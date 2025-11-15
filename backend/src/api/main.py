@@ -45,8 +45,9 @@ def get_application(test_mode: bool = False):
         allow_methods=["*"],  # allow all HTTP methods (GET, POST, etc.)
         allow_headers=["*"],  # allow all headers (including Authorization)
     )
-    
-    question_dir = Path(settings.ROOT_PATH)/settings.QUESTIONS_DIRNAME
+    logger.info("Current origins %s", settings.BACKEND_CORS_ORIGINS)
+
+    question_dir = Path(settings.ROOT_PATH) / settings.QUESTIONS_DIRNAME
     if not question_dir:
         raise ValueError("Cannot Find Local Path")
 
