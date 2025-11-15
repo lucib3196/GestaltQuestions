@@ -48,7 +48,7 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-    
+
 # Copy dependency files first for caching
 COPY pyproject.toml poetry.lock* ./
 # Configure Poetry and install dependencies 
@@ -63,5 +63,5 @@ COPY . .
 EXPOSE 8000
 
 # Run the application.
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--forwarded-allow-ips", "*"]
 
