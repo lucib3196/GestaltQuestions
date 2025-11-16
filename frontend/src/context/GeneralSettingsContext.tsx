@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import { getSettings } from "../api/settingsAPI";
+import { getSettings } from "../api";
 import type { QuestionStorage } from "../types/settingsType";
 
 type GeneralSettingsContextType = {

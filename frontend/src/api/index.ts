@@ -1,2 +1,2 @@
-export * from "./questionAPI";
+export * from "./questionApi";
 export * from "../hooks/questionHooks";

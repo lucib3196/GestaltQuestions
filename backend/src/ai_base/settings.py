@@ -28,8 +28,6 @@ class AICoreSettings(BaseSettings):
 
     langsmith_tracing: bool = True
     langsmith_project: Optional[str] = "ai_ucr"
-    
-    embedding_model: str
 
     def get_api_key(self, model_name: str) -> str | None:
         model = getattr(self, model_name)
