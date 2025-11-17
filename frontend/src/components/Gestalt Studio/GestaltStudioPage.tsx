@@ -20,17 +20,17 @@ import "./gestalt_studio.css";
 
 
 export function rehypeCustomBlocks() {
-  return (tree: any) => {
-    visit(tree, "element", (node: any) => {
-      if (node.tagName?.startsWith("pl-")) {
-        // mark as block-level element
-        node.data = node.data || {};
-        node.data.hName = node.tagName;
-        node.data.hProperties = node.properties || {};
-        node.data.isBlock = true;
-      }
-    });
-  };
+    return (tree: any) => {
+        visit(tree, "element", (node: any) => {
+            if (node.tagName?.startsWith("pl-")) {
+                // mark as block-level element
+                node.data = node.data || {};
+                node.data.hName = node.tagName;
+                node.data.hProperties = node.properties || {};
+                node.data.isBlock = true;
+            }
+        });
+    };
 }
 
 export default function GestaltStudio() {
