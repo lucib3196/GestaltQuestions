@@ -1,4 +1,5 @@
 FROM python:3.11-slim
+WORKDIR /app
 
 # Install dependencies for building Python packages
 RUN apt-get update && apt-get install -y \
@@ -17,7 +18,12 @@ RUN ls
 # Install Poetry
 RUN pip install --no-cache-dir poetry
 
-WORKDIR /app
+
+RUN echo "========= BEFORE COPY =========" && ls -R .
+
+
+
+RUN echo "========= AFTER COPY =========" && ls -R .
 
 # Poetry dependencies first for caching
 COPY pyproject.toml poetry.lock* ./
@@ -28,12 +34,15 @@ RUN poetry config virtualenvs.create false \
 
 
 
-# Copy all project files
-COPY . .
+
 
 # Create non-root user
 RUN useradd -ms /bin/bash sandbox
 USER sandbox
+
+# Copy all project files
+COPY . .
+
 
 EXPOSE 8080
 
