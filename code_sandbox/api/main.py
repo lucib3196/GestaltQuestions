@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from code_sandbox.api.executor import main
+from api.executor import main
 
 app = FastAPI()
 
