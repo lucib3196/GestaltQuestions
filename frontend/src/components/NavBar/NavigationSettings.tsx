@@ -12,6 +12,8 @@ import { QuestionViewPage } from "../../pages/QuestionsPage";
 import TextGenerator from "../CodeGenerators/TextGenerator";
 import ImageGenerator from "../CodeGenerators/ImageGenerator";
 
+import GestaltStudio from "../Gestalt Studio/GestaltStudioPage";
+
 
 
 export const Navigation: NavigationItem[] = [
@@ -25,7 +27,7 @@ export const Navigation: NavigationItem[] = [
         element: <Home />,
         includeNavBar: true,
         requiresAuth: false,
-        allowedRoles: ["student", "developer", "teacher", "admin"]
+        allowedRoles: []
     },
     {
         type: "route",
@@ -34,7 +36,7 @@ export const Navigation: NavigationItem[] = [
         element: <Home />,
         includeNavBar: false,
         requiresAuth: false,
-        allowedRoles: ["student", "developer", "teacher", "admin"]
+        allowedRoles: []
     },
     {
         type: "route",
@@ -95,6 +97,15 @@ export const Navigation: NavigationItem[] = [
         includeNavBar: false,   // Hidden from Navbar
         requiresAuth: true,     // Protected route
         allowedRoles: ["developer", "teacher", "admin", "student"]
+    },
+    {
+        type: "route",
+        name: "Lecture Test",
+        href: "/lecture",
+        element: <GestaltStudio />,
+        includeNavBar: true,
+        requiresAuth: false,
+        allowedRoles: []
     }
 ];
 

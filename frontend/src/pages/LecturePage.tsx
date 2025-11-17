@@ -1,6 +1,6 @@
-import { DerivationRender } from "../components/LectureComponents/Derivation";
+import { DerivationRender } from "../components/Lecture/Derivation";
 import SectionContainer from "../components/Base/SectionContainer";
-import type { Derivation } from "../components/LectureComponents/Derivation";
+import type { Derivation } from "../components/Lecture/Derivation";
 
 const mock_data: Derivation = {
     derivation_title:
