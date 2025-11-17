@@ -5,11 +5,18 @@ import type { AllowedRoles } from "../../api/userAPI";
 export default function ProtectedRoute({
     children,
     allowedRoles,
+    publicRoute = false
 }: {
     children: React.ReactNode;
     allowedRoles: AllowedRoles;
+    publicRoute?: boolean;
 }) {
     const { user, userData } = useAuth();
+
+    // If route is public → no restrictions
+    if (publicRoute || allowedRoles.length === 0) {
+        return children;
+    }
 
     // Not logged in
     if (!user || !userData) return <Navigate to="/login" replace />;

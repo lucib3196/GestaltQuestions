@@ -8,9 +8,20 @@ import PLSolutionPanel from "./PLSolutionPanel";
 import type { PLSolutionPanelProps } from "./PLSolutionPanel";
 import PLHint from "./PLHint";
 import type { PLHintProps } from "./PLHint";
+import type { PLDerivationProps } from "./PLDerivationContainer";
+import type { PLDerivationStepProps } from "./PLDerivationStep";
+import { PLDerivation } from "./PLDerivationContainer";
+import { PLDerivationStep } from "./PLDerivationStep";
 // The currently available tags that are processed, this is the mapping
 // These in html look like EX: <pl-question-panel>Hello world</pl-question-panel
-export type ValidComponents = "pl-question-panel" | "pl-number-input";
+export type ValidComponents =
+  | "pl-question-panel"
+  | "pl-number-input"
+  | "pl-figure"
+  | "pl-solution-panel"
+  | "pl-hint"
+  | "pl-derivation-container"
+  | "pl-derivation-step";
 
 export type TagRegistry = {
   "pl-question-panel": PLQuestionPanelProps;
@@ -18,6 +29,8 @@ export type TagRegistry = {
   "pl-figure": PLFigureProps;
   "pl-solution-panel": PLSolutionPanelProps;
   "pl-hint": PLHintProps;
+  "pl-derivation-container": PLDerivationProps;
+  "pl-derivation-step": PLDerivationStepProps;
 };
 
 export const ComponentMap: Record<
@@ -29,6 +42,8 @@ export const ComponentMap: Record<
   "pl-figure": PLFigure,
   "pl-solution-panel": PLSolutionPanel,
   "pl-hint": PLHint,
+  "pl-derivation-container": PLDerivation,
+  "pl-derivation-step": PLDerivationStep
 };
 // These are the raw attributes for instance <pl-number-input answer-name='c' />
 type RawAttributes = Record<string, string>;
@@ -71,5 +86,16 @@ export const TagAttributeMapping: {
     level: attrs["level"],
     variant: attrs["variant"],
     className: attrs["classname"] || attrs["class"],
+  }),
+  "pl-derivation-step": (attrs) => ({
+    className: attrs["class"] || attrs["classname"],
+  }),
+  "pl-derivation-container": (attrs) => ({
+    title: attrs["title"],
+    subtitle: attrs["subtitle"],
+    reference: attrs["reference"],
+    className: attrs["class"],
+    size: attrs["size"],
+    variant: attrs["variant"]
   }),
 };
