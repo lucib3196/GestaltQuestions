@@ -2,7 +2,7 @@ from pathlib import Path
 
 
 def main():
-    path = Path(r"test_code.py").resolve()
+    path = Path(r"api/test_code.py").resolve()
     return path.read_text()
 
 
