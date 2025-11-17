@@ -73,15 +73,11 @@ def get_settings() -> AppSettings:
     if allowed_origins:
         allowed_origins = allowed_origins.split(",")
     else:
-        allowed_origins = []
+        allowed_origins = ["http://localhost:5173"]
 
     app_settings = AppSettings(
         PROJECT_NAME="GestaltQuestions",
-        BACKEND_CORS_ORIGINS=[
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-        ]
-        + allowed_origins,
+        BACKEND_CORS_ORIGINS=[] + allowed_origins,
         SECRET_KEY=os.getenv("SECRET_KEY", ""),
         QUESTIONS_DIRNAME="questions",
         ROOT_PATH=ROOT_PATH,
@@ -91,7 +87,7 @@ def get_settings() -> AppSettings:
         .resolve()
         .as_posix(),
         POSTGRES_URL=os.getenv("POSTGRES_URL"),
-        SANDBOX_URL=os.getenv("SANDBOX_URL",""),
+        SANDBOX_URL=os.getenv("SANDBOX_URL", ""),
     )
     return app_settings
 

@@ -19,12 +19,6 @@ RUN ls
 RUN pip install --no-cache-dir poetry
 
 
-RUN echo "========= BEFORE COPY =========" && ls -R .
-
-
-
-RUN echo "========= AFTER COPY =========" && ls -R .
-
 # Poetry dependencies first for caching
 COPY pyproject.toml poetry.lock* ./
 
@@ -32,17 +26,12 @@ COPY pyproject.toml poetry.lock* ./
 RUN poetry config virtualenvs.create false \
     && poetry install --no-root --no-interaction --no-ansi
 
-
-
-
-
 # Create non-root user
 RUN useradd -ms /bin/bash sandbox
 USER sandbox
 
 # Copy all project files
 COPY . .
-
 
 EXPOSE 8080
 
