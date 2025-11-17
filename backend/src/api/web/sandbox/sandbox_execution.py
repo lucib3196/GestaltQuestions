@@ -2,7 +2,7 @@ import subprocess
 from fastapi.routing import APIRouter
 from src.api.dependencies import SettingDependency
 import httpx
-
+from src.api.core import logger
 router = APIRouter(prefix="/sandbox", tags=["sandbox"])
 
 
@@ -16,7 +16,12 @@ async def execute(app_settings: SettingDependency):
             raise ValueError("Production Mode must set Sandbox URL for execution")
         async with httpx.AsyncClient() as client:
             res = await client.post(sandbox_url)
-            return {"data": f"{res.json()}"}
+            logger.info("Got Sandbox response %s", res)
+            try:
+                data = res.json()
+            except ValueError:
+                data = res.text
+            return {"data": f"{data}"}
     else:
         process = subprocess.Popen(
             ["docker", "run", "-i", "--rm", "sandbox"],
