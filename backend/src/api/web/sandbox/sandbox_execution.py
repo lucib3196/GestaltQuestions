@@ -3,6 +3,7 @@ from fastapi.routing import APIRouter
 from src.api.dependencies import SettingDependency
 import httpx
 from src.api.core import logger
+
 router = APIRouter(prefix="/sandbox", tags=["sandbox"])
 
 
@@ -14,7 +15,7 @@ async def execute(app_settings: SettingDependency):
         sandbox_url = app_settings.SANDBOX_URL
         if not sandbox_url:
             raise ValueError("Production Mode must set Sandbox URL for execution")
-        async with httpx.AsyncClient(follow_redirects=True) as client:
+        async with httpx.AsyncClient() as client:
             logger.info("This is the sandbox_url %s", sandbox_url)
             res = await client.post(sandbox_url)
             logger.info("Got Sandbox response %s", res)
