@@ -60,6 +60,7 @@ class AppSettings(BaseSettings):
     ROOT_PATH: Union[str, Path]
 
     SQLITE_DB_PATH: Optional[str] = None
+    SANDBOX_URL: Optional[str] = None
 
 
 @lru_cache
@@ -79,7 +80,8 @@ def get_settings() -> AppSettings:
         BACKEND_CORS_ORIGINS=[
             "http://localhost:5173",
             "http://127.0.0.1:5173",
-        ]+allowed_origins,
+        ]
+        + allowed_origins,
         SECRET_KEY=os.getenv("SECRET_KEY", ""),
         QUESTIONS_DIRNAME="questions",
         ROOT_PATH=ROOT_PATH,
@@ -89,6 +91,7 @@ def get_settings() -> AppSettings:
         .resolve()
         .as_posix(),
         POSTGRES_URL=os.getenv("POSTGRES_URL"),
+        SANDBOX_URL=os.getenv("SANDBOX_URL",""),
     )
     return app_settings
 

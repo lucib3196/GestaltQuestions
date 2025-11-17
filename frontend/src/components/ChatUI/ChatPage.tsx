@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ChatUI from "../components/ChatUI/ChatUI";
+import ChatUI from "./ChatUI";
 
 
 export const availableChats = [
