@@ -3,8 +3,8 @@ import subprocess
 import json
 import tempfile
 from typing import Dict, Any
-from src.code_sanbox.code_runner import CodeRunner
-from src.code_sanbox.code_runner.models import ExecutionResult
+from src.code_sandbox.code_runner import CodeRunner
+from src.code_sandbox.code_runner.models import ExecutionResult
 
 
 class JavaScriptRunner(CodeRunner):
