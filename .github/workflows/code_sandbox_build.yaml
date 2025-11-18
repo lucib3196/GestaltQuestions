@@ -9,7 +9,7 @@ on:
     
   pull_request:
     paths: 
-      - 'code_sandbox_build/**'
+      - 'code_sandbox/**'
       - '.github/workflows/code_sandbox_build.yml'
     branches: ["dev", "main"]
 
