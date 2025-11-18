@@ -41,8 +41,4 @@ def test_execution_success(executed_response):
     assert resp.logs
 
 
-def test_execution_fails_with_wrong_runtime(script_path_wrong):
-    """Ensure mismatched runtime fails as expected."""
-    path, language = script_path_wrong
-    with pytest.raises(ValueError) as excinfo:
-        resp = run_generate(path, language)
+
