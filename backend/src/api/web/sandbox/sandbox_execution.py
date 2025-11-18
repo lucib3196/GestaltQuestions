@@ -13,13 +13,13 @@ async def execute(app_settings: SettingDependency):
     if not sandbox_url:
         raise ValueError("SANDBOX_URL must set Sandbox URL for execution")
 
-    path = Path("app_test/test_assets/code/generate.js").resolve()
+    path = Path("app_test/test_assets/code/generate.py").resolve()
 
     try:
         async with httpx.AsyncClient() as client:
             generate_endpoint = f"{sandbox_url}/code_runner/generate"
             data = {
-                "language": "string",
+                "language": "python",
                 "code": path.read_text(),
             }
             res = await client.post(generate_endpoint, json=data)

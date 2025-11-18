@@ -7,15 +7,15 @@ from code_runner.models import ExecutionResult
 
 
 class JavaScriptRunner:
-    def __init__(self, content: str, func_name: str = "generate", suffix: str = ".js"):
-        self.content = content
+    def __init__(self, func_name: str = "generate", suffix: str = ".js"):
+
         self.func_name = func_name
         self.suffix = suffix
 
-    def prepare_code(self):
-        if "module.exports" not in self.content:
-            self.content += f"\nmodule.exports = {{ {self.func_name} }};"
-        return self.content
+    def prepare_code(self, content):
+        if "module.exports" not in content:
+            content += f"\nmodule.exports = {{ {self.func_name} }};"
+        return content
 
     def prepare_runner(self, tmp_path_posix, payload: Dict[str, Any] = {}):
         node_runner = f"""
@@ -26,8 +26,8 @@ class JavaScriptRunner:
         """
         return node_runner
 
-    def run(self, payload: Dict[str, Any] = {}) -> ExecutionResult:
-        code_content = self.prepare_code()
+    def run(self, code: str, payload: Dict[str, Any] = {}) -> ExecutionResult:
+        code_content = self.prepare_code(code)
         with tempfile.NamedTemporaryFile(
             mode="w", delete=False, suffix=self.suffix
         ) as tmp:
@@ -73,5 +73,5 @@ class JavaScriptRunner:
 
 if __name__ == "__main__":
     path = Path(r"app_test/test_code/generate.js").resolve()
-    javascript_runner = JavaScriptRunner(content=path.read_text())
-    print("result", javascript_runner.run())
+    javascript_runner = JavaScriptRunner()
+    print("result", javascript_runner.run(code=path.read_text()))
