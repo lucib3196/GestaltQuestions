@@ -9,7 +9,7 @@ from typing import Any
 from src.code_sandbox.code_runner.base import CodeRunner
 
 # Internal
-from code_runner.models import ExecutionResult
+from src.code_sandbox.code_runner.models import ExecutionResult
 
 
 class PythonScriptRunner(CodeRunner):
