@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def main():
+def run():
     path = Path(r"api/test_code.py").resolve()
     return path.read_text()
 
