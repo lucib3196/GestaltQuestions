@@ -1,6 +1,6 @@
 from typing import Literal, Sequence
 from code_runner import JavaScriptRunner, PythonScriptRunner, CodeRunner
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 from code_runner.models import ExecutionResult
 from code_runner.base import CodeRunner
@@ -8,11 +8,15 @@ from api.core import logger
 
 
 class Generator(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     runner: CodeRunner = Field(
-        ..., description="A function that executes code for the runtime"
+        ...,
+        description="The runtime executor responsible for running code.",
     )
     extensions: Sequence[str] = Field(
-        ..., description="Supported file extensions for the runtim"
+        ...,
+        description="File extensions supported by this runtime.",
     )
 
 
@@ -26,7 +30,7 @@ def run_generate(
     code: str, language: Literal["python", "javascript"]
 ) -> ExecutionResult:
     try:
-        generator = Generator[language]
+        generator = GENERATOR_MAPPING[language]
         runner = generator.runner
         valid_extensions = generator.extensions
 

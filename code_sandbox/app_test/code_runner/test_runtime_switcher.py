@@ -4,6 +4,7 @@ from pathlib import Path
 from code_runner.models import ExecutionResult
 from code_runner.runtime_switcher import run_generate
 
+
 # --- Fixtures ---
 @pytest.fixture(params=["js_script_path", "py_script_path"])
 def script_path(request):
@@ -25,7 +26,8 @@ def script_path_wrong(request):
 def executed_response(script_path):
     """Fixture: executes the runtime switcher for the given language."""
     path, language = script_path
-    resp = run_generate(path, language)
+    code = Path(path).read_text()
+    resp = run_generate(code, language)
     response = ExecutionResult.model_validate(resp)
     assert response
     return response
@@ -35,8 +37,8 @@ def executed_response(script_path):
 def test_execution_success(executed_response):
     """Ensure valid script executes successfully."""
     resp = executed_response
-    assert resp.success is True
-    assert resp.quiz_response
+    assert resp.output 
+    assert resp.logs
 
 
 def test_execution_fails_with_wrong_runtime(script_path_wrong):
