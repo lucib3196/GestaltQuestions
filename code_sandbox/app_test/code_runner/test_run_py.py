@@ -6,9 +6,9 @@ import pytest
 import json
 
 # --- Internal Modules ---
-from code_runner.python_runner import PythonScriptRunner
-from code_runner.models import ExecutionResult
-from utils.utils import logs_contain
+from code_sandbox.src.code_runner.python_runner import PythonScriptRunner
+from code_sandbox.src.code_runner.models import ExecutionResult
+from code_sandbox.src.utils.utils import logs_contain
 
 
 # --------------------------------------------------------------------------- #

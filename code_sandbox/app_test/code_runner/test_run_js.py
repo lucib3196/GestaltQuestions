@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 
 # --- Local Modules ---
-from code_runner.javascript_runner import JavaScriptRunner
-from code_runner.models import ExecutionResult
-from utils.utils import logs_contain
+from code_sandbox.src.code_runner.javascript_runner import JavaScriptRunner
+from code_sandbox.src.code_runner.models import ExecutionResult
+from code_sandbox.src.utils.utils import logs_contain
 
 
 # --------------------------------------------------------------------------- #
@@ -43,7 +43,6 @@ def test_js_execution_success(js_execution_result):
 def test_js_execution_returns_quiz_response(js_execution_result):
     """Verify that the JavaScript returns correctly structured output."""
     output = js_execution_result.output
-    
 
     assert isinstance(output, dict)
     assert output

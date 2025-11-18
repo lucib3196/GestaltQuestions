@@ -1,8 +1,8 @@
 import pytest
 from pathlib import Path
 
-from code_runner.models import ExecutionResult
-from code_runner.runtime_switcher import run_generate
+from code_sandbox.src.code_runner.models import ExecutionResult
+from code_sandbox.src.code_runner.runtime_switcher import run_generate
 
 
 # --- Fixtures ---
@@ -37,8 +37,5 @@ def executed_response(script_path):
 def test_execution_success(executed_response):
     """Ensure valid script executes successfully."""
     resp = executed_response
-    assert resp.output 
+    assert resp.output
     assert resp.logs
-
-
-
