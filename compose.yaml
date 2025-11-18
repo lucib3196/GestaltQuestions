@@ -20,12 +20,16 @@ services:
     ports:
       - 8080:8080
   frontend:
-    build: 
+    build:
       context: ./frontend
-      dockerfile: Dockerfile
-    env_file:
-      - ./frontend/.env
+      dockerfile: Dockerfile.dev
+    command: npm run dev
     ports:
-    - 5173:80
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    env_file:
+      - .env
+ 
 
 
