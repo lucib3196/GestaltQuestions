@@ -1,5 +1,5 @@
 [project]
-name = "code-sandbox"
+name = "code_sandbox"
 version = "0.1.0"
 description = ""
 authors = [
