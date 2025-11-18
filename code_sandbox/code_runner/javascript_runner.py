@@ -4,9 +4,10 @@ import json
 import tempfile
 from typing import Dict, Any
 from code_runner.models import ExecutionResult
+from code_runner.base import CodeRunner
 
 
-class JavaScriptRunner:
+class JavaScriptRunner(CodeRunner):
     def __init__(self, func_name: str = "generate", suffix: str = ".js"):
 
         self.func_name = func_name

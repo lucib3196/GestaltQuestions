@@ -6,12 +6,13 @@ import tempfile
 from contextlib import redirect_stdout
 from pathlib import Path
 from typing import Any
+from code_runner.base import CodeRunner
 
 # Internal
 from code_runner.models import ExecutionResult
 
 
-class PythonScriptRunner:
+class PythonScriptRunner(CodeRunner):
     def __init__(self, func_name: str = "generate", suffix: str = ".py"):
         self.func_name = func_name
         self.suffix = suffix

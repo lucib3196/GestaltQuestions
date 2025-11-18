@@ -1,5 +1,9 @@
 from pydantic import BaseModel
 from typing import Sequence
+from typing import Literal
+
+Language = Literal["javascript", "python"]
+
 
 class ExecutionResult(BaseModel):
     output: str | dict  # final returned value
@@ -7,5 +11,5 @@ class ExecutionResult(BaseModel):
 
 
 class ExecutionRequest(BaseModel):
-    language: str  # python, js, cpp, etc.
+    language: Language
     code: str  # the actual code to run

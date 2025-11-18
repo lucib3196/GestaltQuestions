@@ -1,38 +1,26 @@
-from fastapi.routing import APIRouter
-from code_runner import PythonScriptRunner, JavaScriptRunner
+from fastapi import APIRouter, HTTPException, status
+
 from code_runner.models import ExecutionRequest, ExecutionResult
-from fastapi import HTTPException
-from starlette import status
+from code_runner.runtime_switcher import run_generate
+from pydantic import ValidationError
 
 router = APIRouter(prefix="/code_runner", tags=["code_running"])
-
-ALLOWED_LANGUAGES = ["javascript", "python"]
 
 
 @router.post("/generate")
 def execute_code(data: ExecutionRequest) -> ExecutionResult:
     language = data.language
-    if language not in ALLOWED_LANGUAGES:
+    try:
+        return run_generate(data.code, language=language)
+    except ValidationError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Language {data.language} is not supported for sandbox environment",
+            detail=f"Received a validations error {e}",
         )
-    try:
-
-        if language == "python":
-            runner = PythonScriptRunner()
-            return runner.run(data.code)
-        elif language == "javascript":
-            runner = JavaScriptRunner()
-            return runner.run(data.code)
-        else:
-            raise HTTPException(
-                status_code=500,
-                detail="An unexpected error occured when running the scripts, for some reason an unsupported language passed through",
-            )
-
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={f"Could not execute code {e}"},
         )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected result occured {e}")
