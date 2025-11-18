@@ -1,14 +1,10 @@
 from fastapi import FastAPI
 import os
 import uvicorn
-from .executor import run
+from api.web.code_running import router
 
 app = FastAPI()
-
-
-@app.post("/execute")
-async def execute():
-    return {"data": run()}
+app.include_router(router)
 
 
 def main():
