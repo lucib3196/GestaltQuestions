@@ -28,7 +28,9 @@ class JavaScriptRunner:
 
     def run(self, payload: Dict[str, Any] = {}) -> ExecutionResult:
         code_content = self.prepare_code()
-        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".js") as tmp:
+        with tempfile.NamedTemporaryFile(
+            mode="w", delete=False, suffix=self.suffix
+        ) as tmp:
             tmp.write(code_content)
             tmp_path = tmp.name
         tmp_path_posix = Path(tmp_path).as_posix()
@@ -54,7 +56,7 @@ class JavaScriptRunner:
 
         # Extract last JSON line (supports other console.logs)
         last_line = stdout.splitlines()[-1]
-        print_statements = "\n\n".join(stdout.splitlines()[:-1])
+        print_statements = stdout.splitlines()[:-1]
         try:
             parsed = json.loads(last_line)
             result = parsed.get("result")

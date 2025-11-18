@@ -1,9 +1,9 @@
 from pydantic import BaseModel
-
+from typing import Sequence
 
 class ExecutionResult(BaseModel):
     output: str | dict  # final returned value
-    logs: str | dict = ""  # print statements / console output
+    logs: Sequence[str] = []
 
 
 class ExecutionRequest(BaseModel):

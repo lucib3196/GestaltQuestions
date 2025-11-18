@@ -17,7 +17,6 @@ async def execute(app_settings: SettingDependency):
 
     try:
         async with httpx.AsyncClient() as client:
-            logger.info("This is the sandbox_url %s", sandbox_url)
             generate_endpoint = f"{sandbox_url}/code_runner/generate"
             data = {
                 "language": "string",
@@ -27,7 +26,6 @@ async def execute(app_settings: SettingDependency):
             logger.info("Got Sandbox response %s", res)
             try:
                 data = res.json()
-
             except ValueError:
                 data = res.text
             return {"data": f"{data}"}
