@@ -1,0 +1,46 @@
+name: CodeSandBox Build
+# Only triggers if there is a backend change
+on:
+  push:
+    paths: 
+      - 'code_sandbox/**'
+      - '.github/workflows/code_sandbox_build.yml'
+    branches: ["main", "dev"]
+    
+  pull_request:
+    paths: 
+      - 'code_sandbox_build/**'
+      - '.github/workflows/code_sandbox_build.yml'
+    branches: ["dev", "main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.13]
+
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{matrix.python-version}}
+
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+
+        working-directory: ./code_sandbox
+
+      - name: Install dependencies
+        run: poetry install
+        working-directory: ./code_sandbox
+
+      - name: Run Test
+        run: |
+          poetry run python -m pytest -s --log-cli-level=INFO
+        working-directory: ./code_sandbox
