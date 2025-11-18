@@ -1,10 +1,12 @@
 from typing import Literal, Sequence
-from code_runner import JavaScriptRunner, PythonScriptRunner, CodeRunner
+from src.code_sandbox.code_runner.javascript_runner import JavaScriptRunner
+from src.code_sandbox.code_runner.python_runner import PythonScriptRunner
+from src.code_sandbox.code_runner.base import CodeRunner
 from pydantic import BaseModel, Field, ConfigDict
 
-from code_runner.models import ExecutionResult
-from code_runner.base import CodeRunner
-from api.core import logger
+from src.code_sandbox.code_runner.models import ExecutionResult
+from src.code_sandbox.code_runner.base import CodeRunner
+from src.code_sandbox.api.core import logger
 
 
 class Generator(BaseModel):

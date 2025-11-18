@@ -6,7 +6,7 @@ import tempfile
 from contextlib import redirect_stdout
 from pathlib import Path
 from typing import Any
-from code_runner.base import CodeRunner
+from src.code_sandbox.code_runner.base import CodeRunner
 
 # Internal
 from code_runner.models import ExecutionResult
