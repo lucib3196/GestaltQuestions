@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI
 import uvicorn
-from api.web.code_running import router
+from src.code_sandbox.api.web.code_running import router
 
 
 def get_app():

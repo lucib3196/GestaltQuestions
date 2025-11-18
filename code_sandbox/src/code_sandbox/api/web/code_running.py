@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
-
-from code_runner.models import ExecutionRequest, ExecutionResult
-from code_runner.runtime_switcher import run_generate
+from src.code_sandbox.code_runner.models import ExecutionRequest, ExecutionResult
+from src.code_sandbox.code_runner.runtime_switcher import run_generate
+from src.code_sandbox.code_runner.runtime_switcher import run_generate
 from pydantic import ValidationError
 
 router = APIRouter(prefix="/code_runner", tags=["code_running"])
