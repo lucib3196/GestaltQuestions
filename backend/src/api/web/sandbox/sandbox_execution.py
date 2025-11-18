@@ -1,9 +1,9 @@
-import subprocess
 from fastapi.routing import APIRouter
 from src.api.dependencies import SettingDependency
 import httpx
 from src.api.core import logger
 from pathlib import Path
+
 router = APIRouter(prefix="/sandbox", tags=["sandbox"])
 
 
@@ -12,7 +12,7 @@ async def execute(app_settings: SettingDependency):
     sandbox_url = app_settings.SANDBOX_URL
     if not sandbox_url:
         raise ValueError("SANDBOX_URL must set Sandbox URL for execution")
-    
+
     path = Path("app_test/test_assets/code/generate.js").resolve()
 
     try:
@@ -21,7 +21,7 @@ async def execute(app_settings: SettingDependency):
             generate_endpoint = f"{sandbox_url}/code_runner/generate"
             data = {
                 "language": "string",
-                "content": path.read_text(),
+                "code": path.read_text(),
             }
             res = await client.post(generate_endpoint, json=data)
             logger.info("Got Sandbox response %s", res)

@@ -3,6 +3,7 @@ import subprocess
 import json
 import tempfile
 from typing import Dict, Any
+from code_runner.models import ExecutionResult
 
 
 class JavaScriptRunner:
@@ -25,7 +26,7 @@ class JavaScriptRunner:
         """
         return node_runner
 
-    def run(self, payload: Dict[str, Any] = {}):
+    def run(self, payload: Dict[str, Any] = {}) -> ExecutionResult:
         code_content = self.prepare_code()
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".js") as tmp:
             tmp.write(code_content)
@@ -53,13 +54,13 @@ class JavaScriptRunner:
 
         # Extract last JSON line (supports other console.logs)
         last_line = stdout.splitlines()[-1]
-
+        print_statements = "\n\n".join(stdout.splitlines()[:-1])
         try:
             parsed = json.loads(last_line)
             result = parsed.get("result")
             if not result:
                 raise ValueError("Result is none")
-            return result
+            return ExecutionResult(output=result, logs=print_statements)
         except Exception as e:
             raise ValueError(
                 f"Failed to parse JS output. Error: {e}\n"
