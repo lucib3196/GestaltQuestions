@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 
 # --- Local Modules ---
-from code_sandbox.src.code_runner.javascript_runner import JavaScriptRunner
-from code_sandbox.src.code_runner.models import ExecutionResult
-from code_sandbox.src.utils.utils import logs_contain
+from src.code_sanbox.code_runner.javascript_runner import JavaScriptRunner
+from src.code_sanbox.code_runner.models import ExecutionResult
+from src.code_sanbox.utils.utils import logs_contain
 
 
 # --------------------------------------------------------------------------- #

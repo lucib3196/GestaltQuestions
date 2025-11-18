@@ -1,8 +1,8 @@
 import pytest
 from pathlib import Path
 
-from code_sandbox.src.code_runner.models import ExecutionResult
-from code_sandbox.src.code_runner.runtime_switcher import run_generate
+from src.code_sanbox.code_runner.models import ExecutionResult
+from src.code_sanbox.code_runner.runtime_switcher import run_generate
 
 
 # --- Fixtures ---
