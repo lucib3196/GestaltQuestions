@@ -3,12 +3,13 @@ services:
   server:
     build:
       context: ./backend
-      dockerfile:  Dockerfile
+      dockerfile: Dockerfile.dev
     env_file:
       - .env
     ports:
       - 8000:8000
     volumes:
+      - ./backend:/app        # mount project
       - ./questions:/questions
       - ./FIREBASE_CRED.json:/FIREBASE_CRED.json
   code_sandbox:
