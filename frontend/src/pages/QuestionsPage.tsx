@@ -20,6 +20,7 @@ export function QuestionViewPage() {
     <section className="w-full flex flex-col items-center py-12 space-y-16">
       {/* Dashboard Section */}
       <div className="w-full max-w-5xl flex flex-col items-center px-4 sm:px-6 lg:px-8">
+        
         <QuestionDashBoardHeader />
         <SyncQuestions />
 

@@ -34,9 +34,6 @@ def get_storage_type(
 StorageTypeDep = Annotated[StorageType, Depends(get_storage_type)]
 
 
-
-
-
 bearer_scheme = HTTPBearer(auto_error=False)
 
 

@@ -4,7 +4,7 @@ import type { NavigationItem } from "../../types/navbarTypes";
 
 // Pages
 import Home from "../../pages/Home";
-import ChatPage from "../../pages/ChatPage";
+import ChatPage from "../ChatUI/ChatPage";
 import AccountPage from "../../pages/AccountPage";
 import { QuestionViewPage } from "../../pages/QuestionsPage";
 

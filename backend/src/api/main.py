@@ -61,7 +61,7 @@ def get_application(test_mode: bool = False):
         StaticFiles(directory=question_dir, html=False),
         name="questions",
     )
-    logger.info("Serving static files from:", question_dir)
+    logger.info("Serving static files from: %s", question_dir)
 
     # Define a custom OpenAPI schema that uses your token URL at /auth/login
     def custom_openapi():

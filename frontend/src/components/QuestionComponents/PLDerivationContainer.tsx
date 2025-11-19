@@ -38,9 +38,6 @@ export function PLDerivation({
 
     const visibleSteps = autoShowAll ? steps : steps.slice(0, stepIndex);
 
-    console.log()
-
-
     return (
         <MathJax>
             <div
