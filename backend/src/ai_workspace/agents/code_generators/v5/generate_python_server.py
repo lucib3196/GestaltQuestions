@@ -20,7 +20,7 @@ from src.ai_workspace.retrievers import SemanticExamplesCSV
 client = Client()
 
 # Python-focused resources & templates
-resources = init_generation(column_names = ("question.html", "server.py"))
+resources = init_generation(column_names=("question.html", "server.py"))
 prompt_base = "server_py_template_base1"
 predefined_value_template = "server_add_predefined_py"
 test_template = "server_test_py"

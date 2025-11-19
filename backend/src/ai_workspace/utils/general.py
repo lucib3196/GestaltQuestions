@@ -16,35 +16,6 @@ from pydantic import BaseModel
 
 
 
-def save_graph_visualization(
-    graph,
-    filename: str = "Graph.png",
-    base_path: Optional[str] = None,
-) -> None:
-    """
-    Visualizes a LangGraph StateGraph and saves it as a PNG image.
-
-    Args:
-        graph (StateGraph): The StateGraph instance to visualize.
-        filename (str, optional): The filename for the saved image. Defaults to "Graph.png".
-        base_path (str, optional): The directory path to save the image. If None, saves in the script's directory.
-    """
-    try:
-        image_bytes = graph.get_graph().draw_mermaid_png()  # type: ignore
-        print("Got image bites")
-        display(Image(image_bytes))
-
-        save_dir = base_path or os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(save_dir, filename)
-
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
-        with open(file_path, "wb") as file:
-            file.write(image_bytes)
-
-        print(f"✅ Saved graph visualization at: {file_path}")
-    except Exception as error:
-        print(f"❌ Graph visualization failed: {error}")
 
 
 async def pdf_to_image_temp(
