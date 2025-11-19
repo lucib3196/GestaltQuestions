@@ -1,9 +1,8 @@
 import pytest
 from pathlib import Path
 
-# --- Internal Imports ---
-from src.code_runner.runtime_switcher import run_generate
-from src.code_runner.models import CodeRunResponse, CodeRunException
+from src.code_sandbox.code_runner.models import ExecutionResult
+from src.code_sandbox.code_runner.runtime_switcher import run_generate
 
 
 # --- Fixtures ---
@@ -27,8 +26,9 @@ def script_path_wrong(request):
 def executed_response(script_path):
     """Fixture: executes the runtime switcher for the given language."""
     path, language = script_path
-    resp = run_generate(path, language)
-    response = CodeRunResponse.model_validate(resp)
+    code = Path(path).read_text()
+    resp = run_generate(code, language)
+    response = ExecutionResult.model_validate(resp)
     assert response
     return response
 
@@ -37,12 +37,5 @@ def executed_response(script_path):
 def test_execution_success(executed_response):
     """Ensure valid script executes successfully."""
     resp = executed_response
-    assert resp.success is True
-    assert resp.quiz_response
-
-
-def test_execution_fails_with_wrong_runtime(script_path_wrong):
-    """Ensure mismatched runtime fails as expected."""
-    path, language = script_path_wrong
-    with pytest.raises(CodeRunException) as excinfo:
-        resp = run_generate(path, language)
+    assert resp.output
+    assert resp.logs

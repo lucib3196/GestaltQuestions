@@ -39,7 +39,7 @@ class LocalStorageService(StorageService):
         self.base_name = base
         self.base_path = self.root / base
         logger.debug(
-            "Initialized the storage, questions will be stored at %s", self.root
+            f"Initialized the storage, questions will be stored at {self.base_path}"
         )
 
     # Helper

@@ -19,11 +19,13 @@ import { useQuestionContext } from './../../context/QuestionContext';
 export function QuestionTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const { selectedQuestionID, setSelectedQuestionID } = useQuestionContext()
+  const { selectedQuestionID, setSelectedQuestionID,questions } = useQuestionContext()
   const { isSelected, toggle } = useSelection();
   const [testResults] = useState<MinimalTestResult[]>([]);
   const [theme] = useTheme();
-  const { questions } = useQuestionContext()
+  
+
+  console.log("Got questions", questions)
 
   const paged = useMemo(
     () => questions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
