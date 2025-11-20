@@ -20,11 +20,10 @@ class QuestionModuleDocumentLoader(BaseLoader):
 
             if pd.isna(input_example):
                 continue
-
+            # The page content will be a simple input and output
             content_string = f"""Input Example: {input_example}
-
-    Output Example: {output_example}
-    """
+                Output Example: {output_example}
+                """
 
             yield Document(
                 page_content=content_string,
@@ -52,11 +51,10 @@ class QuestionModuleDocumentLoader(BaseLoader):
         return self.df
 
     def validate_csv(self):
-
         if self.example_input not in self.df.columns:
-            raise ValueError(f"Column Name {self.target_column} is not valid")
-        if self.example_output not in self.self.df.columns:
-            raise ValueError(f"Column Name {self.target_column} is not valid")
+            raise ValueError(f"Column Name {self.example_input} is not valid")
+        if self.example_output not in self.df.columns:
+            raise ValueError(f"Column Name {self.example_output} is not valid")
 
 
 if __name__ == "__main__":
