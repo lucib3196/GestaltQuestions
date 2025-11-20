@@ -3,6 +3,7 @@ from langchain.agents import create_agent
 from langchain.tools import tool
 from langchain_openai import OpenAIEmbeddings
 from langchain.chat_models import init_chat_model
+
 # --- Pydantic ---
 
 # --- Project Imports ---
@@ -22,12 +23,10 @@ server_js_vectorstore = load_vectorstore(
 )
 
 
-
 model = init_chat_model(
     settings.base_model.model,
     model_provider=settings.base_model.provider,
 )
-
 
 @tool
 def retrieve_server_js_context(question: str, computational: bool):
@@ -71,11 +70,11 @@ def improve_server_js(code: str, solution: str | None = None):
     - You have an initial draft of a server.js file that needs restructuring or cleanup.
     - The code does not fully follow best practices or consistent logic patterns.
     - Dynamic parameter generation needs to be improved or standardized.
-    - Variable names, computations, or validation steps appear inconsistent with 
+    - Variable names, computations, or validation steps appear inconsistent with
       the associated question.
-    - A solution (step-by-step explanation) is provided and the code needs to be 
+    - A solution (step-by-step explanation) is provided and the code needs to be
       aligned with the mathematical reasoning or logic in the solution.
-    - The JS logic must match the intended correct answer(s), rounding rules, 
+    - The JS logic must match the intended correct answer(s), rounding rules,
       or intermediate computations.
 
     Do NOT use this tool when:
@@ -144,13 +143,12 @@ def improve_server_js(code: str, solution: str | None = None):
     return model.invoke(prompt)
 
 
-
 tools = [retrieve_server_js_context]
 agent = create_agent(model, tools=tools, system_prompt=SERVER_JS_PROMPT)
 
 if __name__ == "__main__":
     print("Interactive Agent Chat\nType 'exit' to quit.\n")
-    
+
     while True:
         user_input = input("You: ")
 
