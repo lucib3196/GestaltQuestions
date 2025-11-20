@@ -53,7 +53,9 @@ def load_topic_classification_resources():
 
     return model, vectorstore
 
+
 model, vectorstore = load_topic_classification_resources()
+
 
 # Create a tool for answering based on vectorstore
 @tool(response_format="content_and_artifact")
@@ -94,3 +96,6 @@ if __name__ == "__main__":
         metadata = cast(dict[str, Any], metadata_raw)
 
         print(token.content)
+
+    data = agent.invoke({"messages": [{"role": "user", "content": query}]})
+
