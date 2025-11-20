@@ -11,7 +11,7 @@ from src.ai_processing.code_generator.models.models import (
     question_types,
 )
 from src.ai_processing.code_generator.retrievers import (
-    question_html_vectorstore,
+    solution_html_vectorstore,
 )
 
 # --- LangChain / LangGraph ---
@@ -26,7 +26,6 @@ from src.utils import save_graph_visualization, to_serializable
 # --- External Services ---
 from langsmith import Client
 
-
 settings = get_settings()
 embedding_model = settings.embedding_model
 base_model = settings.base_model
@@ -35,9 +34,8 @@ model = init_chat_model(
     model_provider=settings.base_model.provider,
 )
 
-
 client = Client()
-base_prompt = client.pull_prompt("question_html_graph_prompt")
+base_prompt = client.pull_prompt("solution_html_graph_prompt")
 if isinstance(base_prompt, str):
     prompt: ChatPromptTemplate = ChatPromptTemplate.from_template(base_prompt)
 else:
@@ -47,7 +45,7 @@ else:
 class State(TypedDict):
     question: Question
     question_type: question_types
-    question_html: str | None
+    solution_html: str | None
 
     retrieved_documents: Annotated[List[Document], operator.add]
     formatted_examples: str
@@ -57,7 +55,7 @@ def retrieve_examples(state: State) -> Command[Literal["generate_code"]]:
     isAdaptive = False
     if state["question_type"] == "computational":
         isAdaptive = True
-    retriever = question_html_vectorstore.as_retriever(
+    retriever = solution_html_vectorstore.as_retriever(
         search_type="similarity", kwargs={"isAdaptive": isAdaptive}, k=2
     )
     results = retriever.invoke(state["question"].question_text)
@@ -71,15 +69,16 @@ def retrieve_examples(state: State) -> Command[Literal["generate_code"]]:
 
 def generate_code(state: State):
     question_text = state["question"].question_text
+    solution = state["question"].solution_text
     examples = state["formatted_examples"]
     messages = prompt.format_prompt(
-        question=question_text, examples=examples
+        question=question_text, examples=examples, solution=solution
     ).to_messages()
 
     structured_model = model.with_structured_output(CodeResponse)
     question_html = structured_model.invoke(messages)
     question_html = CodeResponse.model_validate(question_html)
-    return {"question_html": question_html.code}
+    return {"solution_html": question_html.code}
 
 
 workflow = StateGraph(State)
@@ -102,15 +101,15 @@ if __name__ == "__main__":
     input_state: State = {
         "question": question,
         "question_type": "computational",
-        "question_html": None,
+        "solution_html": None,
         "retrieved_documents": [],
         "formatted_examples": "",
     }
     result = app.invoke(input_state, config=config)  # type: ignore
-    print(result["question_html"])
+    print(result["solution_html"])
 
     # Save output
-    output_path = Path(r"src/ai_processing/code_generator/outputs")
-    save_graph_visualization(app, output_path, filename="question_html_graph.png")
+    output_path = Path(r"src/ai_processing/code_generator/outputs/solution_html")
+    save_graph_visualization(app, output_path, filename="graph.png")
     data_path = output_path / "output.json"
     data_path.write_text(json.dumps(to_serializable(result)))

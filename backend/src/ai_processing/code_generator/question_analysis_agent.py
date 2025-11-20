@@ -106,4 +106,4 @@ initial_state: QuestionBuildeState = {
     "messages": [],
     "request_type": None,
 }
-result = app.invoke(initial_state, config=config)
+result = app.invoke(initial_state, config=config) # type: ignore
