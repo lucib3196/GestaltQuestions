@@ -1,0 +1,19 @@
+{
+  "question": {
+    "question_text": "A car is traveling along a straight rode at a constant speed of 100mph for 5 hours calculate the total distance traveled",
+    "solution_text": null,
+    "question_solution": null
+  },
+  "metadata": {
+    "title": "QuestionTile",
+    "question_type": "computational",
+    "topics": ["Test"]
+  },
+  "files": {
+    "question.html": "content",
+    "server.js": "code",
+    "server.py": "code",
+    "solution.html": "solution",
+    "files": "{\"title\": \"QuestionTile\", \"question_type\": \"computational\", \"topics\": [\"Test\"], \"ai_generated\": true, \"languages\": [\"javascript\", \"python\"]}"
+  }
+}
