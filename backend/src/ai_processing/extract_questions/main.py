@@ -50,9 +50,6 @@ class Option(BaseModel):
     )
 
 
-
-
-
 class ConceptualQuestion(BaseModel):
     question: str = Field(..., description="The conceptual question being asked.")
     topics: List[str] = Field(
