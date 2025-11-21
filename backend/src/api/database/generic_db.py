@@ -30,12 +30,12 @@ def create_or_resolve(
         raise ValueError(f"{lookup_field} is not a property of {target_cls}")
 
     stmt = select(target_cls).where(
-        func.lower(getattr(target_cls, lookup_field)) == target_value
+        func.lower(getattr(target_cls, lookup_field)) == str(target_value).lower()
     )
     result = session.exec(stmt).first()
     if result:
         return result, True
-    if create:
+    if create :
         try:
             obj: SQLModel = target_cls(**{lookup_field: target_value.strip()})
             session.add(obj)
@@ -50,7 +50,6 @@ def create_or_resolve(
         f"Object of type '{target_cls.__name__}' with {lookup_field}='{target_value}' not found "
         f"and create_field=False"
     )
-    
 
 
 def get_all_model_relationships(model: Type[SQLModel]) -> Dict[str, Type[SQLModel]]:
