@@ -1,4 +1,4 @@
-from src.ai_processing.code_generator.utils import load_vectorstore
+from src.ai_processing.utils import load_vectorstore
 from src.ai_base.settings import get_settings
 
 # --- LangChain / OpenAI ---

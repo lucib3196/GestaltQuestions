@@ -8,7 +8,7 @@ question_types = Literal["computational", "static"]
 class Question(BaseModel):
     question_text: str
     solution_text: str | None
-    question_solution: Dict[str, str] | None
+    question_solution: str|None
 
 
 class CodeResponse(BaseModel):
