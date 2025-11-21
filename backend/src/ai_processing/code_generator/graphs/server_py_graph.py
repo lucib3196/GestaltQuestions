@@ -22,7 +22,11 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
 from src.utils import save_graph_visualization, to_serializable
-
+from src.ai_processing.code_validation.code_validation_graph import (
+    graph as code_validation_graph,
+    State as CodeValidationState,
+)
+from src.ai_processing.utils import extract_langsmith_prompt
 # --- External Services ---
 from langsmith import Client
 
@@ -42,7 +46,7 @@ if isinstance(base_prompt, str):
 else:
     prompt: ChatPromptTemplate = base_prompt
 
-
+print(type(base_prompt))
 class State(TypedDict):
     question: Question
     question_type: question_types
@@ -54,12 +58,18 @@ class State(TypedDict):
 
 def retrieve_examples(state: State) -> Command[Literal["generate_code"]]:
     isAdaptive = False
+
     if state["question_type"] == "computational":
         isAdaptive = True
+
     retriever = server_py_vectorstore.as_retriever(
         search_type="similarity", kwargs={"isAdaptive": isAdaptive}, k=2
     )
-    results = retriever.invoke(state["question"].question_text)
+    question_html = state["question"].question_html
+    if not question_html:
+        question_html = state["question"].question_text
+
+    results = retriever.invoke(question_html)
     # Format docs
     formatted_docs = "\n".join(p.page_content for p in results)
     return Command(
@@ -69,11 +79,13 @@ def retrieve_examples(state: State) -> Command[Literal["generate_code"]]:
 
 
 def generate_code(state: State):
-    question_text = state["question"].question_text
-    solution = state["question"].solution_text
+    question_html = state["question"].question_html
+    if not question_html:
+        question_html = state["question"].question_text
+    solution = state["question"].solution_guide
     examples = state["formatted_examples"]
     messages = prompt.format_prompt(
-        question=question_text, examples=examples, solution=solution
+        question=question_html, examples=examples, solution=solution
     ).to_messages()
 
     structured_model = model.with_structured_output(CodeResponse)
@@ -82,12 +94,78 @@ def generate_code(state: State):
     return {"server_py": question_html.code}
 
 
+def solution_present(state: State) -> Literal["validate_solution", "improve_code"]:
+    if state["question"].solution_guide:
+        return "validate_solution"
+    return "improve_code"
+
+
+def validate_solution(state: State):
+    solution_guide = state["question"].solution_guide
+
+    input_state: CodeValidationState = {
+        "prompt": (
+            "You are tasked with analyzing the following Python server file. "
+            "Verify that the generated code is valid, consistent, and follows "
+            "the logic described in the provided solution guide.\n\n"
+            f"Solution Guide:\n{solution_guide}"
+        ),
+        "generated_code": state["server_py"] or "",
+        "validation_errors": [],
+        "refinement_count": 0,
+        "final_code": "",
+    }
+
+    # Run the code validation refinement graph
+    result = code_validation_graph.invoke(input_state)  # type: ignore
+
+    final_code = result["final_code"]
+
+    return {"server_py": final_code}
+
+
+def improve_code(state: State):
+    input_state: CodeValidationState = {
+        "prompt": (
+            "You are tasked with reviewing and improving the following Python "
+            "server file. Your goal is to ensure that the code is correct, "
+            "numerically consistent, and integrates dynamic unit handling "
+            "based on the problem statement.\n\n"
+            "Carefully analyze the logic, verify alignment with the solution "
+            "guide, and update the code to properly account for variable units, "
+            "scaling factors, or engineering constants that may be required.\n\n"
+            f"General Guidelines for Server File Guide:\n{extract_langsmith_prompt(base_prompt)}"
+        ),
+        "generated_code": state.get("server_py", "") or "",
+        "validation_errors": [],
+        "refinement_count": 0,
+        "final_code": "",
+    }
+
+    # Execute the refinement / validation graph
+    result = code_validation_graph.invoke(input_state)  # type: ignore
+
+    final_code = result["final_code"]
+
+    return {"server_py": final_code}
+
+
 workflow = StateGraph(State)
 # Define Nodes
 workflow.add_node("retrieve_examples", retrieve_examples)
 workflow.add_node("generate_code", generate_code)
+workflow.add_node("validate_solution", validate_solution)
+workflow.add_node("improve_code", improve_code)
+
 # Connect
 workflow.add_edge(START, "retrieve_examples")
+workflow.add_conditional_edges(
+    "generate_code",
+    solution_present,
+    {"improve_code": "improve_code", "validate_solution": "validate_solution"},
+)
+workflow.add_edge("validate_solution", "improve_code")
+workflow.add_edge("improve_code", END)
 workflow.add_edge("retrieve_examples", END)
 
 memory = MemorySaver()
@@ -96,8 +174,9 @@ if __name__ == "__main__":
     config = {"configurable": {"thread_id": "customer_123"}}
     question = Question(
         question_text="A car is traveling along a straight rode at a constant speed of 100mph for 5 hours calculate the total distance traveled",
-        solution_text=None,
-        question_solution=None,
+        solution_guide=None,
+        final_answer=None,
+        question_html="",
     )
     input_state: State = {
         "question": question,

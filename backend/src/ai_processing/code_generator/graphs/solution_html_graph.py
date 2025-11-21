@@ -25,6 +25,10 @@ from src.utils import save_graph_visualization, to_serializable
 
 # --- External Services ---
 from langsmith import Client
+from src.ai_processing.code_validation.code_validation_graph import (
+    graph as code_validation_graph,
+    State as CodeValidationState,
+)
 
 settings = get_settings()
 embedding_model = settings.embedding_model
@@ -58,7 +62,10 @@ def retrieve_examples(state: State) -> Command[Literal["generate_code"]]:
     retriever = solution_html_vectorstore.as_retriever(
         search_type="similarity", kwargs={"isAdaptive": isAdaptive}, k=2
     )
-    results = retriever.invoke(state["question"].question_text)
+    question_html = state["question"].question_html
+    if not question_html:
+        question_html = state["question"].question_text
+    results = retriever.invoke(question_html)
     # Format docs
     formatted_docs = "\n".join(p.page_content for p in results)
     return Command(
@@ -68,25 +75,62 @@ def retrieve_examples(state: State) -> Command[Literal["generate_code"]]:
 
 
 def generate_code(state: State):
-    question_text = state["question"].question_text
-    solution = state["question"].solution_text
+    question_html = state["question"].question_html
+    if not question_html:
+        question_html = state["question"].question_text
+    solution = state["question"].solution_guide
     examples = state["formatted_examples"]
     messages = prompt.format_prompt(
-        question=question_text, examples=examples, solution=solution
+        question=question_html, examples=examples, solution=solution
     ).to_messages()
 
     structured_model = model.with_structured_output(CodeResponse)
-    question_html = structured_model.invoke(messages)
-    question_html = CodeResponse.model_validate(question_html)
-    return {"solution_html": question_html.code}
+    solution_html = structured_model.invoke(messages)
+    solution_html = CodeResponse.model_validate(solution_html)
+    return {"solution_html": solution_html.code}
+
+
+def solution_present(state: State) -> Literal["validate_solution", "END"]:
+    if state["question"].solution_guide:
+        return "validate_solution"
+    return "END"
+
+
+def validate_solution(state: State):
+    solution_guide = state["question"].solution_guide
+
+    input_state: CodeValidationState = {
+        "prompt": f"""You are tasked with analyzing the following HTML file 
+            "containing a solution guide. Verify that the solution guide 
+            "HTML correctly follows the provided solution.
+            "Solution Guide {solution_guide } """,
+        "generated_code": state["solution_html"] or "",
+        "validation_errors": [],
+        "refinement_count": 0,
+        "final_code": "",
+    }
+
+    # Run the code validation refinement graph
+    result = code_validation_graph.invoke(input_state)  # type: ignore
+
+    final_code = result["final_code"]
+
+    return {"solution_html": final_code}
 
 
 workflow = StateGraph(State)
 # Define Nodes
 workflow.add_node("retrieve_examples", retrieve_examples)
 workflow.add_node("generate_code", generate_code)
+workflow.add_node("validate_solution", validate_solution)
 # Connect
 workflow.add_edge(START, "retrieve_examples")
+workflow.add_conditional_edges(
+    "generate_code",
+    solution_present,
+    {"END": END, "validate_solution": "validate_solution"},
+)
+workflow.add_edge("validate_solution", END)
 workflow.add_edge("retrieve_examples", END)
 
 memory = MemorySaver()
@@ -95,8 +139,9 @@ if __name__ == "__main__":
     config = {"configurable": {"thread_id": "customer_123"}}
     question = Question(
         question_text="A car is traveling along a straight rode at a constant speed of 100mph for 5 hours calculate the total distance traveled",
-        solution_text=None,
-        question_solution=None,
+        solution_guide=None,
+        final_answer=None,
+        question_html="A car is traveling along a straight rode at a constant speed of 100mph for 5 hours calculate the total distance traveled",
     )
     input_state: State = {
         "question": question,

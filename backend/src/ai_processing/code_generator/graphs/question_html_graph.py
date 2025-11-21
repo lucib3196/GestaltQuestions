@@ -23,6 +23,7 @@ from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
 from src.utils import save_graph_visualization, to_serializable
 
+
 # --- External Services ---
 from langsmith import Client
 
@@ -60,7 +61,10 @@ def retrieve_examples(state: State) -> Command[Literal["generate_code"]]:
     retriever = question_html_vectorstore.as_retriever(
         search_type="similarity", kwargs={"isAdaptive": isAdaptive}, k=2
     )
-    results = retriever.invoke(state["question"].question_text)
+    question_text = state["question"].question_text
+    # If the question html is none default to the other case
+
+    results = retriever.invoke(question_text)
     # Format docs
     formatted_docs = "\n".join(p.page_content for p in results)
     return Command(
@@ -96,8 +100,9 @@ if __name__ == "__main__":
     config = {"configurable": {"thread_id": "customer_123"}}
     question = Question(
         question_text="A car is traveling along a straight rode at a constant speed of 100mph for 5 hours calculate the total distance traveled",
-        solution_text=None,
-        question_solution=None,
+        solution_guide=None,
+        final_answer=None,
+        question_html="",
     )
     input_state: State = {
         "question": question,

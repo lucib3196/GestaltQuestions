@@ -65,7 +65,7 @@ def generate_question_html(
     metadata = state["metadata"]
     assert metadata
     input_state = {
-        "question":  state["question"],
+        "question": state["question"],
         "question_type": metadata.question_type,
         "question_html": None,
         "retrieved_documents": [],
@@ -75,21 +75,28 @@ def generate_question_html(
     files = {"question.html": result["question_html"]}
     metadata = state["metadata"]
 
+    updated_question = state["question"].model_copy(
+        update={"question_html": result["question_html"]}
+    )
+
     assert metadata
     if metadata.question_type == "computational":
         return Command(
-            update={"files": files},
+            update={"files": files, "question": updated_question},
             goto=["generate_server_py", "generate_server_js", "generate_solution_html"],
         )
     else:
-        return Command(update={"files": files}, goto=["generate_solution_html"])
+        return Command(
+            update={"files": files, "question": updated_question},
+            goto=["generate_solution_html"],
+        )
 
 
 def generate_solution_html(state: State) -> Command:
     metadata = state["metadata"]
     assert metadata
     input_state = {
-        "question":  state["question"],
+        "question": state["question"],
         "question_type": metadata.question_type,
         "solution_html": None,
         "retrieved_documents": [],
@@ -106,7 +113,7 @@ def generate_server_js(state: State) -> Command:
     metadata = state["metadata"]
     assert metadata
     input_state = {
-        "question":  state["question"],
+        "question": state["question"],
         "question_type": metadata.question_type,
         "server_js": None,
         "retrieved_documents": [],
@@ -123,7 +130,7 @@ def generate_server_py(state: State) -> Command:
     metadata = state["metadata"]
     assert metadata
     input_state = {
-        "question":  state["question"],
+        "question": state["question"],
         "question_type": metadata.question_type,
         "server_js": None,
         "retrieved_documents": [],
@@ -204,8 +211,9 @@ if __name__ == "__main__":
     config = {"configurable": {"thread_id": "customer_123"}}
     question = Question(
         question_text="A car is traveling along a straight rode at a constant speed of 100mph for 5 hours calculate the total distance traveled",
-        solution_text=None,
-        question_solution=None,
+        solution_guide=None,
+        final_answer=None,
+        question_html="",
     )
     input_state: State = {"question": question, "metadata": None, "files": {}}
     result = app.invoke(input_state, config=config)  # type: ignore

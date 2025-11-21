@@ -78,8 +78,9 @@ if __name__ == "__main__":
     config = {"configurable": {"thread_id": "customer_123"}}
     question = Question(
         question_text="A car is traveling along a straight rode at a constant speed of 100mph for 5 hours calculate the total distance traveled",
-        solution_text=None,
-        question_solution=None,
+        solution_guide=None,
+        final_answer=None,
+        question_html="",
     )
     input_state: State = {"question": question, "metadata": None}
     result = app.invoke(input_state, config=config)  # type: ignore
