@@ -1,6 +1,6 @@
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
-from src.ai_processing.question_topic_classification.topic_document_loader import (
+from src.ai_workspace.question_topic_classification.topic_document_loader import (
     TopicDocumentLoader,
 )
 from src.ai_base.settings import get_settings

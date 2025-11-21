@@ -6,7 +6,7 @@ from langgraph.types import Command
 from typing import Annotated
 from operator import add
 from src.ai_base.settings import get_settings
-from src.ai_processing.code_generator.models.models import CodeResponse
+from src.ai_workspace.code_generator.models.models import CodeResponse
 from src.utils import save_graph_visualization
 from pathlib import Path
 from src.utils import to_serializable

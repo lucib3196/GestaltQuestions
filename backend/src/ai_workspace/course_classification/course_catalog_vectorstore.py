@@ -1,7 +1,7 @@
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from pathlib import Path
-from src.ai_processing.course_classification.course_document_loader import (
+from src.ai_workspace.course_classification.course_document_loader import (
     CourseDocumentLoader,
 )
 from src.ai_base.settings import get_settings
