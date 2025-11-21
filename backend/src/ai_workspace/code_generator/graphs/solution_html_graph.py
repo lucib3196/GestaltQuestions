@@ -5,12 +5,12 @@ import json
 
 # --- Project Imports ---
 from src.ai_base.settings import get_settings
-from src.ai_processing.code_generator.models.models import (
+from src.ai_workspace.code_generator.models.models import (
     CodeResponse,
     Question,
     question_types,
 )
-from src.ai_processing.code_generator.retrievers import (
+from src.ai_workspace.code_generator.retrievers import (
     solution_html_vectorstore,
 )
 
@@ -25,7 +25,7 @@ from src.utils import save_graph_visualization, to_serializable
 
 # --- External Services ---
 from langsmith import Client
-from src.ai_processing.code_validation.code_validation_graph import (
+from src.ai_workspace.code_validation.code_validation_graph import (
     graph as code_validation_graph,
     State as CodeValidationState,
 )

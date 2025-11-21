@@ -5,18 +5,18 @@ import json
 
 # --- Project Imports ---
 from src.ai_base.settings import get_settings
-from src.ai_processing.code_generator.models.models import (
+from src.ai_workspace.code_generator.models.models import (
     CodeResponse,
     Question,
     question_types,
 )
-from src.ai_processing.code_generator.retrievers import (
+from src.ai_workspace.code_generator.retrievers import (
     server_js_vectorstore,
 )
-from src.ai_processing.code_validation.code_validation_graph import (
+from src.ai_workspace.code_validation.code_validation_graph import (
     graph as code_validation,
 )
-from src.ai_processing.utils import extract_langsmith_prompt
+from src.ai_workspace.utils import extract_langsmith_prompt
 
 
 # --- LangChain / LangGraph ---
@@ -27,7 +27,7 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
 from src.utils import save_graph_visualization, to_serializable
-from src.ai_processing.code_validation.code_validation_graph import (
+from src.ai_workspace.code_validation.code_validation_graph import (
     graph as code_validation_graph,
     State as CodeValidationState,
 )

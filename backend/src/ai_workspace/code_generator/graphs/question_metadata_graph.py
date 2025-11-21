@@ -2,17 +2,17 @@ from typing import Annotated, List, Literal, TypedDict
 import operator
 from pathlib import Path
 import json
-from src.ai_processing.code_generator.models.models import question_types
+from src.ai_workspace.code_generator.models.models import question_types
 from pydantic import BaseModel, Field
 
 # --- Project Imports ---
 from src.ai_base.settings import get_settings
-from src.ai_processing.code_generator.models.models import (
+from src.ai_workspace.code_generator.models.models import (
     CodeResponse,
     Question,
     question_types,
 )
-from src.ai_processing.code_generator.retrievers import (
+from src.ai_workspace.code_generator.retrievers import (
     server_js_vectorstore,
 )
 

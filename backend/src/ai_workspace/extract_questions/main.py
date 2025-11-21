@@ -8,10 +8,10 @@ from langchain.chat_models import init_chat_model
 from langsmith import Client
 from langgraph.graph import StateGraph, START, END
 
-from src.pydantic_models import PageRange
+from .models import PageRange
 from src.ai_base.multimodel_io import PDFMultiModal
 from src.ai_base.settings import get_settings
-from src.utils import extract_langsmith_prompt
+from src.ai_workspace.utils import extract_langsmith_prompt
 
 
 # --- Initialization ---

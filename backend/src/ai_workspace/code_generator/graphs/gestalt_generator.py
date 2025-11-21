@@ -4,7 +4,7 @@ import json
 from src.utils import to_serializable
 
 # --- Project Imports ---
-from src.ai_processing.code_generator.models.models import (
+from src.ai_workspace.code_generator.models.models import (
     Question,
 )
 from typing import Sequence
@@ -13,23 +13,23 @@ from typing import Sequence
 from langgraph.graph import START, StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 from src.utils import save_graph_visualization, to_serializable
-from src.ai_processing.code_generator.graphs.question_metadata_graph import (
+from src.ai_workspace.code_generator.graphs.question_metadata_graph import (
     QuestionMetaData,
 )
 from langgraph.types import Command
-from src.ai_processing.code_generator.graphs.question_html_graph import (
+from src.ai_workspace.code_generator.graphs.question_html_graph import (
     app as question_html_generator,
 )
-from src.ai_processing.code_generator.graphs.server_js_graph import (
+from src.ai_workspace.code_generator.graphs.server_js_graph import (
     app as server_js_generator,
 )
-from src.ai_processing.code_generator.graphs.server_py_graph import (
+from src.ai_workspace.code_generator.graphs.server_py_graph import (
     app as server_py_generator,
 )
-from src.ai_processing.code_generator.graphs.solution_html_graph import (
+from src.ai_workspace.code_generator.graphs.solution_html_graph import (
     app as solution_html_generator,
 )
-from src.ai_processing.code_generator.graphs.question_metadata_graph import (
+from src.ai_workspace.code_generator.graphs.question_metadata_graph import (
     app as question_metadata_generator,
 )
 
