@@ -14,7 +14,10 @@ from src.api.core.config import get_settings
 from src.api.database.database import Base, get_session
 from src.api.main import get_application
 from src.api.models import FileData
-from src.api.service.question.question_manager import QuestionManager, get_question_manager
+from src.api.service.question.question_manager import (
+    QuestionManager,
+    get_question_manager,
+)
 from src.api.service.storage_manager import (
     get_storage_manager,
 )
@@ -96,7 +99,7 @@ def clean_up_cloud(cloud_storage_service):
 @pytest.fixture(scope="function")
 def local_storage(tmp_path):
     """Provide a LocalStorageService rooted in a temporary directory."""
-    root = tmp_path 
+    root = tmp_path
     return LocalStorageService(root, base="questions")
 
 
@@ -149,7 +152,11 @@ def get_storage_service(storage_mode, cloud_storage_service, local_storage):
 
 
 @pytest.fixture(scope="function")
-def test_client(db_session, get_storage_service, storage_mode,):
+def test_client(
+    db_session,
+    get_storage_service,
+    storage_mode,
+):
     """
     Provide a configured FastAPI TestClient with overridden dependencies
     for both local and cloud storage modes.
