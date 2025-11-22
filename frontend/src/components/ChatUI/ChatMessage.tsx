@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 import { MathJax } from "better-react-mathjax";
 import { markdownPlugins } from "./chatConfig";
 import { markdownComponents } from "./chatConfig";
-
+import { useState } from "react";
 type MessageType = Message["type"];
 
 const ChatMessageStyle: Partial<Record<MessageType, string>> = {
@@ -21,6 +21,10 @@ type ChatMessageProps = {
 export default function ChatMessageContainer({ message }: ChatMessageProps) {
     const isAI = message.type === "ai";
     const isTool = message.type === "tool";
+    const [fileDownload, setFileDownload] = useState("")
+
+    
+
 
     const renderContent = () => {
         if (isAI && message.tool_calls?.length) {

@@ -18,12 +18,12 @@ export default function ChatUI({ assistantID }: ChatUIProps) {
 
     const endRef = useRef<HTMLDivElement | null>(null);
     const [stableMessages, setStableMessages] = useState(thread.messages);
-
+    
     // Auto-scroll to bottom
     useEffect(() => {
         const handle = setTimeout(() => {
             setStableMessages(thread.messages);
-        }, 150); // 150ms debounce delay
+        }, 1000); // 150ms debounce delay
 
         return () => clearTimeout(handle);
     }, [thread.messages]);

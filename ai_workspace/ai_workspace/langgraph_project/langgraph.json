@@ -2,7 +2,8 @@
   "$schema": "https://langgra.ph/schema.json",
   "dependencies": ["."],
   "graphs": {
-    "agent": "ai_workspace/code_generator/agents/question_html_agent.py:agent"
+    "agent": "ai_workspace/code_generator/agents/question_html_agent.py:agent",
+    "testing": "ai_workspace/testing/main.py:agent"
   },
   "env": "../.env",
   "image_distro": "wolfi"
