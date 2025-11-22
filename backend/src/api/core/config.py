@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from functools import lru_cache
 from typing import Optional, Literal, Union, Sequence
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # --- Third-Party ---
 from dotenv import load_dotenv
@@ -54,6 +55,10 @@ class AppSettings(BaseSettings):
     @classmethod
     def assemble_db_connection(cls, v: Optional[str], info: ValidationInfo) -> str:
         return v or ":memory:"
+
+    model_config = SettingsConfigDict(
+        env_file=ROOT_PATH / ".env", env_nested_delimiter="__"
+    )
 
     # Static Directory
     QUESTIONS_DIRNAME: Union[str, Path]

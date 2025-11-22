@@ -6,6 +6,8 @@ export const availableChats = [
   "math_helper",
   "topic_classification",
   "ucr_mechanical_courses",
+  "testing",
+  "gestalt_agent"
 ] as const;
 
 export type AvailableChats = (typeof availableChats)[number];
@@ -18,8 +20,9 @@ const Chats: Record<AvailableChats, string> = {
     "A chatbot that classifies questions based on a document store using embedding similarity or metadata lookup.",
   ucr_mechanical_courses:
     "A chatbot that answer questions based on the UCR mechanical engineering Catalog using embedding similarity or metadata lookup. ",
-};
-
+  testing: "A basic chatbot for testing things such as serving files",
+  gestalt_agent: "An agent tasked with creating educational modules"
+}
 function ChatDropDown({
   selectedChat,
   setSelectedChat,
