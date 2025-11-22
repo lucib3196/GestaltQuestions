@@ -25,7 +25,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langgraph.graph import START, END, StateGraph
 
 from src.utils import save_graph_visualization, to_serializable, keep_first
-from src.ai_workspace.models import TopicDescription
+from ai_workspace.models import TopicDescription
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Constants

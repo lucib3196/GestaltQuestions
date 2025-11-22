@@ -16,7 +16,7 @@ from src.ai_workspace.code_generator.retrievers import (
 from src.ai_workspace.code_validation.code_validation_graph import (
     graph as code_validation,
 )
-from src.ai_workspace.utils import extract_langsmith_prompt
+from ai_workspace.utils.utils import extract_langsmith_prompt
 
 
 # --- LangChain / LangGraph ---

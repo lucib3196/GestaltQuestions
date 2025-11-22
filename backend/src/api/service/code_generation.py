@@ -17,7 +17,7 @@ from src.ai_workspace.agents.code_generators.v5.main_text import (
     State as TextState,
     app as text_generator_v5,
 )
-from src.ai_workspace.utils import to_serializable, validate_llm_output
+from ai_workspace.utils.utils import to_serializable, validate_llm_output
 from src.api.models import FileData, QuestionData
 from src.utils import to_bool
 

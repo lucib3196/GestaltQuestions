@@ -8,10 +8,10 @@ from langchain.chat_models import init_chat_model
 from langsmith import Client
 from langgraph.graph import StateGraph, START, END
 
-from ..models import PageRange
+from ai_workspace.models import PageRange
 from src.ai_base.multimodel_io import PDFMultiModal
 from src.ai_base.settings import get_settings
-from src.ai_workspace.utils import extract_langsmith_prompt
+from ai_workspace.utils.utils import extract_langsmith_prompt
 
 
 # --- Initialization ---
@@ -21,7 +21,7 @@ client = Client()
 settings = get_settings()
 
 # Load and extract the LangSmith prompt
-prompt = extract_langsmith_prompt(client.pull_prompt("generate-conceptual-questions"))
+prompt = extract_langsmith_prompt(client.pull_prompt("extract-derivations"))
 
 # Retrieve long-context model configuration
 lcm = settings.long_context_model
@@ -43,59 +43,46 @@ if not provider:
 llm = init_chat_model(model=model, model_provider=provider)
 
 
-class Option(BaseModel):
-    text: str = Field(..., description="Text of the answer choice.")
-    is_correct: bool = Field(
-        ..., description="True if this option is the correct answer, otherwise False."
-    )
-
-
-class ConceptualQuestion(BaseModel):
-    question: str = Field(..., description="The conceptual question being asked.")
-    topics: List[str] = Field(
+class Derivation(BaseModel):
+    derivation_title: str = Field(
         ...,
-        description="A list of three key topics or concepts that this question addresses.",
+        description="A short, concise title describing what the derivation focuses on.",
     )
-    options: List["Option"] = Field(
+    derivation_stub: str = Field(
         ...,
-        description="Multiple-choice options corresponding to possible answers for the question.",
+        description="A brief statement of the equation, relationship, or expression being derived.",
     )
-    reference: "PageRange" = Field(
+    steps: List[str] = Field(
         ...,
-        description="Page range within the lecture material where the concept or question originates.",
+        description="An ordered list of logical or mathematical steps used to carry out the derivation.",
     )
-    explanation: str = Field(
+    reference: PageRange = Field(
         ...,
-        description="A concise explanation of the correct answer intended to help students understand the reasoning.",
+        description="The range of pages within the lecture material where this derivation appears.",
     )
 
     def as_string(self) -> str:
-        """Return a formatted string representation of the conceptual question."""
-        options_formatted = "\n".join(
-            [f"- {'✅ ' if opt.is_correct else ''}{opt.text}" for opt in self.options]
+        steps_formatted = "\n".join(
+            [f"{i+1}. {step}" for i, step in enumerate(self.steps)]
         )
-        topics_formatted = ", ".join(self.topics)
-
         return (
-            f"### **Conceptual Question**\n"
-            f"**Question:** {self.question}\n\n"
-            f"**Topics:** {topics_formatted}\n\n"
-            f"**Options:**\n{options_formatted}\n\n"
-            f"**Explanation:** {self.explanation}\n\n"
+            f"### **{self.derivation_title}**\n"
+            f"**Stub:** {self.derivation_stub}\n\n"
+            f"**Steps:**\n{steps_formatted}\n\n"
             f"**Reference:** {self.reference}\n"
         )
 
 
 class State(BaseModel):
     lecture_pdf: str | Path
-    questions: List[ConceptualQuestion] = []
+    derivations: List[Derivation] = []
 
 
-async def extract_questions(state: State):
+async def extract_derivations(state: State):
     processor = PDFMultiModal()
 
     class Response(BaseModel):
-        derivations: List[ConceptualQuestion]
+        derivations: List[Derivation]
 
     response = await processor.ainvoke(
         prompt=prompt,
@@ -103,15 +90,15 @@ async def extract_questions(state: State):
         output_model=Response,
         llm=llm,
     )
-    return {"questions": response}
+    return {"derivations": response}
 
 
 builder = StateGraph(State)
-builder.add_node("extract_questions", extract_questions)
+builder.add_node("extract_derivations", extract_derivations)
 
-builder.add_edge(START, "extract_questions")
+builder.add_edge(START, "extract_derivations")
 
-builder.add_edge("extract_questions", END)
+builder.add_edge("extract_derivations", END)
 
 graph = builder.compile()
 
