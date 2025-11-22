@@ -36,7 +36,7 @@ class AICoreSettings(BaseSettings):
         return model.api_key or self.default_api_key
 
     model_config = SettingsConfigDict(
-        env_prefix="AI_", env_file=ROOT_PATH / "ai.env", env_nested_delimiter="__"
+        env_prefix="AI_", env_file=ROOT_PATH / ".env", env_nested_delimiter="__"
     )
 
 
