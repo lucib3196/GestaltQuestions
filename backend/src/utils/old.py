@@ -27,23 +27,3 @@ def validate_llm_output(output: Any, model_class: type):
             f"Unexpected Resuls: Output is of type {type(output)} expected type {model_class}"
         )
 
-
-def merge_files_data(
-    existing: Union[FilesData, dict], new: Union[FilesData, dict]
-) -> "FilesData":
-    """
-    Merges two FilesData instances by taking non-empty fields from the new value.
-    Accepts `new` as either a dict or FilesData.
-    """
-    if isinstance(new, dict):
-        new = FilesData(**new)  # Coerce dict to FilesData
-    if isinstance(existing, dict):
-        existing = FilesData(**existing)
-
-    return FilesData(
-        question_html=new.question_html or existing.question_html,
-        server_js=new.server_js or existing.server_js,
-        server_py=new.server_py or existing.server_py,
-        solution_html=new.solution_html or existing.solution_html,
-        metadata=new.metadata or existing.metadata,
-    )

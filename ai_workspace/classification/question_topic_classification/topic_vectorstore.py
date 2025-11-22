@@ -1,9 +1,9 @@
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
-from src.ai_workspace.question_topic_classification.topic_document_loader import (
+from ai_workspace.classification.question_topic_classification.topic_document_loader import (
     TopicDocumentLoader,
 )
-from src.ai_base.settings import get_settings
+from ai_workspace.ai_base.settings import get_settings
 
 
 # For documentation for working with the database see https://python.langchain.com/docs/integrations/vectorstores/faiss/#add-items-to-vector-store

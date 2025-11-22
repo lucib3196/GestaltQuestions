@@ -1,7 +1,14 @@
-from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
-from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings
+# --- Standard Library ---
+from datetime import date, datetime, time
+from typing import Any
+from uuid import UUID
+
+
+from pydantic import BaseModel
 from langchain_core.messages import SystemMessage
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
 
 
 def extract_langsmith_prompt(base) -> str:
@@ -22,7 +29,7 @@ def extract_langsmith_prompt(base) -> str:
         else:
             raise ValueError(f"Unsupported message type: {type(messages).__name__}")
 
-        return template # type: ignore
+        return template  # type: ignore
 
     except Exception as e:
         raise ValueError(f"Could not extract prompt {str(e)}")
@@ -36,3 +43,24 @@ def load_vectorstore(path: str, name: str, embeddings: OpenAIEmbeddings):
         raise RuntimeError(
             f"Failed to load vectorstore '{name}' at '{path}'. Error: {e}"
         )
+
+
+def to_serializable(obj: Any) -> Any:
+    """
+    Recursively convert Pydantic models (and nested dicts/lists thereof)
+    into plain Python data structures.
+    """
+    if isinstance(obj, BaseModel):
+        return obj.model_dump()
+    if isinstance(obj, dict):
+        return {k: to_serializable(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [to_serializable(v) for v in obj]
+
+    # --- Special cases ---
+    if isinstance(obj, (datetime, date, time)):
+        return obj.isoformat()
+    if isinstance(obj, UUID):
+        return str(obj)
+
+    return obj

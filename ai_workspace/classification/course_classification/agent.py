@@ -10,7 +10,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain.agents.middleware import wrap_tool_call
 from langchain_core.messages import ToolMessage
 
-from src.ai_base.settings import get_settings
+from ai_base.settings import get_settings
 from src.utils import save_graph_visualization
 
 # Get settings

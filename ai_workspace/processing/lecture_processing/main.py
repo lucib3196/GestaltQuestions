@@ -1,7 +1,7 @@
 from pathlib import Path
-from src.data_parser import pdf_page_to_image_bytes
-from src.ai_base.multimodel_io import pdf_multimodal
-from src.ai_base.settings import get_settings
+from ai_workspace.data_parser.pdf_parser import pdf_page_to_image_bytes
+from ai_workspace.ai_base.multimodel_io import pdf_multimodal
+from ai_workspace.ai_base.settings import get_settings
 from langchain.chat_models import init_chat_model
 from pydantic import BaseModel, Field
 from typing import List, Tuple
