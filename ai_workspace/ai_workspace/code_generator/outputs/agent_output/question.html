@@ -1,21 +1,10 @@
 <pl-question-panel>
-  <p> Understanding the Order of Operations</p>
-  <p> Algebra often requires careful computation following specific rules known as the order of operations. These rules ensure that everyone solves expressions the same way, producing a consistent result. The acronym PEMDAS can help recall these steps: Parentheses, Exponents, Multiplication and Division (from left to right), Addition and Subtraction (from left to right).</p>
-
-  <p> <strong>Question 1: Simplifying Expressions</strong></p>
-  <p> Evaluate the following expression using the correct order of operations:</p>
-  <p> \[ 7 + 3 \times (10 - 4) \]</p>
-  <pl-number-input answers-name="q1" comparison="exact" digits="3" label="Result for Question 1:" />
-
-  <p> <strong>Question 2: Comparing Different Operations</strong></p>
-  <p> Compare the results of these different expressions, focusing on how the placement and order of operations affect the outcome:</p>
-  <p> \[ 40 / 8 \times 2 \]</p>
-  <pl-number-input answers-name="q2a" comparison="exact" digits="3" label="Result for 40 / 8 * 2:" />
-  <p> \[ 40 / (8 \times 2) \]</p>
-  <pl-number-input answers-name="q2b" comparison="exact" digits="3" label="Result for 40 / (8 * 2):" />
-
-  <p> <strong>Question 3: Evaluating a Complex Expression</strong></p>
-  <p> Consider this more complex expression, and break it down to find the correct result step-by-step:</p>
-  <p> \[ 5^2 - (2 + 3) \times (7 - 2) + 8 / 2 \]</p>
-  <pl-number-input answers-name="q3" comparison="exact" digits="3" label="Result for Question 3:" />
+    <p>
+        In the bustling labs of EngiTech University, the Mechanical Engineering team has been working tirelessly on a revolutionary invention: the Caffeinated Engine! Powered by a secret blend of coffee and donuts, this engine operates on a modified Rankine Cycle. The engine's boiler operates at a pressure of ${{params.P1}}$ ${{params.unitsPressure}}$ and a temperature of ${{params.T1}}$ ${{params.unitsTemperature}}$, where it receives its caffeinated steam.
+    </p>
+    <p> The turbine exhausts to a condenser at ${{params.P2}}$ ${{params.unitsPressure}}$.</p>
 </pl-question-panel>
+
+<p> Determine the thermal efficiency of this cycle and calculate the net work output per cycle, assuming the mass flow rate of steam is ${{params.Mf}}$ ${{params.unitsMassFlowRate}}$. </p>
+<pl-number-input answers-name="Efficiency" comparison="sigfig" digits="3" label="Thermal Efficiency (%)" />
+<pl-number-input answers-name="NetWork" comparison="sigfig" digits="3" label="Net Work Output (in {{params.unitsWork}})" />

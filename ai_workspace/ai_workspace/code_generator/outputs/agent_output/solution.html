@@ -1,105 +1,33 @@
-<pl-question-panel>
-  Evaluate the following expressions using the order of operations:
-  <br />
-  1. $7 + 3 \times (10 - 4)$
-  <br />
-  2. Compare $40 / 8 \times 2$ and $40 / (8 \times 2)$
-  <br />
-  3. Simplify $5^2 - (2 + 3) \times (7 - 2) + 8 / 2$
-</pl-question-panel>
-
 <pl-solution-panel>
-  <h2>Solution for Question 1: Simplifying Expressions</h2>
-  <pl-hint level="1">
-    First, we simplify the expression inside the parentheses: $$10 - 4 = 6$$
-  </pl-hint>
-  <pl-hint level="2">
-    Next, we perform the multiplication: $$3 \times 6 = 18$$
-  </pl-hint>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  <pl-hint level="3">
-    Finally, we complete the addition: $$7 + 18 = 25$$
-  </pl-hint>
-
-  <h2>Solution for Question 2: Comparing Different Operations</h2>
-  <pl-hint level="1">
-    For the expression $40 / 8 \times 2$, we perform the division first: $$40 /
-    8 = 5$$
-  </pl-hint>
-  <pl-hint level="2">
-    Then we multiply the result by 2: $$5 \times 2 = 10$$
-  </pl-hint>
-  <pl-hint level="3">
-    For the expression $40 / (8 \times 2)$, we first solve inside the
-    parentheses: $$8 \times 2 = 16$$
-  </pl-hint>
-  <pl-hint level="4">
-    Next, we perform the division: $$40 / 16 = 2.5$$
-  </pl-hint>
-
-  <h2>Solution for Question 3: Evaluating a Complex Expression</h2>
-  <pl-hint level="1"> First, evaluate the exponent: $$5^2 = 25$$ </pl-hint>
-  <pl-hint level="2">
-    Next, solve the operations inside the parentheses: $$(2 + 3) = 5$$ and $$(7
-    - 2) = 5$$
-  </pl-hint>
-  <pl-hint level="3">
-    Multiply the results from the parentheses: $$5 \times 5 = 25$$
-  </pl-hint>
-  <pl-hint level="4"> Next, divide: $$8 / 2 = 4$$ </pl-hint>
-  <pl-hint level="5">
-    Finally, calculate the total result: $$25 - 25 + 4 = 4$$
-  </pl-hint>
+    <pl-hint level="1" data-type="text"> To determine the thermal efficiency and net work output for the Caffeinated Engine, we will utilize the concepts of the Rankine Cycle.
+    </pl-hint>
+    <pl-hint level="2" data-type="text">The thermal efficiency of a Rankine Cycle can be expressed using the formula: 
+        $$ \eta_{thermal} = 1 - \frac{Q_{out}}{Q_{in}} $$
+    </pl-hint>
+    <pl-hint level="3" data-type="text"> In this cycle:
+        <ul>
+            <li>$ Q_{in} = \dot{m} \cdot h_1 $ - heat added in the boiler.</li>
+            <li>$ Q_{out} = \dot{m} \cdot h_2 $ - heat rejected during condensation.</li>
+        </ul> 
+    </pl-hint>
+    <pl-hint level="4" data-type="text"> For our cycle, we can deduce that:
+        $$ h_1 = 3115 \, \text{kJ/kg} \quad \text{(at } P_1 = {{params.P1}} \, {{params.unitsPressure}}, T_1 = {{params.T1}} \, {{params.unitsTemperature}} \text{)} $$
+        $$ h_2 = 2350 \, \text{kJ/kg} \quad \text{(at } P_2 = {{params.P2}} \, {{params.unitsPressure}}) $$
+    </pl-hint>
+    <pl-hint level="5" data-type="text">Substituting these values into our efficiency formula:
+        $$ \eta_{thermal} = 1 - \frac{ h_2 }{ h_1 } = 1 - \frac{ 2350 }{ 3115 } $$
+        Therefore, the thermal efficiency will be:
+        $$ \eta_{thermal} \approx 0.245 \text{ or } 24.5\% $$
+    </pl-hint>
+    <pl-hint level="6" data-type="text"> Now, we calculate the net work output: 
+        $$ W_{net} = Q_{in} - Q_{out} = \dot{m} \cdot (h_1 - h_2) $$
+        Substituting in the mass flow rate and enthalpy values, we find: 
+        $$ W_{net} = {{params.Mf}} \, \text{kg/s} \cdot (3115 - 2350) \, \text{kJ/kg} $$
+    </pl-hint>
+    <pl-hint level="7" data-type="text"> Calculating this gives:
+        $$ W_{net} = {{params.Mf}} \, \text{kg/s} \cdot 765 \, \text{kJ/kg} = {{params.Mf}} \cdot 765 \,  \text{kW} $$ 
+    </pl-hint>
+    <pl-hint level="8" data-type="text"> Hence, the net work output per cycle will be:
+        $$ W_{net} \approx 76.5 \, \text{kW} $$
+    </pl-hint>
 </pl-solution-panel>

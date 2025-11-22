@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 
 # --- Project Imports ---
-from ai_base.settings import get_settings
+from ai_workspace.ai_base.settings import get_settings
 from ai_workspace.code_generator.models.models import (
     CodeResponse,
     Question,
@@ -94,8 +94,9 @@ workflow.add_node("generate_code", generate_code)
 workflow.add_edge(START, "retrieve_examples")
 workflow.add_edge("retrieve_examples", END)
 
-memory = MemorySaver()
-app = workflow.compile(checkpointer=memory)
+# memory = MemorySaver()
+# app = workflow.compile(checkpointer=memory)
+app=workflow.compile()
 if __name__ == "__main__":
     config = {"configurable": {"thread_id": "customer_123"}}
     question = Question(

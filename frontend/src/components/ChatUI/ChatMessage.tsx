@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 import { MathJax } from "better-react-mathjax";
 import { markdownPlugins } from "./chatConfig";
 import { markdownComponents } from "./chatConfig";
-import { useState } from "react";
+import { useDebounce } from "@uidotdev/usehooks";
 type MessageType = Message["type"];
 
 const ChatMessageStyle: Partial<Record<MessageType, string>> = {
@@ -21,10 +21,10 @@ type ChatMessageProps = {
 export default function ChatMessageContainer({ message }: ChatMessageProps) {
     const isAI = message.type === "ai";
     const isTool = message.type === "tool";
-    const [fileDownload, setFileDownload] = useState("")
 
-    
+    const rawContent = String(message.content ?? "");
 
+    const debouncedContent = useDebounce(rawContent, 300);
 
     const renderContent = () => {
         if (isAI && message.tool_calls?.length) {
@@ -42,7 +42,7 @@ export default function ChatMessageContainer({ message }: ChatMessageProps) {
                     remarkPlugins={markdownPlugins.remarkPlugins}
                     components={markdownComponents}
                 >
-                    {String(message.content ?? "")}
+                    {String(debouncedContent)}
                 </ReactMarkdown>
             </MathJax>
         );

@@ -2,10 +2,9 @@ from ai_workspace.code_generator.graphs.gestalt_generator import (
     app as gestalt_generator,
 )
 from ai_workspace.code_generator.models.models import Question
-from langchain.tools import tool, ToolRuntime
+from langchain.tools import tool
 from langchain.agents import create_agent
-from pydantic import BaseModel
-from ai_base.settings import get_settings
+from ai_workspace.ai_base.settings import get_settings
 from langchain.chat_models import init_chat_model
 from pathlib import Path
 from langgraph.checkpoint.memory import InMemorySaver
@@ -76,7 +75,7 @@ def generate_gestalt_module(
       Automatically generated Python backend implementing deterministic parameter
       generation and evaluation logic.
 
-    - `server.js`
+    - `server.js`(if computational)
       JavaScript runtime that mirrors the Python backend behavior.
 
     - Metadata required by the Gestalt rendering and execution system.
@@ -84,7 +83,7 @@ def generate_gestalt_module(
     ------------------------------
     Developer Note
     ------------------------------
-    This tool ONLY returns a simple string.
+    This tool ONLY returns a json structure.
     The agent is responsible for generating **all module files** upon calling the tool.
     """
     question = Question(
@@ -98,114 +97,105 @@ def generate_gestalt_module(
     result = gestalt_generator.invoke(input_state, config)  # type: ignore
     files: dict = result["files"]
     for filename, content in files.items():
-        path = Path(f"src/ai_processing/code_generator/outputs/agent_output")
+        path = Path(f"ai_workspace/code_generator/outputs/agent_output")
         fpath = path / str(filename)
         fpath.write_text(content)
 
     return result
 
 
-@tool
-def brainstorm_ideas(request: str):
-    """
-    Brainstorm question ideas with the user.
-
-    Use this tool when the user is unsure, vague, or ambiguous about what kind
-    of question they want to generate. This tool helps them explore topics,
-    refine scope, and decide on the exact problem they want.
-
-    Args:
-        request: The topic, subject area, or vague description provided by the user.
-
-    Returns:
-        A list of brainstormed question ideas or directions.
-    """
-    response = model.invoke(
-        f"Brainstorm 1-3 possible high-quality STEM questions or approaches based on: {request}"
-    ).content
-    return response
-
-
-@tool
-def ask_the_user(request: str):
-    """
-    Confirm final question content before module generation.
-
-    This tool should be called AFTER the user has a concrete idea AND BEFORE
-    calling `generate_gestalt_module`. It ensures the user has provided all required
-    components of a Gestalt module:
-
-    Required:
-        - question_text: the complete, fully formatted problem statement
-        - solution_guide: step-by-step explanation (if computational)
-        - final_answer: the final numeric or conceptual answer
-
-    The tool asks the user to confirm that these components are correct, complete,
-    and ready to generate the module.
-
-    Args:
-        request: A formatted summary of what the agent believes the question,
-                 solution guide, and final answer currently are.
-
-    Returns:
-        A confirmation prompt for the user to validate, correct, or update the content.
-    """
-    response = model.invoke(
-        f"Before generating the module, confirm the following question information with the user:\n\n{request}"
-    ).content
-    return response
-
-
 agent = create_agent(
     model="gpt-4o",
-    checkpointer=InMemorySaver(),
-    tools=[generate_gestalt_module, brainstorm_ideas, ask_the_user],
+    # checkpointer=InMemorySaver(),
+    tools=[generate_gestalt_module],
+    
     system_prompt="""
-You are an AI assistant responsible for generating complete, production-ready Gestalt modules.
+You are an AI agent designed to assist educators in creating high-quality STEM learning content for an educational platform. Your primary goal is to help the educator iteratively develop:
 
-A Gestalt module contains:
-- question.html
-- solution.html
-- server.js
-- server.py (if computational)
-- metadata for rendering and execution
+1. A fully defined **question text**
+2. A high-quality **solution guide**
+3. (Optional) A **computational workflow** for server.js/server.py
+4. A final **Gestalt module** once the educator approves
 
-Your job is to ensure high-quality, textbook-level content with correct math and consistent logic across all files.
+You collaborate with the educator through an iterative, conversational workflow.
+
+------------------------------------------------------------
+OVERALL WORKFLOW
+------------------------------------------------------------
+
+You follow this workflow every time:
+
+1. **Clarify → Question Development**
+   - Help the educator shape their idea into a clear, well-defined question text.
+   - If the educator gives only a topic or a partial idea, ask guiding questions.
+
+2. **Solution First → Required**
+   - Before generating the full module, ALWAYS generate or help the user generate:
+       • A complete solution guide (step-by-step)
+       • If computational → ensure the numerical work is correct
+
+   - If the educator proposes changes or has preferences, incorporate them.
+   - This is an iterative phase—keep refining until they are satisfied.
+
+3. **Confirmation Step**
+   - Once the educator is happy with both:
+       • question text  
+       • solution guide  
+
+   → Ask them explicitly:
+
+     “Are you ready for me to generate the full Gestalt module?”
+
+4. **Generation Step**
+   - Once they confirm, call the tool:
+       `generate_gestalt_module`
+   - Provide the question text and solution guide EXACTLY as finalized.
 
 ------------------------------------------------------------
 TOOL USAGE RULES
 ------------------------------------------------------------
 
-1. Use `brainstorm_ideas` when:
-   - The user is unclear, vague, or exploring options.
-   - The user says “I need a question about X” or “help me come up with something.”
+You have access to the following tools:
 
-2. Use `ask_the_user` when:
-   - The user has provided a concrete question idea.
-   - BUT we must confirm that we have all required module inputs:
-        • question_text (the full formatted question)
-        • solution_guide (if computational)
-        • final_answer
-   - This is the last step before generating the module.
 
-   You MUST confirm correctness before generating.
-
-3. Use `generate_gestalt_module` when:
-   - All required inputs are confirmed.
-   - The user explicitly wants the final formatted module created.
-
-   You MUST call this tool when the user wants the completed module package.
+3. **`generate_gestalt_module`**
+   Use only when:
+   - The educator confirms the question + solution guide are finalized
+   - All required fields are present
+   - They explicitly request generation
+   - This tool produces:  
+       • question.html  
+       • solution.html  
+       • server.js  
+       • server.py (if needed)  
+       • metadata  
 
 ------------------------------------------------------------
 BEHAVIOR RULES
 ------------------------------------------------------------
 
-- Be precise, concise, and technically accurate.
-- Never generate a full module until the user confirms all components.
-- Never invent missing information—ask instead.
-- Maintain identical variable names across question, solution, server.js, and server.py.
-- Follow vectorstore formatting conventions for all generated files.
-- Ensure mathematical correctness and pedagogical clarity.
+- Be clear, educational, and technically correct.
+- Always prioritize pedagogical clarity and correctness in the solution guide.
+- Never generate the final module without explicit confirmation.
+- Never invent missing quantities—always ask the educator.
+- Maintain consistent variable names across all generated files.
+- Follow vectorstore formatting and HTML component conventions.
+- For computational questions, ensure:
+   • correct math  
+   • correct unit handling  
+   • consistent server.js and server.py logic  
+
+------------------------------------------------------------
+ROLE SUMMARY
+------------------------------------------------------------
+
+You are an educational design assistant who:
+- Helps generate question text
+- Builds solution guides
+- Iteratively refines content with the educator
+- Confirms correctness before generation
+- Produces the final Gestalt module ONLY after approval
+
 
 """,
 )
@@ -230,6 +220,6 @@ if __name__ == "__main__":
         ):
             # token is the content chunk from the LLM
             # Print token content without newlines for continuous output
-            if hasattr(token, "content") and token.content: # type: ignore
-                print(token.content, end="", flush=True) # type: ignore
+            if hasattr(token, "content") and token.content:  # type: ignore
+                print(token.content, end="", flush=True)  # type: ignore
         print()  # Newline after response completes

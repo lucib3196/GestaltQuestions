@@ -25,8 +25,6 @@ export function QuestionTable() {
   const [theme] = useTheme();
   
 
-  console.log("Got questions", questions)
-
   const paged = useMemo(
     () => questions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
     [questions, page, rowsPerPage]

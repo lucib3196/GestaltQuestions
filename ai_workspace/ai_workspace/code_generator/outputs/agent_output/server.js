@@ -1,61 +1,81 @@
 const math = require("mathjs");
 
 const generate = (usePredefinedValues = 0) => {
-    // Dynamic Parameter Selection
-    let questions = [];
+    const unitSystems = ['si', 'uscs'];
+    const units = {
+        "si": { 
+            "mass": "kg",
+            "pressure": "kPa",
+            "temperature": "°C",
+            "work": "kJ",
+            "massFlowRate": "kg/s",
+        },
+        "uscs": {
+            "mass": "lb",
+            "pressure": "psi",
+            "temperature": "°F",
+            "work": "BTU",
+            "massFlowRate": "lb/s",
+        }
+    };
 
-    // Question 1: Simplifying Expressions
-    const expression1 = "7 + 3 * (10 - 4)";
-    const answer1 = evaluateExpression(expression1);
+    // Dynamic unit selection based on randomization
+    const unitSel = math.randomInt(0, unitSystems.length);
+    const selectedUnits = units[unitSystems[unitSel]];
 
-    // Question 2: Comparing Different Operations
-    const expression2a = "40 / 8 * 2";
-    const answer2a = evaluateExpression(expression2a);
-    const expression2b = "40 / (8 * 2)";
-    const answer2b = evaluateExpression(expression2b);
+    // Dynamic value generation
+    let P1, T1, P2, Mf;
+    if (usePredefinedValues === 0) {
+        P1 = unitSel === 0 ? math.random(2500, 3000) : math.random(500, 600); // pressure
+        T1 = unitSel === 0 ? math.random(340, 360) : math.random(140, 160); // temperature
+        P2 = unitSel === 0 ? math.random(40, 60) : math.random(10, 12); // condenser pressure
+        Mf = Math.round(math.random(0.05, 0.15) * 100) / 100; // mass flow rate
+    } else {
+        // If predefined values are required
+        P1 = unitSel === 0 ? 2800 : 550; // Example predefined values
+        T1 = unitSel === 0 ? 350 : 150;
+        P2 = unitSel === 0 ? 50 : 11;
+        Mf = 0.10;
+    }
 
-    // Question 3: Evaluating a Complex Expression
-    const expression3 = "5^2 - (2 + 3) * (7 - 2) + 8 / 2";
-    const answer3 = evaluateExpression(expression3);
+    // Assume values for enthalpy
+    const h1 = unitSel === 0 ? 3115 : 1323; // kJ/kg or BTU/lb
+    const h2 = unitSel === 0 ? 2350 : 1000; // kJ/kg or BTU/lb
 
-    // Formatting results
-    questions.push({
-        question: "Evaluate: " + expression1,
-        correct_answer: answer1
-    });
-    questions.push({
-        question: "Evaluate: " + expression2a,
-        correct_answer: answer2a
-    });
-    questions.push({
-        question: "Evaluate: " + expression2b,
-        correct_answer: answer2b
-    });
-    questions.push({
-        question: "Evaluate: " + expression3,
-        correct_answer: answer3
-    });
+    // Compute thermal efficiency and net work output
+    const efficiency = 1 - (h2 / h1);
+    const netWorkOutput = Mf * (h1 - h2);
 
-    return {
+    // Format results, consider appropriate conversions and rounding
+    const thermalEfficiency = math.round(efficiency * 100 * 1000) / 1000; // percent
+    const netWork = math.round(netWorkOutput * 10) / 10; // kW or BTU/s
+
+    const data = {
         params: {
-            expressions: questions.map(q => q.question)
+            P1: P1,
+            T1: T1,
+            P2: P2,
+            Mf: Mf,
+            unitsPressure: selectedUnits.pressure,
+            unitsTemperature: selectedUnits.temperature,
+            unitsWork: selectedUnits.work,
+            unitsMassFlowRate: selectedUnits.massFlowRate,
         },
         correct_answers: {
-            answers: questions.map(q => q.correct_answer)
+            Efficiency: thermalEfficiency,
+            NetWork: netWork,
         },
-        intermediate: {
-            expression1: { expression: expression1, result: answer1 },
-            expression2a: { expression: expression2a, result: answer2a },
-            expression2b: { expression: expression2b, result: answer2b },
-            expression3: { expression: expression3, result: answer3 }
-        },
-        nDigits: 2,
-        sigfigs: 2
+        intermediate: {}, // Optional: intermediate reasoning steps.
+        nDigits: 3,
+        sigfigs: 3
     };
-};
 
-function evaluateExpression(expr) {
-    return math.evaluate(expr);
-}
+    // Error Handling
+    if (netWork < 0) {
+        throw new Error("Computed net work output is negative, which is not valid.");
+    }
+
+    return data;
+};
 
 module.exports = { generate };

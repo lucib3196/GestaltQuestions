@@ -12,7 +12,7 @@ from typing import Sequence
 # --- LangChain / LangGraph ---
 from langgraph.graph import START, StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
-from src.utils import save_graph_visualization, to_serializable
+from ai_workspace.utils import save_graph_visualization, to_serializable
 from ai_workspace.code_generator.graphs.question_metadata_graph import (
     QuestionMetaData,
 )
@@ -205,8 +205,9 @@ graph.add_edge("generate_solution_html", "generate_info_json")
 graph.add_edge("generate_info_json", END)
 
 
-memory = MemorySaver()
-app = graph.compile(checkpointer=memory)
+# memory = MemorySaver()
+# app = workflow.compile(checkpointer=memory)
+app=graph.compile()
 if __name__ == "__main__":
     config = {"configurable": {"thread_id": "customer_123"}}
     question = Question(

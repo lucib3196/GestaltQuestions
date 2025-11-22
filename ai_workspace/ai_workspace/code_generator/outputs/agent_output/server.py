@@ -1,56 +1,61 @@
 import math
 
 def generate(use_predefined_values=0):
-    # Function to generate values and compute results based on the order of operations
-
-    # Predefined dataset if needed
-    predefined_dataset = [
-        {"expression1": 25, "expression2_1": 10, "expression2_2": 2.5, "complex_expression": 4},
-        {"expression1": 25, "expression2_1": 10, "expression2_2": 2.5, "complex_expression": 4},
-        {"expression1": 25, "expression2_1": 10, "expression2_2": 2.5, "complex_expression": 4},
-        {"expression1": 25, "expression2_1": 10, "expression2_2": 2.5, "complex_expression": 4},
-        {"expression1": 25, "expression2_1": 10, "expression2_2": 2.5, "complex_expression": 4}
+    # Predefined dataset for testing
+    predefined_data = [
+        {'P1': 2.5, 'unitsPressure': 'MPa', 'T1': 350, 'unitsTemperature': 'C', 'P2': 50, 'unitsPressure2': 'kPa', 'Mf': 0.1, 'unitsMassFlowRate': 'kg/s'},
     ]
 
+    # Select values based on the parameter
     if use_predefined_values == 1:
-        # Use predefined values for testing
-        params = predefined_dataset[0]
+        data = predefined_data[0]
     else:
-        # Compute results using random generation
-        # For this case, we can define expressions directly since values are known
-        # Expression 1: 7 + 3 * (10 - 4)
-        value_in_parentheses = 10 - 4  # Evaluates to 6
-        multiplication_result = 3 * value_in_parentheses  # Evaluates to 18
-        expression1_result = 7 + multiplication_result  # Evaluates to 25
-
-        # Expression 2: 40 / 8 * 2 and 40 / (8 * 2)
-        expression2_1_result = 40 / 8 * 2  # Evaluates to 10
-        expression2_2_result = 40 / (8 * 2)  # Evaluates to 2.5
-
-        # Complex Expression: 5^2 - (2 + 3) * (7 - 2) + 8 / 2
-        exponent_value = 5 ** 2  # Evaluates to 25
-        parentheses_result_1 = 2 + 3  # Evaluates to 5
-        parentheses_result_2 = 7 - 2  # Evaluates to 5
-        multiplication_result_complex = parentheses_result_1 * parentheses_result_2  # Evaluates to 25
-        division_result = 8 / 2  # Evaluates to 4
-        complex_expression_result = exponent_value - multiplication_result_complex + division_result  # Evaluates to 4
-
-        # Store computed values in params
-        params = {
-            "expression1": expression1_result,
-            "expression2_1": expression2_1_result,
-            "expression2_2": expression2_2_result,
-            "complex_expression": complex_expression_result
+        data = {
+            'P1': round(math.uniform(1.0, 3.0), 3),  # 1 MPa to 3 MPa
+            'unitsPressure': 'MPa',
+            'T1': round(math.uniform(300, 400), 3),  # 300°C to 400°C
+            'unitsTemperature': 'C',
+            'P2': round(math.uniform(30, 60), 3),  # 30 kPa to 60 kPa
+            'unitsPressure2': 'kPa',
+            'Mf': round(math.uniform(0.05, 0.15), 3),  # 0.05 kg/s to 0.15 kg/s
+            'unitsMassFlowRate': 'kg/s',
         }
 
+    # Define a conversion factor for pressures if needed
+    pressure_conversion = 1e-3 if data['unitsPressure'] == 'MPa' and data['unitsPressure2'] == 'kPa' else 1
+
+    # Assuming specific heat capacity of water (steam) in kJ/kg·K
+    cp = 4.186  # kJ/kg·K
+
+    # Enthalpy calculations (hypothetical values as per Rankine cycle assumptions)
+    h1 = cp * data['T1']  # Enthalpy at state 1 (in kJ/kg)
+    h2 = h1 * (data['P2'] * pressure_conversion / data['P1']) ** 0.5  # Ideal simplification for h2
+
+    # 1. Thermal Efficiency Calculation
+    eta_thermal = 1 - (h2 / h1)  # Efficiency
+
+    # 2. Net Work Output Calculation
+    W_net = data['Mf'] * (h1 - h2)  # Net work output (in kW)
+
+    # Structuring the return object
     return {
-        "params": params,
-        "correct_answers": {
-            "expression1": params["expression1"],
-            "expression2_1": params["expression2_1"],
-            "expression2_2": params["expression2_2"],
-            "complex_expression": params["complex_expression"]
+        'params': {
+            'P1': data['P1'],
+            'unitsPressure': data['unitsPressure'],
+            'T1': data['T1'],
+            'unitsTemperature': data['unitsTemperature'],
+            'P2': data['P2'],
+            'unitsPressure2': data['unitsPressure2'],
+            'Mf': data['Mf'],
+            'unitsMassFlowRate': data['unitsMassFlowRate'],
+            'h1': round(h1, 3),
+            'h2': round(h2, 3),
+            'eta_thermal': round(eta_thermal * 100, 3),  # convert to percentage
         },
-        "nDigits": 3,
-        "sigfigs": 3,
+        'correct_answers': {
+            'Efficiency': round(eta_thermal * 100, 3),
+            'NetWork': round(W_net, 3),
+        },
+        'nDigits': 3,
+        'sigfigs': 3,
     }

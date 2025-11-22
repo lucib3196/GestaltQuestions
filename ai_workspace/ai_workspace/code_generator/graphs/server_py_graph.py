@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 
 # --- Project Imports ---
-from ai_base.settings import get_settings
+from ai_workspace.ai_base.settings import get_settings
 from ai_workspace.code_generator.models.models import (
     CodeResponse,
     Question,
@@ -21,7 +21,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
-from src.utils import save_graph_visualization, to_serializable
+from ai_workspace.utils import save_graph_visualization, to_serializable
 from ai_workspace.code_validation.code_validation_graph import (
     graph as code_validation_graph,
     State as CodeValidationState,
@@ -168,8 +168,9 @@ workflow.add_edge("validate_solution", "improve_code")
 workflow.add_edge("improve_code", END)
 workflow.add_edge("retrieve_examples", END)
 
-memory = MemorySaver()
-app = workflow.compile(checkpointer=memory)
+# memory = MemorySaver()
+# app = workflow.compile(checkpointer=memory)
+app=workflow.compile()
 if __name__ == "__main__":
     config = {"configurable": {"thread_id": "customer_123"}}
     question = Question(

@@ -1,29 +1,22 @@
-from typing import Annotated, List, Literal, TypedDict
-import operator
+from typing import List, TypedDict
 from pathlib import Path
 import json
 from ai_workspace.code_generator.models.models import question_types
 from pydantic import BaseModel, Field
 
 # --- Project Imports ---
-from ai_base.settings import get_settings
+from ai_workspace.ai_base.settings import get_settings
 from ai_workspace.code_generator.models.models import (
-    CodeResponse,
     Question,
     question_types,
-)
-from ai_workspace.code_generator.retrievers import (
-    server_js_vectorstore,
 )
 
 # --- LangChain / LangGraph ---
 from langchain.chat_models import init_chat_model
-from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END, START, StateGraph
-from langgraph.types import Command
 from langgraph.checkpoint.memory import MemorySaver
-from src.utils import save_graph_visualization, to_serializable
+from ai_workspace.utils import save_graph_visualization, to_serializable
 
 # --- External Services ---
 from langsmith import Client
@@ -72,8 +65,9 @@ workflow.add_node("generate_question_metadata", generate_question_metadata)
 workflow.add_edge(START, "generate_question_metadata")
 workflow.add_edge("generate_question_metadata", END)
 
-memory = MemorySaver()
-app = workflow.compile(checkpointer=memory)
+# memory = MemorySaver()
+# app = workflow.compile(checkpointer=memory)
+app=workflow.compile()
 if __name__ == "__main__":
     config = {"configurable": {"thread_id": "customer_123"}}
     question = Question(
