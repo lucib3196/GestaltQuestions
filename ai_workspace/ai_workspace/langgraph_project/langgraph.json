@@ -1,0 +1,9 @@
+{
+  "$schema": "https://langgra.ph/schema.json",
+  "dependencies": ["."],
+  "graphs": {
+    "agent": "ai_workspace/code_generator/agents/question_html_agent.py:agent"
+  },
+  "env": "../.env",
+  "image_distro": "wolfi"
+}

@@ -63,5 +63,5 @@ COPY . .
 EXPOSE 8001
 
 # Run the application.
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8001", "--forwarded-allow-ips", "*"]
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8001", "--forwarded-allow-ips", "*"]
 
