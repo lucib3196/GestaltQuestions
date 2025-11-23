@@ -43,14 +43,11 @@ Each service can be started individually in separate terminals, or all three can
 
 Installation and setup instructions for each component can be found at the following links:
 
-* Backend Setup Guide
-  [LINK HERE]
+* [AI Workspace Setup Guide](https://github.com/lucib3196/GestaltQuestions/tree/feature/docker_install/ai_workspace)  
 
-* AI Workspace Setup Guide
-  [LINK HERE]
+* [Backend Setup Guide](https://github.com/lucib3196/GestaltQuestions/tree/feature/docker_install/backend)
 
-* Frontend Setup Guide
-  [LINK HERE]
+* [Frontend Setup Guide](https://github.com/lucib3196/GestaltQuestions/tree/feature/docker_install/frontend)
 
 ---
 
