@@ -22,7 +22,7 @@ router = APIRouter(
 
 @router.post("/")
 async def create_question(
-   qs: QuestionResourceDepencency,
+    qs: QuestionResourceDepencency,
     question: QuestionData,
 ) -> Question:
     """
@@ -35,7 +35,7 @@ async def create_question(
        with the correct relative path reference.
 
     Args:
-        qm (QuestionManagerDependency): 
+        qm (QuestionManagerDependency):
         storage (StorageDependency):
         question (QuestionData): Input data model containing details of the question to be created.
 
@@ -338,5 +338,3 @@ async def filter_questions(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to filter question {e}")
-
-

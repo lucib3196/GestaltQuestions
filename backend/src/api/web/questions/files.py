@@ -3,7 +3,6 @@ from fastapi import APIRouter, HTTPException
 from starlette import status
 import json
 import mimetypes
-import base64
 from src.utils import encode_image
 
 # --- Internal ---
@@ -16,6 +15,7 @@ from src.api.service.file_service import FileServiceDep
 from src.api.models.response_models import FileData
 from src.api.dependencies import StorageTypeDep
 from fastapi.responses import Response
+from src.api.service.question_resource import QuestionResourceDepencency
 
 router = APIRouter(
     prefix="/questions",
@@ -29,6 +29,17 @@ client_file_extensions = {
     ".jpeg",
     ".pdf",
 }
+
+
+@router.post("/files")
+async def create_question_file_upload(
+    qr: QuestionResourceDepencency,
+    files: List[UploadFile],
+    fm: FileServiceDep,
+    auto_handle_images: bool = True,
+):
+    for f in files:
+        print(f)
 
 
 @router.get("/files/{qid}")
