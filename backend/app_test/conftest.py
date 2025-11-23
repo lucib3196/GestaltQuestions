@@ -1,12 +1,9 @@
 from contextlib import asynccontextmanager
-from types import SimpleNamespace
 from typing import List
-from uuid import UUID
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from pydantic import BaseModel
 from sqlmodel import Session, create_engine
 
 from src.api.core import logger, in_test_ctx
@@ -130,25 +127,6 @@ def get_storage_service(storage_mode, cloud_storage_service, local_storage):
     raise ValueError(f"Invalid storage type: {storage_mode}")
 
 
-# @pytest.fixture(scope="function")
-# def patch_app_settings(storage_mode, monkeypatch):
-#     """
-#     Patch STORAGE_SERVICE env var for this test's storage mode.
-#     Ensures get_settings() reflects the correct value.
-#     """
-#     monkeypatch.setenv("STORAGE_SERVICE", storage_mode)
-
-#     # Force settings reload (avoid cached instance if you use lru_cache)
-#     from src.api.core import config
-
-#     if hasattr(config.get_settings, "cache_clear"):
-#         config.get_settings.cache_clear()  # ensure settings re-read from env
-
-#     settings = config.get_settings()
-#     assert (
-#         settings.STORAGE_SERVICE == storage_mode
-#     ), f"Settings patch failed. Expected {storage_mode}, got {settings.STORAGE_SERVICE}"
-#     return settings
 
 
 @pytest.fixture(scope="function")
@@ -181,58 +159,9 @@ def test_client(
     with TestClient(app, raise_server_exceptions=True) as client:
         yield client
 
-
-class FakeQuestion(BaseModel):
-    """A fake Question model for testing."""
-
-    title: str | None
-    local_path: str | None
-    blob_name: str | None = None
-    id: UUID
-
-
-class DummySession:
-    """A fake DB session used for testing."""
-
-    def __init__(self):
-        self.committed = False
-        self.refreshed = False
-
-    def commit(self):
-        self.committed = True
-
-    def refresh(self, obj):
-        self.refreshed = True
-
-    def add(self, obj):
-        pass
-
-
-def make_qc_stub(question: FakeQuestion, session: DummySession):
-    """Return a qc stub with async get_question_by_id and safe_refresh_question."""
-
-    async def _get_question_by_id(qid, _session):
-        return question
-
-    async def _safe_refresh_question(qid, _session):
-        _session.commit()
-        _session.refresh(question)
-        return question
-
-    return SimpleNamespace(
-        get_question_by_id=_get_question_by_id,
-        safe_refresh_question=_safe_refresh_question,
-    )
-
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
-
-
-@pytest.fixture
-def dummy_session():
-    return DummySession()
 
 
 @pytest.fixture

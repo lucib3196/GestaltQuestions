@@ -16,6 +16,10 @@ from src.api.models.response_models import FileData
 from src.api.dependencies import StorageTypeDep
 from fastapi.responses import Response
 from src.api.service.question_resource import QuestionResourceDepencency
+import asyncio
+from pydantic import ValidationError
+from src.api.models.models import Question
+
 
 router = APIRouter(
     prefix="/questions",
@@ -23,12 +27,13 @@ router = APIRouter(
 )
 
 CLIENT_FILE_DIR = "clientFiles"
-client_file_extensions = {
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".pdf",
-}
+
+
+def get_file(files: list[UploadFile], name: str) -> UploadFile | None:
+    for f in files:
+        if f.filename == name:
+            return f
+    return None
 
 
 @router.post("/files")
@@ -36,10 +41,51 @@ async def create_question_file_upload(
     qr: QuestionResourceDepencency,
     files: List[UploadFile],
     fm: FileServiceDep,
+    question_data: QuestionData | None = None,
     auto_handle_images: bool = True,
-):
-    for f in files:
-        print(f)
+) -> Question:
+    # Check to see if metadata file is present in the filedata and validate
+    qdata_file = get_file(files, "info.json")
+
+    try:
+        if qdata_file:
+            logger.info("info.json provided. Attempting to validate...")
+
+            # Read and decode the uploaded file
+            raw = await qdata_file.read()
+            json_data = json.loads(raw.decode("utf-8"))
+
+            # Validate using Pydantic, ignoring extra fields
+            qdata = QuestionData.model_validate(json_data, from_attributes=False)
+        else:
+            qdata = None
+
+    except (ValidationError, json.JSONDecodeError) as e:
+        logger.error(f"Failed to validate info.json: {e}")
+
+        # Fallback logic: if no valid info.json and no provided question_data: fail
+        if question_data is None:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "info.json was provided but is invalid, and no fallback question_data "
+                    "was provided. Cannot continue."
+                ),
+            )
+
+        # Otherwise fall back to provided question_data
+        qdata = question_data
+    try:
+        assert qdata
+        tasks = [fm.convert_to_filedata(f) for f in (files or [])]
+        fdata = await asyncio.gather(*tasks)
+        qcreated = await qr.create_question(qdata, fdata, auto_handle_images)
+        logger.info("Successfully created question")
+        return qcreated
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to create question {e} from uploaded files"
+        )
 
 
 @router.get("/files/{qid}")
@@ -322,11 +368,9 @@ async def download_question(
 @router.post("/{id}/upload_files")
 async def upload_files_to_question(
     id: str | UUID,
-    files: List[UploadFile],
-    qm: QuestionManagerDependency,
-    storage: StorageDependency,
+    files: list[UploadFile],
     fm: FileServiceDep,
-    storage_type: StorageTypeDep,
+    qr: QuestionResourceDepencency,
     auto_handle_images: bool = True,
 ):
     """
@@ -349,60 +393,9 @@ async def upload_files_to_question(
         dict: A response indicating successful file uploads.
     """
     try:
-        # Retrieve the question record
-        question = qm.get_question(id)
-        if not question:
-            logger.warning("Question with ID %s not found", id)
-            raise HTTPException(status_code=404, detail=f"Question {id} not found")
-
-        # Get the question’s main storage directory
-        question_storage_path = storage.get_storage_path(
-            str(qm.get_question_path(question.id, storage_type)), relative=False
-        )
-        logger.info("Resolved question storage path: %s", question_storage_path)
-
-        # Separate image/document files from others
-        image_and_doc_files = []
-        other_files = []
-
-        for uploaded_file in files:
-            if not uploaded_file.filename:
-                raise HTTPException(
-                    status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                    detail="File must have a filename ",
-                )
-            ext = Path(uploaded_file.filename).suffix.lower()
-            if ext in client_file_extensions:
-                image_and_doc_files.append(uploaded_file)
-            else:
-                other_files.append(uploaded_file)
-
-        # Define destination paths
-        client_files_dir = Path(question_storage_path) / CLIENT_FILE_DIR
-
-        # Upload files based on handling strategy
-        if auto_handle_images:
-            uploaded_client_files = await fm.save_files(
-                image_and_doc_files, client_files_dir
-            )
-            uploaded_other_files = await fm.save_files(
-                other_files, question_storage_path
-            )
-            return {
-                "status": "ok",
-                "detail": f"Uploaded {len(files)} files",
-                "client_files": uploaded_client_files,
-                "other_files": uploaded_other_files,
-            }
-
-        # If not handling separately, upload everything to root
-        uploaded_files = await fm.save_files(files, question_storage_path)
-
-        return {
-            "status": "ok",
-            "detail": f"Uploaded {len(files)} files",
-            "files": uploaded_files,
-        }
+        tasks = [fm.convert_to_filedata(f) for f in (files or [])]
+        fdata = await asyncio.gather(*tasks)
+        return await qr.upload_files_to_question(id, fdata, auto_handle_images)
 
     except HTTPException:
         raise

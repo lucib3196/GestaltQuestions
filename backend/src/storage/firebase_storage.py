@@ -11,7 +11,7 @@ from google.cloud.storage.blob import Blob
 # --- Local Modules ---
 from src.api.core.logging import logger
 from src.storage.base import StorageService
-from src.api.service.file_service import get_content_type
+from src.api.service.file_service import FileService
 
 
 class FirebaseStorage(StorageService):
@@ -86,7 +86,7 @@ class FirebaseStorage(StorageService):
         elif not isinstance(content, str):
             raise ValueError(f"Unsupported content type: {type(content)}")
 
-        content_type = get_content_type(filename)
+        content_type = FileService().get_content_type(filename)
         blob.upload_from_string(data=content, content_type=content_type)
 
         return self.get_filepath(target, filename)
