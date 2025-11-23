@@ -1,10 +1,13 @@
 import os
 from fastapi import FastAPI
 import uvicorn
+from .web import routes
 
 
 def get_app():
     app = FastAPI()
+    for r in routes:
+        app.include_router(r)
     return app
 
 
