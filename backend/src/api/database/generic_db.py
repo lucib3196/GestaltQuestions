@@ -30,7 +30,7 @@ def create_or_resolve(
         raise ValueError(f"{lookup_field} is not a property of {target_cls}")
 
     stmt = select(target_cls).where(
-        func.lower(getattr(target_cls, lookup_field)) == target_value
+        func.lower(getattr(target_cls, lookup_field)) == target_value.lower()
     )
     result = session.exec(stmt).first()
     if result:

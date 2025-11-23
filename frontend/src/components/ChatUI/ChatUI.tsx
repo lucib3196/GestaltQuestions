@@ -8,7 +8,7 @@ import { useState } from "react";
 type ChatUIProps = {
     assistantID: string;
 };
-
+const DEBOUNCE_DELAY = 160;
 export default function ChatUI({ assistantID }: ChatUIProps) {
     const thread = useStream<{ messages: Message[] }>({
         apiUrl: "http://localhost:2024",
@@ -18,15 +18,19 @@ export default function ChatUI({ assistantID }: ChatUIProps) {
 
     const endRef = useRef<HTMLDivElement | null>(null);
     const [stableMessages, setStableMessages] = useState(thread.messages);
-
+    console.log(thread.messages)
     // Auto-scroll to bottom
     useEffect(() => {
         const handle = setTimeout(() => {
             setStableMessages(thread.messages);
-        }, 150); // 150ms debounce delay
+        }, DEBOUNCE_DELAY);
 
         return () => clearTimeout(handle);
     }, [thread.messages]);
+
+    useEffect(() => {
+        endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [stableMessages]);
 
     return (
         <ChatContainer>

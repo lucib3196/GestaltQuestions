@@ -83,7 +83,7 @@ export const Navigation: NavigationItem[] = [
         element: <ChatPage />,
         includeNavBar: true,
         requiresAuth: false,
-        allowedRoles: ["developer", "teacher", "admin"]
+        allowedRoles: []
     },
 
     //
