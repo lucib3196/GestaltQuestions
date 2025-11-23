@@ -1,6 +1,6 @@
 name: FastAPI CI
 
-# Only triggers if there is a backend change
+# Only triggers if there is a  change
 on:
   push:
     paths: 

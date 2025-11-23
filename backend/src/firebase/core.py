@@ -19,7 +19,6 @@ def initialize_firebase_app():
         else:
             root_path = Path(__file__).parents[3]
             cred = (root_path / app_settings.FIREBASE_CRED).resolve()
-            logger.debug("Root Path is {cred}")
     except Exception as e:
         raise ValueError(f"There was an error loading credentials {str(e)}")
 
@@ -29,3 +28,7 @@ def initialize_firebase_app():
         firebase_admin.initialize_app(cred, {"storageBucket": bucket_name})
     except Exception as e:
         raise ValueError(f"Could not initialize creditionals error {str(e)}")
+
+
+if __name__ == "__main__":
+    fb = initialize_firebase_app()
