@@ -1,69 +1,92 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+# Frontend Setup Guide
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Prerequisites
 
-## Expanding the ESLint configuration
+Before you begin, ensure the following are installed:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* **Git**
+* **Node.js ≥ 18** (npm included)
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 1. Clone the Repository
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone https://github.com/lucib3196/Gestalt_Question_Review.git
+cd Gestalt_Question_Review
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 2. Configure Environment Variables
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Create a `.env` file inside the `frontend` directory and add the required values:
+
+```env
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_FIREBASE_MEASUREMENT_ID=
+
+VITE_API_URL=http://localhost:8000
 ```
+
+These variables configure Firebase services and provide the frontend with the backend API URL.
+
+---
+
+## 3. Install Frontend Dependencies (Recommended Method)
+
+The preferred method is a manual Node.js installation.
+
+```bash
+cd frontend
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Your local development server will typically be available at:
+
+```
+http://localhost:5173
+```
+
+---
+
+## 4. Using Docker (Docker Compose)
+
+Two Dockerfiles are included for the frontend:
+
+* **Dockerfile** – Production build
+* **Dockerfile.dev** – Development build with live reload (used by default)
+
+Both are designed to work with the project’s root `docker-compose.yml`.
+
+To build and run the frontend using Docker:
+
+```bash
+docker compose up --build
+```
+
+This will start the development server inside a container using `Dockerfile.dev`.
+
+---
+
+## Need Help?
+
+If you encounter issues or have setup questions, feel free to reach out:
+
+**[lberm007@ucr.edu](mailto:lberm007@ucr.edu)**
+
+---

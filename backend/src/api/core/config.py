@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 from pydantic import AnyHttpUrl, field_validator
 from pydantic_core.core_schema import ValidationInfo
 from pydantic_settings import BaseSettings
-
 load_dotenv()
 
 # Points to the root directory adjust as needed

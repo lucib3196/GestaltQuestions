@@ -1,20 +1,28 @@
-# Quick Links
--  [ai_base](https://github.com/lucib3196/GestatlQuestions/tree/main/backend/src/ai_base) (in Progress) : A set of basic LLM features including multimodal inputs of image and pdf with code snippets. 
-
-# Gestalt Question Review — Local Setup
-
-## Prerequisites
-
-Before you begin, make sure you have the following installed:
-
-* **Git**
-* **Python ≥ 3.10**
-* **Node.js ≥ 18** (with npm)
-* **Poetry ≥ 1.8** → [Installation Guide](https://python-poetry.org/docs/#installation)
 
 ---
 
-## 1️⃣ Clone the Repository
+# Gestalt Question Review — Local Development Setup
+
+This guide explains how to run the **full Gestalt Question Review system locally**, including the backend API, AI Workspace, and frontend interface.
+You may start each service manually or use Docker Compose to run everything together.
+
+---
+
+## Prerequisites
+
+Before starting, ensure the following tools are installed:
+
+* **Git**
+* **Node.js (npm)**
+* **Python 3.10 or higher**
+* **Poetry** (optional but recommended)
+  Installation Guide: [https://python-poetry.org/docs/#installation](https://python-poetry.org/docs/#installation)
+
+---
+
+## 1. Clone the Repository
+
+If you have not already cloned the repository, do so with:
 
 ```bash
 git clone https://github.com/lucib3196/Gestalt_Question_Review.git
@@ -23,114 +31,79 @@ cd Gestalt_Question_Review
 
 ---
 
-## 2️⃣ Environment Variables
+## 2. Overview of Required Services
 
-Create a `.env` file in the project root with the required API keys and configuration settings.
-For a default env file email me at lberm007@ucr.edu
+The application consists of three main components that must be running:
 
-Example:
+1. **Backend API** (FastAPI)
+2. **AI Workspace** (LangChain & LangGraph utilities)
+3. **Frontend** (Vite + React)
 
-```env
-# Example .env file
-OPENAI_API_KEY=your_openai_api_key_here
-FIREBASE_API_KEY=your_firebase_key_here
-DATABASE_URL=sqlite:///./app.db
-```
+Each service can be started individually in separate terminals, or all three can be started automatically using **Docker Compose**.
 
----
+Installation and setup instructions for each component can be found at the following links:
 
-## 3️⃣ Install Backend Dependencies with Poetry
+* [AI Workspace Setup Guide](https://github.com/lucib3196/GestaltQuestions/tree/feature/docker_install/ai_workspace)  
 
-Poetry will automatically create and manage a virtual environment for the project.
+* [Backend Setup Guide](https://github.com/lucib3196/GestaltQuestions/tree/feature/docker_install/backend)
 
-Go into backend directory and install dependencies 
-```bash
-cd backend
-poetry install
-```
-## 3.1 Install Backend Dependencies (Alternative Method)
-
-You can also install backend dependencies manually using a virtual environment and pip.
-
-### Step 1: Create and Activate a Virtual Environment
-
-**On macOS/Linux:**
-```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate
-```
+* [Frontend Setup Guide](https://github.com/lucib3196/GestaltQuestions/tree/feature/docker_install/frontend)
 
 ---
 
-**On Windows**
-```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate
-```
-```bash
-pip install -r requirements.txt
-```
+## 3. Running All Services Manually
 
-----
+Below are the commands for running each service using Poetry and npm.
+Alternative installation methods (pip, virtualenv, etc.) are detailed in the linked setup guides.
 
-## 3.6 Node.js Setup for ExecJS
-
-The `execjs` library requires **Node.js** to be installed and accessible in your environment.  
-If you don’t have Node.js installed, follow these steps **inside the backend directory**.
-
-### Step 1: Initialize a Node.js Project
+### Backend API
 
 ```bash
 cd backend
-npm init -y
+poetry run python -m src.api.main
 ```
 
-
-## 4️⃣ Install Frontend Dependencies
+### AI Workspace
 
 ```bash
-cd frontend
-npm install
+cd ai_workspace
+poetry run python -m ai_workspace.api.main
 ```
 
----
-
-## 5️⃣ Run the Backend (FastAPI)
-
-Start the FastAPI backend:
-
-```bash
-cd backend // Ensure you're in the backend folder
-poetry run python -m  src.api.main
-```
-
-**Endpoints:**
-
-* API Root → [http://127.0.0.1:8000](http://127.0.0.1:8000)
-* Swagger Docs → [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-
----
-
-## 6️⃣ Run the Frontend (Vite)
-
-In a separate terminal:
+### Frontend
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Your local development server will start — usually at:
-👉 [http://localhost:5173](http://localhost:5173)
+Each command should be run in its own terminal window.
 
 ---
 
+## 4. Running All Services with Docker Compose
 
-## 🧠 Need Help?
+To start all components together using Docker:
 
-If you run into issues or setup problems, feel free to reach out:
-📧 **[lberm007@ucr.edu](mailto:lberm007@ucr.edu)**
+```bash
+docker compose up --build
+```
+
+Docker Compose will:
+
+* Build the correct Dockerfiles for each service
+* Start Backend, AI Workspace, and Frontend
+* Automatically handle networking between services
+
+This is the easiest method for running the entire stack.
 
 ---
+
+## Need Help?
+
+If you encounter issues or need assistance with the setup, feel free to reach out:
+
+**[lberm007@ucr.edu](mailto:lberm007@ucr.edu)**
+
+---
+
