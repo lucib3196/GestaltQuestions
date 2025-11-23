@@ -1,4 +1,3 @@
-
 # AI Workspace Installation Guide
 
 This guide provides instructions for installing and running the AI Workspace module.
@@ -11,9 +10,9 @@ It also includes a FastAPI server that exposes core functionality.
 
 Ensure the following tools are installed before continuing:
 
-* Git
-* Python 3.10+
-* Poetry (recommended but optional)
+- Git
+- Python 3.10+
+- Poetry (recommended but optional) → [Installation Guide](https://python-poetry.org/docs/#installation)
 
 ---
 
@@ -91,7 +90,7 @@ poetry export -f requirements.txt --output requirements.txt
 **macOS/Linux:**
 
 ```bash
-cd backend
+cd ai_workspace
 python3 -m venv venv
 source venv/bin/activate
 ```
@@ -99,7 +98,7 @@ source venv/bin/activate
 **Windows:**
 
 ```bash
-cd backend
+cd ai_workspace
 python -m venv venv
 venv\Scripts\activate
 ```
@@ -116,8 +115,8 @@ pip install -r requirements.txt
 
 There are two Dockerfiles:
 
-* `Dockerfile` (default)
-* `Dockerfile.dev` (recommended for development due to live reload support)
+- `Dockerfile` (default)
+- `Dockerfile.dev` (recommended for development due to live reload support)
 
 ### Build Commands
 
@@ -159,12 +158,9 @@ docker run --rm -it -p 8001:8001 ai_workspace:dev
 
 The server runs on port **8001**.
 
-* API Root: [http://127.0.0.1:8001](http://127.0.0.1:8001)
-* Swagger Documentation: [http://127.0.0.1:8001/docs](http://127.0.0.1:8001/docs)
+- API Root: [http://127.0.0.1:8001](http://127.0.0.1:8001)
+- Swagger Documentation: [http://127.0.0.1:8001/docs](http://127.0.0.1:8001/docs)
 
----
-
-Here is a cleaned-up and properly formatted version:
 
 ---
 
@@ -197,7 +193,6 @@ poetry run langgraph dev --config ./ai_workspace/langgraph_project/langgraph.jso
 ```bash
 langgraph dev --config ./ai_workspace/langgraph_project/langgraph.json
 ```
-
 
 ## Need Assistance?
 

@@ -1,5 +1,3 @@
-# Quick Links
--  [ai_base](https://github.com/lucib3196/GestatlQuestions/tree/main/backend/src/ai_base) (in Progress) : A set of basic LLM features including multimodal inputs of image and pdf with code snippets. 
 
 # Gestalt Question Review — Local Setup
 
