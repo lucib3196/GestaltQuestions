@@ -58,10 +58,6 @@ FIREBASE_CRED=FIREBASE_CRED.json
 PYTHONUTF8=1
 ```
 
----
-
-Here is a corrected, clear, and consistent version.
-I fixed the Docker explanation, corrected the structure, and made sure the instructions match how these Dockerfiles should be used—especially since they are intended to run under the root `docker-compose.yml`.
 
 ---
 
@@ -137,8 +133,6 @@ To build and start the service, run:
 ```bash
 docker compose up --build
 ```
-
-
 
 # API Endpoints
 

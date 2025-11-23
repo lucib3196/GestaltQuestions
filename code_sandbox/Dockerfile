@@ -35,4 +35,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["uvicorn", "src.code_sandbox.api.main:app", "--host", "0.0.0.0", "--port", "8080","--forwarded-allow-ips", "*"]
+CMD ["uvicorn", "code_sandbox.api.main:app", "--host", "0.0.0.0", "--port", "8080","--forwarded-allow-ips", "*"]
