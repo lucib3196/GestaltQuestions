@@ -5,7 +5,7 @@ from src.api.core import logger
 from src.api.dependencies import StorageType, StorageTypeDep
 from src.api.models import FileData, QuestionData
 from src.api.models.models import Question
-from src.api.service.question.question_manager import (
+from src.api.service.question_manager import (
     QuestionManager,
     QuestionManagerDependency,
 )
