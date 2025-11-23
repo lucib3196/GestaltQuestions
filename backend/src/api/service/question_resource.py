@@ -12,7 +12,6 @@ from src.api.service.question_manager import (
 from src.api.service.storage_manager import StorageDependency, StorageService
 from src.utils import safe_dir_name
 
-
 class QuestionResourceService:
     """Service that coordinates storage and database operations for questions."""
 
@@ -22,6 +21,13 @@ class QuestionResourceService:
         storage_manager: StorageService,
         storage_type: StorageType,
     ):
+        """_summary_
+
+        Args:
+            qm (QuestionManager): Manages database interactions for creating and committing the question.
+            storage_manager (StorageService):  Handles file system or cloud storage initialization for the question.
+            storage_type (StorageType): Wether we are working with the cloud or local storage
+        """
         self.qm = qm
         self.storage_manager = storage_manager
         self.storage_type = storage_type
@@ -31,7 +37,21 @@ class QuestionResourceService:
         question_data: QuestionData,
         files: Optional[List[FileData]] = None,
     ) -> Question:
-        """Create a question and optionally save associated files."""
+        """Create a question and optionally save associated files.
+
+            This function performs three main operations:
+            1. Creates a new `Question` entry in the database via the `QuestionManagerDependency`.
+            2. Generates a sanitized directory name for the question based on its title and ID.
+            3. Initializes the appropriate storage path (local or cloud) and updates the database record
+            with the correct relative path reference.
+        args:
+        question (QuestionData): Input data model containing details of the question to be created.
+        Returns:
+            Question: The created `Question` SQLModel instance with updated storage path information.
+        Raises:
+            Exception: Propagates any error encountered during creation or storage initialization.
+        """
+
         logger.info(
             f"[QuestionResourceService] Starting creation for '{question_data.title}'"
         )
