@@ -60,6 +60,11 @@ PYTHONUTF8=1
 
 ---
 
+Here is a corrected, clear, and consistent version.
+I fixed the Docker explanation, corrected the structure, and made sure the instructions match how these Dockerfiles should be used—especially since they are intended to run under the root `docker-compose.yml`.
+
+---
+
 # Installation Methods
 
 There are three supported installation methods:
@@ -79,7 +84,7 @@ If installing dependencies manually, create and activate a virtual environment.
 ### macOS/Linux
 
 ```bash
-cd ai_workspace
+cd backend
 python3 -m venv venv
 source venv/bin/activate
 ```
@@ -87,7 +92,7 @@ source venv/bin/activate
 ### Windows
 
 ```bash
-cd ai_workspace
+cd backend
 python -m venv venv
 venv\Scripts\activate
 ```
@@ -98,26 +103,6 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
----
-
-# Docker Build
-
-Two Dockerfiles are included:
-
-* `Dockerfile` (default production configuration)
-* `Dockerfile.dev` (development configuration with live reload)
-
-### Build with default Dockerfile
-
-```bash
-docker build -t backend:latest .
-```
-
-### Build with development Dockerfile
-
-```bash
-docker build -f Dockerfile.dev -t backend:dev .
-```
 
 ---
 
@@ -135,19 +120,25 @@ poetry run python -m backend.api.main
 python -m backend.api.main
 ```
 
-## Using Docker
-
-```bash
-docker run --rm -it -p 8000:8000 backend:latest
-```
-
-or for development mode:
-
-```bash
-docker run --rm -it -p 8000:8000 backend:dev
-```
-
 ---
+
+## Using Docker (Docker Compose)
+
+Two Dockerfiles are available:
+
+* **Dockerfile** – Production-oriented build
+* **Dockerfile.dev** – Development build with live reload and debugging features
+
+These Dockerfiles are intended to be used through the project’s **docker-compose.yml** configuration.
+The current setup uses **Dockerfile.dev** by default for development.
+
+To build and start the service, run:
+
+```bash
+docker compose up --build
+```
+
+
 
 # API Endpoints
 
