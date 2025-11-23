@@ -164,6 +164,41 @@ The server runs on port **8001**.
 
 ---
 
+Here is a cleaned-up and properly formatted version:
+
+---
+
+## Experimental: LangGraph Development Server
+
+This feature is currently **experimental**. It provides access to a LangGraph development server that exposes an interactive Studio on **port 2024** for testing chatbots and agent workflows.
+
+### Agent Configuration
+
+All available agents are configured in:
+
+```
+./ai_workspace/langgraph_project/langgraph.json
+```
+
+### Notes
+
+This feature is **not yet available in Docker**. It must be run locally.
+
+### Running the LangGraph Dev Server
+
+**Using Poetry:**
+
+```bash
+poetry run langgraph dev --config ./ai_workspace/langgraph_project/langgraph.json
+```
+
+**Using pip:**
+
+```bash
+langgraph dev --config ./ai_workspace/langgraph_project/langgraph.json
+```
+
+
 ## Need Assistance?
 
 If you encounter issues or need help setting up the workspace, contact:
