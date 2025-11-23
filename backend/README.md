@@ -130,13 +130,13 @@ pip install -r requirements.txt
 ## Using Poetry
 
 ```bash
-poetry run python -m backend.api.main
+poetry run python -m src.api.main
 ```
 
 ## Using Pip
 
 ```bash
-python -m backend.api.main
+python -m src.api.main
 ```
 
 
