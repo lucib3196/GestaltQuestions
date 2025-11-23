@@ -1,4 +1,4 @@
-name: FastAPI CI
+name: AI Workspace CI
 
 # Only triggers if there is a  change
 on:
@@ -42,13 +42,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
 
-        working-directory: ./backend
+        working-directory: ./ai_workspace
 
       - name: Install dependencies
         run: poetry install
-        working-directory: ./backend
+        working-directory: ./ai_workspace
 
       - name: Run Test
         run: |
           poetry run python -m pytest -s --log-cli-level=INFO
-        working-directory: ./backend
+        working-directory: ./ai_workspace
