@@ -8,8 +8,8 @@ from pathlib import Path
 from typing import Any
 
 # Internal
-from src.code_sandbox.code_runner.base import CodeRunner
-from src.code_sandbox.code_runner.models import ExecutionResult
+from code_sandbox.code_runner.base import CodeRunner
+from code_sandbox.code_runner.models import ExecutionResult
 
 
 class PythonScriptRunner(CodeRunner):

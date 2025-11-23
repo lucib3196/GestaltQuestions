@@ -1,5 +1,5 @@
 [project]
-name = "src"
+name = "code_sandbox"
 packages = [
     { include = "code_sandbox", from = "src" }
 ]

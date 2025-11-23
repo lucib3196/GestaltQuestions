@@ -72,37 +72,60 @@ There are three supported installation methods:
 Choose the method that best fits your workflow.
 
 ---
+Here is a cleaned-up, clearer version that explicitly states we are working inside the **backend** directory. The flow is now consistent and easy to follow:
 
-# Virtual Environment (Pip Workflow)
+---
 
-If installing dependencies manually, create and activate a virtual environment.
+# Backend Installation Guide
 
-### macOS/Linux
+## Poetry Installation
+
+Poetry must be installed on your system before proceeding.
+
+Navigate into the **backend** directory and install the dependencies:
 
 ```bash
 cd backend
+poetry install
+```
+
+---
+
+## Pip Installation
+
+If you prefer to install dependencies using pip, first generate a `requirements.txt` file from Poetry:
+
+```bash
+cd backend
+poetry lock
+poetry export -f requirements.txt --output requirements.txt
+```
+
+### Create and Activate a Virtual Environment
+
+**macOS/Linux:**
+
+```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-### Windows
+**Windows:**
 
 ```bash
-cd backend
 python -m venv venv
 venv\Scripts\activate
 ```
 
-Install dependencies:
+### Install Dependencies with pip
 
 ```bash
 pip install -r requirements.txt
 ```
 
-
 ---
 
-# Running the Server
+# Running the Server (Backend)
 
 ## Using Poetry
 
@@ -116,7 +139,6 @@ poetry run python -m backend.api.main
 python -m backend.api.main
 ```
 
----
 
 ## Using Docker (Docker Compose)
 
@@ -136,7 +158,7 @@ docker compose up --build
 
 # API Endpoints
 
-The server runs on port **8000** (not 8001—your Docker and FastAPI commands use 8000).
+The server runs on port **8000** 
 
 * API Root: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 * Swagger Documentation: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
