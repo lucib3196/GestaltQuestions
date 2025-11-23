@@ -1,60 +1,65 @@
 import math
 
 def generate(use_predefined_values=0):
-    # Predefined dataset for testing
+    # Predefined dataset for testing purposes
     predefined_data = [
-        {'P1': 2.5, 'unitsPressure': 'MPa', 'T1': 350, 'unitsTemperature': 'C', 'P2': 50, 'unitsPressure2': 'kPa', 'Mf': 0.1, 'unitsMassFlowRate': 'kg/s'},
+        {'thickness_brick': 0.2, 'k_brick': 0.72, 'thickness_insulation': 0.1, 'k_insulation': 0.04, 'thickness_concrete': 0.15, 'k_concrete': 1.7, 'T1': 20, 'T2': -10},
+        {'thickness_brick': 0.25, 'k_brick': 0.9, 'thickness_insulation': 0.2, 'k_insulation': 0.03, 'thickness_concrete': 0.1, 'k_concrete': 1.5, 'T1': 25, 'T2': -5},
+        {'thickness_brick': 0.15, 'k_brick': 0.6, 'thickness_insulation': 0.15, 'k_insulation': 0.05, 'thickness_concrete': 0.2, 'k_concrete': 1.2, 'T1': 30, 'T2': 10},
+        {'thickness_brick': 0.2, 'k_brick': 0.85, 'thickness_insulation': 0.1, 'k_insulation': 0.04, 'thickness_concrete': 0.1, 'k_concrete': 1.8, 'T1': 15, 'T2': 0},
+        {'thickness_brick': 0.3, 'k_brick': 0.75, 'thickness_insulation': 0.2, 'k_insulation': 0.035, 'thickness_concrete': 0.15, 'k_concrete': 1.9, 'T1': 22, 'T2': 5},
     ]
 
-    # Select values based on the parameter
-    if use_predefined_values == 1:
-        data = predefined_data[0]
+    if use_predefined_values == 0:
+        import random
+        # Generate random values within realistic ranges
+        thickness_brick = random.uniform(0.1, 0.3)  # m
+        k_brick = random.uniform(0.5, 1.0)  # W/(m·K)
+        thickness_insulation = random.uniform(0.1, 0.3)  # m
+        k_insulation = random.uniform(0.03, 0.1)  # W/(m·K)
+        thickness_concrete = random.uniform(0.1, 0.3)  # m
+        k_concrete = random.uniform(1.0, 2.0)  # W/(m·K)
+        T1 = random.uniform(0, 100)  # °C
+        T2 = random.uniform(-20, 20)  # °C
     else:
-        data = {
-            'P1': round(math.uniform(1.0, 3.0), 3),  # 1 MPa to 3 MPa
-            'unitsPressure': 'MPa',
-            'T1': round(math.uniform(300, 400), 3),  # 300°C to 400°C
-            'unitsTemperature': 'C',
-            'P2': round(math.uniform(30, 60), 3),  # 30 kPa to 60 kPa
-            'unitsPressure2': 'kPa',
-            'Mf': round(math.uniform(0.05, 0.15), 3),  # 0.05 kg/s to 0.15 kg/s
-            'unitsMassFlowRate': 'kg/s',
-        }
+        # Use predefined values
+        data = random.choice(predefined_data)
+        thickness_brick = data['thickness_brick']
+        k_brick = data['k_brick']
+        thickness_insulation = data['thickness_insulation']
+        k_insulation = data['k_insulation']
+        thickness_concrete = data['thickness_concrete']
+        k_concrete = data['k_concrete']
+        T1 = data['T1']
+        T2 = data['T2']
 
-    # Define a conversion factor for pressures if needed
-    pressure_conversion = 1e-3 if data['unitsPressure'] == 'MPa' and data['unitsPressure2'] == 'kPa' else 1
+    # Calculate thermal resistances for each layer
+    A = 1  # Assume area = 1 m² for simplicity
+    R_brick = thickness_brick / (k_brick * A)  # R for brick layer
+    R_insulation = thickness_insulation / (k_insulation * A)  # R for insulation layer
+    R_concrete = thickness_concrete / (k_concrete * A)  # R for concrete layer
 
-    # Assuming specific heat capacity of water (steam) in kJ/kg·K
-    cp = 4.186  # kJ/kg·K
+    # Total thermal resistance
+    R_total = R_brick + R_insulation + R_concrete
 
-    # Enthalpy calculations (hypothetical values as per Rankine cycle assumptions)
-    h1 = cp * data['T1']  # Enthalpy at state 1 (in kJ/kg)
-    h2 = h1 * (data['P2'] * pressure_conversion / data['P1']) ** 0.5  # Ideal simplification for h2
+    # Calculate heat transfer rate
+    Q = (T1 - T2) / R_total
 
-    # 1. Thermal Efficiency Calculation
-    eta_thermal = 1 - (h2 / h1)  # Efficiency
-
-    # 2. Net Work Output Calculation
-    W_net = data['Mf'] * (h1 - h2)  # Net work output (in kW)
-
-    # Structuring the return object
     return {
         'params': {
-            'P1': data['P1'],
-            'unitsPressure': data['unitsPressure'],
-            'T1': data['T1'],
-            'unitsTemperature': data['unitsTemperature'],
-            'P2': data['P2'],
-            'unitsPressure2': data['unitsPressure2'],
-            'Mf': data['Mf'],
-            'unitsMassFlowRate': data['unitsMassFlowRate'],
-            'h1': round(h1, 3),
-            'h2': round(h2, 3),
-            'eta_thermal': round(eta_thermal * 100, 3),  # convert to percentage
+            'thickness_brick': round(thickness_brick, 3),
+            'k_brick': round(k_brick, 3),
+            'thickness_insulation': round(thickness_insulation, 3),
+            'k_insulation': round(k_insulation, 3),
+            'thickness_concrete': round(thickness_concrete, 3),
+            'k_concrete': round(k_concrete, 3),
+            'T1': round(T1, 3),
+            'T2': round(T2, 3),
+            'R_total': round(R_total, 3),
+            'heat_transfer_rate': round(Q, 3),
         },
         'correct_answers': {
-            'Efficiency': round(eta_thermal * 100, 3),
-            'NetWork': round(W_net, 3),
+            'heat_transfer_rate': round(Q, 3),
         },
         'nDigits': 3,
         'sigfigs': 3,

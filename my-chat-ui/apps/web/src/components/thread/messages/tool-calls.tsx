@@ -2,6 +2,7 @@ import { AIMessage, ToolMessage } from "@langchain/langgraph-sdk";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect } from "react";
 
 function isComplexValue(value: any): boolean {
   return Array.isArray(value) || (typeof value === "object" && value !== null);
@@ -68,6 +69,36 @@ export function ToolCalls({
 export function ToolResult({ message }: { message: ToolMessage }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  function downloadZip(base64: string, filename: string) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+
+    const blob = new Blob([bytes], { type: "application/zip" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+
+  useEffect(() => {
+    if (message.name === "prepare_zip") {
+      try {
+        const parsed = JSON.parse(String(message.content));
+        downloadZip(parsed.zip_base64, parsed.filename);
+      } catch (err) {
+        console.error("Failed to parse zip payload:", err);
+      }
+    }
+  }, [message.name, message.content]);
+
   let parsedContent: any;
   let isJsonContent = false;
 
@@ -80,6 +111,7 @@ export function ToolResult({ message }: { message: ToolMessage }) {
     // Content is not JSON, use as is
     parsedContent = message.content;
   }
+
 
   const contentStr = isJsonContent
     ? JSON.stringify(parsedContent, null, 2)
@@ -95,13 +127,16 @@ export function ToolResult({ message }: { message: ToolMessage }) {
 
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden">
-      <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
+      <div className="bg-blue-50 px-4 py-2 border-b border-gray-200">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           {message.name ? (
             <h3 className="font-medium text-gray-900">
               Tool Result:{" "}
-              <code className="bg-gray-100 px-2 py-1 rounded">
+              <code className="bg-blue-100 px-2 py-1 rounded">
                 {message.name}
+                {message.name === "prepare_zip" && (
+                  <div className="text-sm text-green-600">Preparing ZIP download...</div>
+                )}
               </code>
             </h3>
           ) : (
@@ -170,16 +205,16 @@ export function ToolResult({ message }: { message: ToolMessage }) {
           (isJsonContent &&
             Array.isArray(parsedContent) &&
             parsedContent.length > 5)) && (
-          <motion.button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full py-2 flex items-center justify-center border-t-[1px] border-gray-200 text-gray-500 hover:text-gray-600 hover:bg-gray-50 transition-all ease-in-out duration-200 cursor-pointer"
-            initial={{ scale: 1 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {isExpanded ? <ChevronUp /> : <ChevronDown />}
-          </motion.button>
-        )}
+            <motion.button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="w-full py-2 flex items-center justify-center border-t-[1px] border-gray-200 text-gray-500 hover:text-gray-600 hover:bg-gray-50 transition-all ease-in-out duration-200 cursor-pointer"
+              initial={{ scale: 1 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {isExpanded ? <ChevronUp /> : <ChevronDown />}
+            </motion.button>
+          )}
       </motion.div>
     </div>
   );

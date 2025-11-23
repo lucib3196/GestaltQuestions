@@ -2,80 +2,71 @@ const math = require("mathjs");
 
 const generate = (usePredefinedValues = 0) => {
     const unitSystems = ['si', 'uscs'];
+
     const units = {
-        "si": { 
-            "mass": "kg",
-            "pressure": "kPa",
-            "temperature": "°C",
-            "work": "kJ",
-            "massFlowRate": "kg/s",
+        "si": {
+            "dist": "m",
+            "thermalConductivity": "W/m*K",
+            "temperature": "K"
         },
         "uscs": {
-            "mass": "lb",
-            "pressure": "psi",
-            "temperature": "°F",
-            "work": "BTU",
-            "massFlowRate": "lb/s",
+            "dist": "feet",
+            "thermalConductivity": "Btu/h*ft*F",
+            "temperature": "°F"
         }
     };
 
-    // Dynamic unit selection based on randomization
-    const unitSel = math.randomInt(0, unitSystems.length);
-    const selectedUnits = units[unitSystems[unitSel]];
+    const unitSel = math.randomInt(0, 2);
+    const unitsDist = units[unitSystems[unitSel]].dist;
+    const unitsThermalConductivity = units[unitSystems[unitSel]].thermalConductivity;
+    const unitsTemperature = units[unitSystems[unitSel]].temperature;
 
-    // Dynamic value generation
-    let P1, T1, P2, Mf;
-    if (usePredefinedValues === 0) {
-        P1 = unitSel === 0 ? math.random(2500, 3000) : math.random(500, 600); // pressure
-        T1 = unitSel === 0 ? math.random(340, 360) : math.random(140, 160); // temperature
-        P2 = unitSel === 0 ? math.random(40, 60) : math.random(10, 12); // condenser pressure
-        Mf = Math.round(math.random(0.05, 0.15) * 100) / 100; // mass flow rate
-    } else {
-        // If predefined values are required
-        P1 = unitSel === 0 ? 2800 : 550; // Example predefined values
-        T1 = unitSel === 0 ? 350 : 150;
-        P2 = unitSel === 0 ? 50 : 11;
-        Mf = 0.10;
-    }
+    // 1. Dynamic Values Generation
+    const thickness_brick = usePredefinedValues === 0 ? math.round(math.random(10, 30) * 100) / 100 : 20; // cm
+    const k_brick = usePredefinedValues === 0 ? math.random(0.5, 1.5) : 0.72; // W/m*K
+    const thickness_insulation = usePredefinedValues === 0 ? math.round(math.random(5, 15) * 100) / 100 : 10; // cm
+    const k_insulation = usePredefinedValues === 0 ? math.random(0.01, 0.1) : 0.04; // W/m*K
+    const thickness_concrete = usePredefinedValues === 0 ? math.round(math.random(10, 25) * 100) / 100 : 15; // cm
+    const k_concrete = usePredefinedValues === 0 ? math.random(1.5, 2.5) : 1.7; // W/m*K
+    const T1 = usePredefinedValues === 0 ? math.random(15, 25) : 20; // °C
+    const T2 = usePredefinedValues === 0 ? math.random(-20, 0) : -10; // °C
 
-    // Assume values for enthalpy
-    const h1 = unitSel === 0 ? 3115 : 1323; // kJ/kg or BTU/lb
-    const h2 = unitSel === 0 ? 2350 : 1000; // kJ/kg or BTU/lb
+    // 2. Convert thickness from cm to m
+    const thickness_brick_m = thickness_brick / 100;
+    const thickness_insulation_m = thickness_insulation / 100;
+    const thickness_concrete_m = thickness_concrete / 100;
 
-    // Compute thermal efficiency and net work output
-    const efficiency = 1 - (h2 / h1);
-    const netWorkOutput = Mf * (h1 - h2);
+    // 3. Compute thermal resistances
+    const R_brick = thickness_brick_m / k_brick;
+    const R_insulation = thickness_insulation_m / k_insulation;
+    const R_concrete = thickness_concrete_m / k_concrete;
 
-    // Format results, consider appropriate conversions and rounding
-    const thermalEfficiency = math.round(efficiency * 100 * 1000) / 1000; // percent
-    const netWork = math.round(netWorkOutput * 10) / 10; // kW or BTU/s
+    // 4. Total resistance
+    const R_total = R_brick + R_insulation + R_concrete;
 
-    const data = {
+    // 5. Rate of heat transfer calculation
+    const Q = (T1 - T2) / R_total; // Using area A = 1 m^2 for simplicity
+
+    return {
         params: {
-            P1: P1,
+            thickness_brick: thickness_brick,
+            k_brick: k_brick,
+            thickness_insulation: thickness_insulation,
+            k_insulation: k_insulation,
+            thickness_concrete: thickness_concrete,
+            k_concrete: k_concrete,
             T1: T1,
-            P2: P2,
-            Mf: Mf,
-            unitsPressure: selectedUnits.pressure,
-            unitsTemperature: selectedUnits.temperature,
-            unitsWork: selectedUnits.work,
-            unitsMassFlowRate: selectedUnits.massFlowRate,
+            T2: T2,
+            unitsDist: unitsDist,
+            unitsThermalConductivity: unitsThermalConductivity,
+            unitsTemperature: unitsTemperature
         },
         correct_answers: {
-            Efficiency: thermalEfficiency,
-            NetWork: netWork,
+            heatTransfer: Q
         },
-        intermediate: {}, // Optional: intermediate reasoning steps.
         nDigits: 3,
         sigfigs: 3
     };
-
-    // Error Handling
-    if (netWork < 0) {
-        throw new Error("Computed net work output is negative, which is not valid.");
-    }
-
-    return data;
 };
 
 module.exports = { generate };

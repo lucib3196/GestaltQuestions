@@ -23,7 +23,8 @@ dependencies = [
     "uvicorn (>=0.38.0,<0.39.0)",
     "langgraph-cli[inmem] (>=0.4.7,<0.5.0)",
     "langchain-community (>=0.4.1,<0.5.0)",
-    "faiss-cpu (>=1.13.0,<2.0.0)"
+    "faiss-cpu (>=1.13.0,<2.0.0)",
+    "grpcio (>=1.76.0,<2.0.0)"
 ]
 
 

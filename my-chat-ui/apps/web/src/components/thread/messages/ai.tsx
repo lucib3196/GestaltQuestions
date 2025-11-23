@@ -142,8 +142,8 @@ export function AssistantMessage({
               <ThreadView interrupt={threadInterrupt.value} />
             )}
           {threadInterrupt?.value &&
-          !isAgentInboxInterruptSchema(threadInterrupt.value) &&
-          isLastMessage ? (
+            !isAgentInboxInterruptSchema(threadInterrupt.value) &&
+            isLastMessage ? (
             <GenericInterruptView interrupt={threadInterrupt.value} />
           ) : null}
           <div

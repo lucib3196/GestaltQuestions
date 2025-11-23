@@ -44,26 +44,17 @@ class State(TypedDict):
     files: Annotated[dict, lambda a, b: {**a, **b}]
 
 
-def classify_question(state: State) -> Command[Literal["generate_question_html"]]:
+def classify_question(state: State):
     input_state = {"question": state["question"], "metadata": None}
     result = question_metadata_generator.invoke(input_state, config)  # type: ignore
-    return Command(
-        update={
-            "metadata": result["metadata"],
-        },
-        goto="generate_question_html",
-    )
+
+    return {"metadata": result["metadata"]}
 
 
-def generate_question_html(
-    state: State,
-) -> Command[
-    Sequence[
-        Literal["generate_solution_html", "generate_server_js", "generate_server_py"]
-    ]
-]:
+def generate_question_html(state: State):
     metadata = state["metadata"]
     assert metadata
+
     input_state = {
         "question": state["question"],
         "question_type": metadata.question_type,
@@ -71,30 +62,23 @@ def generate_question_html(
         "retrieved_documents": [],
         "formatted_examples": "",
     }
+
     result = question_html_generator.invoke(input_state, config)  # type: ignore
-    files = {"question.html": result["question_html"]}
-    metadata = state["metadata"]
 
     updated_question = state["question"].model_copy(
         update={"question_html": result["question_html"]}
     )
 
-    assert metadata
-    if metadata.question_type == "computational":
-        return Command(
-            update={"files": files, "question": updated_question},
-            goto=["generate_server_py", "generate_server_js", "generate_solution_html"],
-        )
-    else:
-        return Command(
-            update={"files": files, "question": updated_question},
-            goto=["generate_solution_html"],
-        )
+    return {
+        "question": updated_question,
+        "files": {"question.html": result["question_html"]},
+    }
 
 
-def generate_solution_html(state: State) -> Command:
+def generate_solution_html(state: State):
     metadata = state["metadata"]
     assert metadata
+
     input_state = {
         "question": state["question"],
         "question_type": metadata.question_type,
@@ -102,16 +86,16 @@ def generate_solution_html(state: State) -> Command:
         "retrieved_documents": [],
         "formatted_examples": "",
     }
+
     result = solution_html_generator.invoke(input_state, config)  # type: ignore
-    files = {"solution.html": result["solution_html"]}
-    return Command(
-        update={"files": files},
-    )
+
+    return {"files": {"solution.html": result["solution_html"]}}
 
 
-def generate_server_js(state: State) -> Command:
+def generate_server_js(state: State):
     metadata = state["metadata"]
     assert metadata
+
     input_state = {
         "question": state["question"],
         "question_type": metadata.question_type,
@@ -119,16 +103,16 @@ def generate_server_js(state: State) -> Command:
         "retrieved_documents": [],
         "formatted_examples": "",
     }
+
     result = server_js_generator.invoke(input_state, config)  # type: ignore
-    files = {"server.js": result["server_js"]}
-    return Command(
-        update={"files": files},
-    )
+
+    return {"files": {"server.js": result["server_js"]}}
 
 
-def generate_server_py(state: State) -> Command:
+def generate_server_py(state: State):
     metadata = state["metadata"]
     assert metadata
+
     input_state = {
         "question": state["question"],
         "question_type": metadata.question_type,
@@ -136,28 +120,25 @@ def generate_server_py(state: State) -> Command:
         "retrieved_documents": [],
         "formatted_examples": "",
     }
+
     result = server_py_generator.invoke(input_state, config)  # type: ignore
-    files = {"server.py": result["server_py"]}
-    return Command(
-        update={"files": files},
-    )
+
+    return {"files": {"server.py": result["server_py"]}}
 
 
-def generate_info_json(state: State) -> Command:
+def generate_info_json(state: State):
     metadata = state["metadata"]
     assert metadata
+
     info_metadata = metadata.model_dump()
     info_metadata["ai_generated"] = True
 
-    # Create the info.json file this is the metadata associated with the database as well
     if metadata.question_type == "computational":
         info_metadata["languages"] = ["javascript", "python"]
-        files = {"info.json": json.dumps(to_serializable(info_metadata))}
-        return Command(update={"files": files})
     else:
         info_metadata["languages"] = []
-        files = {"files": json.dumps(to_serializable(info_metadata))}
-        return Command(update={"files": files})
+
+    return {"files": {"info.json": json.dumps(to_serializable(info_metadata))}}
 
 
 def router(
@@ -207,7 +188,7 @@ graph.add_edge("generate_info_json", END)
 
 # memory = MemorySaver()
 # app = workflow.compile(checkpointer=memory)
-app=graph.compile()
+app = graph.compile()
 if __name__ == "__main__":
     config = {"configurable": {"thread_id": "customer_123"}}
     question = Question(

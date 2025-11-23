@@ -74,8 +74,6 @@ function ScrollToBottom(props: { className?: string }) {
   );
 }
 
-
-
 export function Thread() {
   const [threadId, setThreadId] = useQueryState("threadId");
   const [chatHistoryOpen, setChatHistoryOpen] = useQueryState(
@@ -245,7 +243,7 @@ export function Thread() {
                 </Button>
               )}
             </div>
-            
+
           </div>
         )}
         {chatStarted && (
@@ -278,7 +276,7 @@ export function Thread() {
                   damping: 30,
                 }}
               >
-                
+
                 <span className="text-xl font-semibold tracking-tight">
                   Gestalt Module Creator
                 </span>
@@ -287,7 +285,7 @@ export function Thread() {
 
             <div className="flex items-center gap-4">
               <div className="flex items-center">
-                
+
               </div>
               <TooltipIconButton
                 size="lg"
