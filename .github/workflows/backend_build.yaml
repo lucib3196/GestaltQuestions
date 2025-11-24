@@ -42,6 +42,7 @@ jobs:
           pwd
           mkdir -p secrets
       - name: Decode Firebase credentials
+        working-directory: ./backend
         run: |
           mkdir -p secrets
           echo '${{ secrets.FIREBASE_JSON }}' > ${{vars.FIREBASE_JSON_PATH}}

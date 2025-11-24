@@ -25,11 +25,6 @@ def server_files():
     ]
 
 
-import pytest
-import json
-from src.api.models.models import Question
-
-
 @pytest.fixture
 def qpayload_bad():
     return {"Data": "Some Content"}
