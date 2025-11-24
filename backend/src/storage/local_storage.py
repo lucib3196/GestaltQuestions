@@ -104,6 +104,7 @@ class LocalStorageService(StorageService):
         target = self.normalize_path(target)
 
         absolute_path = Path(self.root) / str(target)
+
         if relative:
             return absolute_path.relative_to(self.root).as_posix()
 
@@ -155,6 +156,7 @@ class LocalStorageService(StorageService):
         if filename:
             path = Path(self.get_storage_path(target, relative=False)) / filename
             return path.as_posix()
+
         else:
             return self.get_storage_path(target)
 
@@ -180,8 +182,9 @@ class LocalStorageService(StorageService):
         Returns:
             bytes | None: File contents if found, otherwise None.
         """
-        target = Path(self.get_file(target, filename))
-
+        target = Path(self.get_filepath(target, filename))
+        
+        logger.info("Reading file %s", target)
         if target.exists() and target.is_file():
             return target.read_bytes()
         return None
@@ -194,32 +197,40 @@ class LocalStorageService(StorageService):
         overwrite: bool = True,
     ) -> Path:
         """
-        Save a file to the directory for a given identifier.
+        Save a file to the given target directory.
 
         Args:
-            identifier: Unique identifier for the stored resource.
+            target: Directory to save into. Can be absolute or relative.
             filename: Target filename.
-            content: File content (string, dict, list, or bytes).
-            overwrite: Whether to overwrite the file if it already exists.
+            content: Content to write.
+            overwrite: Whether to overwrite an existing file.
 
         Returns:
-            Path: Path to the saved file.
-
-        Raises:
-            ValueError: If overwrite is False and the file already exists.
+            Path: The full path to the saved file.
         """
-        file_path = Path(self.get_storage_path(target, relative=False)) / filename
 
+        target = Path(self.get_storage_path(target, relative=False))
+
+        # Ensure parent directory exists
+        target.mkdir(parents=True, exist_ok=True)
+
+        file_path = target / filename
+
+        # Handle overwrite rules
         if not overwrite and file_path.exists():
-            raise ValueError(f"Cannot overwrite file {file_path}")
+            raise ValueError(f"Cannot overwrite file: {file_path}")
 
+        # --- Write depending on content type ---
         if isinstance(content, (dict, list)):
             file_path.write_text(json.dumps(content, indent=2))
+
         elif isinstance(content, (bytes, bytearray)):
             mode = "wb" if overwrite else "xb"
             with open(file_path, mode) as f:
                 f.write(content)
+
         else:
+            logger.info("Saving text %s to path %s", content,file_path)
             file_path.write_text(str(content))
 
         return file_path

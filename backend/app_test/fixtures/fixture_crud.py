@@ -11,19 +11,7 @@ from src.api.models import (
 )
 
 
-@pytest.fixture
-def question_payload_full_dict():
-    """Full question payload including topics, qtypes, and languages."""
-    return {
-        "title": "SomeTitle",
-        "ai_generated": True,
-        "isAdaptive": True,
-        "createdBy": "John Doe",
-        "user_id": 1,
-        "topics": ["Topic1", "Topic2"],
-        "qtype": ["Numerical", "Matrix"],
-        "languages": ["Python", "Go", "Rust"],
-    }
+
 
 
 # --- Domain-Specific Payloads ---

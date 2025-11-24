@@ -37,11 +37,14 @@ jobs:
         with:
           python-version: ${{matrix.python-version}}
 
+      
+
       - name: Debug Check Directory
         run: |
           pwd
           mkdir -p secrets
       - name: Decode Firebase credentials
+        working-directory: ./backend
         run: |
           mkdir -p secrets
           echo '${{ secrets.FIREBASE_JSON }}' > ${{vars.FIREBASE_JSON_PATH}}
@@ -53,11 +56,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
 
-        working-directory: ./backend
-
       - name: Install dependencies
         run: poetry install
         working-directory: ./backend
+
+      - name: Show pydantic version
+        run: poetry run python -c "import pydantic; print('Pydantic =', pydantic.__version__)"
+        working-directory: ./backend
+
+
+      
 
       - name: Run Test
         run: |

@@ -1,6 +1,5 @@
 import asyncio
 import io
-import json
 import shutil
 import zipfile
 from pathlib import Path
@@ -11,52 +10,8 @@ from starlette import status
 import mimetypes
 
 from src.api.core import logger
-from src.api.core.config import get_settings
-from src.api.models import SuccessfulResponse
-
-
-settings = get_settings()
-
-
-# Configuration for file size and filetypes
-MAX_FILE_SIZE_MB = 5
-ALLOWED_EXTENSIONS = {
-    # Images
-    ".png",
-    ".jpg",
-    ".jpeg",
-    # Documents
-    ".pdf",
-    ".txt",
-    ".html",
-    ".json",
-    # Code
-    ".py",
-    ".js",
-    ".bin",
-}
-ALLOWED_MIME_TYPES = {
-    "image/png",
-    "image/jpeg",
-    "application/pdf",
-    "text/plain",
-    "text/html",
-    "application/json",
-    "text/x-python",
-    "application/javascript",
-    "application/octet-stream",
-    "text/javascript",
-}
-ALLOWED_ZIP_EXTENSIONS = {"application/zip", "application/x-zip-compressed"}
-ALLOWED_IMAGE_EXTENSIONS = {
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-}
-
-
-class SuccessFileServiceResponse(SuccessfulResponse):
-    path: str | Path
+from src.api.models import SuccessFileServiceResponse, FileData
+from .config import *
 
 
 class FileService:
@@ -116,17 +71,47 @@ class FileService:
     async def convert_to_uploadfile(
         self, path: Union[Path, str, UploadFile]
     ) -> UploadFile:
+        try:
+            if isinstance(path, UploadFile):
+                return path
+            path = Path(path)
+            upload_file = UploadFile(
+                filename=path.name,
+                file=open(path, "rb"),  # important: open in binary mode
+            )
+            await self.validate_file(upload_file)
+            return upload_file
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Could not convert to UploadFile path {path} Error: {e}",
+            )
 
-        if isinstance(path, UploadFile):
-            return path
-
-        path = Path(path)
-        upload_file = UploadFile(
-            filename=path.name,
-            file=open(path, "rb"),  # important: open in binary mode
-        )
-        await self.validate_file(upload_file)
-        return upload_file
+    async def convert_to_filedata(self, path: Union[Path, str, UploadFile]) -> FileData:
+        try:
+            if isinstance(path, UploadFile):
+                await self.validate_file(path)
+                content = await path.read()
+                filename = path.filename or "untitled.txt"
+                mimetype = self.get_content_type(filename)
+                return FileData(filename=filename, content=content, mime_type=mimetype)
+            else:
+                path = Path(path).resolve()
+                if not path.exists() or not path.is_file():
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"The uploaded file {path} either does not exist or is not a file",
+                    )
+                return FileData(
+                    filename=path.name,
+                    content=path.read_text(),
+                    mime_type=self.get_content_type(path.name),
+                )
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Could not convert to filedata. File {path} Error: {e}",
+            )
 
     async def save_files(
         self, files: List[UploadFile], destination: str | Path
@@ -222,62 +207,16 @@ class FileService:
                 detail=f"Could not validate file contents {str(e)}",
             )
 
+    def get_content_type(self, filename: str) -> str:
+        """Return MIME type based on file extension, defaults to octet-stream."""
+        import os
+
+        ext = os.path.splitext(filename)[1].lower()
+        return CONTENT_TYPE_MAPPING.get(ext, "application/octet-stream")
+
 
 def get_file_service() -> FileService:
     return FileService()
 
 
 FileServiceDep = Annotated[FileService, Depends(get_file_service)]
-
-CONTENT_TYPE_MAPPING = {
-    # Text
-    ".txt": "text/plain",
-    ".csv": "text/csv",
-    ".json": "application/json",
-    ".xml": "application/xml",
-    # Web
-    ".html": "text/html",
-    ".htm": "text/html",
-    ".css": "text/css",
-    ".js": "application/javascript",
-    ".ts": "application/typescript",
-    ".jsx": "text/jsx",
-    ".tsx": "text/tsx",
-    # Images
-    ".png": "image/png",
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".gif": "image/gif",
-    ".svg": "image/svg+xml",
-    ".ico": "image/vnd.microsoft.icon",
-    ".webp": "image/webp",
-    # Documents
-    ".pdf": "application/pdf",
-    ".doc": "application/msword",
-    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ".ppt": "application/vnd.ms-powerpoint",
-    ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ".xls": "application/vnd.ms-excel",
-    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    # Code
-    ".py": "text/x-python",
-    ".java": "text/x-java-source",
-    ".c": "text/x-c",
-    ".cpp": "text/x-c++",
-    ".h": "text/x-c",
-    ".hpp": "text/x-c++",
-    # Compressed
-    ".zip": "application/zip",
-    ".tar": "application/x-tar",
-    ".gz": "application/gzip",
-    ".rar": "application/vnd.rar",
-    ".7z": "application/x-7z-compressed",
-}
-
-
-def get_content_type(filename: str) -> str:
-    """Return MIME type based on file extension, defaults to octet-stream."""
-    import os
-
-    ext = os.path.splitext(filename)[1].lower()
-    return CONTENT_TYPE_MAPPING.get(ext, "application/octet-stream")

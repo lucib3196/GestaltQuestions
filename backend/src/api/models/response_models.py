@@ -58,3 +58,7 @@ class UpdateFile(BaseModel):
     question_id: str | UUID
     filename: str
     new_content: str | dict
+
+
+class SuccessFileServiceResponse(SuccessfulResponse):
+    path: str | Path

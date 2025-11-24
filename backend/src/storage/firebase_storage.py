@@ -11,7 +11,7 @@ from google.cloud.storage.blob import Blob
 # --- Local Modules ---
 from src.api.core.logging import logger
 from src.storage.base import StorageService
-from src.api.service.file_service import get_content_type
+from src.api.service.file_service import FileService
 
 
 class FirebaseStorage(StorageService):
@@ -20,11 +20,38 @@ class FirebaseStorage(StorageService):
         self.bucket = storage.bucket(bucket)
         self.base_path = base_path
 
+    def normalize_path(self, target: str | Path) -> str:
+        target_path = Path(target)
+        try:
+            relative_path = target_path.relative_to(self.base_path)
+        except ValueError:
+            # Case 2: Not inside root (likely already relative or external)
+            relative_path = target_path
+        rel_str = relative_path.as_posix()
+        if not rel_str.startswith(f"{self.base_path}/"):
+            rel_str = f"{self.base_path}/{rel_str}"
+        return rel_str
+
     def get_base_path(self) -> str | Path:
         return Path(self.base_path).as_posix()
 
     def get_storage_path(self, target: str | Path | Blob, relative: bool = True) -> str:
-        return (Path(self.base_path) / str(target)).as_posix()
+        """
+        Resolve a storage path inside the base directory.
+
+        - Blob → use blob.name
+        - Path → use only the filename (Path.name)
+        - str  → assume it's a relative filename
+
+        Returns either:
+            • a path relative to base_path (default)
+            • or an absolute filesystem path
+        """
+        # --- Build the full absolute path ---
+        base_path = Path(self.base_path)
+        if isinstance(target, Blob):
+            target = str(target.name)
+        return self.normalize_path(target)
 
     def create_storage_path(self, target: str | Path) -> str:
         target_blob = self.get_storage_path(target)
@@ -33,15 +60,15 @@ class FirebaseStorage(StorageService):
         return str(blob.name)
 
     def does_storage_path_exist(self, target: str | Path) -> bool:
-        target = self.get_storage_path(target)
+        target = self.get_storage_path(target, relative=True)
         blobs = list(self.bucket.list_blobs(prefix=target, max_results=1))
         blob = self.bucket.blob(target)
         if blob.exists():
             return True
         return len(blobs) > 0
 
-    def get_filepath(self, target: str | Path, filename: str | None = None) -> str:
-        target = self.get_storage_path(target)
+    def get_file(self, target: str | Path, filename: str | None = None) -> str:
+        target = self.get_storage_path(target, relative=True)
         if filename:
             target = (Path(target) / filename).as_posix()
         return target
@@ -53,7 +80,7 @@ class FirebaseStorage(StorageService):
         filename: str | None = None,
         content_type: str = "application/octet-stream",
     ) -> Blob:
-        destination_blob = self.get_filepath(target, filename)
+        destination_blob = self.get_file(target, filename)
         blob = self.bucket.blob(destination_blob)
         if isinstance(file_obj, bytes):
             blob.upload_from_string(file_obj, content_type=content_type)
@@ -86,10 +113,10 @@ class FirebaseStorage(StorageService):
         elif not isinstance(content, str):
             raise ValueError(f"Unsupported content type: {type(content)}")
 
-        content_type = get_content_type(filename)
+        content_type = FileService().get_content_type(filename)
         blob.upload_from_string(data=content, content_type=content_type)
 
-        return self.get_filepath(target, filename)
+        return self.get_file(target, filename)
 
     def does_file_exist(self, target_path: str | Path, filename: str | None):
         return self.get_blob(target_path, filename).exists()
@@ -106,12 +133,30 @@ class FirebaseStorage(StorageService):
             blob_name = blob_name.as_posix()
         if not filename:
             return self.bucket.blob(blob_name)
-        return self.bucket.blob(self.get_filepath(blob_name, filename))
+        return self.bucket.blob(self.get_file(blob_name, filename))
 
     def list_files(self, target: str | Path) -> List[str]:
-        target = Path(self.get_storage_path(target)).as_posix()
+        # Always use relative path inside cloud bucket
+        target = Path(self.get_storage_path(target, relative=True)).as_posix()
+
         blobs = self.bucket.list_blobs(prefix=target)
-        return [b.name for b in blobs]
+
+        filenames = []
+        for b in blobs:
+            name = b.name
+
+            # Skip the folder prefix (GCS returns folder entries too)
+            if name.endswith("/"):
+                continue
+            # Skip the acutal folder name
+            if name == target:
+                continue
+
+            # Extract only the filename
+            filename = Path(name).name
+            filenames.append(filename)
+
+        return filenames
 
     def delete_storage(self, target: str | Path) -> None:
         target = Path(self.get_storage_path(target)).as_posix()
@@ -123,7 +168,8 @@ class FirebaseStorage(StorageService):
                 logger.error("Blob not found, nothing to delete.")
         return None
 
-    def delete_file(self, target: str | Path, filename: str) -> None:
+    def delete_file(self, target: str | Path, filename: str | None = None) -> None:
+
         b = self.get_blob(target, filename)
         if b.exists():
             b.delete()
@@ -164,5 +210,5 @@ class FirebaseStorage(StorageService):
         # Delete the original blob
         old_blob.delete()
 
-        print(f"[FirebaseStorage] Renamed {old_path} → {new_path}")
+        logger.info(f"[FirebaseStorage] Renamed {old_path} → {new_path}")
         return str(new_blob.name)

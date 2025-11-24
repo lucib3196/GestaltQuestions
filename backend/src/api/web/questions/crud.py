@@ -4,12 +4,13 @@ from starlette import status
 
 # --- Internal ---
 from src.api.core import logger
-from src.api.service.question.question_manager import QuestionManagerDependency
+from src.api.service.question_manager import QuestionManagerDependency
 from src.api.service.storage_manager import StorageDependency
 from src.api.models.models import Question
 from src.api.models import *
 from src.utils import safe_dir_name
 from src.api.dependencies import StorageTypeDep
+from src.api.service.question_resource import QuestionResourceDepencency
 
 router = APIRouter(
     prefix="/questions",
@@ -21,10 +22,8 @@ router = APIRouter(
 
 @router.post("/")
 async def create_question(
-    qm: QuestionManagerDependency,
-    storage: StorageDependency,
+    qs: QuestionResourceDepencency,
     question: QuestionData,
-    storage_type: StorageTypeDep,
 ) -> Question:
     """
     Create a new question, store it in the database, and initialize its corresponding storage path.
@@ -36,8 +35,8 @@ async def create_question(
        with the correct relative path reference.
 
     Args:
-        qm (QuestionManagerDependency): Manages database interactions for creating and committing the question.
-        storage (StorageDependency): Handles file system or cloud storage initialization for the question.
+        qm (QuestionManagerDependency):
+        storage (StorageDependency):
         question (QuestionData): Input data model containing details of the question to be created.
 
     Returns:
@@ -47,17 +46,7 @@ async def create_question(
         Exception: Propagates any error encountered during creation or storage initialization.
     """
     try:
-        qcreated = await qm.create_question(question)
-        # Handles the directoru creation for the question
-        path_name = safe_dir_name(f"{qcreated.title}_{str(qcreated.id)[:8]}")
-        # Creates the actual path
-        path = storage.create_storage_path(path_name)
-        # Storing the relative path in db
-        relative_path = storage.get_storage_path(path, relative=True)
-        qm.set_question_path(qcreated.id, relative_path, storage_type)
-        # Commit the changes
-        qm.session.commit()
-
+        qcreated = await qs.create_question(question, files=None)
         return qcreated
     except Exception:
         raise
@@ -349,45 +338,3 @@ async def filter_questions(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to filter question {e}")
-
-
-
-
-
-
-# # TODO: Add test
-# @router.post("/download_starter")
-# async def download_starter(qm: QuestionManagerDependency):
-#     try:
-#         data = await qm.download_starter_templates()
-
-#         # Create a new in-memory buffer
-#         buffer = io.BytesIO()
-
-#         # Open a ZipFile to write into that buffer
-#         with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zf:
-#             for folder, bdata in data.items():
-#                 # Ensure bdata is BytesIO or bytes
-#                 if isinstance(bdata, io.BytesIO):
-#                     content = bdata.getvalue()
-#                 else:
-#                     content = bdata
-
-#                 # Write it into the zip archive
-#                 zf.writestr(f"{folder}.zip", content)
-
-#         # Reset pointer so StreamingResponse can read from start
-#         buffer.seek(0)
-
-#         return StreamingResponse(
-#             buffer,
-#             media_type="application/zip",
-#             headers={
-#                 "Content-Disposition": 'attachment; filename="starter_templates.zip"'
-#             },
-#         )
-#     except Exception as e:
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#             detail=f"Could not download starter: {e}",
-#         )
