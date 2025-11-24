@@ -1,24 +1,38 @@
-# --- Third-Party ---
-from fastapi import APIRouter, HTTPException
-from starlette import status
+# -------------------------
+# Standard Library Imports
+# -------------------------
+import asyncio
 import json
 import mimetypes
-from src.utils import encode_image
+from typing import List
+from uuid import UUID
+from pathlib import Path
 
-# --- Internal ---
-from src.api.core import logger
-from src.api.service.question_manager import QuestionManagerDependency
-from src.api.service.storage_manager import StorageDependency
-from src.api.models import *
-from fastapi import UploadFile
-from src.api.service.file_service import FileServiceDep
-from src.api.models.response_models import FileData
-from src.api.dependencies import StorageTypeDep
+# -------------------------
+# Third-Party Imports
+# -------------------------
+from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.responses import Response
-from src.api.service.question_resource import QuestionResourceDepencency
-import asyncio
+from starlette import status
 from pydantic import ValidationError
+
+# -------------------------
+# Internal Project Imports
+# -------------------------
+from src.api.core import logger
+from src.api.dependencies import StorageTypeDep
+from src.api.models import (
+    FileData,
+    QuestionData,
+    SuccessDataResponse,
+    SuccessFileResponse,
+)
 from src.api.models.models import Question
+from src.api.service.file_service import FileServiceDep
+from src.api.service.question_manager import QuestionManagerDependency
+from src.api.service.question_resource import QuestionResourceDepencency
+from src.api.service.storage_manager import StorageDependency
+from src.utils import encode_image
 
 
 router = APIRouter(
@@ -91,8 +105,7 @@ async def create_question_file_upload(
 @router.get("/files/{qid}")
 async def get_question_files(
     qid: str | UUID,
-    qm: QuestionManagerDependency,
-    storage: StorageDependency,
+    qr: QuestionResourceDepencency,
     storage_type: StorageTypeDep,
 ) -> SuccessFileResponse:
     """
@@ -115,13 +128,7 @@ async def get_question_files(
         HTTPException(500): If the filenames cannot be retrieved due to a server error.
     """
     try:
-        question = qm.get_question(qid)
-        question_path = qm.get_question_path(question.id, storage_type)
-        assert question_path
-        files = storage.list_files(question_path)
-        return SuccessFileResponse(
-            status=200, detail="Retrieved files ok", filenames=files
-        )
+        return await qr.get_question_files(qid)
     except HTTPException:
         raise
     except Exception as e:
@@ -346,8 +353,6 @@ async def download_question(
         files = storage.list_filepaths(question_path)
         folder_name = f"{question.title}_download"
 
-        logger.info("These are the files %s", files)
-
         zip_bytes = await fm.download_zip(files=files, folder_name=folder_name)
 
         return Response(
@@ -372,7 +377,7 @@ async def upload_files_to_question(
     fm: FileServiceDep,
     qr: QuestionResourceDepencency,
     auto_handle_images: bool = True,
-):
+) -> dict:
     """
     Upload one or more files associated with a question.
 

@@ -1,7 +1,6 @@
 from functools import lru_cache
 from typing import Annotated, Dict, List, Optional
 from pathlib import Path
-import asyncio
 from uuid import UUID
 
 # --- Third-Party ---
@@ -17,7 +16,7 @@ from src.api.models.response_models import FileData
 from src.api.service.question_manager import QuestionManager, QuestionManagerDependency
 from src.api.service.storage_manager import StorageDependency, StorageService
 from src.utils import safe_dir_name
-
+from src.api.models.response_models import FileData, SuccessFileResponse
 
 client_file_extensions = {
     ".png",
@@ -174,6 +173,14 @@ class QuestionResourceService:
             "detail": f"Uploaded {len(files)} files",
             "files": uploaded_all,
         }
+
+    async def get_question_files(self, question_id: str | UUID):
+        question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+        assert question_path
+        files = self.storage_manager.list_files(question_path)
+        return SuccessFileResponse(
+            status=200, detail="Retrieved files ok", filenames=files
+        )
 
 
 @lru_cache
