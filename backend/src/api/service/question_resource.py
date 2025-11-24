@@ -69,7 +69,7 @@ class QuestionResourceService:
             Exception: Propagates any error encountered during creation or storage initialization.
         """
          # --- Step 0: Validate input ---
-        question_data = QuestionData.model_validate(question_data, extra="ignore")
+        question_data = QuestionData.model_validate(question_data,)
         logger.info(f"[QuestionResourceService] Creating '{question_data.title}'")
 
         # --- Step 1: Create DB record ---
