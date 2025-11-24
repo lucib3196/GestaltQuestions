@@ -69,7 +69,7 @@ class FirebaseStorage(StorageService):
         return str(blob.name)
 
     def does_storage_path_exist(self, target: str | Path) -> bool:
-        target = self.get_storage_path(target)
+        target = self.get_storage_path(target,relative=False)
         blobs = list(self.bucket.list_blobs(prefix=target, max_results=1))
         blob = self.bucket.blob(target)
         if blob.exists():

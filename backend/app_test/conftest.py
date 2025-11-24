@@ -25,7 +25,7 @@ from src.api.service.question_resource import (
     QuestionResourceService,
     get_question_resource,
 )
-
+from src.api.dependencies import get_storage_type
 settings = get_settings()
 initialize_firebase_app()
 
@@ -163,6 +163,7 @@ def api_client(
     question_manager,
     question_resource,
     active_storage_backend,
+    storage_mode
 ):
     """
     Provides a FastAPI TestClient with dependency overrides for DB, storage,
@@ -183,11 +184,15 @@ def api_client(
 
     async def override_get_storage():
         yield active_storage_backend
+        
+    async def override_storage_mode():
+        yield storage_mode
 
     app.dependency_overrides[get_session] = override_get_db
     app.dependency_overrides[get_question_manager] = override_get_question_manager
     app.dependency_overrides[get_question_resource] = override_get_question_resource
     app.dependency_overrides[get_storage_manager] = override_get_storage
+    app.dependency_overrides[get_storage_type] = override_storage_mode
 
     # --- Start test client ---
     with TestClient(app, raise_server_exceptions=True) as client:

@@ -21,7 +21,7 @@ async def test_create_question_with_files(
 async def test_handle_question_files(
     question_resource, question_file_payload, tmp_path
 ):
-    storage_path = tmp_path / "qs_test"
+    storage_path = "qs_test"
     data = await question_resource.handle_question_files(
         question_file_payload, storage_path, True
     )

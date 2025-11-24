@@ -111,9 +111,12 @@ def test_qet_all_questions(api_client, create_multiple_question_responses):
 
 def test_get_all_questions_metadata(api_client, create_question_and_return_question):
     question_id = create_question_and_return_question.id
+    logger.info("This is teh question id %s", question_id)
     response = api_client.get(f"/questions/{question_id}/all_data")
-    assert response.status_code == 200
     question_data = response.json()
+    logger.info("This is the response from the get all %s", question_data)
+    assert response.status_code == 200
+    
     assert QuestionMeta.model_validate(question_data)
 
 

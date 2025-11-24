@@ -159,7 +159,7 @@ class QuestionManager:
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Could not retreive question {e}",
+                detail=f"Could not retrieve question path {e}",
             )
 
     def set_question_path(
