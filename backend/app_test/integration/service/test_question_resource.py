@@ -23,7 +23,7 @@ async def test_handle_question_files(question_resource, question_file_payload):
     data = await question_resource.handle_question_files(
         question_file_payload, storage_path, True
     )
-    # No Images passed in
+    # No Images passed inn
     assert data["client_files"] == []
     assert len(data["other_files"]) == len(question_file_payload)
 
