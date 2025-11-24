@@ -51,7 +51,7 @@ class QuestionResourceService:
 
     async def create_question(
         self,
-        question_data: QuestionData,
+        question_data: QuestionData | dict,
         files: Optional[List[FileData]] = None,
         handle_images: bool = True,
     ) -> Question:
@@ -69,7 +69,8 @@ class QuestionResourceService:
         Raises:
             Exception: Propagates any error encountered during creation or storage initialization.
         """
-
+        # Validate the model first
+        question_data = QuestionData.model_validate(question_data, extra="ignore")
         logger.info(
             f"[QuestionResourceService] Starting creation for '{question_data.title}'"
         )
@@ -81,9 +82,10 @@ class QuestionResourceService:
         # Step 2: Prepare storage directories
         path_name = safe_dir_name(f"{qcreated.title}_{str(qcreated.id)[:8]}")
         path = self.storage_manager.create_storage_path(path_name)
+
         relative_path = self.storage_manager.get_storage_path(path, relative=True)
         abs_path = self.storage_manager.get_storage_path(path, relative=False)
-        logger.debug(f"[QuestionResourceService] Storage paths ready: {abs_path}")
+        logger.info(f"[QuestionResourceService] Storage paths ready: {abs_path}")
 
         # Step 3: Update DB with storage reference
         self.qm.set_question_path(qcreated.id, relative_path, self.storage_type)  # type: ignore
@@ -121,56 +123,57 @@ class QuestionResourceService:
         storage_path: str | Path,
         auto_handle_images: bool = True,
     ) -> Dict:
-        image_and_doc_files: List[FileData] = []
-        other_files: List[FileData] = []
+
+        storage_path = Path(storage_path)
+        client_files_dir = storage_path / self.client_path
+
+        # Ensure base directories exist
+        storage_path.mkdir(parents=True, exist_ok=True)
+        client_files_dir.mkdir(parents=True, exist_ok=True)
+
+        # Split files into client (images/docs) vs others
+        client_files = []
+        other_files = []
+
         for f in files:
-            # Validates that the file has a filename
             if not f.filename:
                 raise HTTPException(
                     status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                    detail="File must have a filename ",
+                    detail="File must have a filename",
                 )
-            # Check the extension
-            ext = Path(f.filename).suffix.lower()
-            if ext in client_file_extensions:
-                image_and_doc_files.append(f)
-            else:
-                other_files.append(f)
-        # Define destination paths
-        client_files_dir = (Path(storage_path) / self.client_path).resolve()
 
-        # Upload files based on handling strategy
+            ext = Path(f.filename).suffix.lower()
+            (client_files if ext in client_file_extensions else other_files).append(f)
+
+        # Helper to write a batch of files
+        def save_batch(target_dir: Path, batch: List[FileData]):
+            return [
+                self.storage_manager.save_file(
+                    target_dir, f.filename, content=f.content
+                )
+                for f in batch
+            ]
+
+        # Auto mode → split outputs
         if auto_handle_images:
-            uploaded_client_files = [
-                self.storage_manager.save_file(
-                    client_files_dir, f.filename, content=f.content
-                )
-                for f in image_and_doc_files
-            ]
-            uploaded_other_files = [
-                self.storage_manager.save_file(
-                    client_files_dir, f.filename, content=f.content
-                )
-                for f in other_files
-            ]
+            uploaded_client = save_batch(client_files_dir, client_files)
+            uploaded_other = save_batch(storage_path, other_files)
+
             return {
                 "status": "ok",
                 "detail": f"Uploaded {len(files)} files",
-                "client_files": uploaded_client_files,
-                "other_files": uploaded_other_files,
+                "client_files": uploaded_client,
+                "other_files": uploaded_other,
             }
-        else:
-            uploaded_files = [
-                self.storage_manager.save_file(
-                    storage_path, f.filename, content=f.content
-                )
-                for f in files
-            ]
-            return {
-                "status": "ok",
-                "detail": f"Uploaded {len(files)} files",
-                "files": uploaded_files,
-            }
+
+        # Non-auto → all go to same folder
+        uploaded_all = save_batch(storage_path, files)
+
+        return {
+            "status": "ok",
+            "detail": f"Uploaded {len(files)} files",
+            "files": uploaded_all,
+        }
 
 
 @lru_cache

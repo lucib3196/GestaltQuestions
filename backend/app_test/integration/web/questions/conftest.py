@@ -45,15 +45,15 @@ def question_payload_fluids():
 
 
 @pytest.fixture
-def create_question_web(test_client, question_payload):
+def create_question_web(api_client, question_payload):
     """POST a minimal valid question payload to /questions/."""
-    return test_client.post("/questions/", json=question_payload)
+    return api_client.post("/questions/", json=question_payload)
 
 
 @pytest.fixture
-def create_question_bad_payload_response(test_client, qpayload_bad):
+def create_question_bad_payload_response(api_client, qpayload_bad):
     """POST an invalid question payload to /questions/."""
-    return test_client.post("/questions/", json=qpayload_bad)
+    return api_client.post("/questions/", json=qpayload_bad)
 
 
 @pytest.fixture

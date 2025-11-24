@@ -20,11 +20,30 @@ class FirebaseStorage(StorageService):
         self.bucket = storage.bucket(bucket)
         self.base_path = base_path
 
+    def normalize_path(self, target: str | Path) -> str:
+        target_path = Path(target)
+        try:
+            relative_path = target_path.relative_to(self.base_path)
+        except ValueError:
+            # Case 2: Not inside root (likely already relative or external)
+            relative_path = target_path
+        rel_str = relative_path.as_posix()
+        if not rel_str.startswith(f"{self.base_path}/"):
+            rel_str = f"{self.base_path}/{rel_str}"
+        return rel_str
+
     def get_base_path(self) -> str | Path:
         return Path(self.base_path).as_posix()
 
     def get_storage_path(self, target: str | Path | Blob, relative: bool = True) -> str:
-        return (Path(self.base_path) / str(target)).as_posix()
+        if isinstance(target, Blob):
+            target = str(target.name)
+        target = self.normalize_path(target)
+        absolute_path = Path(self.base_path) / str(target)
+        if relative:
+            return absolute_path.relative_to(self.base_path).as_posix()
+        return absolute_path.as_posix()
+
 
     def create_storage_path(self, target: str | Path) -> str:
         target_blob = self.get_storage_path(target)

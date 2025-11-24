@@ -5,7 +5,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlmodel import Session, create_engine
-
+from app_test.fixtures.fixture_crud import *
 from src.api.core import logger, in_test_ctx
 from src.api.core.config import get_settings
 from src.api.database.database import Base, get_session
@@ -21,7 +21,10 @@ from src.api.service.storage_manager import (
 from src.firebase.core import initialize_firebase_app
 from src.storage.firebase_storage import FirebaseStorage
 from src.storage.local_storage import LocalStorageService
-
+from src.api.service.question_resource import (
+    QuestionResourceService,
+    get_question_resource,
+)
 
 settings = get_settings()
 initialize_firebase_app()
@@ -67,15 +70,6 @@ def _clean_db(db_session, test_engine):
 
 
 # -----------------------------
-# Question Manager Fixture
-# -----------------------------
-@pytest.fixture(scope="function")
-def question_manager(db_session):
-    """Provide a QuestionManager instance for database operations."""
-    return QuestionManager(db_session)
-
-
-# -----------------------------
 # Storage Fixtures
 # -----------------------------
 @pytest.fixture(scope="function")
@@ -104,7 +98,7 @@ def local_storage(tmp_path):
 # API Fixtures
 # =========================================
 @pytest.fixture(scope="session")
-def test_app():
+def app_instance():
     """Create the FastAPI app once for all tests."""
     app = get_application()
     app.router.lifespan_context = on_startup_test
@@ -113,51 +107,92 @@ def test_app():
 
 @pytest.fixture(scope="function", params=["local", "cloud"])
 def storage_mode(request):
-    """Single shared parameter controlling local/cloud mode."""
+    """
+    Controls whether tests run against local or cloud-backed storage.
+    """
     return request.param
 
 
 @pytest.fixture(scope="function")
-def get_storage_service(storage_mode, cloud_storage_service, local_storage):
-    """Select either cloud or local storage for parameterized tests."""
+def active_storage_backend(storage_mode, cloud_storage_service, local_storage):
+    """
+    Selects the correct storage backend for a test run.
+    """
     if storage_mode == "cloud":
         return cloud_storage_service
-    elif storage_mode == "local":
+    if storage_mode == "local":
         return local_storage
     raise ValueError(f"Invalid storage type: {storage_mode}")
 
 
+@pytest.fixture(scope="function")
+def question_manager(db_session):
+    """
+    Provides a fresh QuestionManager for each test.
+    """
+    return QuestionManager(db_session)
 
 
 @pytest.fixture(scope="function")
-def test_client(
-    db_session,
-    get_storage_service,
+def question_resource(
     storage_mode,
+    cloud_storage_service,
+    local_storage,
+    question_manager,
 ):
     """
-    Provide a configured FastAPI TestClient with overridden dependencies
-    for both local and cloud storage modes.
+    Provides a configured QuestionResourceService based on the active storage backend.
+    """
+    if storage_mode == "cloud":
+        storage = cloud_storage_service
+    elif storage_mode == "local":
+        storage = local_storage
+    else:
+        raise ValueError(f"Invalid storage type: {storage_mode}")
+
+    return QuestionResourceService(
+        question_manager,
+        storage,
+        storage_mode,
+    )
+
+
+@pytest.fixture(scope="function")
+def api_client(
+    db_session,
+    question_manager,
+    question_resource,
+    active_storage_backend,
+):
+    """
+    Provides a FastAPI TestClient with dependency overrides for DB, storage,
+    question manager, and resource service.
     """
     app = get_application()
     app.router.lifespan_context = on_startup_test
-    # patch_app_settings # type: ignore
 
+    # --- Dependency overrides ---
     def override_get_db():
         yield db_session
 
-    async def override_qm():
-        yield QuestionManager(db_session)
+    async def override_get_question_manager():
+        yield question_manager
 
-    async def override_storage():
-        yield get_storage_service
+    async def override_get_question_resource():
+        yield question_resource
+
+    async def override_get_storage():
+        yield active_storage_backend
 
     app.dependency_overrides[get_session] = override_get_db
-    app.dependency_overrides[get_question_manager] = override_qm
-    app.dependency_overrides[get_storage_manager] = override_storage
+    app.dependency_overrides[get_question_manager] = override_get_question_manager
+    app.dependency_overrides[get_question_resource] = override_get_question_resource
+    app.dependency_overrides[get_storage_manager] = override_get_storage
 
+    # --- Start test client ---
     with TestClient(app, raise_server_exceptions=True) as client:
         yield client
+
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -193,7 +228,18 @@ def mark_logs_in_test():
     in_test_ctx.reset(token)
 
 
-from app_test.fixtures.fixture_crud import *
+@pytest.fixture
+def question_payload_full_dict():
+    """Full question payload including topics, qtypes, and languages."""
+    return {
+        "title": "SomeTitle",
+        "ai_generated": True,
+        "isAdaptive": True,
+        "createdBy": "John Doe",
+        "topics": ["Topic1", "Topic2"],
+        "qtype": ["Numerical", "Matrix"],
+        "languages": ["Python", "Go", "Rust"],
+    }
 
 
 @pytest.fixture
