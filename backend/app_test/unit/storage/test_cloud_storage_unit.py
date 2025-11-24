@@ -71,13 +71,12 @@ def test_get_base_name(cloud_storage_service):
 
 def test_get_storage_path_relative(cloud_storage_service):
     name = "TestFolder"
-    expected = name
+    expected = (Path("integration_test") / name).as_posix()
     assert cloud_storage_service.get_storage_path(name,relative=True) == expected
 
 def test_get_storage_path_absolute(cloud_storage_service):
     name = "TestFolder"
     expected = (Path("integration_test") / name).as_posix()
-    
     assert cloud_storage_service.get_storage_path(name,relative=False) == expected
 
 def test_create_storage_path(cloud_storage_service, save_test_question, file_data):
@@ -112,7 +111,7 @@ def test_get_filepath(cloud_storage_service, save_test_question, file_data):
     expected = (
         Path(file_data["base"]) / file_data["identifier"] / file_data["filename"]
     ).as_posix()
-    result = cloud_storage_service.get_filepath(
+    result = cloud_storage_service.get_file(
         file_data["identifier"], file_data["filename"]
     )
     assert Path(result) == Path(expected)
