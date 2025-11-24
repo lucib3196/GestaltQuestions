@@ -156,6 +156,7 @@ class LocalStorageService(StorageService):
         if filename:
             path = Path(self.get_storage_path(target, relative=False)) / filename
             return path.as_posix()
+
         else:
             return self.get_storage_path(target)
 
@@ -181,8 +182,9 @@ class LocalStorageService(StorageService):
         Returns:
             bytes | None: File contents if found, otherwise None.
         """
-        target = Path(self.get_file(target, filename))
-
+        target = Path(self.get_filepath(target, filename))
+        
+        logger.info("Reading file %s", target)
         if target.exists() and target.is_file():
             return target.read_bytes()
         return None
@@ -228,6 +230,7 @@ class LocalStorageService(StorageService):
                 f.write(content)
 
         else:
+            logger.info("Saving text %s to path %s", content,file_path)
             file_path.write_text(str(content))
 
         return file_path

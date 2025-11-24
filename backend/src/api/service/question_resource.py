@@ -16,7 +16,12 @@ from src.api.models.response_models import FileData
 from src.api.service.question_manager import QuestionManager, QuestionManagerDependency
 from src.api.service.storage_manager import StorageDependency, StorageService
 from src.utils import safe_dir_name
-from src.api.models.response_models import FileData, SuccessFileResponse
+from src.api.models.response_models import (
+    FileData,
+    SuccessFileResponse,
+    SuccessDataResponse,
+)
+from .file_service import FileService
 
 client_file_extensions = {
     ".png",
@@ -68,8 +73,10 @@ class QuestionResourceService:
         Raises:
             Exception: Propagates any error encountered during creation or storage initialization.
         """
-         # --- Step 0: Validate input ---
-        question_data = QuestionData.model_validate(question_data,)
+        # --- Step 0: Validate input ---
+        question_data = QuestionData.model_validate(
+            question_data,
+        )
         logger.info(f"[QuestionResourceService] Creating '{question_data.title}'")
 
         # --- Step 1: Create DB record ---
@@ -180,22 +187,35 @@ class QuestionResourceService:
     async def get_question_files(self, question_id: str | UUID):
         question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
         assert question_path
-        print("This is the question path to get the files from", question_path)
         files = self.storage_manager.list_files(question_path)
         return SuccessFileResponse(
             status=200, detail="Retrieved files ok", filenames=files
         )
-        
-    async def get_question_file(self,question_id: str|UUID, filename: str):
+
+    async def get_question_file(self, question_id: str | UUID, filename: str):
         question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
         assert question_path
-        file = self.storage_manager.get_file(question_path,filename)
+        if await FileService().is_image(filename):
+            filepath = Path(question_path) / self.client_path / filename
+        else:
+            filepath = Path(question_path) / filename
+        file = self.storage_manager.get_file(filepath)
+        # Check if it exist
         return file
-        
-        
-    async def delete_file(self, filename:str):
-        pass
-        
+
+    async def delete_file(self, qid: str | UUID, filename: str):
+        file = await self.get_question_file(qid, filename)
+        self.storage_manager.delete_file(file)
+        return SuccessDataResponse(status=200, detail="Deleted file ok")
+
+    async def read_file(self, qid: str | UUID, filename: str):
+        file = await self.get_question_file(qid, filename)
+        data = self.storage_manager.read_file(file)
+        if data:
+            data = data.decode("utf-8")
+        return SuccessDataResponse(
+            status=status.HTTP_200_OK, detail=f"Read file {filename} success", data=data
+        )
 
 
 @lru_cache

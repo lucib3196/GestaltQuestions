@@ -98,7 +98,8 @@ async def create_question_file_upload(
         raise HTTPException(
             status_code=500, detail=f"Failed to create question {e} from uploaded files"
         )
-        
+
+
 # --------------------------
 # ---------Retrieving--------
 # --------------------------
@@ -116,12 +117,7 @@ async def get_question_files(
     This endpoint locates the question by its unique identifier (UUID or string ID),
     determines the corresponding storage directory, and returns the filenames
     of all available files within that question’s folder.
-
-    Args:
-        qid (str | UUID): The unique identifier of the question.
-        qm (QuestionManagerDependency): Dependency that manages question retrieval.
-        storage (StorageDependency): Dependency that handles file storage operations.
-
+    
     Returns:
         SuccessFileResponse: A response containing a list of filenames related to the question.
 
@@ -139,44 +135,18 @@ async def get_question_files(
             detail=f"Could not retrieve file names: {e}",
         )
 
-@router.delete("/files/{qid}/{filename}")
-async def delete_file(
-    qid: str | UUID,
-    filename: str,
-    qm: QuestionManagerDependency,
-    storage: StorageDependency,
-    storage_type: StorageTypeDep,
-    fm: FileServiceDep,
-):
-    try:
-        question = qm.get_question(qid)
-        question_path = Path(qm.get_question_path(question.id, storage_type))
-        logger.debug(f"The question path is {question_path}")
-        if await fm.is_image(filename):
-            filepath = question_path / CLIENT_FILE_DIR / filename
-        else:
-            filepath = question_path / filename
 
-        resolved_filepath = storage.get_storage_path(filepath, relative=False)
-        logger.info("Deleting the resolved file %s", resolved_filepath)
-        storage.delete_file(resolved_filepath)
-        return SuccessDataResponse(status=200, detail="Deleted file ok")
+@router.delete("/files/{qid}/{filename}")
+async def delete_file(qid: str | UUID, filename: str, qr: QuestionResourceDepencency):
+    try:
+        return await qr.delete_file(qid, filename)
     except HTTPException:
         raise
 
 
-
-
-
-
-
 @router.get("/files/{qid}/{filename}")
 async def read_question_file(
-    qid: str | UUID,
-    filename: str,
-    qm: QuestionManagerDependency,
-    storage: StorageDependency,
-    storage_type: StorageTypeDep,
+    qid: str | UUID, filename: str, qr: QuestionResourceDepencency
 ) -> SuccessDataResponse:
     """
     Read the contents of a specific file associated with a given question.
@@ -184,11 +154,6 @@ async def read_question_file(
     This endpoint retrieves a single file from the question's storage path and
     decodes its contents into a UTF-8 string before returning it in the response.
 
-    Args:
-        qid (str | UUID): The unique identifier of the question.
-        filename (str): The name of the file to retrieve.
-        qm (QuestionManagerDependency): Dependency that manages question retrieval.
-        storage (StorageDependency): Dependency that handles file storage operations.
 
     Returns:
         SuccessDataResponse: A response containing the decoded file contents.
@@ -198,14 +163,7 @@ async def read_question_file(
         HTTPException(500): If the file cannot be read or decoded due to a server error.
     """
     try:
-        question = qm.get_question(qid)
-        question_path = qm.get_question_path(question.id, storage_type)
-        data = storage.read_file(question_path, filename)
-        if data:
-            data = data.decode("utf-8")
-        return SuccessDataResponse(
-            status=status.HTTP_200_OK, detail=f"Read file {filename} success", data=data
-        )
+       return await qr.read_file(qid, filename)
     except HTTPException:
         raise
     except Exception as e:

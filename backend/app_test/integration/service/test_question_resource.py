@@ -1,5 +1,5 @@
 import pytest
-
+import json
 
 @pytest.mark.asyncio
 async def test_create_question(question_resource, question_payload_full_dict):
@@ -37,7 +37,6 @@ async def test_get_question_files(
     )
 
     response = await question_resource.get_question_files(qcreated.id)
-    print("This is the response", response)
     assert response
     assert len(response.filenames) == len(question_file_payload)
 
@@ -52,3 +51,35 @@ async def test_get_question_file(
     for f in question_file_payload:
         retrieved = await question_resource.get_question_file(qcreated.id, f.filename)
         assert retrieved
+
+
+
+@pytest.mark.asyncio
+async def test_delete_file(
+    question_resource, question_payload_full_dict, question_file_payload
+):
+    qcreated = await question_resource.create_question(
+        question_payload_full_dict, files=question_file_payload
+    )
+    for f in question_file_payload:
+        await question_resource.delete_file(qcreated.id, f.filename)
+        data = await question_resource.read_file(qcreated.id,f.filename)
+        assert data.data is None
+
+
+@pytest.mark.asyncio
+async def test_read_file(question_resource, question_payload_full_dict, question_file_payload):
+    qcreated = await question_resource.create_question(
+        question_payload_full_dict, files=question_file_payload
+    )
+
+    for f in question_file_payload:
+        data = await question_resource.read_file(qcreated.id, f.filename)
+        returned = data.data
+        print("This is the response data", data)
+        # If it is a JSON file, parse response before comparing
+        if f.filename.endswith(".json"):
+            assert json.loads(returned) == f.content
+        else:
+            # All other file types compared as strings
+            assert returned == f.content
