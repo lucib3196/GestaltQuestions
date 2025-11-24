@@ -76,7 +76,7 @@ class FirebaseStorage(StorageService):
             return True
         return len(blobs) > 0
 
-    def get_filepath(self, target: str | Path, filename: str | None = None) -> str:
+    def get_file(self, target: str | Path, filename: str | None = None) -> str:
         target = self.get_storage_path(target, relative=False)
         if filename:
             target = (Path(target) / filename).as_posix()
@@ -89,7 +89,7 @@ class FirebaseStorage(StorageService):
         filename: str | None = None,
         content_type: str = "application/octet-stream",
     ) -> Blob:
-        destination_blob = self.get_filepath(target, filename)
+        destination_blob = self.get_file(target, filename)
         blob = self.bucket.blob(destination_blob)
         if isinstance(file_obj, bytes):
             blob.upload_from_string(file_obj, content_type=content_type)
@@ -125,7 +125,7 @@ class FirebaseStorage(StorageService):
         content_type = FileService().get_content_type(filename)
         blob.upload_from_string(data=content, content_type=content_type)
 
-        return self.get_filepath(target, filename)
+        return self.get_file(target, filename)
 
     def does_file_exist(self, target_path: str | Path, filename: str | None):
         return self.get_blob(target_path, filename).exists()
@@ -142,12 +142,13 @@ class FirebaseStorage(StorageService):
             blob_name = blob_name.as_posix()
         if not filename:
             return self.bucket.blob(blob_name)
-        return self.bucket.blob(self.get_filepath(blob_name, filename))
+        return self.bucket.blob(self.get_file(blob_name, filename))
 
     def list_files(self, target: str | Path) -> List[str]:
         target = Path(self.get_storage_path(target)).as_posix()
         blobs = self.bucket.list_blobs(prefix=target)
         return [b.name for b in blobs]
+    
 
     def delete_storage(self, target: str | Path) -> None:
         target = Path(self.get_storage_path(target)).as_posix()

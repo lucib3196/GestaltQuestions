@@ -100,6 +100,10 @@ async def create_question_file_upload(
         raise HTTPException(
             status_code=500, detail=f"Failed to create question {e} from uploaded files"
         )
+        
+# --------------------------
+# ---------Retrieving--------
+# --------------------------
 
 
 @router.get("/files/{qid}")
@@ -138,6 +142,22 @@ async def get_question_files(
         )
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @router.delete("/files/{qid}/{filename}")
 async def delete_file(
     qid: str | UUID,
@@ -162,6 +182,11 @@ async def delete_file(
         return SuccessDataResponse(status=200, detail="Deleted file ok")
     except HTTPException:
         raise
+
+
+
+
+
 
 
 @router.get("/files/{qid}/{filename}")

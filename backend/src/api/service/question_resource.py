@@ -126,10 +126,6 @@ class QuestionResourceService:
         storage_path = Path(storage_path)
         client_files_dir = storage_path / self.client_path
 
-        # Ensure base directories exist
-        storage_path.mkdir(parents=True, exist_ok=True)
-        client_files_dir.mkdir(parents=True, exist_ok=True)
-
         # Split files into client (images/docs) vs others
         client_files = []
         other_files = []
@@ -181,6 +177,17 @@ class QuestionResourceService:
         return SuccessFileResponse(
             status=200, detail="Retrieved files ok", filenames=files
         )
+        
+    async def get_question_file(self,question_id: str|UUID, filename: str):
+        question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+        assert question_path
+        file = self.storage_manager.get_file(question_path,filename)
+        return file
+        
+        
+    async def delete_file(self, filename:str):
+        pass
+        
 
 
 @lru_cache
