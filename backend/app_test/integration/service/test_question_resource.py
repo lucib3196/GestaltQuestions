@@ -36,9 +36,10 @@ async def test_get_question_files(
         question_payload_full_dict, files=question_file_payload
     )
 
-    files = await question_resource.get_question_files(qcreated.id)
-    assert files
-    assert len(files.filenames) == len(question_file_payload)
+    response = await question_resource.get_question_files(qcreated.id)
+    print("This is the response", response)
+    assert response
+    assert len(response.filenames) == len(question_file_payload)
 
 
 @pytest.mark.asyncio
@@ -50,5 +51,4 @@ async def test_get_question_file(
     )
     for f in question_file_payload:
         retrieved = await question_resource.get_question_file(qcreated.id, f.filename)
-        print("This is the retrieved", retrieved)
         assert retrieved

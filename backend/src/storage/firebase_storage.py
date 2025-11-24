@@ -47,29 +47,20 @@ class FirebaseStorage(StorageService):
             • a path relative to base_path (default)
             • or an absolute filesystem path
         """
-        # --- Normalize target to a filename ---
-        if isinstance(target, Blob):
-            filename = target.name
-        elif isinstance(target, Path):
-            filename = target.name
-        else:
-            filename = str(target)
-        assert filename
         # --- Build the full absolute path ---
-        absolute_path = Path(self.base_path) / (filename or "")
-        # --- Return relative or absolute ---
-        if relative:
-            return filename  # always relative to base_path
-        return absolute_path.as_posix()
+        base_path = Path(self.base_path)
+        if isinstance(target, Blob):
+            target = str(target.name)
+        return self.normalize_path(target)
 
     def create_storage_path(self, target: str | Path) -> str:
-        target_blob = self.get_storage_path(target, relative=False)
+        target_blob = self.get_storage_path(target)
         blob: Blob = self.bucket.blob(target_blob)
         blob.upload_from_string("")
         return str(blob.name)
 
     def does_storage_path_exist(self, target: str | Path) -> bool:
-        target = self.get_storage_path(target,relative=False)
+        target = self.get_storage_path(target, relative=True)
         blobs = list(self.bucket.list_blobs(prefix=target, max_results=1))
         blob = self.bucket.blob(target)
         if blob.exists():
@@ -77,7 +68,7 @@ class FirebaseStorage(StorageService):
         return len(blobs) > 0
 
     def get_file(self, target: str | Path, filename: str | None = None) -> str:
-        target = self.get_storage_path(target, relative=False)
+        target = self.get_storage_path(target, relative=True)
         if filename:
             target = (Path(target) / filename).as_posix()
         return target
@@ -145,10 +136,27 @@ class FirebaseStorage(StorageService):
         return self.bucket.blob(self.get_file(blob_name, filename))
 
     def list_files(self, target: str | Path) -> List[str]:
-        target = Path(self.get_storage_path(target)).as_posix()
+        # Always use relative path inside cloud bucket
+        target = Path(self.get_storage_path(target, relative=True)).as_posix()
+
         blobs = self.bucket.list_blobs(prefix=target)
-        return [b.name for b in blobs]
-    
+
+        filenames = []
+        for b in blobs:
+            name = b.name
+
+            # Skip the folder prefix (GCS returns folder entries too)
+            if name.endswith("/"):
+                continue
+            # Skip the acutal folder name
+            if name == target:
+                continue
+
+            # Extract only the filename
+            filename = Path(name).name
+            filenames.append(filename)
+
+        return filenames
 
     def delete_storage(self, target: str | Path) -> None:
         target = Path(self.get_storage_path(target)).as_posix()

@@ -68,7 +68,6 @@ async def create_question_file_upload(
             # Read and decode the uploaded file
             raw = await qdata_file.read()
             json_data = json.loads(raw.decode("utf-8"))
-
             # Validate using Pydantic, ignoring extra fields
             qdata = QuestionData.model_validate(json_data, from_attributes=False)
         else:
@@ -86,7 +85,6 @@ async def create_question_file_upload(
                     "was provided. Cannot continue."
                 ),
             )
-
         # Otherwise fall back to provided question_data
         qdata = question_data
     try:
@@ -140,23 +138,6 @@ async def get_question_files(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Could not retrieve file names: {e}",
         )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @router.delete("/files/{qid}/{filename}")
 async def delete_file(
