@@ -1,5 +1,6 @@
 import { MdDriveFolderUpload } from "react-icons/md";
-
+import { useState, type FormEvent } from "react";
+import api from "../../api/client";
 type UploadFilesProp = {
     onFilesSelected: (files: File[]) => void;
 };
@@ -45,4 +46,23 @@ export default function UploadFiles({ onFilesSelected }: UploadFilesProp) {
             />
         </div>
     );
+}
+
+
+export function UploadZip() {
+    const [zip, setZip] = useState(null)
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault()
+
+        if (!zip) return;
+
+        const formData = new FormData()
+        formData.append("zip", zip);
+
+        const res = await api.post("")
+
+
+
+    }
 }

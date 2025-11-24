@@ -51,7 +51,7 @@ def save_test_question(cloud_storage_service, file_data) -> Path:
 def test_firebase_initialization(cloud_storage_service):
     """Ensure the Firebase service is properly initialized."""
     assert cloud_storage_service
-    assert cloud_storage_service.base_path == "integration_test"
+    assert cloud_storage_service.base == "integration_test"
 
 
 def test_get_base_path(cloud_storage_service):

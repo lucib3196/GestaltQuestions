@@ -38,12 +38,12 @@ def test_initialization(local_storage, tmp_path):
     assert local_storage.get_base_path() == (tmp_path / "questions").as_posix()
 
 
-def test_normalize_path(local_storage):
+def test_get_relative_to_base(local_storage):
     question_expected = "questions/ValidQuestion"
-    assert local_storage.normalize_path(question_expected) == question_expected
+    assert local_storage.get_relative_to_base(question_expected) == question_expected
 
     question_wrong = "ValidQuestion"
-    assert local_storage.normalize_path(question_wrong) == question_expected
+    assert local_storage.get_relative_to_base(question_wrong) == question_expected
 
 
 # =============================================================================

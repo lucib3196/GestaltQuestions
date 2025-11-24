@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Optional, List, IO
 from google.cloud.storage.blob import Blob
+from src.api.core import logger
 
 
 class StorageService:
@@ -12,27 +13,55 @@ class StorageService:
     (e.g., local filesystem, cloud bucket, or hybrid configuration).
     """
 
+    def __init__(self, root_path: str | Path, base: str, create:bool):
+        """
+        Initialize the storage backend.
+
+        Args:
+            root_path: The absolute root directory or root URI.
+            base_path: The base directory or bucket prefix for this resource.
+        """
+
     # -------------------------------------------------------------------------
     # Base path and metadata
     # -------------------------------------------------------------------------
-    def get_base_path(self) -> str | Path:
-        """Return the absolute path (or URI) to the base storage directory or bucket."""
+    def get_base_path(self) -> str:
+        """
+        Return the base storage path or bucket name used for all resource-specific
+        subdirectories.
+
+        This typically represents the folder or prefix under which an individual
+        resource (e.g., a question, module, or file group) will store its files.
+
+        Must be implemented by subclasses.
+        """
         raise NotImplementedError("get_base_path must be implemented by subclass")
 
-    def get_root_path(self) -> str | Path:
-        """Return the absolute path (or URI) to the base storage directory or bucket."""
-        raise NotImplementedError("get_base_path must be implemented by subclass")
+    def get_root_path(self) -> str:
+        """
+        Return the root directory or root URI where all storage operations begin.
 
+        This is typically the absolute base location such as:
+        - a local filesystem root directory
+        - a cloud bucket root
+        - an S3/GCS/MinIO root prefix
+
+        Must be implemented by subclasses.
+        """
+        raise NotImplementedError("get_root_path must be implemented by subclass")
+    
+    def get_relative_to_base(self, target: str|Path|Blob)->str:
+        raise NotImplementedError("get_relative_to_base must be implemented by subclass")
     # -------------------------------------------------------------------------
     # Storage path operations
     # -------------------------------------------------------------------------
-    def get_storage_path(self, target: str | Path, relative:bool) -> str:
+    def get_storage_path(self, target: str | Path, relative: bool) -> str:
         """Return the absolute path to the directory for a given storage target."""
         raise NotImplementedError("get_storage_path must be implemented by subclass")
+
     def create_storage_path(self, target: str | Path) -> Path | str:
         """Create a new directory or container for the given storage target."""
         raise NotImplementedError("create_storage_path must be implemented by subclass")
-
 
     def does_storage_path_exist(self, target: str | Path) -> bool:
         """Check whether a storage directory or container exists for the given target."""

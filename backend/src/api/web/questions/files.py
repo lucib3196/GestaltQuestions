@@ -27,7 +27,7 @@ from src.api.models import (
     SuccessFileResponse,
 )
 from src.api.models.models import Question
-from src.api.service.file_service import FileServiceDep
+from src.api.service.file_service import FileServiceDep, FileService
 from src.api.service.question_manager import QuestionManagerDependency
 from src.api.service.question_resource import QuestionResourceDepencency
 from src.api.service.storage_manager import StorageDependency
@@ -315,8 +315,6 @@ async def upload_files_to_question(
         )
 
 
-
-
 @router.get("/filedata/{qid}")
 async def get_filedata(
     qid: str | UUID,
@@ -426,3 +424,9 @@ async def download_question(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Could not get files {e}",
         )
+
+
+@router.post("/upload_zip")
+async def upload_zip(file: UploadFile, storage: StorageDependency):
+    save_path = storage.get_base_path()
+    return await FileService().upload_zip_and_extract(file, save_path)

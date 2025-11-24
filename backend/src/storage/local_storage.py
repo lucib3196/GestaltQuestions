@@ -24,70 +24,62 @@ class LocalStorageService(StorageService):
     # Initialization / Lifecycle
     # -------------------------------------------------------------------------
 
-    def __init__(self, root: str | Path, base: str, create: bool = False):
+    def __init__(self, root_path: str | Path, base: str, create: bool = True):
         """
-        Initialize the local storage service with a base directory.
+        Initialize the local storage service with a base_path directory.
 
         Args:
-            root: Path or string specifying the root storage directory.
+            _root_path: Path or string specifying the _root_path storage directory.
         """
-        # Where the storage is at
-        self.root = Path(root).resolve()
-        self.root.mkdir(parents=True, exist_ok=True)
-
-        # Base name the folder where we store
-        self.base_name = base
-        self.base_path = self.root / base
+        self._root_path = Path(root_path).resolve()
+        self.base_path = (self._root_path / base).resolve()
+        # The actual name of where the data is stored
+        self.base = base
+        # Ensure that the storage is created
+        if create:
+            self._root_path.mkdir(parents=True, exist_ok=True)
         logger.debug(
             f"Initialized the storage, questions will be stored at {self.base_path}"
         )
 
-    # Helper
-    def normalize_path(self, target: str | Path) -> str:
-        """
-        Ensure the given path is normalized under the base path.
+    # -------------------------------------------------------------------------
+    # base_path path operations
+    # -------------------------------------------------------------------------
 
-        - If an absolute path is passed, it strips self.root and returns a relative path.
-        - If a relative path is passed, it ensures it is prefixed by self.base_name.
-        - Always returns a POSIX-style string (forward slashes).
+    def get_base_path(self) -> str:
         """
+        Return the absolute path to the base_path directory for local storage.
+
+        Returns:
+            Path: The resolved base_path directory path.
+        """
+        return Path(self.base_path).as_posix()
+
+    def get_root_path(self) -> str:
+        """Returns the _root_path path"""
+        return self._root_path.as_posix()
+
+    def get_relative_to_base(self, target: str | Path | Blob) -> str:
+        if isinstance(target, Blob):
+            target = str(target.name)
         # Convert to Path
         target_path = Path(target)
 
-        # Case 1: Absolute path inside the storage root
+        # Case 1: Absolute path inside the storage _root_path
         try:
-            relative_path = target_path.relative_to(self.root)
+            relative_path = target_path.relative_to(self._root_path)
         except ValueError:
-            # Case 2: Not inside root (likely already relative or external)
+            # Case 2: Not inside _root_path (likely already relative or external)
             relative_path = target_path
 
         # Convert to posix string
         rel_str = relative_path.as_posix()
 
-        # Case 3: Ensure prefix
-        if not rel_str.startswith(f"{self.base_name}/"):
-            rel_str = f"{self.base_name}/{rel_str}"
+        # Case 3: Ensure prefix, if it does not start
+        if not rel_str.startswith(f"{self.base}/"):
+            rel_str = f"{self.base}/{rel_str}"
 
         return rel_str
-
-    # -------------------------------------------------------------------------
-    # Base path operations
-    # -------------------------------------------------------------------------
-
-    def get_base_path(self) -> str:
-        """
-        Return the absolute path to the base directory for local storage.
-
-        Returns:
-            Path: The resolved base directory path.
-        """
-        return Path(self.base_path).as_posix()
-
-    def get_root_path(self) -> str:
-        """Returns the root path"""
-        return self.root.as_posix()
-
-    # Getting
 
     def get_storage_path(self, target: str | Path | Blob, relative: bool = True) -> str:
         """
@@ -99,15 +91,10 @@ class LocalStorageService(StorageService):
         Returns:
             Path: Path to the resource directory.
         """
-        if isinstance(target, Blob):
-            target = str(target.name)
-        target = self.normalize_path(target)
-
-        absolute_path = Path(self.root) / str(target)
-
+        rel_str = self.get_relative_to_base(target)
         if relative:
-            return absolute_path.relative_to(self.root).as_posix()
-
+            return rel_str
+        absolute_path = Path(self._root_path) / rel_str
         return absolute_path.as_posix()
 
     def create_storage_path(self, target: str | Path) -> Path:
@@ -183,7 +170,7 @@ class LocalStorageService(StorageService):
             bytes | None: File contents if found, otherwise None.
         """
         target = Path(self.get_filepath(target, filename))
-        
+
         logger.info("Reading file %s", target)
         if target.exists() and target.is_file():
             return target.read_bytes()
@@ -230,7 +217,7 @@ class LocalStorageService(StorageService):
                 f.write(content)
 
         else:
-            logger.info("Saving text %s to path %s", content,file_path)
+            logger.info("Saving text %s to path %s", content, file_path)
             file_path.write_text(str(content))
 
         return file_path

@@ -15,43 +15,43 @@ from src.api.service.file_service import FileService
 
 
 class FirebaseStorage(StorageService):
-    def __init__(self, bucket, base_path):
+    def __init__(self, bucket, base):
         logger.info("[Firebase]: Intializing firebase storage ")
         self.bucket = storage.bucket(bucket)
-        self.base_path = base_path
+        # The base is the name of where the storage starts
+        self.base = base
 
     def normalize_path(self, target: str | Path) -> str:
         target_path = Path(target)
         try:
-            relative_path = target_path.relative_to(self.base_path)
+            relative_path = target_path.relative_to(self.base)
         except ValueError:
             # Case 2: Not inside root (likely already relative or external)
             relative_path = target_path
+
         rel_str = relative_path.as_posix()
-        if not rel_str.startswith(f"{self.base_path}/"):
-            rel_str = f"{self.base_path}/{rel_str}"
+        if not rel_str.startswith(f"{self.base}/"):
+            rel_str = f"{self.base}/{rel_str}"
         return rel_str
 
-    def get_base_path(self) -> str | Path:
-        return Path(self.base_path).as_posix()
+    def get_relative_to_base(self, target: str | Path | Blob) -> str:
+        if isinstance(target, Blob):
+            target = str(target.name)
+        target_path = Path(target)
+        rel_str = target_path.as_posix()
+        if not rel_str.startswith(f"{self.base}/"):
+            rel_str = f"{self.base}/{rel_str}"
+        return rel_str
+
+    def get_base_path(self) -> str:
+        return Path(self.base).as_posix()
 
     def get_storage_path(self, target: str | Path | Blob, relative: bool = True) -> str:
         """
-        Resolve a storage path inside the base directory.
-
-        - Blob → use blob.name
-        - Path → use only the filename (Path.name)
-        - str  → assume it's a relative filename
-
-        Returns either:
-            • a path relative to base_path (default)
-            • or an absolute filesystem path
+        The relative will always be returned
         """
         # --- Build the full absolute path ---
-        base_path = Path(self.base_path)
-        if isinstance(target, Blob):
-            target = str(target.name)
-        return self.normalize_path(target)
+        return self.get_relative_to_base(target)
 
     def create_storage_path(self, target: str | Path) -> str:
         target_blob = self.get_storage_path(target)
@@ -175,7 +175,7 @@ class FirebaseStorage(StorageService):
             b.delete()
 
     def hard_delete(self):
-        blobs = self.bucket.list_blobs(prefix=str(self.base_path))
+        blobs = self.bucket.list_blobs(prefix=str(self.base))
         try:
             for blob in blobs:
                 logger.info("Deleting %s", blob.name)
