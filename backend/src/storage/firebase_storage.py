@@ -36,17 +36,34 @@ class FirebaseStorage(StorageService):
         return Path(self.base_path).as_posix()
 
     def get_storage_path(self, target: str | Path | Blob, relative: bool = True) -> str:
+        """
+        Resolve a storage path inside the base directory.
+
+        - Blob → use blob.name
+        - Path → use only the filename (Path.name)
+        - str  → assume it's a relative filename
+
+        Returns either:
+            • a path relative to base_path (default)
+            • or an absolute filesystem path
+        """
+        # --- Normalize target to a filename ---
         if isinstance(target, Blob):
-            target = str(target.name)
-        target = self.normalize_path(target)
-        absolute_path = Path(self.base_path) / str(target)
+            filename = target.name
+        elif isinstance(target, Path):
+            filename = target.name
+        else:
+            filename = str(target)
+        assert filename
+        # --- Build the full absolute path ---
+        absolute_path = Path(self.base_path) / (filename or "")
+        # --- Return relative or absolute ---
         if relative:
-            return absolute_path.relative_to(self.base_path).as_posix()
+            return filename  # always relative to base_path
         return absolute_path.as_posix()
 
-
     def create_storage_path(self, target: str | Path) -> str:
-        target_blob = self.get_storage_path(target)
+        target_blob = self.get_storage_path(target, relative=False)
         blob: Blob = self.bucket.blob(target_blob)
         blob.upload_from_string("")
         return str(blob.name)
@@ -60,7 +77,7 @@ class FirebaseStorage(StorageService):
         return len(blobs) > 0
 
     def get_filepath(self, target: str | Path, filename: str | None = None) -> str:
-        target = self.get_storage_path(target)
+        target = self.get_storage_path(target,relative=False)
         if filename:
             target = (Path(target) / filename).as_posix()
         return target
