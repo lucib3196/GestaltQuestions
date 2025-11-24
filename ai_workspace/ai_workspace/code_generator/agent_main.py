@@ -1,7 +1,10 @@
 from ai_workspace.code_generator.graphs.gestalt_generator import (
     app as gestalt_generator,
 )
-from ai_workspace.code_generator.models.models import Question
+from ai_workspace.models.models import (
+    Question,
+    question_types, CodeResponse
+)
 from langchain.tools import tool
 from langchain.agents import create_agent
 from ai_workspace.ai_base.settings import get_settings

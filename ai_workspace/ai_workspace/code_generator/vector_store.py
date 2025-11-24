@@ -1,7 +1,7 @@
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from pathlib import Path
-from src.ai_processing.code_generator.document_loader import (
+from ai_workspace.code_generator.document_loader import (
     QuestionModuleDocumentLoader,
 )
 from ai_workspace.ai_base.settings import get_settings
