@@ -77,7 +77,7 @@ class FirebaseStorage(StorageService):
         return len(blobs) > 0
 
     def get_filepath(self, target: str | Path, filename: str | None = None) -> str:
-        target = self.get_storage_path(target,relative=False)
+        target = self.get_storage_path(target, relative=False)
         if filename:
             target = (Path(target) / filename).as_posix()
         return target
@@ -159,7 +159,8 @@ class FirebaseStorage(StorageService):
                 logger.error("Blob not found, nothing to delete.")
         return None
 
-    def delete_file(self, target: str | Path, filename: str) -> None:
+    def delete_file(self, target: str | Path, filename: str | None = None) -> None:
+
         b = self.get_blob(target, filename)
         if b.exists():
             b.delete()
