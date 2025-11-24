@@ -179,8 +179,9 @@ class LocalStorageService(StorageService):
     def save_file(
         self,
         target: str | Path,
-        filename: str,
         content: Union[str, dict, list, bytes, bytearray],
+        filename: str | None=None,
+        
         overwrite: bool = True,
     ) -> Path:
         """
@@ -195,13 +196,15 @@ class LocalStorageService(StorageService):
         Returns:
             Path: The full path to the saved file.
         """
+        if filename:
+            target = Path(self.get_storage_path(target, relative=False))
+            target.mkdir(parents=True, exist_ok=True)
+            file_path = (Path(target) / filename).resolve()
+        else:
+            file_path = Path(target).resolve()
+            file_path.parent.mkdir(parents=True, exist_ok=True)
 
-        target = Path(self.get_storage_path(target, relative=False))
-
-        # Ensure parent directory exists
-        target.mkdir(parents=True, exist_ok=True)
-
-        file_path = target / filename
+        logger.info("Got file path %s", file_path)
 
         # Handle overwrite rules
         if not overwrite and file_path.exists():
@@ -212,7 +215,7 @@ class LocalStorageService(StorageService):
             file_path.write_text(json.dumps(content, indent=2))
 
         elif isinstance(content, (bytes, bytearray)):
-            mode = "wb" if overwrite else "xb"
+            mode = "wb"
             with open(file_path, mode) as f:
                 f.write(content)
 

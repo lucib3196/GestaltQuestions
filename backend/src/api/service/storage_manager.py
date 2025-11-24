@@ -12,12 +12,12 @@ def get_storage_manager() -> StorageService:
         if not (settings.FIREBASE_CRED and settings.STORAGE_BUCKET):
             raise ValueError("Settings for Cloud Storage not Set")
         storage_service = FirebaseStorage(
-            base_path="/UCR_Questions", bucket=settings.STORAGE_BUCKET
+            base="/UCR_Questions", bucket=settings.STORAGE_BUCKET
         )
     else:
         
         storage_service = LocalStorageService(
-            settings.ROOT_PATH, str(settings.QUESTIONS_DIRNAME)
+            str(settings.QUESTIONS_DIRNAME),""
         )
     logger.info(f"Question manager set to {settings.STORAGE_SERVICE}")
     logger.info("Initialized Question Manager Success ")

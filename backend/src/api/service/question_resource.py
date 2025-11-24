@@ -319,7 +319,7 @@ class QuestionResourceService:
 
         try:
             path = self.storage_manager.save_file(
-                file, filename, content, overwrite=True
+                target=file, content=content, overwrite=True
             )
         except Exception as exc:
             logger.error(

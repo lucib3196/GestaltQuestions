@@ -13,7 +13,7 @@ class StorageService:
     (e.g., local filesystem, cloud bucket, or hybrid configuration).
     """
 
-    def __init__(self, root_path: str | Path, base: str, create:bool):
+    def __init__(self, root_path: str | Path, base: str, create: bool):
         """
         Initialize the storage backend.
 
@@ -49,9 +49,12 @@ class StorageService:
         Must be implemented by subclasses.
         """
         raise NotImplementedError("get_root_path must be implemented by subclass")
-    
-    def get_relative_to_base(self, target: str|Path|Blob)->str:
-        raise NotImplementedError("get_relative_to_base must be implemented by subclass")
+
+    def get_relative_to_base(self, target: str | Path | Blob) -> str:
+        raise NotImplementedError(
+            "get_relative_to_base must be implemented by subclass"
+        )
+
     # -------------------------------------------------------------------------
     # Storage path operations
     # -------------------------------------------------------------------------
@@ -98,8 +101,8 @@ class StorageService:
     def save_file(
         self,
         target: str | Path,
-        filename: str,
         content: str | dict | list | bytes | bytearray,
+        filename: str | None = None,
         overwrite: bool = True,
     ) -> Path | str:
         """Save a file under the given target directory."""
