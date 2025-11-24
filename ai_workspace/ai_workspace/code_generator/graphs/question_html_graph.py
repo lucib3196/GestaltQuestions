@@ -5,10 +5,9 @@ import json
 
 # --- Project Imports ---
 from ai_workspace.ai_base.settings import get_settings
-from ai_workspace.code_generator.models.models import (
-    CodeResponse,
+from ai_workspace.models.models import (
     Question,
-    question_types,
+    question_types, CodeResponse
 )
 from ai_workspace.code_generator.retrievers import (
     question_html_vectorstore,

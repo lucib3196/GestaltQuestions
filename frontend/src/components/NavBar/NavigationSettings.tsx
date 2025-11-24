@@ -45,7 +45,7 @@ export const Navigation: NavigationItem[] = [
         element: <QuestionViewPage />,
         includeNavBar: true,
         requiresAuth: false,
-        allowedRoles: ["student", "developer", "teacher", "admin"]
+        allowedRoles: []
     },
 
     //

@@ -8,7 +8,7 @@ from langchain.chat_models import init_chat_model
 from langsmith import Client
 from langgraph.graph import StateGraph, START, END
 
-from ai_workspace.models import PageRange
+from ai_workspace.models.models import ConceptualQuestion
 from ai_base.multimodel_io import PDFMultiModal
 from ai_base.settings import get_settings
 from ai_workspace.utils.utils import extract_langsmith_prompt
@@ -41,49 +41,6 @@ if not provider:
 
 # Initialize chat model
 llm = init_chat_model(model=model, model_provider=provider)
-
-
-class Option(BaseModel):
-    text: str = Field(..., description="Text of the answer choice.")
-    is_correct: bool = Field(
-        ..., description="True if this option is the correct answer, otherwise False."
-    )
-
-
-class ConceptualQuestion(BaseModel):
-    question: str = Field(..., description="The conceptual question being asked.")
-    topics: List[str] = Field(
-        ...,
-        description="A list of three key topics or concepts that this question addresses.",
-    )
-    options: List["Option"] = Field(
-        ...,
-        description="Multiple-choice options corresponding to possible answers for the question.",
-    )
-    reference: "PageRange" = Field(
-        ...,
-        description="Page range within the lecture material where the concept or question originates.",
-    )
-    explanation: str = Field(
-        ...,
-        description="A concise explanation of the correct answer intended to help students understand the reasoning.",
-    )
-
-    def as_string(self) -> str:
-        """Return a formatted string representation of the conceptual question."""
-        options_formatted = "\n".join(
-            [f"- {'✅ ' if opt.is_correct else ''}{opt.text}" for opt in self.options]
-        )
-        topics_formatted = ", ".join(self.topics)
-
-        return (
-            f"### **Conceptual Question**\n"
-            f"**Question:** {self.question}\n\n"
-            f"**Topics:** {topics_formatted}\n\n"
-            f"**Options:**\n{options_formatted}\n\n"
-            f"**Explanation:** {self.explanation}\n\n"
-            f"**Reference:** {self.reference}\n"
-        )
 
 
 class State(BaseModel):
