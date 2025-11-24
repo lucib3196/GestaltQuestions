@@ -76,7 +76,6 @@ async def test_read_file(question_resource, question_payload_full_dict, question
     for f in question_file_payload:
         data = await question_resource.read_file(qcreated.id, f.filename)
         returned = data.data
-        print("This is the response data", data)
         # If it is a JSON file, parse response before comparing
         if f.filename.endswith(".json"):
             assert json.loads(returned) == f.content

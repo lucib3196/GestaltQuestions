@@ -2,6 +2,7 @@ from functools import lru_cache
 from typing import Annotated, Dict, List, Optional
 from pathlib import Path
 from uuid import UUID
+import json
 
 # --- Third-Party ---
 from fastapi import Depends, HTTPException
@@ -120,14 +121,34 @@ class QuestionResourceService:
         files: List[FileData],
         auto_handle_images: bool = True,
     ) -> Dict:
+        """
+        Upload a batch of files to a question.
+
+        Performs:
+        - Question existence check
+        - Resolves absolute storage path (local/cloud)
+        - Delegates saving to `handle_question_files()`
+        """
+        logger.debug("Starting upload for question_id=%s", question_id)
+
         question = self.qm.get_question(question_id)
         if not question:
-            logger.warning("Question with ID %s not found", id)
-            raise HTTPException(status_code=404, detail=f"Question {id} not found")
-        path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
-        # Get the absolute path
-        abs_path = self.storage_manager.get_storage_path(path, relative=False)
-        logger.info("Resolved question storage path: %s", abs_path)
+            logger.warning("Upload failed — question %s not found", question_id)
+            raise HTTPException(
+                status_code=404, detail=f"Question {question_id} not found"
+            )
+
+        # Resolve question directory (relative DB path)
+        relative_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+        abs_path = self.storage_manager.get_storage_path(relative_path, relative=False)
+
+        logger.debug(
+            "Resolved storage paths for question_id=%s: relative='%s', absolute='%s'",
+            question_id,
+            relative_path,
+            abs_path,
+        )
+
         return await self.handle_question_files(files, abs_path, auto_handle_images)
 
     async def handle_question_files(
@@ -136,38 +157,66 @@ class QuestionResourceService:
         storage_path: str | Path,
         auto_handle_images: bool = True,
     ) -> Dict:
+        """
+        Save a set of uploaded files.
 
+        Splits into client files (images/docs) and main files when auto-handling is enabled.
+        """
         storage_path = Path(storage_path)
         client_files_dir = storage_path / self.client_path
 
-        # Split files into client (images/docs) vs others
-        client_files = []
-        other_files = []
+        logger.debug(
+            "Handling upload of %d files into storage_path='%s'",
+            len(files),
+            storage_path,
+        )
 
+        client_files: List[FileData] = []
+        other_files: List[FileData] = []
+
+        # Categorize files
         for f in files:
             if not f.filename:
+                logger.warning("Skipped file with missing filename")
                 raise HTTPException(
                     status_code=status.HTTP_406_NOT_ACCEPTABLE,
                     detail="File must have a filename",
                 )
 
             ext = Path(f.filename).suffix.lower()
-            (client_files if ext in client_file_extensions else other_files).append(f)
+            if ext in client_file_extensions:
+                client_files.append(f)
+            else:
+                other_files.append(f)
 
-        # Helper to write a batch of files
+        # Save helper
         def save_batch(target_dir: Path, batch: List[FileData]):
-            return [
-                self.storage_manager.save_file(
-                    target_dir, f.filename, content=f.content
-                )
-                for f in batch
-            ]
+            saved_paths = []
+            for f in batch:
+                try:
+                    saved = self.storage_manager.save_file(
+                        target_dir, f.filename, content=f.content
+                    )
+                    saved_paths.append(saved)
+                    logger.debug("Saved file '%s' -> '%s'", f.filename, saved)
+                except Exception as exc:
+                    logger.error(
+                        "Failed saving file '%s' into '%s': %s",
+                        f.filename,
+                        target_dir,
+                        exc,
+                    )
+                    raise HTTPException(
+                        status_code=500,
+                        detail=f"Failed saving file '{f.filename}'",
+                    ) from exc
+            return saved_paths
 
-        # Auto mode → split outputs
         if auto_handle_images:
             uploaded_client = save_batch(client_files_dir, client_files)
             uploaded_other = save_batch(storage_path, other_files)
 
+            logger.info("Uploaded %d files (auto client split enabled)", len(files))
             return {
                 "status": "ok",
                 "detail": f"Uploaded {len(files)} files",
@@ -175,9 +224,9 @@ class QuestionResourceService:
                 "other_files": uploaded_other,
             }
 
-        # Non-auto → all go to same folder
+        # No auto-split mode
         uploaded_all = save_batch(storage_path, files)
-
+        logger.info("Uploaded %d files (no client split)", len(files))
         return {
             "status": "ok",
             "detail": f"Uploaded {len(files)} files",
@@ -185,36 +234,110 @@ class QuestionResourceService:
         }
 
     async def get_question_files(self, question_id: str | UUID):
+        """
+        Return a list of stored filenames for a question.
+        """
+        logger.debug("Fetching file list for question_id=%s", question_id)
+
         question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
         assert question_path
+
         files = self.storage_manager.list_files(question_path)
+
+        logger.debug("Found %d files for question_id=%s", len(files), question_id)
         return SuccessFileResponse(
             status=200, detail="Retrieved files ok", filenames=files
         )
 
     async def get_question_file(self, question_id: str | UUID, filename: str):
+        """
+        Resolve the exact path/identifier for a stored file.
+        """
+        logger.debug("Resolving file '%s' for question_id=%s", filename, question_id)
+
         question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
         assert question_path
+
+        # Direct images to client folder
         if await FileService().is_image(filename):
             filepath = Path(question_path) / self.client_path / filename
         else:
             filepath = Path(question_path) / filename
-        file = self.storage_manager.get_file(filepath)
-        # Check if it exist
-        return file
+
+        return self.storage_manager.get_file(filepath)
 
     async def delete_file(self, qid: str | UUID, filename: str):
+        """
+        Delete a given file from storage.
+        """
+        logger.debug("Deleting file '%s' for question_id=%s", filename, qid)
+
         file = await self.get_question_file(qid, filename)
         self.storage_manager.delete_file(file)
+
+        logger.info("Deleted file '%s' for question_id=%s", filename, qid)
         return SuccessDataResponse(status=200, detail="Deleted file ok")
 
     async def read_file(self, qid: str | UUID, filename: str):
+        """
+        Read a file and return its text contents.
+        """
+        logger.debug("Reading file '%s' for question_id=%s", filename, qid)
+
         file = await self.get_question_file(qid, filename)
-        data = self.storage_manager.read_file(file)
-        if data:
-            data = data.decode("utf-8")
+        raw_data = self.storage_manager.read_file(file)
+
+        if raw_data is None:
+            logger.warning(
+                "Read attempted but file '%s' was not found (qid=%s)",
+                filename,
+                qid,
+            )
+            return SuccessDataResponse(
+                status=404,
+                detail=f"File '{filename}' not found",
+                data=None,
+            )
+
+        text = raw_data.decode("utf-8")
         return SuccessDataResponse(
-            status=status.HTTP_200_OK, detail=f"Read file {filename} success", data=data
+            status=status.HTTP_200_OK,
+            detail=f"Read file {filename} success",
+            data=text,
+        )
+
+    async def update_file(self, qid: str | UUID, filename: str, content: str | dict):
+        """
+        Overwrite an existing file for a question.
+        """
+        logger.debug("Updating file '%s' for question_id=%s", filename, qid)
+
+        if isinstance(content, dict):
+            content = json.dumps(content, indent=2)
+
+        file = await self.get_question_file(qid, filename)
+
+        try:
+            path = self.storage_manager.save_file(
+                file, filename, content, overwrite=True
+            )
+        except Exception as exc:
+            logger.error(
+                "Failed to update file '%s' for question_id=%s: %s",
+                filename,
+                qid,
+                exc,
+            )
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed writing file '{filename}'",
+            ) from exc
+
+        logger.info("Successfully updated file '%s' for question_id=%s", filename, qid)
+        return SuccessDataResponse(
+            status=200,
+            detail=f"Wrote file successfully to {path}",
+            data=content,
         )
 
 
