@@ -79,12 +79,12 @@ def cloud_storage_service():
     return FirebaseStorage(settings.STORAGE_BUCKET, base_path)
 
 
-@pytest.fixture(autouse=True)
-def clean_up_cloud(cloud_storage_service):
-    """Clean up the test bucket after each test."""
-    yield
-    cloud_storage_service.hard_delete()
-    logger.debug("Deleting Bucket - Cleaning Up")
+# @pytest.fixture(autouse=True)
+# def clean_up_cloud(cloud_storage_service):
+#     """Clean up the test bucket after each test."""
+#     yield
+#     cloud_storage_service.hard_delete()
+#     logger.debug("Deleting Bucket - Cleaning Up")
 
 
 @pytest.fixture(scope="function")
