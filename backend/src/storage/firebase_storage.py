@@ -210,5 +210,5 @@ class FirebaseStorage(StorageService):
         # Delete the original blob
         old_blob.delete()
 
-        print(f"[FirebaseStorage] Renamed {old_path} → {new_path}")
+        logger.info(f"[FirebaseStorage] Renamed {old_path} → {new_path}")
         return str(new_blob.name)
