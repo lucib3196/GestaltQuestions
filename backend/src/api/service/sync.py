@@ -2,11 +2,10 @@
 import asyncio
 import json
 from collections import defaultdict
-from typing import List, Literal, Sequence, Union
+from typing import List, Literal, Sequence, Union, Tuple
 
 # --- Third-Party ---
 from pydantic import ValidationError
-from src.api.database.database import get_session
 
 # --- Internal ---
 from src.api.core import logger
@@ -15,15 +14,13 @@ from src.api.models.models import Question
 from src.api.models.sync_models import *
 from src.api.service.question_manager import (
     QuestionManagerDependency,
-    get_question_manager,
 )
 from src.utils import to_serializable
-from src.api.service.storage_manager import StorageDependency, get_storage_manager
-from src.utils import safe_dir_name, to_serializable
+from src.api.service.storage_manager import StorageDependency
 from src.api.service.question_resource import QuestionResourceDepencency
 
 
-metadata_name = ["metadata.json", "info.json"]
+metadata_name = ["metadata.json", "info.json", "info2.json"]
 excluded_path_names = ["downloads"]
 
 # Utils for resolving
@@ -164,6 +161,7 @@ async def check_question_sync_status(
         logger.warning(detail)
         payload["detail"] = detail
         payload["status"] = "missing_id"
+        payload["metadata"] = json.dumps(to_serializable(question_data))
         return UnsyncedQuestion(**payload)
 
     logger.info(f"Found Question ID: {question_id}")
@@ -180,6 +178,7 @@ async def check_question_sync_status(
         logger.warning(detail)
         payload["detail"] = detail
         payload["status"] = "not_in_database"
+        payload["metadata"] = json.dumps(to_serializable(question_data))
         return UnsyncedQuestion(**payload)
 
     logger.info(
@@ -188,92 +187,92 @@ async def check_question_sync_status(
     return qdb
 
 
-
-# 
+#
 # ------------Actual Syncing--------------
-# 
+#
+
 
 async def sync_question(
-    unsynced: UnsyncedQuestion,
-    qm: QuestionManagerDependency,
-    storage: StorageDependency,
-) -> SyncStatus:
+    unsynced: UnsyncedQuestion, qr: QuestionResourceDepencency
+) -> UnsyncedQuestion:
+
     # Check metadata
     if not getattr(unsynced, "metadata", None):
         logger.warning(f"⏩ Skipping {unsynced.question_name}: no metadata available.")
-        return "missing_metadata"
+        return unsynced
 
-    # Validate the metadata
+    # Validate that the metadata is the right type
     try:
         metadata_dict = json.loads(str(unsynced.metadata))
         qvalidated = QuestionData.model_validate(
             metadata_dict, context={"extra": "ignore"}
         )
     except json.JSONDecodeError as e:
-        logger.error(f"Invalid JSON for {unsynced.question_name}: {e}")
-        return "invalid_metadata_json"
+        detail = f"Invalid JSON for {unsynced.question_name}: {e}"
+        logger.error(detail)
+        unsynced.detail = detail
+        return unsynced
     except ValidationError as e:
-        logger.error(f"Validation failed for {unsynced.question_name}: {e}")
-        return "invalid question schema"
+        detail = f"Validation failed for {unsynced.question_name}: {e}"
+        logger.error("detail")
+        unsynced.detail = detail
+        return unsynced
 
-    # Write and save the question
+    # First try to create the question in the database
     try:
-        qcreated = await qm.create_question(qvalidated.model_dump())
-        # Handle path
-        old_path = Path(unsynced.question_path).resolve()
-        new_path = safe_dir_name(f"{qcreated.title}_{str(qcreated.id)[:8]}")
-        new_path = Path(storage.get_base_path()) / new_path
-        logger.info("This is the db_path")
-
-        if old_path.exists():
-            logger.info(f"Renaming {old_path} → {new_path}")
-            new_path = storage.rename_storage(old_path, new_path)
-        else:
-            new_path = storage.create_storage_path(new_path)
-
-        db_path = storage.get_storage_path(new_path, relative=True)
-        logger.info("This is the db_path %s ", db_path)
-
-        qm.set_question_path(qcreated.id, db_path, storage_type="local")
-
-        # Write the question data to the folder
-        question_data = await qm.get_question_data(qcreated.id)
-        meta_path = (Path(new_path) / "info2.json").resolve()
-        meta_path.write_text(
-            json.dumps(
-                to_serializable(question_data.model_dump()),
-                indent=2,
-                ensure_ascii=False,
-            )
+        old_path = unsynced.question_path
+        qcreated, new_path = await qr.sync_question(qvalidated, old_path)
+        question_path = (
+            str(new_path) if isinstance(new_path, str) else new_path.as_posix()
         )
         logger.info(f"✅ Synced question: {unsynced.question_name}")
-        return "success"
+        return UnsyncedQuestion(
+            question_name=str(qcreated.title),
+            question_path=question_path,
+            detail="Successfully Synced",
+            status="success",
+            metadata=None,
+        )
     except Exception as e:
-        logger.exception(f"Failed to create question {unsynced.question_name}: {e}")
-        return "failed to create question"
+        return UnsyncedQuestion(
+            question_name=unsynced.question_name,
+            question_path=unsynced.question_path,
+            detail="Failed to sync question {e}",
+            status="failed to create question",
+            metadata=unsynced.metadata,
+        )
 
 
 async def sync_questions(
-    qm: QuestionManagerDependency, storage: StorageDependency
-) -> SyncMetrics:
-    unsynced_questions: Sequence[UnsyncedQuestion] = await check_unsync(storage, qm)
-    logger.info(f"🔍 Found {len(unsynced_questions)} unsynced questions to process.")
+    qr: QuestionResourceDepencency,
+) -> Tuple[SyncMetrics, Sequence[UnsyncedQuestion]]:
+    unsynced_questions: Sequence[UnsyncedQuestion] = await check_unsync(
+        qr.storage_manager, qr.qm
+    )
+
+    logger.info(f" Found {len(unsynced_questions)} unsynced questions to process.")
+
     sync_results = await asyncio.gather(
-        *[sync_question(q, qm, storage) for q in unsynced_questions]
+        *[sync_question(q, qr) for q in unsynced_questions]
     )
 
     categorized = defaultdict(list)
-    for question, status in zip(unsynced_questions, sync_results):
-        categorized[status].append(question.question_name)
+
+    # FIX: Use the status string, not the entire UnsyncedQuestion object
+    for original, result in zip(unsynced_questions, sync_results):
+        categorized[result.status].append(original.question_name)
 
     success_count = len(categorized.get("success", []))
     failed_count = sum(len(v) for k, v in categorized.items() if k != "success")
-    metrics = SyncMetrics(
-        total_found=len(unsynced_questions),
-        synced=success_count,
-        failed=failed_count,
+
+    return (
+        SyncMetrics(
+            total_found=len(unsynced_questions),
+            synced=success_count,
+            failed=failed_count,
+        ),
+        sync_results,
     )
-    return metrics
 
 
 async def prune_question(
@@ -330,11 +329,3 @@ async def prune_questions(
         bug=bug,
     )
     return metrics
-
-
-if __name__ == "__main__":
-    result = asyncio.run(
-        check_unsync(get_storage_manager(), get_question_manager(session=get_session()))
-    )
-    data = to_serializable(result)
-    print(data)

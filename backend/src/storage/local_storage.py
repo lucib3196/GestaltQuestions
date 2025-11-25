@@ -144,6 +144,8 @@ class LocalStorageService(StorageService):
         old = Path(old)
         new = Path(new)
 
+        logger.info(f"[LocalStorage]: Renaming {old}->{new}")
+
         if not old.is_absolute():
             old = self.get_storage_path(old, relative=False)
         if not new.is_absolute():
