@@ -1,6 +1,4 @@
 
-
-
 export default function QuestionPageHeader() {
     return (
         <div className="flex justify-center items-center mb-6">
