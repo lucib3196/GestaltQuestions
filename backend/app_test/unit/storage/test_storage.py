@@ -17,6 +17,22 @@ def create_test_dir(active_storage_backend) -> Tuple[Path, str]:
     return created_dir, testdir
 
 
+@pytest.fixture
+def save_multiple_files(active_storage_backend, create_test_dir):
+    """Save multiple test files (string, dict, bytes) under a temporary directory."""
+    _, name = create_test_dir
+    files = [
+        ("text.txt", "Hello World"),  # string
+        ("data.json", {"key": "value"}),  # dict
+        ("binary.bin", b"\x00\x01\x02"),  # bytes
+    ]
+
+    for filename, content in files:
+        active_storage_backend.save_file(name, filename, content)
+
+    return files, name
+
+
 # -------------------------------------------------------------------------
 # Initialization / Lifecycle
 # -------------------------------------------------------------------------
@@ -253,21 +269,15 @@ def test_list_file_paths(active_storage_backend):
         active_storage_backend.save_file(
             target=target, content=content, filename=filename
         )
-
     # Retrieve file paths
     retrieved_paths = active_storage_backend.list_file_paths(target)
-
     # Number of returned files should match what we saved
     assert len(retrieved_paths) == len(data)
-
     # Normalize expected filenames
     expected_filenames = sorted([name for name, _ in data])
-
     # Extract actual filenames (end of path)
     actual_filenames = sorted([Path(p).name for p in retrieved_paths])
-
     assert actual_filenames == expected_filenames
-
 
 
 def test_list_file_names(active_storage_backend):
@@ -286,14 +296,31 @@ def test_list_file_names(active_storage_backend):
             target=target, content=content, filename=filename
         )
     retrieved_paths = active_storage_backend.list_file_names(target)
-
     # Number of returned files should match what we saved
     assert len(retrieved_paths) == len(data)
-
     # Normalize expected filenames
     expected_filenames = sorted([name for name, _ in data])
-
     # Extract actual filenames (end of path)
     actual_filenames = sorted([Path(p).name for p in retrieved_paths])
-
     assert actual_filenames == expected_filenames
+
+
+# =========================================================================
+# Mutating operations: copy, move, delete
+# =========================================================================
+
+
+def test_delete_file(save_multiple_files, active_storage_backend):
+    """Ensure delete_file removes files as expected."""
+    files, name = save_multiple_files
+    for filename, _ in files:
+        active_storage_backend.delete_file(name, filename)
+        assert active_storage_backend.read_file(name, filename) is None
+
+
+def test_empty_directory(create_test_dir, active_storage_backend):
+    """Check that a newly created directory is empty."""
+    _, name = create_test_dir
+    active_storage_backend.delete_storage(name)
+    f = active_storage_backend.list_files(name)
+    assert f == []

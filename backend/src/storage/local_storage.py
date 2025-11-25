@@ -14,8 +14,6 @@ class LocalStorageService(StorageService):
     """
     Local storage implementation of `StorageService`.
 
-    Handles file operations (create, save, delete, download) on the local filesystem.
-    Uses `DirectoryService` for directory management and `FileService` for file zipping
     and download operations.
     """
 
