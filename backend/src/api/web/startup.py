@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from starlette import status
 
 from src.api.models import *
+from src.api.dependencies import AppSettings, SettingDependency
 from src.api.core.config import get_settings
 
 router = APIRouter()
@@ -14,6 +15,6 @@ def startup_connection():
 
 
 @router.get("/settings")
-async def get_current_settings():
+async def get_current_settings(settings: SettingDependency):
     """Return the current storage settings (cloud or local)."""
-    return {"storage_service": settings.STORAGE_SERVICE}
+    return {"settings": settings }
