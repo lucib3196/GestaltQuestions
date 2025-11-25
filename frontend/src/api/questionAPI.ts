@@ -156,8 +156,15 @@ export class QuestionAPI {
 
   static async downloadQuestion(questionId: string) {
     const response = await api.post(
-      `${this.base}/files/${encodeURIComponent(questionId)}/{donwload}`
+      `${this.base}/files/${encodeURIComponent(questionId)}/download`,
+      null,
+      {
+        responseType: "blob",
+      }
     );
-    return response.data;
+    return {
+      blob: response.data as Blob,
+      header: response.headers["content-disposition"],
+    };
   }
 }

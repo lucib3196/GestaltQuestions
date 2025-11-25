@@ -396,7 +396,7 @@ async def download_question_file(
         )
 
 
-@router.post("/files/{id}/download")
+@router.post("/files/{qid}/download")
 async def download_question(
     qid: str | UUID,
     qm: QuestionManagerDependency,
@@ -414,7 +414,9 @@ async def download_question(
         return Response(
             content=zip_bytes,
             media_type="application/zip",
-            headers={"Content-Disposition": f"attachment; filename={folder_name}.zip"},
+            headers={
+                "Content-Disposition": f'attachment; filename="{folder_name}.zip"'
+            },
         )
 
     except HTTPException:

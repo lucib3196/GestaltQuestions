@@ -1,15 +1,16 @@
 import { useState, useMemo } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import clsx from "clsx";
-
+import { downloadZip } from "../../utils/downloadUtils";
 import { BiSelectMultiple } from "react-icons/bi";
 import type { IconType } from "react-icons";
 import { IoMdDownload } from "react-icons/io";
 import { MdDelete, MdFileUpload } from "react-icons/md";
-
+import { toast } from "react-toastify";
 import SearchBar from "../Base/SearchBar";
-import { useRetrievedQuestions } from "../../api";
+import { QuestionAPI, useRetrievedQuestions } from "../../api";
 import { useQuestionTableContext } from "../../context/QuestionTableContext";
+import { useQuestionContext } from "../../context/QuestionContext";
 
 interface ActionButtonProps {
     icon: IconType;
@@ -39,7 +40,8 @@ export function ActionButton({
 }
 
 export default function QuestionViewToolBar() {
-    const { multiSelect, setMultiSelect } = useQuestionTableContext()
+    const { multiSelect, setMultiSelect } = useQuestionTableContext();
+    const { selectedQuestions } = useQuestionContext();
     const [searchTitle, setSearchTitle] = useState<string>("");
     const debouncedSearchTerm = useDebounce(searchTitle, 300);
 
@@ -52,6 +54,20 @@ export default function QuestionViewToolBar() {
         questionFilter: questionFilter,
         showAllQuestions: false,
     });
+
+    const handleQuestionDownloads = async () => {
+        if (!selectedQuestions.length) return;
+        const requests = selectedQuestions.map((qId) =>
+            QuestionAPI.downloadQuestion(qId)
+        );
+
+        const responses = await Promise.all(requests);
+
+
+        responses.map((r) => downloadZip(r.blob,r.header))
+        
+        toast.success("Downloaded all question success");
+    };
 
     return (
         <div
@@ -76,7 +92,7 @@ export default function QuestionViewToolBar() {
                     icon={BiSelectMultiple}
                     label="Multi-Select"
                     className="justify-self-end max-w-[200px]"
-                    onClick={() => setMultiSelect(prev => !prev)}
+                    onClick={() => setMultiSelect((prev) => !prev)}
                 />
             </div>
 
@@ -87,19 +103,16 @@ export default function QuestionViewToolBar() {
             />
 
             {/* Bottom Row — Action Buttons */}
-            {multiSelect && <div className="grid grid-cols-2 gap-4">
-                <ActionButton
-                    icon={MdDelete}
-                    label="Delete Question"
-                    onClick={() => console.log("Clicked")}
-                />
-                <ActionButton
-                    icon={IoMdDownload}
-                    label="Download Question"
-                    onClick={() => console.log("Clicked")}
-                />
-
-            </div>}
+            {multiSelect && (
+                <div className="grid grid-cols-2 gap-4">
+                    <ActionButton icon={MdDelete} label="Delete Question" onClick={() => console.log("Clicked")} />
+                    <ActionButton
+                        icon={IoMdDownload}
+                        label="Download Question"
+                        onClick={handleQuestionDownloads}
+                    />
+                </div>
+            )}
         </div>
     );
 }
