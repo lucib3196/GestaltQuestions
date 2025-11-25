@@ -290,6 +290,29 @@ class QuestionResourceService:
         logger.info("Deleted file '%s' for question_id=%s", filename, qid)
         return SuccessDataResponse(status=200, detail="Deleted file ok")
 
+    async def delete_question(self, qid: str | UUID) -> Dict[str, str]:
+        try:
+            # Check if question is in database
+            question = self.qm.get_question(qid)
+            if not question:
+                raise HTTPException(status_code=404, detail="Question {qid} not found")
+
+            question_path = self.qm.get_question_path(qid, self.storage_type)  # type: ignore
+            storage = self.storage_manager.get_storage_path(
+                question_path, relative=False
+            )
+
+            # First delete from database
+            self.qm.delete_question(qid)
+            self.storage_manager.delete_storage(storage)
+            return {"status": "ok", "detail": "Deleted Question"}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=500, detail=f"Failed to delete question {e}"
+            )
+
     async def read_file(self, qid: str | UUID, filename: str):
         """
         Read a file and return its text contents.

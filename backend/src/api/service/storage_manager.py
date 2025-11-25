@@ -12,7 +12,7 @@ def get_storage_manager() -> StorageService:
         if not (settings.FIREBASE_CRED and settings.STORAGE_BUCKET):
             raise ValueError("Settings for Cloud Storage not Set")
         storage_service = FirebaseStorage(
-            base="/UCR_Questions", bucket=settings.STORAGE_BUCKET
+            root="/UCR", base="questions", bucket=settings.STORAGE_BUCKET
         )
     else:
 

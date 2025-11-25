@@ -11,6 +11,8 @@ import SearchBar from "../Base/SearchBar";
 import { QuestionAPI, useRetrievedQuestions } from "../../api";
 import { useQuestionTableContext } from "../../context/QuestionTableContext";
 import { useQuestionContext } from "../../context/QuestionContext";
+import { MyModal } from "../Base/MyModal";
+
 
 interface ActionButtonProps {
     icon: IconType;
@@ -26,6 +28,7 @@ export function ActionButton({
 }: ActionButtonProps) {
     return (
         <div
+            onClick={onClick}
             className={clsx(
                 "w-full flex justify-center border p-2 rounded-md shadow hover:scale-105 uration-300 ease-in-out",
                 className
@@ -43,6 +46,7 @@ export default function QuestionViewToolBar() {
     const { multiSelect, setMultiSelect } = useQuestionTableContext();
     const { selectedQuestions } = useQuestionContext();
     const [searchTitle, setSearchTitle] = useState<string>("");
+    const [showModal, setShowModal] = useState(false)
     const debouncedSearchTerm = useDebounce(searchTitle, 300);
 
     const questionFilter = useMemo(
@@ -60,14 +64,19 @@ export default function QuestionViewToolBar() {
         const requests = selectedQuestions.map((qId) =>
             QuestionAPI.downloadQuestion(qId)
         );
-
         const responses = await Promise.all(requests);
-
-
-        responses.map((r) => downloadZip(r.blob,r.header))
-        
+        responses.map((r) => downloadZip(r.blob, r.header))
         toast.success("Downloaded all question success");
     };
+    const handleDeleteQuestions = async () => {
+        if (!selectedQuestions.length) return;
+        const requests = selectedQuestions.map((qId) =>
+            QuestionAPI.deleteQuestion(qId)
+        );
+        await Promise.all(requests);
+        toast.success("Deleted question success");
+        window.location.reload();
+    }
 
     return (
         <div
@@ -99,13 +108,13 @@ export default function QuestionViewToolBar() {
             <ActionButton
                 icon={MdFileUpload}
                 label="Upload Question"
-                onClick={() => console.log("Clicked")}
+                onClick={() => setShowModal(prev => !prev)}
             />
 
             {/* Bottom Row — Action Buttons */}
             {multiSelect && (
                 <div className="grid grid-cols-2 gap-4">
-                    <ActionButton icon={MdDelete} label="Delete Question" onClick={() => console.log("Clicked")} />
+                    <ActionButton icon={MdDelete} label="Delete Question" onClick={handleDeleteQuestions} />
                     <ActionButton
                         icon={IoMdDownload}
                         label="Download Question"
@@ -113,6 +122,8 @@ export default function QuestionViewToolBar() {
                     />
                 </div>
             )}
+
+            {showModal && <MyModal setShowModal={setShowModal}>Upload File</MyModal>}
         </div>
     );
 }
