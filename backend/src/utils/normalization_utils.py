@@ -77,3 +77,16 @@ def normalize_content(content):
     if isinstance(content, bytes):
         return content.decode("utf-8")
     return content
+
+
+def normalize(content):
+    if isinstance(content, dict):
+        return json.dumps(content, indent=2).encode("utf-8")
+    if isinstance(content, str):
+        return content.encode("utf-8")
+    if isinstance(content, (bytes, bytearray)):
+        return content
+    raise TypeError
+
+def normalize_newlines(b: bytes) -> bytes:
+    return b.replace(b"\r\n", b"\n")

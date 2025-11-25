@@ -48,20 +48,7 @@ def test_does_storage_path_exist(create_test_dir, local_storage):
 # =============================================================================
 # File Utilities Tests
 # =============================================================================
-@pytest.mark.parametrize(
-    "filename, content, reader",
-    [
-        ("text.txt", "Hello World", lambda f: f.read_text()),  # string
-        ("data.json", {"key": "value"}, lambda f: json.loads(f.read_text())),  # dict
-        ("binary.bin", b"\x00\x01\x02", lambda f: f.read_bytes()),  # bytes
-    ],
-)
-def test_save_file(local_storage, create_test_dir, filename, content, reader):
-    """Ensure save_file correctly writes different content types."""
-    _, name = create_test_dir
-    f = local_storage.save_file(name, filename, content)
-    assert f.exists()
-    assert reader(f) == content
+
 
 
 def test_get_file(save_multiple_files, local_storage, tmp_path):

@@ -62,7 +62,7 @@ class StorageService:
 
     def download_file(
         self, target: str | Path, filename: Optional[str] = None
-    ) -> bytes:
+    ) -> bytes | None:
         """
         Explicit download operation—separate from read_file for clarity.
         Useful for cloud backends that require a distinct GET operation.

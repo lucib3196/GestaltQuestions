@@ -118,7 +118,7 @@ class LocalStorageService(StorageService):
             logger.info("Storage Path does not exist creating one ")
             return self.create_storage_path(target)
         logger.info("Storage path exist")
-        return  self.get_storage_path(target, relative=False)
+        return self.get_storage_path(target, relative=False)
 
     def does_storage_path_exist(self, target: str | Path) -> bool:
         """
@@ -167,17 +167,18 @@ class LocalStorageService(StorageService):
             return target.read_bytes()
         return None
 
-    def download_file(self, target: str | Path, filename: str | None = None) -> bytes:
-        return super().download_file(target, filename)
-
-    def get_file_path(
+    def download_file(
         self, target: str | Path, filename: str | None = None
-    ) -> str | Path:
+    ) -> bytes | None:
+        return self.read_file(target, filename)
+
+    def get_file_path(self, target: str | Path, filename: str | None = None) -> str:
+        target = Path(self.get_storage_path(target, relative=False))
         if filename:
-            path = Path(self.get_storage_path(target, relative=False)) / filename
-            return path.as_posix()
+            target = target / filename
+            return target.as_posix()
         else:
-            return self.get_storage_path(target, relative=False)
+            return target.as_posix()
 
     def open_file_stream(self, target: str | Path, filename: str) -> IO[bytes]:
         return super().open_file_stream(target, filename)

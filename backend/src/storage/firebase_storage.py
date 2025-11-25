@@ -78,32 +78,25 @@ class FirebaseStorage(StorageService):
             logger.info("Storage Path does not exist creating one ")
             return self.create_storage_path(target)
         logger.info("Storage path exist")
-        return  self.get_storage_path(target, relative=False)
+        return self.get_storage_path(target, relative=False)
 
     def does_storage_path_exist(self, target: str | Path) -> bool:
         target = self.get_storage_path(target, relative=False)
         blobs = list(self.bucket.list_blobs(prefix=target, max_results=1))
-        blob = self.bucket.blob(target)
         has_others = len(blobs) > 0
-        logger.info(f"This is the blob {blob.name} {blob.exists()}")
-        if blob.exists():
-            return True
-        return len(blobs) > 0
+        return len(blobs) > 0 or has_others
 
     def rename_storage(self, old: str | Path, new: str | Path) -> str:
-        old_path = str(old)
-        new_path = str(new)
+        # Ensure that we get the blobs in the correct path
+        old_path = self.get_storage_path(old, relative=False)
+        new_path = self.get_storage_path(new, relative=False)
 
-        old_blob = self.get_blob(old)
-
-        if not old_blob.exists():
-            logger.warning(f"Blob not found: {old_path}")
-            return str(new_path)
-
+        old_blob = self.bucket.get_blob(old_path)
+        logger.info(f"This is the old blob {old_path}, {old_blob}")
         # Copy the blob to the new location
         new_blob = self.bucket.copy_blob(old_blob, self.bucket, new_path)
-
         # Delete the original blob
+        assert old_blob
         old_blob.delete()
 
         logger.info(f"[FirebaseStorage] Renamed {old_path} → {new_path}")
@@ -115,17 +108,25 @@ class FirebaseStorage(StorageService):
     def read_file(
         self, target: str | Path, filename: Optional[str] = None
     ) -> bytes | None:
-        if self.does_file_exist(target, filename):
-            return self.get_blob(target, filename).download_as_bytes()
-        return None
+        try:
+            file = self.get_file_path(target, filename)
+            logger.info("Retrieved file %s", file)
+            blob = self.bucket.get_blob(file)
+            logger.info("Got the blob %s", blob)
+            assert blob
+            return blob.download_as_bytes()
 
-    def download_file(self, target: str | Path, filename: str | None = None) -> bytes:
-        return super().download_file(target, filename)
+        except Exception as e:
+            raise ValueError(f"Could not read contents from blob {e}")
 
-    def get_file_path(
-        self, target: str | Path, filename: str | None = None
-    ) -> str | Path:
-        return super().get_file_path(target, filename)
+    def download_file(self, target: str | Path, filename: str | None = None) -> bytes|None:
+        return self.read_file(target, filename)
+
+    def get_file_path(self, target: str | Path, filename: str | None = None) -> str:
+        storage = Path(self.get_storage_path(target, relative=False))
+        if filename:
+            return (storage / filename).as_posix()
+        return storage.as_posix()
 
     def open_file_stream(self, target: str | Path, filename: str) -> IO[bytes]:
         return super().open_file_stream(target, filename)
@@ -155,21 +156,56 @@ class FirebaseStorage(StorageService):
         content: str | dict | List | bytes | bytearray,
         filename: str | None = None,
         overwrite: bool = True,
-    ) -> Path | str:
+    ) -> str:
 
-        blob = self.get_blob(target, filename)
+        try:
+            # Resolve directory path
+            target_dir = Path(self.get_storage_path(target, relative=False))
 
-        if isinstance(content, (dict, list)):
-            content = json.dumps(content, indent=2)
-        elif isinstance(content, (bytes, bytearray)):
-            content = content.decode()
-        elif not isinstance(content, str):
-            raise ValueError(f"Unsupported content type: {type(content)}")
+            # Determine final file path
+            if filename:
+                file_path = target_dir / filename
+            else:
+                if not target_dir.is_file():
+                    raise ValueError(
+                        "A filename must be provided for non-file targets."
+                    )
+                filename = target_dir.name
+                file_path = target_dir
 
-        content_type = FileService().get_content_type(filename)
-        blob.upload_from_string(data=content, content_type=content_type)
+            # Ensure directory exists (make sure this is a DIRECTORY)
+            self.ensure_storage_path(target_dir.as_posix())
 
-        return self.get_file(target, filename)
+            # Create Firebase blob reference
+            blob = self.bucket.blob(file_path.as_posix())
+
+            # Normalize content
+            if isinstance(content, (dict, list)):
+                content_bytes = json.dumps(content, indent=2).encode("utf-8")
+
+            elif isinstance(content, str):
+                content_bytes = content.encode("utf-8")
+
+            elif isinstance(content, (bytes, bytearray)):
+                content_bytes = bytes(content)
+
+            else:
+                raise ValueError(f"Unsupported content type: {type(content)}")
+
+            # Content type detection
+            content_type = FileService().get_content_type(filename)
+
+            # Upload to Firebase
+            blob.upload_from_string(
+                data=content_bytes,
+                content_type=content_type,
+            )
+
+            # Return file path or URI
+            return self.get_file(target, filename)
+
+        except Exception as e:
+            raise ValueError(f"Could not save file '{filename}': {e}") from e
 
     # =========================================================================
     # Metadata operations
