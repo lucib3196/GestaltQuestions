@@ -286,11 +286,9 @@ class LocalStorageService(StorageService):
     # =========================================================================
 
     def list_file_names(self, target: str | Path) -> List[str]:
-        return [f.name for f in self.list_file_paths(target) if f.is_file()]
+        return [Path(f).name for f in self.list_file_paths(target) if Path(f).is_file()]
 
-    def list_file_paths(
-        self, target: str | Path, recursive: bool = False
-    ) -> List[str]:
+    def list_file_paths(self, target: str | Path, recursive: bool = False) -> List[str]:
         target = Path(self.get_storage_path(target, relative=False))
         if not target.exists():
             logger.warning(f"Target path does not exist for {target}")
