@@ -49,20 +49,20 @@ export default function UploadFiles({ onFilesSelected }: UploadFilesProp) {
 }
 
 
-export function UploadZip() {
-    const [zip, setZip] = useState(null)
+// export function UploadZip() {
+//     const [zip, setZip] = useState(null)
 
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault()
+//     const handleSubmit = async (e: FormEvent) => {
+//         e.preventDefault()
 
-        if (!zip) return;
+//         if (!zip) return;
 
-        const formData = new FormData()
-        formData.append("zip", zip);
+//         const formData = new FormData()
+//         formData.append("zip", zip);
 
-        const res = await api.post("")
+//         const res = await api.post("")
 
 
 
-    }
-}
+//     }
+// }
