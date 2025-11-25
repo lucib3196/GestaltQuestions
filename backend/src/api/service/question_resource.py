@@ -195,7 +195,7 @@ class QuestionResourceService:
             for f in batch:
                 try:
                     saved = self.storage_manager.save_file(
-                        target_dir, f.filename, content=f.content
+                        target=target_dir, filename=f.filename, content=f.content
                     )
                     saved_paths.append(saved)
                     logger.debug("Saved file '%s' -> '%s'", f.filename, saved)
@@ -233,7 +233,7 @@ class QuestionResourceService:
             "files": uploaded_all,
         }
 
-    async def get_question_files(self, question_id: str | UUID):
+    async def get_question_file_names(self, question_id: str | UUID):
         """
         Return a list of stored filenames for a question.
         """
@@ -247,6 +247,18 @@ class QuestionResourceService:
         logger.debug("Found %d files for question_id=%s", len(files), question_id)
         return SuccessFileResponse(
             status=200, detail="Retrieved files ok", filenames=files
+        )
+
+    async def get_question_filepaths(
+        self, question_id: str | UUID
+    ) -> SuccessFileResponse:
+        logger.debug("Fetching filepath list for question_id=%s", question_id)
+        question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+        assert question_path
+        filepaths = self.storage_manager.list_filepaths(question_path)
+        logger.debug("Found %d files for question_id=%s", len(filepaths), question_id)
+        return SuccessFileResponse(
+            status=200, detail="Retrieved files ok", filenames=filepaths
         )
 
     async def get_question_file(self, question_id: str | UUID, filename: str):
@@ -339,6 +351,9 @@ class QuestionResourceService:
             detail=f"Wrote file successfully to {path}",
             data=content,
         )
+
+    async def get_question_file_data(self, qid: str | UUID):
+        pass
 
 
 @lru_cache

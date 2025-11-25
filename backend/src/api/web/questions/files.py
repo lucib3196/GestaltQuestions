@@ -134,10 +134,9 @@ async def create_question_file_upload(
 
 
 @router.get("/files/{qid}")
-async def get_question_files(
+async def get_question_file_names(
     qid: str | UUID,
     qr: QuestionResourceDepencency,
-    storage_type: StorageTypeDep,
 ) -> SuccessFileResponse:
     """
     Retrieve the list of files stored for a specific question.
@@ -159,7 +158,7 @@ async def get_question_files(
         HTTPException(500): If the file list cannot be retrieved.
     """
     try:
-        return await qr.get_question_files(qid)
+        return await qr.get_question_file_names(qid)
     except HTTPException:
         raise
     except Exception as e:
