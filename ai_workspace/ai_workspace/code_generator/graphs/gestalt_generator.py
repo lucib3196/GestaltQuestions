@@ -4,7 +4,7 @@ import json
 from ai_workspace.utils import to_serializable
 
 # --- Project Imports ---
-from ai_workspace.code_generator.models.models import (
+from ai_workspace.models.models import (
     Question,
 )
 from typing import Sequence

@@ -2,7 +2,7 @@
 from datetime import date, datetime, time
 from typing import Any
 from uuid import UUID
-
+from pathlib import Path
 
 from pydantic import BaseModel
 from langchain_core.messages import SystemMessage
@@ -62,5 +62,7 @@ def to_serializable(obj: Any) -> Any:
         return obj.isoformat()
     if isinstance(obj, UUID):
         return str(obj)
+    if isinstance(obj, Path):
+        return obj.as_posix()
 
     return obj

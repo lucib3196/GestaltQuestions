@@ -13,7 +13,7 @@ from pydantic_settings import BaseSettings
 load_dotenv()
 
 # Points to the root directory adjust as needed
-ROOT_PATH = Path(__file__).parents[4]
+ROOT_PATH = Path(__file__).parents[3]
 
 
 class AppSettings(BaseSettings):
@@ -56,7 +56,7 @@ class AppSettings(BaseSettings):
         return v or ":memory:"
 
     model_config = SettingsConfigDict(
-        env_file=ROOT_PATH / ".env", env_nested_delimiter="__"
+        env_file=ROOT_PATH / ".env", env_nested_delimiter="__", extra="ignore"
     )
 
     # Static Directory

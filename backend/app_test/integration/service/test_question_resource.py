@@ -36,7 +36,7 @@ async def test_get_question_files(
         question_payload_full_dict, files=question_file_payload
     )
 
-    response = await question_resource.get_question_files(qcreated.id)
+    response = await question_resource.get_question_file_names(qcreated.id)
     assert response
     assert len(response.filenames) == len(question_file_payload)
 

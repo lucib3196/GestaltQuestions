@@ -1,14 +1,14 @@
 from typing import List, TypedDict
 from pathlib import Path
 import json
-from ai_workspace.code_generator.models.models import question_types
+
 from pydantic import BaseModel, Field
 
 # --- Project Imports ---
 from ai_workspace.ai_base.settings import get_settings
-from ai_workspace.code_generator.models.models import (
+from ai_workspace.models.models import (
     Question,
-    question_types,
+    question_types, CodeResponse
 )
 
 # --- LangChain / LangGraph ---

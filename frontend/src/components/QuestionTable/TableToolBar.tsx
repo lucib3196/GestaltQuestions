@@ -11,8 +11,6 @@ type Props = {
     onHandleDownload: () => void;
 };
 
-
-
 export function TableToolbar({
     canAct,
     count,

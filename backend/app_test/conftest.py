@@ -11,6 +11,7 @@ from src.api.core.config import get_settings
 from src.api.database.database import Base, get_session
 from src.api.main import get_application
 from src.api.models import FileData
+from src.storage.base import StorageService
 from src.api.service.question_manager import (
     QuestionManager,
     get_question_manager,
@@ -26,6 +27,7 @@ from src.api.service.question_resource import (
     get_question_resource,
 )
 from src.api.dependencies import get_storage_type
+
 settings = get_settings()
 initialize_firebase_app()
 
@@ -75,23 +77,25 @@ def _clean_db(db_session, test_engine):
 @pytest.fixture(scope="function")
 def cloud_storage_service():
     """Provide a FirebaseStorage instance connected to the test bucket."""
-    base_path = "integration_test"
-    return FirebaseStorage(settings.STORAGE_BUCKET, base_path)
-
-
-# @pytest.fixture(autouse=True)
-# def clean_up_cloud(cloud_storage_service):
-#     """Clean up the test bucket after each test."""
-#     yield
-#     cloud_storage_service.hard_delete()
-#     logger.debug("Deleting Bucket - Cleaning Up")
+    root = "test"
+    base = "questions"
+    return FirebaseStorage(settings.STORAGE_BUCKET, root=root, base=base)
 
 
 @pytest.fixture(scope="function")
 def local_storage(tmp_path):
     """Provide a LocalStorageService rooted in a temporary directory."""
     root = tmp_path
+    base = "questions"
     return LocalStorageService(root, base="questions")
+
+
+@pytest.fixture(autouse=True)
+def clean_up_cloud(cloud_storage_service):
+    """Clean up the test bucket after each test."""
+    yield
+    cloud_storage_service.hard_delete()
+    logger.debug("Deleting Bucket - Cleaning Up")
 
 
 # =========================================
@@ -114,7 +118,9 @@ def storage_mode(request):
 
 
 @pytest.fixture(scope="function")
-def active_storage_backend(storage_mode, cloud_storage_service, local_storage):
+def active_storage_backend(
+    storage_mode, cloud_storage_service, local_storage
+) -> StorageService:
     """
     Selects the correct storage backend for a test run.
     """
@@ -163,7 +169,7 @@ def api_client(
     question_manager,
     question_resource,
     active_storage_backend,
-    storage_mode
+    storage_mode,
 ):
     """
     Provides a FastAPI TestClient with dependency overrides for DB, storage,
@@ -184,7 +190,7 @@ def api_client(
 
     async def override_get_storage():
         yield active_storage_backend
-        
+
     async def override_storage_mode():
         yield storage_mode
 
@@ -204,25 +210,7 @@ def api_client(
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture
-def patch_question_dir(monkeypatch):
-    """Patch QUESTIONS_DIRNAME to a test directory name."""
-    dir_name = "test_question"
-    monkeypatch.setattr(settings, "QUESTIONS_DIRNAME", dir_name)
-    return dir_name
 
-
-@pytest.fixture
-def patch_questions_path(monkeypatch, tmp_path, patch_question_dir):
-    """Patch BASE_PATH and QUESTIONS_PATH to a temporary directory on disk."""
-    base_path = tmp_path.resolve()
-    monkeypatch.setattr(settings, "BASE_PATH", str(base_path))
-
-    questions_path = base_path / patch_question_dir
-    questions_path.mkdir(parents=True, exist_ok=True)
-    monkeypatch.setattr(settings, "QUESTIONS_PATH", str(questions_path))
-
-    return questions_path
 
 
 @pytest.fixture(autouse=True)

@@ -186,12 +186,7 @@ async def get_all_questions_data(
 
 
 @router.delete("/{id}")
-async def delete_question(
-    id: str | UUID,
-    qm: QuestionManagerDependency,
-    storage: StorageDependency,
-    storage_type: StorageTypeDep,
-):
+async def delete_question(id: str | UUID, qr: QuestionResourceDepencency):
     """
     Delete a question from the database and remove any associated stored files.
 
@@ -217,26 +212,7 @@ async def delete_question(
         Exception: Propagates any unexpected errors encountered during deletion.
     """
     try:
-        question = await get_question(id, qm)
-        if not question:
-            raise HTTPException(
-                status_code=404, detail="Question not found nothing to delete"
-            )
-        question_path = qm.get_question_path(
-            question.id,
-            storage_type,
-        )
-
-        assert qm.delete_question(id)
-        if not question_path:
-            logger.warning(
-                "Question of ID: {question.id} Title: {question.title} does not have a storage path will still delete from database but may cause issues"
-            )
-            return {"status": "ok", "detail": "Deleted Question"}
-
-        storage.delete_storage(question_path)
-        return {"status": "ok", "detail": "Deleted Question"}
-
+        return await qr.delete_question(id)
     except Exception:
         raise
 

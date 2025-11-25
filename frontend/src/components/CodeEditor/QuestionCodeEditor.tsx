@@ -3,7 +3,7 @@ import { LogOutput } from "./LogPrint";
 import { Loading } from "../Base/Loading";
 import { useCodeEditorContext } from "../../context/CodeEditorContext";
 import { CodeEditorToolBar } from "./CodeEditorToolBar";
-import { useQuestionFiles } from "../../hooks/codeEditorHooks";
+import { useQuestionFiles } from "../../hooks/useCodeEditor";
 import { useState, useEffect } from "react";
 import { getImageBase64FileData, isImageExt } from "../../utils/parsers";
 

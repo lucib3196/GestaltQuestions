@@ -153,4 +153,27 @@ export class QuestionAPI {
     );
     return response.data;
   }
+
+  static async downloadQuestion(questionId: string) {
+    const response = await api.post(
+      `${this.base}/files/${encodeURIComponent(questionId)}/download`,
+      null,
+      {
+        responseType: "blob",
+      }
+    );
+    return {
+      blob: response.data as Blob,
+      header: response.headers["content-disposition"],
+    };
+  }
+
+  static async uploadQuestionZip(zipFile: File[]) {
+    if (zipFile.length > 1) return;
+    const file = zipFile[0];
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await api.post(`${this.base}/upload_zip`, formData);
+    return response.data;
+  }
 }

@@ -140,7 +140,7 @@ async def check_local_unsync(
 ) -> Sequence[UnsyncedQuestion]:
     try:
 
-        path = Path(storage.get_base_path()).resolve()
+        path = Path(storage.get_root_path()).resolve()
         logger.info(f"Checking the path {path}")
         if not path.exists():
             logger.debug("Creating base path. It does not exist")

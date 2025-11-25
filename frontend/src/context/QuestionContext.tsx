@@ -14,10 +14,13 @@ import type { QuestionMeta } from "../types/questionTypes";
 type QuestionContextType = {
     selectedQuestionID: string | null;
     setSelectedQuestionID: React.Dispatch<React.SetStateAction<string>>;
+    selectedQuestions: string[];
+    setSelectedQuestions: React.Dispatch<React.SetStateAction<string[]>>;
     questionMeta: QuestionMeta | null;
     setQuestionMeta: React.Dispatch<React.SetStateAction<QuestionMeta | null>>;
     questions: QuestionMeta[];
     setQuestions: Dispatch<React.SetStateAction<QuestionMeta[]>>;
+
 };
 
 export const QuestionContext = createContext<QuestionContextType | null>(null);
@@ -26,6 +29,7 @@ export function QuestionProvider({ children }: { children: ReactNode }) {
     const [questions, setQuestions] = useState<QuestionMeta[]>([]);
     const [questionMeta, setQuestionMeta] = useState<QuestionMeta | null>(null);
     const [selectedQuestionID, setSelectedQuestionID] = useState<string>("");
+    const [selectedQuestions, setSelectedQuestions] = useState<string[]>([])
 
     const fetchQuestionMeta = useCallback(async () => {
         if (!selectedQuestionID) return;
@@ -50,6 +54,8 @@ export function QuestionProvider({ children }: { children: ReactNode }) {
                 setSelectedQuestionID,
                 questionMeta,
                 setQuestionMeta,
+                selectedQuestions,
+                setSelectedQuestions
             }}
         >
             {children}

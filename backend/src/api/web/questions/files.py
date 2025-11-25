@@ -6,6 +6,7 @@ import json
 import mimetypes
 from typing import List
 from uuid import UUID
+from pathlib import Path
 
 # -------------------------
 # Third-Party Imports
@@ -27,7 +28,7 @@ from src.api.models import (
     SuccessFileResponse,
 )
 from src.api.models.models import Question
-from src.api.service.file_service import FileServiceDep
+from src.api.service.file_service import FileServiceDep, FileService
 from src.api.service.question_manager import QuestionManagerDependency
 from src.api.service.question_resource import QuestionResourceDepencency
 from src.api.service.storage_manager import StorageDependency
@@ -134,10 +135,9 @@ async def create_question_file_upload(
 
 
 @router.get("/files/{qid}")
-async def get_question_files(
+async def get_question_file_names(
     qid: str | UUID,
     qr: QuestionResourceDepencency,
-    storage_type: StorageTypeDep,
 ) -> SuccessFileResponse:
     """
     Retrieve the list of files stored for a specific question.
@@ -159,7 +159,7 @@ async def get_question_files(
         HTTPException(500): If the file list cannot be retrieved.
     """
     try:
-        return await qr.get_question_files(qid)
+        return await qr.get_question_file_names(qid)
     except HTTPException:
         raise
     except Exception as e:
@@ -315,8 +315,6 @@ async def upload_files_to_question(
         )
 
 
-
-
 @router.get("/filedata/{qid}")
 async def get_filedata(
     qid: str | UUID,
@@ -327,7 +325,9 @@ async def get_filedata(
     try:
         question = qm.get_question(qid)
         question_path = qm.get_question_path(question.id, storage_type)
-        file_paths = storage.list_filepaths(question_path, recursive=True)
+        file_paths = [
+            Path(f) for f in storage.list_file_paths(question_path, recursive=True)
+        ]
         logger.info("These are the file paths", file_paths)
         file_data = []
         for f in file_paths:
@@ -370,17 +370,16 @@ async def download_question_file(
     qid: str | UUID,
     filename: str,
     qm: QuestionManagerDependency,
-    storage: StorageDependency,
-    fm: FileServiceDep,
-    storage_type: StorageTypeDep,
+    qr: QuestionResourceDepencency,
 ):
     try:
         question = qm.get_question(qid)
-        question_path = qm.get_question_path(question.id, storage_type)
-        filepath = storage.get_file(question_path, filename)
         folder_name = f"{question.title}_download"
+        file_path = await qr.get_question_file(qid, filename)
 
-        zip_bytes = await fm.download_zip(files=[filepath], folder_name=folder_name)
+        zip_bytes = await FileService().download_zip(
+            files=[file_path], folder_name=folder_name
+        )
 
         return Response(
             content=zip_bytes,
@@ -397,26 +396,27 @@ async def download_question_file(
         )
 
 
-@router.post("/files/{id}/download")
+@router.post("/files/{qid}/download")
 async def download_question(
     qid: str | UUID,
     qm: QuestionManagerDependency,
-    storage: StorageDependency,
-    fm: FileServiceDep,
-    storage_type: StorageTypeDep,
+    qr: QuestionResourceDepencency,
 ):
     try:
         question = qm.get_question(qid)
-        question_path = qm.get_question_path(question.id, storage_type)
-        files = storage.list_filepaths(question_path)
+        data = await qr.get_question_filepaths(qid)
         folder_name = f"{question.title}_download"
 
-        zip_bytes = await fm.download_zip(files=files, folder_name=folder_name)
+        zip_bytes = await FileService().download_zip(
+            files=[Path(f) for f in data.filenames], folder_name=folder_name
+        )
 
         return Response(
             content=zip_bytes,
             media_type="application/zip",
-            headers={"Content-Disposition": f"attachment; filename={folder_name}.zip"},
+            headers={
+                "Content-Disposition": f'attachment; filename="{folder_name}.zip"'
+            },
         )
 
     except HTTPException:
@@ -426,3 +426,9 @@ async def download_question(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Could not get files {e}",
         )
+
+
+@router.post("/upload_zip")
+async def upload_zip(file: UploadFile, storage: StorageDependency):
+    save_path = storage.get_base_path()
+    return await FileService().upload_zip_and_extract(file, save_path)
