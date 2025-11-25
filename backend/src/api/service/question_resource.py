@@ -55,6 +55,19 @@ class QuestionResourceService:
         self.storage_type = storage_type
         self.client_path = image_location
 
+    # Basic retrieval and checks
+    async def get_question_path(
+        self, qid: str | UUID, relative: bool = True
+    ) -> str | Path:
+        rel_path = self.qm.get_question_path(qid, self.storage_type)  # type: ignore
+        if relative:
+            return rel_path
+        return self.storage_manager.get_storage_path(rel_path, False)
+
+    async def does_question_path_exist(self, qid: str | UUID) -> bool:
+        path = await self.get_question_path(qid, relative=False)
+        return self.storage_manager.does_storage_path_exist(path)
+
     async def create_question(
         self,
         question_data: QuestionData | dict,

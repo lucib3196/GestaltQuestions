@@ -276,28 +276,23 @@ async def sync_questions(
 
 
 async def prune_question(
-    q: Question, qm: QuestionManagerDependency, storage: StorageDependency
+    q: Question, qr: QuestionResourceDepencency
 ) -> Literal["ok", "deleted", "bug"]:
-    if not q.local_path:
-        qm.delete_question(q.id)
-        return "deleted"
-    question_path = Path(storage.get_storage_path(q.local_path, relative=False))
-    if question_path.exists():
-        logger.debug(f"✅ Folder exists for '{q.title}' → {question_path}")
-        return "ok"
-    else:
-        try:
-            qm.delete_question(q.id)
+    try:
+        # Check that the question has a path
+        if await qr.does_question_path_exist(q.id):  # type: ignore
+            return "ok"
+        else:
+            # Just delete from database record, this should eventually be more robust but it should work
+            qr.qm.delete_question(q.id)
             return "deleted"
-        except Exception as e:
-            logger.exception(f"⚠️ Failed to delete '{q.title}' from DB: {e}")
-            return "bug"
+    except Exception as e:
+        logger.exception(f"⚠️ Failed to delete '{q.title}' from DB: {e}")
+        return "bug"
 
 
-async def prune_questions(
-    qm: QuestionManagerDependency, storage: StorageDependency
-) -> FolderCheckMetrics:
-    all_questions = qm.get_all_questions(
+async def prune_questions(qr: QuestionResourceDepencency) -> FolderCheckMetrics:
+    all_questions = qr.qm.get_all_questions(
         0,
         1000,
     )
@@ -310,9 +305,7 @@ async def prune_questions(
         )
 
     total_checked = len(all_questions)
-    prune_status = await asyncio.gather(
-        *[prune_question(q, qm, storage) for q in all_questions]
-    )
+    prune_status = await asyncio.gather(*[prune_question(q, qr) for q in all_questions])
 
     categorized = defaultdict(list)
     for question, status in zip(all_questions, prune_status):

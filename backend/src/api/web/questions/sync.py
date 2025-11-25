@@ -21,9 +21,6 @@ async def check_sync_status(
         raise HTTPException(status_code=500, detail=f"Failed to check sync {e}")
 
 
-
-
-
 @router.post("/sync_questions")
 async def sync_questions(qr: QuestionResourceDepencency) -> SyncResponse:
     try:
@@ -34,10 +31,8 @@ async def sync_questions(qr: QuestionResourceDepencency) -> SyncResponse:
 
 
 @router.post("/prune_missing_questions")
-async def prune_missing_questions(
-    qm: QuestionManagerDependency, storage: StorageDependency
-) -> FolderCheckMetrics:
+async def prune_missing_questions(qr: QuestionResourceDepencency) -> FolderCheckMetrics:
     try:
-        return await sync.prune_questions(qm, storage)
+        return await sync.prune_questions(qr)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to prune {e}")
