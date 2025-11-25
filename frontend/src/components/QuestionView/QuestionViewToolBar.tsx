@@ -1,19 +1,17 @@
 import { useState, useMemo } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
 import clsx from "clsx";
-import { downloadZip } from "../../utils/downloadUtils";
 import { BiSelectMultiple } from "react-icons/bi";
 import type { IconType } from "react-icons";
 import { IoMdDownload } from "react-icons/io";
 import { MdDelete, MdFileUpload } from "react-icons/md";
-import { toast } from "react-toastify";
 import SearchBar from "../Base/SearchBar";
-import { QuestionAPI, useRetrievedQuestions } from "../../api";
+import { useRetrievedQuestions } from "../../api";
 import { useQuestionTableContext } from "../../context/QuestionTableContext";
-import { useQuestionContext } from "../../context/QuestionContext";
 import { MyModal } from "../Base/MyModal";
-import UploadFiles from "../Forms/UploadFileComponent";
 import { useQuestionToolBarActions } from "../../hooks/useQuestionsToolBarActions";
+import UploadZipQuestionModal from "./UploadZipQuestionModal";
+
 
 interface ActionButtonProps {
     icon: IconType;
@@ -35,7 +33,7 @@ export function ActionButton({
                 className
             )}
         >
-            <button onClick={onClick} className="flex items-center gap-2">
+            <button onClick={() => onClick} className="flex items-center gap-2">
                 <Icon size={18} />
                 {label}
             </button>
@@ -108,7 +106,10 @@ export default function QuestionViewToolBar() {
                 </div>
             )}
 
-            {showModal && <MyModal setShowModal={setShowModal}><UploadFiles onFilesSelected={handleQuestionUpload} message="Upload a Zip Folder" accept={"zip"} multiple={false} /></MyModal>}
+            {showModal && <MyModal setShowModal={setShowModal}><UploadZipQuestionModal /></MyModal>}
         </div>
     );
 }
+
+
+
