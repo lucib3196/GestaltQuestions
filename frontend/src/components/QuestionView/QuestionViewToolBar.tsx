@@ -12,7 +12,7 @@ import { QuestionAPI, useRetrievedQuestions } from "../../api";
 import { useQuestionTableContext } from "../../context/QuestionTableContext";
 import { useQuestionContext } from "../../context/QuestionContext";
 import { MyModal } from "../Base/MyModal";
-
+import UploadFiles from "../Forms/UploadFileComponent";
 
 interface ActionButtonProps {
     icon: IconType;
@@ -47,6 +47,7 @@ export default function QuestionViewToolBar() {
     const { selectedQuestions } = useQuestionContext();
     const [searchTitle, setSearchTitle] = useState<string>("");
     const [showModal, setShowModal] = useState(false)
+
     const debouncedSearchTerm = useDebounce(searchTitle, 300);
 
     const questionFilter = useMemo(
@@ -76,6 +77,16 @@ export default function QuestionViewToolBar() {
         await Promise.all(requests);
         toast.success("Deleted question success");
         window.location.reload();
+    }
+    const handleQuestionUpload = async (zipFile: File[]) => {
+
+        try {
+            await QuestionAPI.uploadQuestionZip(zipFile)
+
+        } catch (error) {
+            console.error(error)
+            toast.error("Could not upload question zip try again")
+        }
     }
 
     return (
@@ -123,7 +134,7 @@ export default function QuestionViewToolBar() {
                 </div>
             )}
 
-            {showModal && <MyModal setShowModal={setShowModal}>Upload File</MyModal>}
+            {showModal && <MyModal setShowModal={setShowModal}><UploadFiles onFilesSelected={handleQuestionUpload} message="Upload a Zip Folder" accept={"zip"} multiple={false} /></MyModal>}
         </div>
     );
 }
