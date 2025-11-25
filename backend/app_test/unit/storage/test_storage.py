@@ -2,6 +2,8 @@ import pytest
 from typing import Literal, Tuple
 from pathlib import Path
 from src.utils import normalize, normalize_newlines
+from io import BytesIO
+
 
 storage_type: Literal["local", "cloud"]
 
@@ -14,6 +16,7 @@ def create_test_dir(active_storage_backend) -> Tuple[Path, str]:
     print("[TEST] This is the created dir", created_dir)
     return created_dir, testdir
 
+
 # -------------------------------------------------------------------------
 # Initialization / Lifecycle
 # -------------------------------------------------------------------------
@@ -23,6 +26,7 @@ def test_storage_initialization(active_storage_backend):
 
     assert backend.get_root_path() is not None
     assert backend.get_base_path() is not None
+
 
 # -------------------------------------------------------------------------
 # base_path path operations
@@ -50,10 +54,12 @@ def test_get_relative_to_base(active_storage_backend):
 
     path_to_check = f"MyQuestion"
     assert backend.get_relative_to_base(path_to_check) == correct_path
-    
+
+
 # =========================================================================
 # Storage path operations
 # =========================================================================
+
 
 def test_create_storage_path(
     create_test_dir, active_storage_backend, tmp_path, storage_mode
@@ -96,8 +102,8 @@ def test_ensure_storage_path_nonexist(active_storage_backend, create_test_dir):
     folder_name = "MyNewQuestion"
     created = backend.ensure_storage_path(folder_name)
     print("This is the created", created)
-    
-    
+
+
 def test_storage_path_exist(active_storage_backend, create_test_dir):
     backend = active_storage_backend
     created, folder_name = create_test_dir
@@ -116,11 +122,12 @@ def test_rename_storage(active_storage_backend, create_test_dir):
     # Assert that the old one does not exist
     assert backend.does_storage_path_exist(old_name) is False
     assert backend.does_storage_path_exist(renamed_storage) is True
-    
-    
+
+
 # =========================================================================
 # File operations: read, write, fetch
 # =========================================================================
+
 
 @pytest.mark.parametrize(
     "filename, content",
@@ -163,6 +170,7 @@ def test_read_file(active_storage_backend, create_test_dir, filename, content):
 
     assert normalize_newlines(raw_bytes) == normalize_newlines(normalize(content))
 
+
 # Same current functionality as read file
 @pytest.mark.parametrize(
     "filename, content",
@@ -189,9 +197,103 @@ def test_download_file(active_storage_backend, create_test_dir, filename, conten
         ("binary.bin", b"\x00\x01\x02"),  # bytes → raw bytes
     ],
 )
-def test_get_file_path(active_storage_backend, create_test_dir,filename,  content):
+def test_get_file_path(active_storage_backend, create_test_dir, filename, content):
     target, _ = create_test_dir
     active_storage_backend.save_file(target, content, filename)
-    target_path = Path(target)/filename
-    assert active_storage_backend.get_file_path(target,filename) == target_path.as_posix()
-    
+    target_path = Path(target) / filename
+    assert (
+        active_storage_backend.get_file_path(target, filename) == target_path.as_posix()
+    )
+
+
+@pytest.mark.parametrize(
+    "filename, file_content",
+    [
+        ("hello.txt", b"Hello World"),  # raw bytes
+        ("data.bin", b"\x00\x01\x02\x03"),  # binary content
+        ("from_io.txt", BytesIO(b"streamed data")),  # file-like object
+    ],
+)
+def test_upload_file(active_storage_backend, create_test_dir, filename, file_content):
+    target, _ = create_test_dir
+
+    if isinstance(file_content, BytesIO):
+        file_obj = file_content
+        expected_bytes = file_content.getvalue()
+    else:
+        file_obj = BytesIO(file_content)
+        expected_bytes = file_content
+
+    # Upload the file
+    upload = active_storage_backend.upload_file(
+        file_obj=file_obj,
+        target=target,
+        filename=filename,
+        content_type="application/octet-stream",
+    )
+    assert upload is not None
+    assert active_storage_backend.read_file(target, filename) == expected_bytes
+
+
+# =========================================================================
+# File listing, checks, existence
+# =========================================================================
+def test_list_file_paths(active_storage_backend):
+    data = [
+        ("text.txt", "Hello World"),  # string
+        ("data.json", {"key": "value"}),  # dict → json
+        ("binary.bin", b"\x00\x01\x02"),  # bytes → raw bytes
+    ]
+
+    # Create a directory that will hold all files
+    target = active_storage_backend.create_storage_path("MyFullDir")
+
+    # Save all test files
+    for filename, content in data:
+        active_storage_backend.save_file(
+            target=target, content=content, filename=filename
+        )
+
+    # Retrieve file paths
+    retrieved_paths = active_storage_backend.list_file_paths(target)
+
+    # Number of returned files should match what we saved
+    assert len(retrieved_paths) == len(data)
+
+    # Normalize expected filenames
+    expected_filenames = sorted([name for name, _ in data])
+
+    # Extract actual filenames (end of path)
+    actual_filenames = sorted([Path(p).name for p in retrieved_paths])
+
+    assert actual_filenames == expected_filenames
+
+
+
+def test_list_file_names(active_storage_backend):
+    data = [
+        ("text.txt", "Hello World"),  # string
+        ("data.json", {"key": "value"}),  # dict → json
+        ("binary.bin", b"\x00\x01\x02"),  # bytes → raw bytes
+    ]
+
+    # Create a directory that will hold all files
+    target = active_storage_backend.create_storage_path("MyFullDir")
+
+    # Save all test files
+    for filename, content in data:
+        active_storage_backend.save_file(
+            target=target, content=content, filename=filename
+        )
+    retrieved_paths = active_storage_backend.list_file_names(target)
+
+    # Number of returned files should match what we saved
+    assert len(retrieved_paths) == len(data)
+
+    # Normalize expected filenames
+    expected_filenames = sorted([name for name, _ in data])
+
+    # Extract actual filenames (end of path)
+    actual_filenames = sorted([Path(p).name for p in retrieved_paths])
+
+    assert actual_filenames == expected_filenames

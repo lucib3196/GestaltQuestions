@@ -127,7 +127,7 @@ class StorageService:
 
     def list_file_paths(
         self, target: str | Path, recursive: bool = False
-    ) -> List[Path]:
+    ) -> List[str]:
         raise NotImplementedError
 
     def does_file_exist(self, target: str | Path, filename: str | None = None) -> bool:

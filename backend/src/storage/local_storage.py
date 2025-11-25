@@ -190,7 +190,15 @@ class LocalStorageService(StorageService):
         filename: str | None = None,
         content_type: str = "application/octet-stream",
     ) -> Blob | Path:
-        return super().upload_file(file_obj, target, filename, content_type)
+        self.get_file_path(target, filename)
+        if isinstance(file_obj, bytes):
+            return self.save_file(target, file_obj, filename)
+        else:
+            try:
+                file_obj.seek(0)
+            except Exception:
+                pass  # not all IO objects support seek
+        return self.save_file(target, file_obj.read(), filename)
 
     def get_file(
         self, target: str | Path, filename: str | None = None, recursive: bool = False
@@ -282,15 +290,15 @@ class LocalStorageService(StorageService):
 
     def list_file_paths(
         self, target: str | Path, recursive: bool = False
-    ) -> List[Path]:
+    ) -> List[str]:
         target = Path(self.get_storage_path(target, relative=False))
         if not target.exists():
             logger.warning(f"Target path does not exist for {target}")
             return []
         if recursive:
-            return [f for f in target.rglob("*")]
+            return [f.as_posix() for f in target.rglob("*")]
         else:
-            return [f for f in target.iterdir()]
+            return [f.as_posix() for f in target.iterdir()]
 
     def does_file_exist(self, target: str | Path, filename: str | None = None) -> bool:
         return super().does_file_exist(target, filename)

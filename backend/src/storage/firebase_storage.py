@@ -119,7 +119,9 @@ class FirebaseStorage(StorageService):
         except Exception as e:
             raise ValueError(f"Could not read contents from blob {e}")
 
-    def download_file(self, target: str | Path, filename: str | None = None) -> bytes|None:
+    def download_file(
+        self, target: str | Path, filename: str | None = None
+    ) -> bytes | None:
         return self.read_file(target, filename)
 
     def get_file_path(self, target: str | Path, filename: str | None = None) -> str:
@@ -133,21 +135,45 @@ class FirebaseStorage(StorageService):
 
     def upload_file(
         self,
-        file_obj: IO[bytes],
+        file_obj: IO[bytes] | bytes,
         target: str | Path,
         filename: str | None = None,
         content_type: str = "application/octet-stream",
     ) -> Blob:
-        destination_blob = self.get_file(target, filename)
-        blob = self.bucket.blob(destination_blob)
-        if isinstance(file_obj, bytes):
-            blob.upload_from_string(file_obj, content_type=content_type)
+        """
+        Upload a file to Firebase Storage. Supports both raw bytes and file-like objects.
+        """
+        target_dir = Path(self.get_storage_path(target, relative=False))
+
+        # Determine final file path
+        if filename:
+            file_path = target_dir / filename
         else:
-            try:
-                file_obj.seek(0)
-            except Exception:
-                pass  # not all IO objects support seek
-        blob.upload_from_file(file_obj, content_type=content_type)
+            if not target_dir.is_file():
+                raise ValueError("A filename must be provided for non-file targets.")
+            filename = target_dir.name
+            file_path = target_dir
+        blob = self.bucket.blob(file_path.as_posix())
+
+        # --- Case 1: raw bytes passed directly
+        if isinstance(file_obj, (bytes, bytearray)):
+            blob.upload_from_string(
+                data=file_obj,
+                content_type=content_type,
+            )
+            return blob
+
+        # --- Case 2: file-like object (e.g., BytesIO, uploaded file)
+        try:
+            file_obj.seek(0)  # type: ignore
+        except Exception:
+            pass  # ignore if stream doesn't support seeking
+
+        blob.upload_from_file(
+            file_obj,
+            content_type=content_type,
+        )
+
         return blob
 
     def save_file(
@@ -202,7 +228,7 @@ class FirebaseStorage(StorageService):
             )
 
             # Return file path or URI
-            return self.get_file(target, filename)
+            return self.get_file_path(target, filename)
 
         except Exception as e:
             raise ValueError(f"Could not save file '{filename}': {e}") from e
@@ -218,16 +244,43 @@ class FirebaseStorage(StorageService):
     ) -> str:
         return super().get_public_url(target, filename, expires_in)
 
-    def list_file_names(self, target: str | Path) -> List[str]:
-        return super().list_file_names(target)
+    # =========================================================================
+    # File listing, checks, existence
+    # =========================================================================
 
-    def list_file_paths(
-        self, target: str | Path, recursive: bool = False
-    ) -> List[Path]:
-        return super().list_file_paths(target, recursive)
+    def list_file_names(self, target: str | Path) -> List[str]:
+        # list_file_paths returns cloud paths like: "questions/MyDir/file.txt"
+        paths = self.list_file_paths(target)
+
+        # Extract only filenames
+        filenames = [Path(p).name for p in paths]
+
+        # Filter out any folder markers (rare, but safe)
+        return [name for name in filenames if name and not name.endswith("/")]
+
+    def list_file_paths(self, target: str | Path, recursive: bool = False) -> List[str]:
+        target = Path(self.get_storage_path(target, relative=False)).as_posix()
+
+        # Ensure consistent prefix ending
+        if not target.endswith("/"):
+            target = target + "/"
+
+        blobs = list(self.bucket.list_blobs(prefix=target))
+
+        if not recursive:
+            # Only return immediate children (no nested directories)
+            result = []
+            for blob in blobs:
+                relative = blob.name[len(target) :]  # strip prefix
+                if "/" not in relative:  # ensure not nested
+                    result.append(blob.name)
+            return result
+
+        # Recursive: include everything under this prefix
+        return [blob.name for blob in blobs]
 
     def does_file_exist(self, target: str | Path, filename: str | None = None):
-        return self.get_blob(target, filename).exists()
+        return Path(self.get_file_path(target, filename)).exists()
 
     # =========================================================================
     # Mutating operations: copy, move, delete
@@ -270,12 +323,6 @@ class FirebaseStorage(StorageService):
                 logger.error("Blob not found, nothing to delete.")
         return None
 
-    def get_file(self, target: str | Path, filename: str | None = None) -> str:
-        target = self.get_storage_path(target, relative=True)
-        if filename:
-            target = (Path(target) / filename).as_posix()
-        return target
-
     def hard_delete(self):
         blobs = self.bucket.list_blobs(prefix=str(self.base))
         try:
@@ -284,33 +331,3 @@ class FirebaseStorage(StorageService):
                 blob.delete()
         except NotFound:
             logger.warning("Base directory not found, nothing to delete.")
-
-    # def get_blob(self, blob_name: str | Path, filename: Optional[str] = None) -> Blob:
-    #     if isinstance(blob_name, Path):
-    #         blob_name = blob_name.as_posix()
-    #     if not filename:
-    #         return self.bucket.blob(blob_name)
-    #     return self.bucket.blob(self.get_file(blob_name, filename))
-
-    def list_files(self, target: str | Path) -> List[str]:
-        # Always use relative path inside cloud bucket
-        target = Path(self.get_storage_path(target, relative=True)).as_posix()
-
-        blobs = self.bucket.list_blobs(prefix=target)
-
-        filenames = []
-        for b in blobs:
-            name = b.name
-
-            # Skip the folder prefix (GCS returns folder entries too)
-            if name.endswith("/"):
-                continue
-            # Skip the acutal folder name
-            if name == target:
-                continue
-
-            # Extract only the filename
-            filename = Path(name).name
-            filenames.append(filename)
-
-        return filenames
