@@ -110,10 +110,9 @@ class FirebaseStorage(StorageService):
     ) -> bytes | None:
         try:
             file = self.get_file_path(target, filename)
-            logger.info("Retrieved file %s", file)
             blob = self.bucket.get_blob(file)
-            logger.info("Got the blob %s", blob)
-            assert blob
+            if blob is None:
+                return None
             return blob.download_as_bytes()
 
         except Exception as e:
@@ -308,26 +307,15 @@ class FirebaseStorage(StorageService):
         )
 
     def delete_file(self, target: str | Path, filename: str | None = None) -> None:
-
-        b = self.get_blob(target, filename)
-        if b.exists():
-            b.delete()
+        target = self.get_file_path(target, filename)
+        blob = self.bucket.get_blob(target)
+        if blob and blob.exists():
+            blob.delete()
 
     def delete_storage(self, target: str | Path) -> None:
-        target = Path(self.get_storage_path(target)).as_posix()
-        for blob in self.bucket.list_blobs(prefix=target):
-            try:
-                logger.info("Deleting %s", blob.name)
-                blob.delete()
-            except NotFound:
-                logger.error("Blob not found, nothing to delete.")
-        return None
+        file_paths = self.list_file_paths(target)
+        for f in file_paths:
+            self.delete_file(f)
 
-    def hard_delete(self):
-        blobs = self.bucket.list_blobs(prefix=str(self.base))
-        try:
-            for blob in blobs:
-                logger.info("Deleting %s", blob.name)
-                blob.delete()
-        except NotFound:
-            logger.warning("Base directory not found, nothing to delete.")
+    def hard_delete(self) -> None:
+        self.delete_storage(self.get_root_path())

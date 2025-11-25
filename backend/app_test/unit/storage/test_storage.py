@@ -20,7 +20,7 @@ def create_test_dir(active_storage_backend) -> Tuple[Path, str]:
 @pytest.fixture
 def save_multiple_files(active_storage_backend, create_test_dir):
     """Save multiple test files (string, dict, bytes) under a temporary directory."""
-    _, name = create_test_dir
+    dir, name = create_test_dir
     files = [
         ("text.txt", "Hello World"),  # string
         ("data.json", {"key": "value"}),  # dict
@@ -28,9 +28,13 @@ def save_multiple_files(active_storage_backend, create_test_dir):
     ]
 
     for filename, content in files:
-        active_storage_backend.save_file(name, filename, content)
+        active_storage_backend.save_file(
+            name,
+            content,
+            filename,
+        )
 
-    return files, name
+    return dir
 
 
 # -------------------------------------------------------------------------
@@ -312,15 +316,17 @@ def test_list_file_names(active_storage_backend):
 
 def test_delete_file(save_multiple_files, active_storage_backend):
     """Ensure delete_file removes files as expected."""
-    files, name = save_multiple_files
-    for filename, _ in files:
-        active_storage_backend.delete_file(name, filename)
-        assert active_storage_backend.read_file(name, filename) is None
+    dir = save_multiple_files
+    files = active_storage_backend.list_file_paths(dir)
+    print("This is the filepath", files)
+    for f in files:
+        active_storage_backend.delete_file(f)
+        assert active_storage_backend.read_file(f) is None
 
 
 def test_empty_directory(create_test_dir, active_storage_backend):
     """Check that a newly created directory is empty."""
-    _, name = create_test_dir
-    active_storage_backend.delete_storage(name)
-    f = active_storage_backend.list_files(name)
+    dir, _ = create_test_dir
+    active_storage_backend.delete_storage(dir)
+    f = active_storage_backend.list_file_paths(dir)
     assert f == []

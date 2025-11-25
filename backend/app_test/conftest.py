@@ -90,12 +90,12 @@ def local_storage(tmp_path):
     return LocalStorageService(root, base="questions")
 
 
-# @pytest.fixture(autouse=True)
-# def clean_up_cloud(cloud_storage_service):
-#     """Clean up the test bucket after each test."""
-#     yield
-#     cloud_storage_service.hard_delete()
-#     logger.debug("Deleting Bucket - Cleaning Up")
+@pytest.fixture(autouse=True)
+def clean_up_cloud(cloud_storage_service):
+    """Clean up the test bucket after each test."""
+    yield
+    cloud_storage_service.hard_delete()
+    logger.debug("Deleting Bucket - Cleaning Up")
 
 
 # =========================================
@@ -210,25 +210,7 @@ def api_client(
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture
-def patch_question_dir(monkeypatch):
-    """Patch QUESTIONS_DIRNAME to a test directory name."""
-    dir_name = "test_question"
-    monkeypatch.setattr(settings, "QUESTIONS_DIRNAME", dir_name)
-    return dir_name
 
-
-@pytest.fixture
-def patch_questions_path(monkeypatch, tmp_path, patch_question_dir):
-    """Patch BASE_PATH and QUESTIONS_PATH to a temporary directory on disk."""
-    base_path = tmp_path.resolve()
-    monkeypatch.setattr(settings, "BASE_PATH", str(base_path))
-
-    questions_path = base_path / patch_question_dir
-    questions_path.mkdir(parents=True, exist_ok=True)
-    monkeypatch.setattr(settings, "QUESTIONS_PATH", str(questions_path))
-
-    return questions_path
 
 
 @pytest.fixture(autouse=True)
