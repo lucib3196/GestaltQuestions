@@ -6,19 +6,19 @@ type QuestionButtonProps = {
   isSubmitted: boolean;
   showSolution: () => void;
   handleSubmit: (e: FormEvent) => void;
-  generateVarient: () => void;
+  generateVariant: () => void;
 };
 export function QuestionButtons({
   isSubmitted,
   showSolution,
   handleSubmit,
-  generateVarient,
+  generateVariant,
 }: QuestionButtonProps) {
   return (
     <div className="grid sm:grid-cols-3 gap-10 mb-10">
       <MyButton
         name={"Generate Variation"}
-        onClick={generateVarient}
+        onClick={generateVariant}
         color="generateVariant"
       />
       <MyButton name={"Show Solution"} color="showSolution" onClick={showSolution} />

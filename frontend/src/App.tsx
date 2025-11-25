@@ -12,7 +12,6 @@ const config = {
   tex: {
     inlineMath: [
       ["$", "$"],
-      ["(", ")"],
     ],
     displayMath: [
       ["$$", "$$"],
