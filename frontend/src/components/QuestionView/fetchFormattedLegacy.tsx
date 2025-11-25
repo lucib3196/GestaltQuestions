@@ -102,7 +102,7 @@ import { useCodeEditorContext } from "../../context/CodeEditorContext";
 // Fetches the question html and solution html
 export function useRawQuestionHTML() {
     const { selectedQuestionID } = useQuestionContext();
-    const {refreshKey} = useCodeEditorContext()
+    const { refreshKey } = useCodeEditorContext()
     const [questionHtml, setQuestionHtml] = useState<string | null>(null);
     const [solutionHTML, setSolutionHTML] = useState<| null | string>(null);
     const [loading, setLoading] = useState<boolean>(false);

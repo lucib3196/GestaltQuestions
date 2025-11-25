@@ -9,21 +9,24 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import { useSelection } from "./utils/useSelection";
 import { QuestionRow } from "./QuestionRow";
-import type { MinimalTestResult } from "./utils/services";
+
 import { tableHeaderSx } from "../../styles/tableHeaderSx";
 import { useTheme } from "../Generic/DarkModeToggle";
-import { useQuestionContext } from './../../context/QuestionContext';
+import { useQuestionContext } from "../../context/QuestionContext";
+
+import { ValidTableCol } from "./tableConfig";
+import { useQuestionTableContext } from "../../context/QuestionTableContext";
 
 export function QuestionTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const { selectedQuestionID, setSelectedQuestionID,questions } = useQuestionContext()
-  const { isSelected, toggle } = useSelection();
-  const [testResults] = useState<MinimalTestResult[]>([]);
+
   const [theme] = useTheme();
-  
+
+  const { questions } =
+    useQuestionContext();
+  const { multiSelect } = useQuestionTableContext()
 
   const paged = useMemo(
     () => questions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
@@ -36,9 +39,7 @@ export function QuestionTable() {
     setPage(0);
   };
 
-  const handleQuestionClick = (id: string) => {
-    setSelectedQuestionID(id);
-  };
+
 
   return (
     <div className="w-full lg:w-3/4 mt-10">
@@ -46,34 +47,29 @@ export function QuestionTable() {
         component={Paper}
         className="rounded-lg shadow-md dark:bg-gray-900"
       >
+
         <Table aria-label="question table" stickyHeader>
+          {/* Define the table cols */}
           <TableHead>
             <TableRow>
-              {[
-                "Select",
-                "Question Title",
-                "Question Type",
-                "Is Adaptive",
-                // "Created By",
-                // "Test Results",
-              ].map((h) => (
-                <TableCell key={h} sx={tableHeaderSx(theme)}>
-                  {h}
-                </TableCell>
-              ))}
+              {ValidTableCol.map((v, index) => {
+                // Skip the first column when multiSelect is true
+                if (!multiSelect && v === "Select") return null;
+
+                return (
+                  <TableCell key={index} sx={tableHeaderSx(theme)}>
+                    {v}
+                  </TableCell>
+                );
+              })}
             </TableRow>
           </TableHead>
-
+          {/* The Actual Body of the questions */}
           <TableBody>
             {paged.map((q) => (
               <QuestionRow
                 key={q.id}
                 question={q}
-                isActive={selectedQuestionID === q.id}
-                isChecked={isSelected(q.id ?? "")}
-                onToggleCheck={toggle}
-                onClickTitle={handleQuestionClick}
-                testResults={testResults}
               />
             ))}
           </TableBody>

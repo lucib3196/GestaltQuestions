@@ -6,13 +6,14 @@ import type { NavigationItem } from "../../types/navbarTypes";
 import Home from "../../pages/Home";
 import ChatPage from "../ChatUI/ChatPage";
 import AccountPage from "../../pages/AccountPage";
-import { QuestionViewPage } from "../../pages/QuestionsPage";
+
 
 // Generators
 import TextGenerator from "../CodeGenerators/TextGenerator";
 import ImageGenerator from "../CodeGenerators/ImageGenerator";
 
 import GestaltStudio from "../Gestalt Studio/GestaltStudioPage";
+import { QuestionViewPage } from '../QuestionView/QuestionViewPage';
 
 
 

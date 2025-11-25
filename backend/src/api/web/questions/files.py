@@ -6,6 +6,7 @@ import json
 import mimetypes
 from typing import List
 from uuid import UUID
+from pathlib import Path
 
 # -------------------------
 # Third-Party Imports
@@ -324,7 +325,9 @@ async def get_filedata(
     try:
         question = qm.get_question(qid)
         question_path = qm.get_question_path(question.id, storage_type)
-        file_paths = storage.list_filepaths(question_path, recursive=True)
+        file_paths = [
+            Path(f) for f in storage.list_file_paths(question_path, recursive=True)
+        ]
         logger.info("These are the file paths", file_paths)
         file_data = []
         for f in file_paths:
@@ -374,7 +377,7 @@ async def download_question_file(
     try:
         question = qm.get_question(qid)
         question_path = qm.get_question_path(question.id, storage_type)
-        filepath = storage.get_file(question_path, filename)
+        filepath = storage.get_file_path(question_path, filename)
         folder_name = f"{question.title}_download"
 
         zip_bytes = await fm.download_zip(files=[filepath], folder_name=folder_name)
@@ -405,7 +408,7 @@ async def download_question(
     try:
         question = qm.get_question(qid)
         question_path = qm.get_question_path(question.id, storage_type)
-        files = storage.list_filepaths(question_path)
+        files = storage.list_file_paths(question_path)
         folder_name = f"{question.title}_download"
 
         zip_bytes = await fm.download_zip(files=files, folder_name=folder_name)

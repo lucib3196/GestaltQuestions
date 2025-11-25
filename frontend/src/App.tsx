@@ -7,6 +7,8 @@ import CodeEditorProvider from "./context/CodeEditorContext";
 import { QuestionProvider } from "./context/QuestionContext";
 import { QuestionRuntimeProvider } from "./context/QuestionAnswerContext";
 import { AuthModeProvider } from "./context/AuthMode";
+import { QuestionTableProvider } from "./context/QuestionTableContext";
+
 const config = {
   loader: { load: ["[tex]/ams"] },
   tex: {
@@ -29,25 +31,27 @@ const config = {
 function App() {
   return (
     <AuthProvider>
-      <MathJaxContext version={3} config={config}>
-        <AuthModeProvider>
-          <QuestionRuntimeProvider>
-            <QuestionSettingsProvider>
-              <QuestionProvider>
-                <CodeEditorProvider>
-                  {/* Main Content */}
-                  <NavBar />
-                  <ToastContainer />
+      <QuestionTableProvider>
+        <MathJaxContext version={3} config={config}>
+          <AuthModeProvider>
+            <QuestionRuntimeProvider>
+              <QuestionSettingsProvider>
+                <QuestionProvider>
+                  <CodeEditorProvider>
+                    {/* Main Content */}
+                    <NavBar />
+                    <ToastContainer />
 
-                  {/* <LecturePage /> */}
-                  {/* <LegacyQuestion /> */}
-                  {/* End of Main Content */}
-                </CodeEditorProvider>
-              </QuestionProvider>
-            </QuestionSettingsProvider>
-          </QuestionRuntimeProvider>
-        </AuthModeProvider>
-      </MathJaxContext>
+                    {/* <LecturePage /> */}
+                    {/* <LegacyQuestion /> */}
+                    {/* End of Main Content */}
+                  </CodeEditorProvider>
+                </QuestionProvider>
+              </QuestionSettingsProvider>
+            </QuestionRuntimeProvider>
+          </AuthModeProvider>
+        </MathJaxContext>
+      </QuestionTableProvider>
     </AuthProvider>
   );
 }

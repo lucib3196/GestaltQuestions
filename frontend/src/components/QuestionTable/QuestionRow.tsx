@@ -1,113 +1,89 @@
-import type { QuestionMeta } from "../../types/questionTypes";
+import React, { useEffect } from "react";
+import clsx from "clsx";
 import { Checkbox, TableCell, TableRow } from "@mui/material";
-import type { MinimalTestResult } from "./utils/services";
+import type { QuestionMeta } from "../../types/questionTypes";
+import { useQuestionContext } from "../../context/QuestionContext";
+import { useQuestionTableContext } from "../../context/QuestionTableContext";
+
 
 type Props = {
     question: QuestionMeta;
-    isActive: boolean; // matches context.selectedQuestion
-    isChecked: boolean; // from selection hook
-    onToggleCheck: (idx: string, title: string, isChecked: boolean) => void;
-    onClickTitle: (id: string) => void;
-    testResults: MinimalTestResult[];
 };
 
-export function QuestionRow({
-    question,
-    isActive,
-    isChecked,
-    onToggleCheck,
-    onClickTitle,
-    testResults,
-}: Props) {
-    const result = testResults.find((t) => t.idx === question.id);
+export function QuestionRow({ question }: Props) {
+    const { multiSelect, setResetKey, resetKey } = useQuestionTableContext();
+    // Handle the select of the title
+    const {
+        selectedQuestionID,
+        setSelectedQuestionID,
+        setSelectedQuestions,
+        selectedQuestions,
+    } = useQuestionContext();
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { checked, value } = event.target;
+
+        setSelectedQuestions((prev) => {
+            if (checked) {
+                return prev.includes(value) ? prev : [...prev, value];
+            } else {
+                return prev.filter((v) => v !== value);
+            }
+        });
+    };
+
+    useEffect(() => {
+        // Clear selected list
+        setSelectedQuestions([]);
+        // Force checkboxes to reset by giving them a new key
+        setResetKey((k) => k + 1);
+    }, [multiSelect]);
+
+    if (!question.id) return null;
 
     return (
-        <TableRow
-            hover
-            role="row"
-            className={`transition-colors ${isActive
-                ? "bg-red-50 dark:bg-red-900/30"
-                : "hover:bg-indigo-50 dark:hover:bg-gray-800"
-                }`}
-        >
-            {/* Checkbox */}
-            <TableCell>
-                <Checkbox
-                    name={question.title}
-                    value={question.id}
-                    checked={isChecked}
-                    onChange={(e) =>
-                        onToggleCheck(
-                            question.id ?? "",
-                            question.title ?? "",
-                            e.target.checked
-                        )
-                    }
-                />
-            </TableCell>
+        <TableRow hover role="row" className={clsx("transition-colors")}>
+            {/* Multi-select Checkbox */}
+            {multiSelect && (
+                <TableCell>
+                    <Checkbox
+                        key={resetKey}
+                        checked={selectedQuestions.includes(question.id)}
+                        value={question.id}
+                        onChange={handleChange}
+                    />
+                </TableCell>
+            )}
 
             {/* Question Title */}
             <TableCell>
                 <div
-                    onClick={() => onClickTitle(question.id ?? "")}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) =>
-                        e.key === "Enter" && onClickTitle(question.id ?? "")
-                    }
-                    className={`
-                    flex items-center gap-2 cursor-pointer select-none text-base font-medium
-                    transition-all duration-300 ease-in-out
-                    ${isActive
-                            ? "text-red-600 dark:text-red-400 font-extrabold scale-[1.03]"
-                            : "text-indigo-900 dark:text-gray-100 hover:text-red-600 hover:font-extrabold hover:scale-[1.02]"
-                        }
-    `}
+                    key={question.id}
+                    onClick={() => setSelectedQuestionID(question.id ?? "")}
+                    className={clsx(
+                        "flex items-center gap-2",
+                        "cursor-pointer select-none",
+                        "text-base font-medium",
+                        "transition-all duration-300 ease-in-out",
+                        selectedQuestionID === question.id &&
+                        "font-semibold text-indigo-700"
+                    )}
                 >
                     {question.title}
                 </div>
             </TableCell>
 
-            {/* Question Type */}
-            <TableCell>
-                <span className="text-sm font-medium text-indigo-900 dark:text-gray-200">
-                    {(question.qtypes ?? []).map((q) => q.name).join(", ")}
-                </span>
-            </TableCell>
-
-            {/* Adaptive */}
+            {/* Adaptive / Non-Adaptive Badge */}
             <TableCell>
                 <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${question.isAdaptive
-                        ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
-                        : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-                        }`}
-                >
-                    {question.isAdaptive ? "YES" : "NO"}
-                </span>
-            </TableCell>
-
-            {/* Created By */}
-            {/* <TableCell>
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                    {String(question.createdBy)}
-                </span>
-            </TableCell> */}
-
-            {/* Test Results */}
-            <TableCell>
-                {result ? (
-                    <span
-                        className={`px-2 py-1 rounded-md text-xs font-semibold ${result.pass
+                    className={clsx(
+                        "w-full px-2 py-1 rounded-full text-lg font-semibold",
+                        question.isAdaptive
                             ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
-                            : "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100"
-                            }`}
-                    >
-                        {result.pass ? "PASS" : "FAIL"}
-                    </span>
-                ) : (
-                    <span className="text-xs text-gray-500 dark:text-gray-400">—</span>
-                )}
+                            : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                    )}
+                >
+                    {question.isAdaptive ? "Adaptive" : "Non-Adaptive"}
+                </span>
             </TableCell>
         </TableRow>
     );
