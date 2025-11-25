@@ -153,4 +153,11 @@ export class QuestionAPI {
     );
     return response.data;
   }
+
+  static async downloadQuestion(questionId: string) {
+    const response = await api.post(
+      `${this.base}/files/${encodeURIComponent(questionId)}/{donwload}`
+    );
+    return response.data;
+  }
 }
