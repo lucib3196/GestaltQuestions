@@ -1,21 +1,22 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-
-import { useAdaptiveParams } from "../../api";
-import { trueish } from "../../utils";
-import DisplayCorrectAnswer from "./DisplayCorrectAnswer";
-import { useQuestionRuntime } from "../../context/QuestionAnswerContext";
-import { useQuestionContext } from "../../context/QuestionContext";
-import { useCallback } from "react";
 import {
-  useRawQuestionHTML,
-  useParsedQuestionHTML,
-} from "../QuestionView/fetchFormattedLegacy";
-import QuestionHTMLToReact from "../QuestionComponents/ParseQuestionHTML";
-import { QuestionHeader } from "./QuestionHeader";
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  type FormEvent,
+} from "react";
+import { useAdaptiveParams } from "../../api";
+import { useRawQuestionHTML, useParsedQuestionHTML } from "../../api";
+import { useQuestionContext } from "../../context/QuestionContext";
+import { useQuestionRuntime } from "../../context/QuestionAnswerContext";
+import { trueish } from "../../utils";
 import { Error } from "../Generic/Error";
 import { Loading } from "../Base/Loading";
-
+import { QuestionHeader } from "./QuestionHeader";
 import { QuestionButtons } from "./QuestionButtons";
+import DisplayCorrectAnswer from "./DisplayCorrectAnswer";
+import QuestionHTMLToReact from "../QuestionComponents/ParseQuestionHTML";
+
 
 export default function QuestionEngine() {
   const { questionMeta: qdata } = useQuestionContext();

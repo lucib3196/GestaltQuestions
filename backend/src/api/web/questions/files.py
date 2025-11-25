@@ -370,17 +370,16 @@ async def download_question_file(
     qid: str | UUID,
     filename: str,
     qm: QuestionManagerDependency,
-    storage: StorageDependency,
-    fm: FileServiceDep,
-    storage_type: StorageTypeDep,
+    qr: QuestionResourceDepencency,
 ):
     try:
         question = qm.get_question(qid)
-        question_path = qm.get_question_path(question.id, storage_type)
-        filepath = storage.get_file_path(question_path, filename)
         folder_name = f"{question.title}_download"
+        file_path = await qr.get_question_file(qid, filename)
 
-        zip_bytes = await fm.download_zip(files=[filepath], folder_name=folder_name)
+        zip_bytes = await FileService().download_zip(
+            files=[file_path], folder_name=folder_name
+        )
 
         return Response(
             content=zip_bytes,
@@ -401,17 +400,16 @@ async def download_question_file(
 async def download_question(
     qid: str | UUID,
     qm: QuestionManagerDependency,
-    storage: StorageDependency,
-    fm: FileServiceDep,
-    storage_type: StorageTypeDep,
+    qr: QuestionResourceDepencency,
 ):
     try:
         question = qm.get_question(qid)
-        question_path = qm.get_question_path(question.id, storage_type)
-        files = storage.list_file_paths(question_path)
+        data = await qr.get_question_filepaths(qid)
         folder_name = f"{question.title}_download"
 
-        zip_bytes = await fm.download_zip(files=files, folder_name=folder_name)
+        zip_bytes = await FileService().download_zip(
+            files=[Path(f) for f in data.filenames], folder_name=folder_name
+        )
 
         return Response(
             content=zip_bytes,
