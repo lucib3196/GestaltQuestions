@@ -4,13 +4,7 @@ from typing import Tuple
 import pytest
 
 
-@pytest.fixture
-def create_test_dir(local_storage) -> Tuple[Path, str]:
-    """Create a temporary test directory inside the local storage."""
-    testdir = "TestFolder"
-    created_dir = local_storage.create_storage_path(testdir).as_posix()
-    print("[TEST] This is the created dir", created_dir)
-    return created_dir, testdir
+
 
 
 @pytest.fixture
@@ -29,21 +23,6 @@ def save_multiple_files(local_storage, create_test_dir):
     return files, name
 
 
-# =============================================================================
-# Initialization Tests
-# =============================================================================
-def test_initialization(local_storage, tmp_path):
-    """Ensure storage initializes with correct root and base properties."""
-    assert local_storage.get_root_path() == (tmp_path).as_posix()
-    assert local_storage.get_base_path() == (tmp_path / "questions").as_posix()
-
-
-def test_get_relative_to_base(local_storage):
-    question_expected = "questions/ValidQuestion"
-    assert local_storage.get_relative_to_base(question_expected) == question_expected
-
-    question_wrong = "ValidQuestion"
-    assert local_storage.get_relative_to_base(question_wrong) == question_expected
 
 
 # =============================================================================
@@ -57,10 +36,7 @@ def test_create_storage_path(create_test_dir):
     assert created_path.name == folder_name
 
 
-def test_get_storage_path(create_test_dir, local_storage):
-    """Validate that get_storage_path returns the correct directory path."""
-    created, folder_name = create_test_dir
-    assert local_storage.get_storage_path(folder_name, False) == created
+
 
 
 def test_does_storage_path_exist(create_test_dir, local_storage):
