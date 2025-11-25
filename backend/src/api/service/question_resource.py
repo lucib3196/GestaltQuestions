@@ -242,7 +242,7 @@ class QuestionResourceService:
         question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
         assert question_path
 
-        files = self.storage_manager.list_files(question_path)
+        files = self.storage_manager.list_file_names(question_path)
 
         logger.debug("Found %d files for question_id=%s", len(files), question_id)
         return SuccessFileResponse(
@@ -255,7 +255,7 @@ class QuestionResourceService:
         logger.debug("Fetching filepath list for question_id=%s", question_id)
         question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
         assert question_path
-        filepaths = self.storage_manager.list_filepaths(question_path)
+        filepaths = self.storage_manager.list_file_paths(question_path)
         logger.debug("Found %d files for question_id=%s", len(filepaths), question_id)
         return SuccessFileResponse(
             status=200, detail="Retrieved files ok", filenames=filepaths
@@ -276,7 +276,7 @@ class QuestionResourceService:
         else:
             filepath = Path(question_path) / filename
 
-        return self.storage_manager.get_file(filepath)
+        return self.storage_manager.get_file_path(filepath)
 
     async def delete_file(self, qid: str | UUID, filename: str):
         """
