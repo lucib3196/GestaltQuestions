@@ -15,7 +15,7 @@ async def view_local(
     qm: QuestionManagerDependency, storage: StorageDependency
 ) -> Sequence[UnsyncedQuestion]:
     try:
-        return await sync.check_local_unsync(storage, qm)
+        return await sync.check_unsync(storage, qm)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to check sync {e}")
 

@@ -65,13 +65,22 @@ class LocalStorageService(StorageService):
         # Case 1: Absolute path inside the storage _root_path
         try:
             relative_path = target_path.relative_to(self._root_path)
+            logger.info("Retrieved relative path fine %s", relative_path)
         except ValueError:
             # Case 2: Not inside _root_path (likely already relative or external)
             relative_path = target_path
 
         # Convert to posix string
-        rel_str = relative_path.as_posix()
+        rel_str = relative_path.as_posix().lstrip("/")
 
+        # 1. Avoid duplication
+        base = self.base
+        if rel_str == base:
+            return rel_str
+
+        # 2.  If rel_str starts with "questions/", do NOT prefix
+        if rel_str.startswith(f"{base}/"):
+            return rel_str
         # Case 3: Ensure prefix, if it does not start
         if not rel_str.startswith(f"{self.base}/"):
             rel_str = f"{self.base}/{rel_str}"
@@ -92,6 +101,7 @@ class LocalStorageService(StorageService):
             Path: Path to the resource directory.
         """
         rel_str = self.get_relative_to_base(target)
+        logger.info("This is the rel str %s", rel_str)
         if relative:
             return rel_str
         absolute_path = Path(self._root_path) / rel_str
@@ -298,6 +308,10 @@ class LocalStorageService(StorageService):
 
     def does_file_exist(self, target: str | Path, filename: str | None = None) -> bool:
         return super().does_file_exist(target, filename)
+
+    def iterate(self, target: str | Path, recursive: bool = False):
+        target_path = Path(self.get_storage_path(target, relative=False))
+        return target_path.rglob("*") if recursive else target_path.iterdir()
 
     # =========================================================================
     # Mutating operations: copy, move, delete
