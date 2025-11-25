@@ -13,6 +13,7 @@ import { useQuestionTableContext } from "../../context/QuestionTableContext";
 import { useQuestionContext } from "../../context/QuestionContext";
 import { MyModal } from "../Base/MyModal";
 import UploadFiles from "../Forms/UploadFileComponent";
+import { useQuestionToolBarActions } from "../../hooks/useQuestionsToolBarActions";
 
 interface ActionButtonProps {
     icon: IconType;
@@ -44,7 +45,7 @@ export function ActionButton({
 
 export default function QuestionViewToolBar() {
     const { multiSelect, setMultiSelect } = useQuestionTableContext();
-    const { selectedQuestions } = useQuestionContext();
+    const { handleDeleteQuestions, handleQuestionUpload, handleQuestionDownloads } = useQuestionToolBarActions()
     const [searchTitle, setSearchTitle] = useState<string>("");
     const [showModal, setShowModal] = useState(false)
 
@@ -60,34 +61,7 @@ export default function QuestionViewToolBar() {
         showAllQuestions: false,
     });
 
-    const handleQuestionDownloads = async () => {
-        if (!selectedQuestions.length) return;
-        const requests = selectedQuestions.map((qId) =>
-            QuestionAPI.downloadQuestion(qId)
-        );
-        const responses = await Promise.all(requests);
-        responses.map((r) => downloadZip(r.blob, r.header))
-        toast.success("Downloaded all question success");
-    };
-    const handleDeleteQuestions = async () => {
-        if (!selectedQuestions.length) return;
-        const requests = selectedQuestions.map((qId) =>
-            QuestionAPI.deleteQuestion(qId)
-        );
-        await Promise.all(requests);
-        toast.success("Deleted question success");
-        window.location.reload();
-    }
-    const handleQuestionUpload = async (zipFile: File[]) => {
 
-        try {
-            await QuestionAPI.uploadQuestionZip(zipFile)
-
-        } catch (error) {
-            console.error(error)
-            toast.error("Could not upload question zip try again")
-        }
-    }
 
     return (
         <div

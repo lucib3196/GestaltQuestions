@@ -171,7 +171,7 @@ export class QuestionAPI {
   static async uploadQuestionZip(zipFile: File[]) {
     if (zipFile.length > 1) return;
     const file = zipFile[0];
-    const formData = new FormData(); 
+    const formData = new FormData();
     formData.append("file", file);
     const response = await api.post(`${this.base}/upload_zip`, formData);
     return response.data;

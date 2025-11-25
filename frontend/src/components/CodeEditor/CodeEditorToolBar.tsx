@@ -8,7 +8,7 @@ import {
   useDeleteQuestionFile,
   useSaveQuestionFile,
   useUploadQuestionFiles,
-} from "../../hooks/codeEditorHooks";
+} from "../../hooks/useCodeEditor";
 import { useState } from "react";
 import { UploadCodeFile } from "./UploadCodeFiles";
 import { DeleteCodeFile } from "./DeletedCodeFiles";
