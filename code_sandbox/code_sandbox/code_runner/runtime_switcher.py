@@ -42,4 +42,4 @@ def run_generate(
         logger.exception(
             f"[Runtime Switcher] Unexpected error during {language} execution | '"
         )
-        raise ValueError(f"Failed to execute code {code} ")
+        raise ValueError(f"Failed to execute code {e} ")

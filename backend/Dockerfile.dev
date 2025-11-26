@@ -65,11 +65,7 @@ RUN poetry config virtualenvs.create false \
 
 # WORKDIR /app
 
-# # Copy package.json files into the backend image
-# COPY package.json package-lock.json ./
 
-# # Install node modules inside this image
-# RUN npm install
 
 # Copy the source code into the container.
 COPY . .

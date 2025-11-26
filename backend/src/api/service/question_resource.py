@@ -470,6 +470,28 @@ class QuestionResourceService:
             # Preserve full traceback for debugging upstream
             raise e
 
+    async def list_all_question_files(self, qid: str | UUID) -> List[str]:
+        """Returns all the file names for a given question
+
+        Args:
+            qid (str | UUID): _description_
+
+        Raises:
+            HTTPException: _description_
+
+        Returns:
+            List[str]: _description_
+        """
+        try:
+            question_dir = await self.get_question_path(qid, relative=False)
+            return self.storage_manager.list_file_names(question_dir)
+        except Exception as e:
+            logger.exception("Error resolving question storage path")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error accessing question storage path",
+            ) from e
+
 
 @lru_cache
 def get_question_resource(

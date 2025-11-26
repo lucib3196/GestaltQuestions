@@ -5,7 +5,8 @@ import tempfile
 from typing import Dict, Any
 from code_sandbox.code_runner.base import CodeRunner
 from code_sandbox.code_runner.models import ExecutionResult
-
+from code_sandbox.api.core.logger import logger
+import os
 
 class JavaScriptRunner(CodeRunner):
     def __init__(self, func_name: str = "generate", suffix: str = ".js"):
@@ -19,31 +20,41 @@ class JavaScriptRunner(CodeRunner):
         return content
 
     def prepare_runner(self, tmp_path_posix, payload: Dict[str, Any] = {}):
-        node_runner = f"""
+            node_runner = f"""\
         const mod = require("{tmp_path_posix}");
         const input = {json.dumps(payload)};
-        const result = mod['{self.func_name}'](input);
-        console.log(JSON.stringify({{result}}));
+        const result = mod["{self.func_name}"](input);
+        console.log(JSON.stringify(result));
         """
-        return node_runner
+            return node_runner
 
     def run(self, code: str, payload: Dict[str, Any] = {}) -> ExecutionResult:
         code_content = self.prepare_code(code)
+        env = os.environ.copy()
+        env["NODE_PATH"] = "/app/node_modules:/usr/lib/node_modules"
+        
+        
         with tempfile.NamedTemporaryFile(
-            mode="w", delete=False, suffix=self.suffix
+            mode="w", delete=False, suffix=self.suffix, dir="/app/tmp",
         ) as tmp:
             tmp.write(code_content)
             tmp_path = tmp.name
-        tmp_path_posix = Path(tmp_path).as_posix()
+        tmp_path_posix = Path(tmp_path).resolve().as_posix()
+        logger.info(f"The actual code content {Path(tmp_path_posix).read_text()}",)
         node_runner = self.prepare_runner(tmp_path_posix, payload)
+        
+        
+        logger.info(f"This is what I am running {node_runner}")
 
         try:
             result = subprocess.run(
                 ["node", "-e", node_runner],
+                cwd="/app",             # <-- For docker container
                 capture_output=True,
                 text=True,
                 timeout=5,
             )
+            logger.info(f"This is the result {result}")
         except subprocess.TimeoutExpired:
             raise ValueError("JavaScript execution timed out")
         except Exception as e:
@@ -52,8 +63,7 @@ class JavaScriptRunner(CodeRunner):
         stdout = result.stdout.strip()
         stderr = result.stderr.strip()
 
-        if not stdout:
-            raise ValueError("JavaScript script returned no output")
+        json_data = json.loads(result.stdout) if result.stdout.strip() else None
 
         # Extract last JSON line (supports other console.logs)
         last_line = stdout.splitlines()[-1]
