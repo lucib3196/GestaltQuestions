@@ -7,9 +7,10 @@ class QuizData(BaseModel):
     correct_answers: Dict[str, Any]
     intermediate: Optional[Dict[str, Any]] = None
     test_results: Optional[Dict[str, Any]] = None
-    logs: Optional[List[Any]] = []
+    logs: List[Any] = []
     nDigits: Optional[int] = 3
     sigfigs: Optional[int] = 3
+    model_config = {"extra": "allow"}  # Ignore unexpected fields and missing ones
 
 
 class CodeRunResponse(BaseModel):
@@ -17,7 +18,6 @@ class CodeRunResponse(BaseModel):
     error: Optional[str] = None
     quiz_response: Optional[QuizData] = None
     http_status_code: Optional[int] = None
-
 
 
 class CodeRunException(Exception):

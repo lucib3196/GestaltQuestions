@@ -7,7 +7,7 @@
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
 ARG PYTHON_VERSION=3.13.7
-FROM python:${PYTHON_VERSION}-slim as backend
+FROM python:${PYTHON_VERSION}-slim as ai_workspace
 
 # Prevent Python from writing pyc files and buffer logs
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -56,23 +56,11 @@ RUN poetry config virtualenvs.create false \
     && poetry install --no-root --no-interaction --no-ansi
 
 
-    # Install Node.js (Debian-based)
-# RUN apt-get update && \
-#     apt-get install -y curl && \
-#     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-#     apt-get install -y nodejs && \
-#     apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# WORKDIR /app
-
-
-
 # Copy the source code into the container.
 COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 8000
+EXPOSE 2024
 
 # Run the application.
-CMD ["uvicorn", "src.api.main:app","--reload", "--host", "0.0.0.0", "--port", "8000","--forwarded-allow-ips", "*"]
-
+CMD ["langgraph", "dev", "--config", "./ai_workspace/langgraph_project/langgraph.json"]
