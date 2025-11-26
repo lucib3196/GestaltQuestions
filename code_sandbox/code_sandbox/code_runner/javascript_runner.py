@@ -31,14 +31,25 @@ class JavaScriptRunner(CodeRunner):
 
     def run(self, code: str, payload: Dict[str, Any] = {}) -> ExecutionResult:
         code_content = self.prepare_code(code)
+
+        # This needs to be refactored at some point
         env = os.environ.copy()
         env["NODE_PATH"] = "/app/node_modules:/usr/lib/node_modules"
+
+        tmp_dir = Path("/app/tmp")
+        if not tmp_dir.exists():
+            # Local: use system tmp dir instead
+            tmp_dir = Path(tempfile.gettempdir())
+            
+        cwd_path = Path("/app")
+        if not cwd_path.exists():
+            cwd_path = Path().resolve()  # local working directory
 
         with tempfile.NamedTemporaryFile(
             mode="w",
             delete=False,
             suffix=self.suffix,
-            dir="/app/tmp",
+            dir=tmp_dir,
         ) as tmp:
             tmp.write(code_content)
             tmp_path = tmp.name
@@ -47,7 +58,7 @@ class JavaScriptRunner(CodeRunner):
         try:
             result = subprocess.run(
                 ["node", "-e", node_runner],
-                cwd="/app",  # <-- For docker container
+                cwd=cwd_path, 
                 capture_output=True,
                 text=True,
                 timeout=5,
