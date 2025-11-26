@@ -30,7 +30,7 @@ jobs:
           python-version: ${{matrix.python-version}}
       - name: Install App Dir
         run: |
-            mkdir -p /app/tmp && chmod -R 777 /app/tmp
+            mkdir -p ${{ github.workspace }}/app/tmp
 
       - name: Install Poetry
         run: |
