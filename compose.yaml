@@ -26,6 +26,15 @@ services:
       - ./ai_workspace/.env
     ports:
       - 8001:8001
+
+  # langgraph_agent:
+  #   build: 
+  #     context: ./ai_workspace
+  #     dockerfile: Dockerfile.langgraph
+  #   env_file:
+  #     - ./ai_workspace/.env
+  #   ports:
+  #     - 2024:2024
   
   frontend:
     build:
@@ -42,6 +51,22 @@ services:
       - ./frontend/.env
     tty: true
     stdin_open: true
+
+  # chat_ui:
+  #   build:
+  #     context: ./my-chat-ui
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./my-chat-ui:/app        # mount project
+  #     - /app/node_modules      # do NOT overwrite node_modules
+  #   environment:
+  #   - CHOKIDAR_USEPOLLING=true
+  #   env_file:
+  #     - ./my-chat-ui/.env
+  #   tty: true
+  #   stdin_open: true
 
 
 
