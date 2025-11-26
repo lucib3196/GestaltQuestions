@@ -132,6 +132,9 @@ class StorageService:
 
     def does_file_exist(self, target: str | Path, filename: str | None = None) -> bool:
         raise NotImplementedError
+    
+    def iterate(self, target: str | Path, recursive: bool = False):
+        raise NotImplementedError
 
     # =========================================================================
     # Mutating operations: copy, move, delete

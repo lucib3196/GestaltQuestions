@@ -33,10 +33,8 @@ class SyncMetrics(BaseModel):
 
 
 class SyncResponse(BaseModel):
-    metrics: SyncMetrics
-    synced_questions: Sequence["Question"]
-    skipped_questions: List["UnsyncedQuestion"]
-    failed_questions: List[str]  # store file name or reason
+    sync_metrics: SyncMetrics
+    sync_raw: Sequence[UnsyncedQuestion]
 
 
 class FolderCheckMetrics(BaseModel):

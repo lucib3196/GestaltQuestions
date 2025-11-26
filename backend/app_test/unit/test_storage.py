@@ -76,6 +76,38 @@ def test_get_relative_to_base(active_storage_backend):
     assert backend.get_relative_to_base(path_to_check) == correct_path
 
 
+def test_no_duplication(active_storage_backend):
+    backend = active_storage_backend
+    base = "questions"
+
+    # Case: Passing the base itself should NOT get duplicated
+    assert backend.get_relative_to_base(base) == base
+
+    # Case: Passing a child path should remain unchanged
+    assert backend.get_relative_to_base("questions/abc") == "questions/abc"
+
+    # Case: Passing a plain identifier should get prefixed
+    assert backend.get_relative_to_base("abc") == "questions/abc"
+
+
+def test_get_storage_no_duplication(active_storage_backend, storage_mode, tmp_path):
+    backend = active_storage_backend
+    base = "questions"
+
+    if storage_mode == "local":
+        assert (
+            backend.get_storage_path(base, relative=False)
+            == (tmp_path / base).as_posix()
+        )
+
+    if storage_mode == "cloud":
+        root = "test"
+        assert (
+            backend.get_storage_path(base, relative=False)
+            == (Path(root) / base).as_posix()
+        )
+
+
 # =========================================================================
 # Storage path operations
 # =========================================================================

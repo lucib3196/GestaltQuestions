@@ -2,7 +2,7 @@
 import asyncio
 import json
 from collections import defaultdict
-from typing import List, Literal, Sequence, Union
+from typing import List, Literal, Sequence, Union, Tuple
 
 # --- Third-Party ---
 from pydantic import ValidationError
@@ -12,28 +12,98 @@ from src.api.core import logger
 from src.api.models import *
 from src.api.models.models import Question
 from src.api.models.sync_models import *
-from src.api.service.question_manager import QuestionManagerDependency
+from src.api.service.question_manager import (
+    QuestionManagerDependency,
+)
+from src.utils import to_serializable
 from src.api.service.storage_manager import StorageDependency
-from src.utils import safe_dir_name, to_serializable
+from src.api.service.question_resource import QuestionResourceDepencency
 
 
-metadata_name = ["metadata.json", "info.json"]
+metadata_name = ["metadata.json", "info.json", "info2.json"]
 excluded_path_names = ["downloads"]
+
+# Utils for resolving
+
+
+def find_question_dir(
+    root: str | Path, required_file: List[str] = metadata_name
+) -> str | None:
+    root = Path(root)
+    if root.is_dir():
+        for f in required_file:
+            if (root / f).exists():
+                return root.as_posix()
 
 
 async def resolve_metadata_path(
-    question: Path, metadata_name: List[str] = metadata_name
+    question_dir: Path, metadata_name: List[str] = metadata_name
 ) -> Path | None:
     for m in metadata_name:
-        metadata_path = question / m
+        metadata_path = question_dir / m
         if metadata_path.exists():
             logger.info(f"Found metadata path for filename {m}")
             return metadata_path
     return None
 
 
+#
+# ----------Checking -----------------
+#
+# These section is focused on checking the questions founc in the directory
+async def check_unsync(
+    storage: StorageDependency, qm: QuestionManagerDependency
+) -> Sequence[UnsyncedQuestion]:
+    """
+    Recursively scan the storage for valid question directories and check
+    whether any of them are out-of-sync with the database.
+
+    A "valid" question directory is currently identified by the presence
+    of required metadata files (e.g., `info.json`). Each detected question
+    directory is passed to `check_question_sync_status()` to determine its
+    sync status.
+    """
+    try:
+        # Get the root storage path where all question content is stored.
+        # This may be a local filesystem path (e.g. C:/Data/Questions)
+        # or a cloud path (e.g. firebase/Data/User/Questions).
+        base_storage_path = storage.get_base_path()
+        logger.info(f"Checking the path {base_storage_path}")
+
+        # Ensure the path exists or create it.
+        path = Path(storage.ensure_storage_path(base_storage_path))
+
+        # Recursively iterate through the entire directory tree.
+        data = storage.iterate(path, recursive=True)
+
+        # Identify directories that represent valid question folders.
+        # A "valid" folder is one containing required metadata files.
+        question_dirs = []
+        for d in data:
+            valid_dir = find_question_dir(d)
+            if valid_dir:
+                question_dirs.append(valid_dir)
+
+        # Prepare sync-check tasks for each valid question directory.
+        tasks = [
+            check_question_sync_status(Path(p), qm)
+            for p in question_dirs
+            if Path(p).name not in excluded_path_names
+        ]
+
+        # Execute tasks concurrently.
+        results = await asyncio.gather(*tasks)
+
+        # Filter out only UnsyncedQuestion objects.
+        return [r for r in results if isinstance(r, UnsyncedQuestion)]
+
+    except Exception as e:
+        logger.error(f"Could not check unsynced questions: {e}")
+        raise e
+
+
 async def check_question_sync_status(
-    question: Path,
+    question_dir: Path,
     qm: QuestionManagerDependency,
     metadata_name: List[str] = metadata_name,
 ) -> Union["Question", "UnsyncedQuestion"]:
@@ -49,52 +119,52 @@ async def check_question_sync_status(
         - `Question`: if the question is properly synced with the DB.
         - `UnsyncedQuestion`: with detailed reasoning if not synced.
     """
-    relative_path = Path(question).as_posix()
-    logger.info("Checking the relative path for the sync %s", relative_path)
-    metadata = await resolve_metadata_path(question)
+    metadata = await resolve_metadata_path(question_dir)
+    question_name = question_dir.name
+    question_path = question_dir.as_posix()
+
+    # Create a payload this will be use as the unsynced question response
+    payload = {
+        "question_name": question_name,
+        "question_path": question_path,
+        "detail": "",
+        "status": "failed to create question",
+        "metadata": None,
+    }
+    # Check if metadata is present
     if metadata is None:
         detail = (
-            f"No `{metadata_name}` found in {question.name}. "
+            f"No `{metadata_name}` found in {question_dir.name}. "
             "This question cannot be indexed or referenced until metadata is generated."
         )
         logger.warning(detail)
-        return UnsyncedQuestion(
-            question_name=question.name,
-            question_path=relative_path,
-            detail=detail,
-            status="missing_metadata",
-            metadata=None,
-        )
+        payload["detail"] = detail
+        payload["status"] = "missing_metadata"
+        return UnsyncedQuestion(**payload)
 
     try:
         question_data = json.loads(metadata.read_text())
     except json.JSONDecodeError as e:
-        detail = f"Invalid JSON in {metadata_name}: {e}"
+        detail = f"Failed to parse JSON in {metadata_name}: {e}"
         logger.error(detail)
-        return UnsyncedQuestion(
-            question_name=question.name,
-            question_path=relative_path,
-            detail=detail,
-            status="invalid_metadata_json",
-            metadata=None,
-        )
+        payload["detail"] = detail
+        payload["status"] = "invalid_metadata_json"
+        return UnsyncedQuestion(**payload)
 
-    question_id = question_data.get("id")
+    # Check if there is a id in the question data
+    question_id = question_data.get("id", None)
     if not question_id:
         detail = (
-            f"`{metadata_name}` found for {question.name}, but no 'id' key present. "
+            f"`{metadata_name}` found for {question_dir.name}, but no 'id' key present. "
             "This likely means the question was never inserted into the database."
         )
         logger.warning(detail)
-        return UnsyncedQuestion(
-            question_name=question.name,
-            question_path=relative_path,
-            detail=detail,
-            status="missing_id",
-            metadata=json.dumps(question_data),
-        )
+        payload["detail"] = detail
+        payload["status"] = "missing_id"
+        payload["metadata"] = json.dumps(to_serializable(question_data))
+        return UnsyncedQuestion(**payload)
 
-    logger.info(f"🗂 Found Question ID: {question_id}")
+    logger.info(f"Found Question ID: {question_id}")
 
     # --- Step 3: Confirm question exists in DB ---
     try:
@@ -106,161 +176,123 @@ async def check_question_sync_status(
             "Run the synchronization process to register this question."
         )
         logger.warning(detail)
-        return UnsyncedQuestion(
-            question_name=question.name,
-            question_path=relative_path,
-            detail=detail,
-            status="not_in_database",
-            metadata=json.dumps(question_data),
-        )
+        payload["detail"] = detail
+        payload["status"] = "not_in_database"
+        payload["metadata"] = json.dumps(to_serializable(question_data))
+        return UnsyncedQuestion(**payload)
 
     logger.info(
-        f"✅ Question {question.name} is properly synced with the database (ID: {question_id})"
+        f"✅ Question {question_name} is properly synced with the database (ID: {question_id})"
     )
     return qdb
 
 
-async def get_all_unsynced(
-    path: Path, qm: QuestionManagerDependency
-) -> Sequence[UnsyncedQuestion]:
-    try:
-        tasks = [
-            check_question_sync_status(question, qm)
-            for question in path.iterdir()
-            if question.name not in excluded_path_names
-        ]
-        results = await asyncio.gather(*tasks)
-        return [r for r in results if isinstance(r, UnsyncedQuestion)]
-    except Exception as e:
-        raise ValueError(f"Could not check the unsynced questions {e}")
-
-
-async def check_local_unsync(
-    storage: StorageDependency, qm: QuestionManagerDependency
-) -> Sequence[UnsyncedQuestion]:
-    try:
-
-        path = Path(storage.get_root_path()).resolve()
-        logger.info(f"Checking the path {path}")
-        if not path.exists():
-            logger.debug("Creating base path. It does not exist")
-            path.mkdir(parents=True, exist_ok=True)
-        return await get_all_unsynced(path, qm)
-    except Exception as e:
-        logger.info(f"Could not check unsync {e}")
-        raise e
+#
+# ------------Actual Syncing--------------
+#
 
 
 async def sync_question(
-    unsynced: UnsyncedQuestion,
-    qm: QuestionManagerDependency,
-    storage: StorageDependency,
-) -> SyncStatus:
+    unsynced: UnsyncedQuestion, qr: QuestionResourceDepencency
+) -> UnsyncedQuestion:
+
     # Check metadata
     if not getattr(unsynced, "metadata", None):
         logger.warning(f"⏩ Skipping {unsynced.question_name}: no metadata available.")
-        return "missing_metadata"
+        return unsynced
 
-    # Validate the metadata
+    # Validate that the metadata is the right type
     try:
         metadata_dict = json.loads(str(unsynced.metadata))
-        qvalidated = QuestionData.model_validate(metadata_dict, context={"extra": "ignore"})
+        qvalidated = QuestionData.model_validate(
+            metadata_dict, context={"extra": "ignore"}
+        )
     except json.JSONDecodeError as e:
-        logger.error(f"Invalid JSON for {unsynced.question_name}: {e}")
-        return "invalid_metadata_json"
+        detail = f"Invalid JSON for {unsynced.question_name}: {e}"
+        logger.error(detail)
+        unsynced.detail = detail
+        return unsynced
     except ValidationError as e:
-        logger.error(f"Validation failed for {unsynced.question_name}: {e}")
-        return "invalid question schema"
+        detail = f"Validation failed for {unsynced.question_name}: {e}"
+        logger.error("detail")
+        unsynced.detail = detail
+        return unsynced
 
-    # Write and save the question
+    # First try to create the question in the database
     try:
-        qcreated = await qm.create_question(qvalidated.model_dump())
-        # Handle path
-        old_path = Path(unsynced.question_path).resolve()
-        new_path = safe_dir_name(f"{qcreated.title}_{str(qcreated.id)[:8]}")
-        new_path = Path(storage.get_base_path()) / new_path
-        logger.info("This is the db_path")
-
-        if old_path.exists():
-            logger.info(f"Renaming {old_path} → {new_path}")
-            new_path = storage.rename_storage(old_path, new_path)
-        else:
-            new_path = storage.create_storage_path(new_path)
-
-        db_path = storage.get_storage_path(new_path, relative=True)
-        logger.info("This is the db_path %s ", db_path)
-
-        qm.set_question_path(qcreated.id, db_path, storage_type="local")
-
-        # Write the question data to the folder
-        question_data = await qm.get_question_data(qcreated.id)
-        meta_path = (Path(new_path) / "info2.json").resolve()
-        meta_path.write_text(
-            json.dumps(
-                to_serializable(question_data.model_dump()),
-                indent=2,
-                ensure_ascii=False,
-            )
+        old_path = unsynced.question_path
+        qcreated, new_path = await qr.sync_question(qvalidated, old_path)
+        question_path = (
+            str(new_path) if isinstance(new_path, str) else new_path.as_posix()
         )
         logger.info(f"✅ Synced question: {unsynced.question_name}")
-        return "success"
+        return UnsyncedQuestion(
+            question_name=str(qcreated.title),
+            question_path=question_path,
+            detail="Successfully Synced",
+            status="success",
+            metadata=None,
+        )
     except Exception as e:
-        logger.exception(f"Failed to create question {unsynced.question_name}: {e}")
-        return "failed to create question"
+        return UnsyncedQuestion(
+            question_name=unsynced.question_name,
+            question_path=unsynced.question_path,
+            detail="Failed to sync question {e}",
+            status="failed to create question",
+            metadata=unsynced.metadata,
+        )
 
 
 async def sync_questions(
-    qm: QuestionManagerDependency, storage: StorageDependency
-) -> SyncMetrics:
-    path = Path(storage.get_base_path()).resolve()
-    logger.info("Checking the path %s", path)
-    if not path.exists():
-        logger.warning(f"⚠️ Base directory {path} not found — creating it.")
-        path.mkdir(parents=True, exist_ok=True)
-    unsynced_questions: Sequence[UnsyncedQuestion] = await get_all_unsynced(path, qm)
+    qr: QuestionResourceDepencency,
+) -> Tuple[SyncMetrics, Sequence[UnsyncedQuestion]]:
+    unsynced_questions: Sequence[UnsyncedQuestion] = await check_unsync(
+        qr.storage_manager, qr.qm
+    )
 
-    logger.info(f"🔍 Found {len(unsynced_questions)} unsynced questions to process.")
+    logger.info(f" Found {len(unsynced_questions)} unsynced questions to process.")
+
     sync_results = await asyncio.gather(
-        *[sync_question(q, qm, storage) for q in unsynced_questions]
+        *[sync_question(q, qr) for q in unsynced_questions]
     )
 
     categorized = defaultdict(list)
-    for question, status in zip(unsynced_questions, sync_results):
-        categorized[status].append(question.question_name)
+
+    # FIX: Use the status string, not the entire UnsyncedQuestion object
+    for original, result in zip(unsynced_questions, sync_results):
+        categorized[result.status].append(original.question_name)
 
     success_count = len(categorized.get("success", []))
     failed_count = sum(len(v) for k, v in categorized.items() if k != "success")
-    metrics = SyncMetrics(
-        total_found=len(unsynced_questions),
-        synced=success_count,
-        failed=failed_count,
+
+    return (
+        SyncMetrics(
+            total_found=len(unsynced_questions),
+            synced=success_count,
+            failed=failed_count,
+        ),
+        sync_results,
     )
-    return metrics
 
 
 async def prune_question(
-    q: Question, qm: QuestionManagerDependency, storage: StorageDependency
+    q: Question, qr: QuestionResourceDepencency
 ) -> Literal["ok", "deleted", "bug"]:
-    if not q.local_path:
-        qm.delete_question(q.id)
-        return "deleted"
-    question_path = Path(storage.get_storage_path(q.local_path, relative=False))
-    if question_path.exists():
-        logger.debug(f"✅ Folder exists for '{q.title}' → {question_path}")
-        return "ok"
-    else:
-        try:
-            qm.delete_question(q.id)
+    try:
+        # Check that the question has a path
+        if await qr.does_question_path_exist(q.id):  # type: ignore
+            return "ok"
+        else:
+            # Just delete from database record, this should eventually be more robust but it should work
+            qr.qm.delete_question(q.id)
             return "deleted"
-        except Exception as e:
-            logger.exception(f"⚠️ Failed to delete '{q.title}' from DB: {e}")
-            return "bug"
+    except Exception as e:
+        logger.exception(f"⚠️ Failed to delete '{q.title}' from DB: {e}")
+        return "bug"
 
 
-async def prune_questions(
-    qm: QuestionManagerDependency, storage: StorageDependency
-) -> FolderCheckMetrics:
-    all_questions = qm.get_all_questions(
+async def prune_questions(qr: QuestionResourceDepencency) -> FolderCheckMetrics:
+    all_questions = qr.qm.get_all_questions(
         0,
         1000,
     )
@@ -273,9 +305,7 @@ async def prune_questions(
         )
 
     total_checked = len(all_questions)
-    prune_status = await asyncio.gather(
-        *[prune_question(q, qm, storage) for q in all_questions]
-    )
+    prune_status = await asyncio.gather(*[prune_question(q, qr) for q in all_questions])
 
     categorized = defaultdict(list)
     for question, status in zip(all_questions, prune_status):
