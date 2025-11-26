@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from pathlib import Path
 
-from src.code_sandbox.api.main import get_app
+from code_sandbox.api.main import get_app
 
 
 # --------------------------------------------------------------------------- #

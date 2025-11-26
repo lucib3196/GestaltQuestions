@@ -8,7 +8,6 @@ import json
 
 # Third-party libraries
 from fastapi import APIRouter, HTTPException
-from starlette import status
 
 # Local application imports
 from src.api.core import logger
