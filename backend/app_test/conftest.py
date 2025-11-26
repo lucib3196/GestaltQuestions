@@ -19,7 +19,7 @@ from src.api.service.question_manager import (
 from src.api.service.storage_manager import (
     get_storage_manager,
 )
-from src.firebase.core import initialize_firebase_app
+from src.api.initialize_firebase import initialize_firebase_app
 from src.storage.firebase_storage import FirebaseStorage
 from src.storage.local_storage import LocalStorageService
 from src.api.service.question_resource import (
