@@ -30,16 +30,17 @@ async def run_server(
     app_settings: SettingDependency,
 ):
     ai_url = app_settings.AI_WORKSPACE_URL
+    logger.info(f"This is the ai url {ai_url}")
     try:
         async with httpx.AsyncClient() as client:
-            generate_endpoint = f"{ai_url}/gestal_module"
+            generate_endpoint = f"{ai_url}/gestalt_module/"
             payload = {
-                "question": question,
+                "question": question
             }
             res = await client.post(generate_endpoint, json=payload)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to execute generation {e}")
-    logger.info("This is the res", res)
+    logger.info("This is the res %s", res)
     # Validate that the output is in the right form
     try:
         res = Output.model_validate(res)
