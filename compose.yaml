@@ -26,6 +26,8 @@ services:
       - ./ai_workspace/.env
     ports:
       - 8001:8001
+    volumes: 
+      - ./code_sandbox:/app
 
   langgraph_agent:
     build: 
