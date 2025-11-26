@@ -38,19 +38,32 @@ class FirebaseStorage(StorageService):
     def get_relative_to_base(self, target: str | Path | Blob) -> str:
         if isinstance(target, Blob):
             target = str(target.name)
-
         # Convert to Path
         target_path = Path(target)
 
         # Case 1: Absolute path inside the storage _root_path
         try:
             relative_path = target_path.relative_to(self.root)
+            logger.info("Retrieved relative path fine %s", relative_path)
         except ValueError:
             # Case 2: Not inside _root_path (likely already relative or external)
             relative_path = target_path
-        rel_str = relative_path.as_posix()
+
+        # Convert to posix string
+        rel_str = relative_path.as_posix().lstrip("/")
+
+        # 1. Avoid duplication
+        base = self.base
+        if rel_str == base:
+            return rel_str
+
+        # 2.  If rel_str starts with "questions/", do NOT prefix
+        if rel_str.startswith(f"{base}/"):
+            return rel_str
+        # Case 3: Ensure prefix, if it does not start
         if not rel_str.startswith(f"{self.base}/"):
             rel_str = f"{self.base}/{rel_str}"
+
         return rel_str
 
     # =========================================================================
