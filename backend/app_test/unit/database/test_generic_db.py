@@ -4,7 +4,7 @@ import pytest
 from src.api.models.models import Topic,Language, QType
 
 def test_get_all_model_relationships():
-    question_relationships = ["topics", "languages", "qtypes", "created_by"]
+    question_relationships = ["topics", "languages", "qtypes"]
     all_relationships = gdb.get_all_model_relationships(Question)
     assert set(all_relationships.keys()) == set(question_relationships)
 
