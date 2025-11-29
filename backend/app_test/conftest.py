@@ -228,7 +228,6 @@ def question_payload_full_dict():
         "title": "SomeTitle",
         "ai_generated": True,
         "isAdaptive": True,
-        "createdBy": "John Doe",
         "topics": ["Topic1", "Topic2"],
         "qtype": ["Numerical", "Matrix"],
         "languages": ["Python", "Go", "Rust"],
