@@ -1,10 +1,26 @@
 # Standard library
-from typing import List, Optional
+from typing import List, Optional, Union
 from uuid import UUID, uuid4
 from enum import Enum
 
 # Third-party libraries
 from sqlmodel import Field, Relationship, SQLModel
+
+
+# ENUMS
+class UserRole(str, Enum):
+    ADMIN = "admin"
+    TEACHER = "teacher"
+    DEVELOPER = "developer"
+    STUDENT = "student"
+
+
+class QuestionStatus(str, Enum):
+    PUBLIC = "public"
+    PRIVATE = "private"
+
+
+# Actual SQLModels
 
 
 class QuestionTopicLink(SQLModel, table=True):
@@ -34,11 +50,9 @@ class QuestionQTypeLink(SQLModel, table=True):
     )
 
 
-class UserRole(str, Enum):
-    ADMIN = "admin"
-    TEACHER = "teacher"
-    DEVELOPER = "developer"
-    STUDENT = "student"
+# --------------------------------------------
+# -----------------Users----------------------
+# --------------------------------------------
 
 
 class User(SQLModel, table=True):
@@ -47,16 +61,26 @@ class User(SQLModel, table=True):
     email: str | None
     role: UserRole = UserRole.STUDENT
     fb_id: str | None = None
-    storage_path: str | None = None
-    created_questions: List["Question"] = Relationship(back_populates="created_by")
+
+
+class StudenProfile(SQLModel, table=True):
+    user_id: UUID = Field(foreign_key="user.id", primary_key=True)
+    institution: str | None = None
+
+
+class EducatorProfile(SQLModel, table=True):
+    user_id: UUID = Field(foreign_key="user.id", primary_key=True)
+    institution: str | None = None
+
+
+class DeveloperProfile(SQLModel, table=True):
+    user_id: UUID = Field(foreign_key="user.id", primary_key=True)
 
 
 class Question(SQLModel, table=True):
     id: UUID | None = Field(default_factory=uuid4, primary_key=True, index=True)
     # Question metadata contains basic fields
     title: Optional[str] = Field(default=None, index=True)
-    ai_generated: bool = False
-    isAdaptive: bool = False
     topics: List["Topic"] = Relationship(
         back_populates="questions", link_model=QuestionTopicLink
     )
@@ -67,12 +91,19 @@ class Question(SQLModel, table=True):
         back_populates="questions", link_model=QuestionQTypeLink
     )
 
+    # Question status
+    ai_generated: bool = False
+    isAdaptive: bool = False
+    status: QuestionStatus = Field(default=QuestionStatus.PRIVATE)
+
     # Storage
     local_path: Optional[str] = None
     blob_path: Optional[str] = None
 
     created_by_id: UUID | None = Field(default=None, foreign_key="user.id")
-    created_by: Optional["User"] = Relationship(back_populates="created_questions")
+
+
+# Question metadata
 
 
 class Language(SQLModel, table=True):

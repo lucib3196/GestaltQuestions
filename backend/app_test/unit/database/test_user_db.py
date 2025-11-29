@@ -1,5 +1,6 @@
 import pytest
 import src.api.database.user as user_db
+import src.api.database.question as question_db
 
 from src.api.models import UserBase
 from src.api.models.models import UserRole
@@ -61,3 +62,11 @@ def test_update_user(create_user, db_session):
     assert update
     assert update.id == cuser.id
     print("This is the created user", update)
+
+
+@pytest.mark.asyncio
+async def test_set_user_questiosn(create_user, question_payload_full_dict, db_session):
+    qcreated = await question_db.create_question(question_payload_full_dict, db_session)
+    user_db.set_user_created_questions(create_user.id, qcreated, db_session)
+    result = user_db.get_user_created_questions(create_user.id, db_session)
+    assert result
