@@ -1,6 +1,6 @@
 from typing import Annotated, Sequence
 from uuid import UUID
-
+from src.api.core import logger
 from fastapi import Depends, HTTPException
 from starlette import status
 

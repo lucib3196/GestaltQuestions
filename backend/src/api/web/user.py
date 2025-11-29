@@ -60,6 +60,14 @@ async def create_user(
         )
 
 
+@router.get("/{id}")
+async def get_user_by_id(user_manager: UserManagerDependeny, id: str) -> User:
+    try:
+        return user_manager.get_user(id)
+    except Exception:
+        raise
+
+
 @router.get("/")
 async def get_user(
     user_manager: UserManagerDependeny,
@@ -78,9 +86,7 @@ async def get_user(
 
     logger.info(f"Got token {token}")
     try:
-
         user = user_manager.get_user_by_fb(token["uid"])
-
         logger.info("Retrieved user: uid='%s', email='%s'", user.id, user.email)
         return user
     except HTTPException as e:

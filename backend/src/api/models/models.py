@@ -60,21 +60,8 @@ class User(SQLModel, table=True):
     username: str | None
     email: str | None
     role: UserRole = UserRole.STUDENT
+    institution: str | None = None
     fb_id: str | None = None
-
-
-class StudenProfile(SQLModel, table=True):
-    user_id: UUID = Field(foreign_key="user.id", primary_key=True)
-    institution: str | None = None
-
-
-class EducatorProfile(SQLModel, table=True):
-    user_id: UUID = Field(foreign_key="user.id", primary_key=True)
-    institution: str | None = None
-
-
-class DeveloperProfile(SQLModel, table=True):
-    user_id: UUID = Field(foreign_key="user.id", primary_key=True)
 
 
 class Question(SQLModel, table=True):

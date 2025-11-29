@@ -97,7 +97,7 @@ export const Navigation: NavigationItem[] = [
         element: <AccountPage />,
         includeNavBar: false,   // Hidden from Navbar
         requiresAuth: true,     // Protected route
-        allowedRoles: ["developer", "teacher", "admin", "student"]
+        allowedRoles: []
     },
     {
         type: "route",

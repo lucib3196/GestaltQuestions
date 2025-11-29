@@ -10,8 +10,6 @@ from src.api.models import UserBase
 from src.api.models.models import (
     User,
     UserRole,
-    StudenProfile,
-    EducatorProfile,
     Question,
 )
 from src.utils import convert_uuid
@@ -121,15 +119,6 @@ def update_user(id: str | UUID, data: UserBase, session: SessionDep) -> Optional
         logger.error(f"[DB] Failed to edit user: {e}")
         raise ValueError("[DB] Failed to edit user: {e}")
 
-
-def get_user_profile(user_id: str | UUID, role: UserRole, session: SessionDep):
-    if role == UserRole.TEACHER:
-        stmt = select(EducatorProfile).where(EducatorProfile.user_id == user_id)
-    elif role == UserRole.STUDENT:
-        stmt = select(StudenProfile).where(StudenProfile.user_id == user_id)
-    else:
-        raise NotImplementedError(f"Have not implement other profiles {role}")
-    return session.exec(stmt)
 
 
 def get_user_created_questions(user_id: str | UUID, session: SessionDep):

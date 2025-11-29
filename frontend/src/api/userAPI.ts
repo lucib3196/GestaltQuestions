@@ -24,6 +24,8 @@ export class UserAPI {
       },
     });
 
+    console.log(token)
+
     console.log("[Frontend] User fetched:");
     return response.data;
   }

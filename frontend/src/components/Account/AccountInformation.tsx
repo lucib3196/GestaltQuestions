@@ -18,6 +18,8 @@ export default function AccountInformation() {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("")
 
+    
+
     useEffect(() => {
         if (!userData) return;
         setUsername(userData.username ?? "");
