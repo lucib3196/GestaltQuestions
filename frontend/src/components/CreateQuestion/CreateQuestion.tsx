@@ -3,11 +3,13 @@ import { MyModal } from "../Base/MyModal";
 import QuestionCreationForm from "./QuestionForm";
 import { TableToolBarButton } from "../QuestionTable/TableToolBarButtons";
 import { FiUpload } from "react-icons/fi";
+
+
 function Header() {
     return (
         <div className="text-center py-6">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                Create a Question
+                Create a Question today
                 <span className="text-indigo-500"> or Upload from Files</span>
             </h1>
             <p className="mt-2 text-sm md:text-base text-gray-500">

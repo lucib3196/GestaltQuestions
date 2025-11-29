@@ -7,7 +7,12 @@ from src.utils import convert_uuid
 from src.api.core import logger
 from src.api.database import SessionDep
 from src.api.models import UserBase
-from src.api.models.models import User, UserRole
+from src.api.models.models import (
+    User,
+    UserRole,
+    Question,
+)
+from src.utils import convert_uuid
 
 
 def create_user(
@@ -113,3 +118,23 @@ def update_user(id: str | UUID, data: UserBase, session: SessionDep) -> Optional
         session.rollback()
         logger.error(f"[DB] Failed to edit user: {e}")
         raise ValueError("[DB] Failed to edit user: {e}")
+
+
+
+def get_user_created_questions(user_id: str | UUID, session: SessionDep):
+    stmt = select(Question).where(Question.created_by_id == user_id)
+    return session.exec(stmt).all()
+
+
+def set_user_created_questions(
+    user_id: str | UUID, question: Question, session: SessionDep
+):
+    try:
+        question.created_by_id = convert_uuid(user_id)
+        session.add(question)
+        session.commit()
+        session.refresh(question)
+    except SQLAlchemyError as e:
+        session.rollback()
+        logger.error(f"[DB] Failed to set question to user: {e}")
+        raise ValueError("[DB] Failed to set question to user: {e}")
