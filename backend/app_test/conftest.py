@@ -210,9 +210,6 @@ def api_client(
 # ---------------------------------------------------------------------------
 
 
-
-
-
 @pytest.fixture(autouse=True)
 def mark_logs_in_test():
     """Mark logs as being inside test context for duration of each test."""
