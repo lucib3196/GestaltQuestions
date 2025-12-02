@@ -44,14 +44,14 @@ class State(TypedDict):
     files: Annotated[dict, lambda a, b: {**a, **b}]
 
 
-def classify_question(state: State):
+async def classify_question(state: State):
     input_state = {"question": state["question"], "metadata": None}
     result = question_metadata_generator.invoke(input_state, config)  # type: ignore
 
     return {"metadata": result["metadata"]}
 
 
-def generate_question_html(state: State):
+async  def generate_question_html(state: State):
     metadata = state["metadata"]
     assert metadata
 
@@ -75,7 +75,7 @@ def generate_question_html(state: State):
     }
 
 
-def generate_solution_html(state: State):
+async def generate_solution_html(state: State):
     metadata = state["metadata"]
     assert metadata
 
@@ -92,7 +92,7 @@ def generate_solution_html(state: State):
     return {"files": {"solution.html": result["solution_html"]}}
 
 
-def generate_server_js(state: State):
+async def generate_server_js(state: State):
     metadata = state["metadata"]
     assert metadata
 
@@ -109,7 +109,7 @@ def generate_server_js(state: State):
     return {"files": {"server.js": result["server_js"]}}
 
 
-def generate_server_py(state: State):
+async def generate_server_py(state: State):
     metadata = state["metadata"]
     assert metadata
 
@@ -126,7 +126,7 @@ def generate_server_py(state: State):
     return {"files": {"server.py": result["server_py"]}}
 
 
-def generate_info_json(state: State):
+async def generate_info_json(state: State):
     metadata = state["metadata"]
     assert metadata
 
@@ -135,13 +135,15 @@ def generate_info_json(state: State):
 
     if metadata.question_type == "computational":
         info_metadata["languages"] = ["javascript", "python"]
+        info_metadata["isAdaptive"] = True
     else:
         info_metadata["languages"] = []
+        info_metadata["isAdaptive"] = False
 
     return {"files": {"info.json": json.dumps(to_serializable(info_metadata))}}
 
 
-def router(
+async def router(
     state: State,
 ) -> Sequence[
     Literal["generate_solution_html", "generate_server_js", "generate_server_py"]
@@ -198,7 +200,7 @@ if __name__ == "__main__":
         question_html="",
     )
     input_state: State = {"question": question, "metadata": None, "files": {}}
-    result = app.invoke(input_state, config=config)  # type: ignore
+    result = app.ainvoke(input_state, config=config)  # type: ignore
 
     # Save output
     output_path = Path(r"src/ai_processing/code_generator/outputs/gestalt_generator")

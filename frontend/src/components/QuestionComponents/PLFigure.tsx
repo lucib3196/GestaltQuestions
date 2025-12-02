@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { API_URL } from "../../config";
+import { questionAPIURL } from "../../config";
 import { useQuestionContext } from "../../context/QuestionContext";
 
 export type ImageSize = "sm" | "md" | "lg";
@@ -30,7 +30,7 @@ export default function PLFigure({
 }: PLFigureProps) {
     const { questionMeta: qdata } = useQuestionContext();
 
-    const imagePath = `${API_URL}/${qdata?.question_path}/clientFiles/${src}`;
+    const imagePath = `${questionAPIURL}/${qdata?.question_path}/clientFiles/${src}`;
 
     return (
         <div

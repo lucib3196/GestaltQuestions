@@ -1,9 +1,8 @@
-
 import React, { useState } from "react";
 import ModGenerators from "./BaseTemplate";
-import api from "../../api/client";
 import { toast } from "react-toastify";
 import UploadFilesButton from "../Forms/UploadFileComponent";
+import { AIWorkspaceAPI } from "../../api/aiWorkspaceAPI";
 const ImageGeneratorConst = {
     name: "Visual Extract",
 };
@@ -31,22 +30,12 @@ const FileUploadForm: React.FC = () => {
         e.preventDefault();
         if (!fileList) return;
 
-        const formData = new FormData();
-
-        for (let i = 0; i < fileList.length; i++) {
-            formData.append("files", fileList[i]);
-        }
-
         setLoading(true);
 
         try {
+            await AIWorkspaceAPI.generateImage(fileList[0]);
 
-            await api.post(
-                "/code_generator/v5/image_gen",
-                formData,
-            );
-
-            toast.success("Generation Successful")
+            toast.success("Generation Successful");
         } catch (error) {
             toast.error(`Error submitting form ${error}`);
         } finally {
@@ -56,9 +45,12 @@ const FileUploadForm: React.FC = () => {
 
     return (
         <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-            <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
-
-                <UploadFilesButton onFilesSelected={setFileList} />
+            <form
+                onSubmit={handleSubmit}
+                encType="multipart/form-data"
+                className="space-y-4"
+            >
+                <UploadFilesButton onFilesSelected={setFileList} multiple={false} />
                 {fileList.length > 0 && (
                     <ul className="mt-4 space-y-2 text-sm text-gray-700">
                         {fileList.map((file, idx) => (
@@ -76,7 +68,8 @@ const FileUploadForm: React.FC = () => {
                 )}
                 <button
                     type="submit"
-                    className={`w-full py-2 px-4 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-200 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`w-full py-2 px-4 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-200 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     disabled={loading}
                 >
                     {loading ? "Generating..." : "Generate"}

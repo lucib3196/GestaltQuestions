@@ -8,7 +8,7 @@ from src.utils import safe_dir_name
 from fastapi import Depends, HTTPException, UploadFile
 from starlette import status
 import mimetypes
-
+from typing import cast
 from src.api.core import logger
 from src.api.models import SuccessFileServiceResponse, FileData
 from .config import *
@@ -89,10 +89,11 @@ class FileService:
 
     async def convert_to_filedata(self, path: Union[Path, str, UploadFile]) -> FileData:
         try:
-            if isinstance(path, UploadFile):
-                await self.validate_file(path)
-                content = await path.read()
-                filename = path.filename or "untitled.txt"
+            if isinstance(path, UploadFile) or hasattr(path,"file"):
+                upload = cast(UploadFile, path)
+                await self.validate_file(upload)
+                content = await upload.read()
+                filename = upload.filename or "untitled.txt"
                 mimetype = self.get_content_type(filename)
                 return FileData(filename=filename, content=content, mime_type=mimetype)
             else:

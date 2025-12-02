@@ -1,9 +1,14 @@
 import axios from "axios";
-import { API_URL } from "../config";
+import { questionAPIURL, aiWorkspaceURL } from "../config";
 
 axios.defaults.withCredentials = true;
+
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: questionAPIURL,
+});
+
+export const aiApi = axios.create({
+  baseURL: aiWorkspaceURL,
 });
 
 export default api;
