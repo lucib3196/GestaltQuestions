@@ -5,7 +5,7 @@ import httpx
 import json
 
 from langchain_core.runnables.config import RunnableConfig
-
+from pydantic import BaseModel
 from ai_workspace.api.core.config import get_settings
 from ai_workspace.api.core.logging import logger
 from ai_workspace.api.service.gestalt_module import run_text
@@ -27,10 +27,14 @@ async def convert_to_upload_file(filename: str, content: str | dict | bytes):
     return UploadFile(filename=filename, file=BytesIO(content))
 
 
+class QuestionDataText(BaseModel):
+    question: str
+
+
 @router.post("/")
-async def generate_gestalt_module(question: str):
+async def generate_gestalt_module(question: QuestionDataText):
     try:
-        question_files = run_text(question, config)
+        question_files = run_text(question.question, config)
         logger.info("Generated question success")
         question_meta = question_files["info.json"]
         # Prepare data
