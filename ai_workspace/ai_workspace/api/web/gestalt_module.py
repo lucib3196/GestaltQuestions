@@ -129,6 +129,21 @@ async def upload_question(question_files: Dict[str, str]):
 
 @router.post("/")
 async def generate_gestalt_module(question: QuestionDataText):
+    """
+    Generate a Gestalt module from a text-based question.
+
+    This endpoint:
+    - Receives a question in structured format (`QuestionDataText`)
+    - Passes it to the text-based Gestalt generator (`run_text`)
+    - Receives a dictionary of generated question files
+    - Uploads the generated files to the Question API using `upload_question`
+
+    Returns:
+        The result of uploading the generated question files.
+
+    Raises:
+        HTTPException: If the generation or upload process fails.
+    """
     try:
         question_files = run_text(question.question, config)
         return await upload_question(question_files)
@@ -138,6 +153,23 @@ async def generate_gestalt_module(question: QuestionDataText):
 
 @router.post("/image")
 async def generate_gestalt_module_image(image: UploadFile):
+    """
+    Generate one or more Gestalt modules from an uploaded image.
+
+    This endpoint:
+    - Saves the uploaded image to a temporary directory
+    - Runs the image-based Gestalt extractor (`run_image`)
+    - For each detected question, retrieves its generated file package
+    - Uploads each package to the Question API
+    - Uses asyncio.gather with `return_exceptions=True` to continue processing
+      even if individual uploads fail
+
+    Returns:
+        A list of successful responses and/or captured exceptions.
+
+    Raises:
+        HTTPException: If processing the image or generating modules fails.
+    """
     try:
         filename = image.filename or "untitled.png"
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -146,20 +178,22 @@ async def generate_gestalt_module_image(image: UploadFile):
                 shutil.copyfileobj(image.file, buffer)
 
             result = await run_image(temp_path, config=config)
-            logger.info("Generated questions success")
+            logger.info("Generated questions successfully.")
 
         tasks = []
         for r in result:
             question_files = r.get("files", {})
             tasks.append(upload_question(question_files))
-        # Since we may process alot of questions if there is an exception continue and log the error
 
-        responses = asyncio.gather(*tasks, return_exceptions=True)
-        for result in responses:
-            if isinstance(result, Exception):
-                logger.warning(f"Task failed: {result}")
+        # Run all uploads with error continuation
+        responses = await asyncio.gather(*tasks, return_exceptions=True)
+
+        for res in responses:
+            if isinstance(res, Exception):
+                logger.warning(f"Task failed: {res}")
             else:
-                logger.info(f"Task succeeded: {result}")
+                logger.info(f"Task succeeded: {res}")
+
         return responses
 
     except Exception as e:
