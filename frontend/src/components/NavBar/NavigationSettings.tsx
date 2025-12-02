@@ -57,19 +57,19 @@ export const Navigation: NavigationItem[] = [
         name: "Generators",
         includeNavBar: true,
         requiresAuth: true,
-        allowedRoles: ["developer", "teacher", "admin"],
+        allowedRoles: [],
         items: [
             {
                 name: "Text",
                 href: "/generators/text_generator",
                 element: <TextGenerator />,
-                allowedRoles: ["developer", "teacher", "admin"]
+                allowedRoles: []
             },
             {
                 name: "Image Upload",
                 href: "/generators/image_generator",
                 element: <ImageGenerator />,
-                allowedRoles: ["developer", "teacher", "admin"]
+                allowedRoles: []
             },
         ],
     },

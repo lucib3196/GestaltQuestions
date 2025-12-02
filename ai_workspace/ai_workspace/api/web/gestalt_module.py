@@ -1,15 +1,16 @@
-from ai_workspace.api.service.gestalt_module import run_text
-from fastapi import APIRouter
-from langchain_core.runnables.config import RunnableConfig
-from typing import Dict
-import httpx
-from ai_workspace.api.core.config import get_settings
-from fastapi import UploadFile
+from fastapi import APIRouter, HTTPException, UploadFile
 from io import BytesIO
-import json
 import asyncio
-from fastapi import HTTPException
+import httpx
+import json
+
+from langchain_core.runnables.config import RunnableConfig
+
+from ai_workspace.api.core.config import get_settings
 from ai_workspace.api.core.logging import logger
+from ai_workspace.api.service.gestalt_module import run_text
+
+
 router = APIRouter(prefix="/gestal_module", tags=["code_generation"])
 config: RunnableConfig = {"configurable": {"thread_id": "customer_123"}}
 
@@ -27,7 +28,7 @@ async def convert_to_upload_file(filename: str, content: str | dict | bytes):
 
 
 @router.post("/")
-async def generate_gestalt_module(question: str) -> Dict[str, str]:
+async def generate_gestalt_module(question: str):
     try:
         question_files = run_text(question, config)
         logger.info("Generated question success")
