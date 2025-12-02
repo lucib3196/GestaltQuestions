@@ -1,7 +1,6 @@
 import api from "./client";
 import type {
   UnsyncedQuestion,
-  SyncMetrics,
   FolderCheckMetrics,
   SyncResponse
 } from "../types/syncTypes";
