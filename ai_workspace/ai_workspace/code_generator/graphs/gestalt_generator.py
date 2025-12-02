@@ -135,8 +135,10 @@ def generate_info_json(state: State):
 
     if metadata.question_type == "computational":
         info_metadata["languages"] = ["javascript", "python"]
+        info_metadata["isAdaptive"] = True
     else:
         info_metadata["languages"] = []
+        info_metadata["isAdaptive"] = False
 
     return {"files": {"info.json": json.dumps(to_serializable(info_metadata))}}
 
