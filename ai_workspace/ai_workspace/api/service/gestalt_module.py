@@ -6,12 +6,12 @@ from ai_workspace.code_generator.graphs import multi_modal_gestalt as gcm
 from ai_workspace.models.models import Question
 
 
-def run_text(question: str, config: RunnableConfig) -> Dict[str, str]:
+async def run_text(question: str, config: RunnableConfig) -> Dict[str, str]:
     question_data = Question(
         question_text=question, solution_guide=None, final_answer=None, question_html=""
     )
     input_state: gc.State = {"question": question_data, "metadata": None, "files": {}}
-    result = gc.app.invoke(input_state, config=config)
+    result = await gc.app.ainvoke(input_state, config=config)
     files = result["files"]
     return files
 

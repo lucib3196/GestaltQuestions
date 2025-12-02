@@ -145,7 +145,7 @@ async def generate_gestalt_module(question: QuestionDataText):
         HTTPException: If the generation or upload process fails.
     """
     try:
-        question_files = run_text(question.question, config)
+        question_files = await run_text(question.question, config)
         return await upload_question(question_files)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to handle question {e}")
