@@ -1,8 +1,8 @@
-import { API_URL } from "../config";
+import { questionAPIURL } from "../config";
 
 export const imageUrl = (path: string) => {
   try {
-    return `${API_URL}${path.startsWith("/") ? "" : "/"}${path}`;
+    return `${questionAPIURL}${path.startsWith("/") ? "" : "/"}${path}`;
   } catch (error) {
     console.log(error);
   }
