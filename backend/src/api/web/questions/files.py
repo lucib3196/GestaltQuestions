@@ -116,6 +116,7 @@ async def create_question_file_upload(
             )
         # Otherwise fall back to provided question_data
         qdata = question_data
+
     try:
         assert qdata
         tasks = [fm.convert_to_filedata(f) for f in (files or [])]

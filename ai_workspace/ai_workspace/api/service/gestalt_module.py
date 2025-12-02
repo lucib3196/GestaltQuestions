@@ -1,8 +1,9 @@
-from ai_workspace.code_generator.graphs import gestalt_generator as gc
-from ai_workspace.models.models import Question
 from typing import Dict
 from langchain_core.runnables.config import RunnableConfig
-import httpx
+from ai_workspace.code_generator.graphs import gestalt_generator as gc
+from ai_workspace.models.models import Question
+
+
 
 def run_text(question: str, config: RunnableConfig) -> Dict[str, str]:
     question_data = Question(
