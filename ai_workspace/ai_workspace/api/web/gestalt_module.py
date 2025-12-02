@@ -67,3 +67,6 @@ async def generate_gestalt_module(question: QuestionDataText):
             return response.json()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to handle question {e}")
+
+
+

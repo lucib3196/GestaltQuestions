@@ -60,7 +60,8 @@ async def extract_questions(state: State):
         output_model=Response,
         llm=llm,
     )
-    return {"questions": response}
+    response = Response.model_validate(response)
+    return {"questions": response.questions}
 
 
 builder = StateGraph(State)
