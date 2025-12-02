@@ -1,8 +1,8 @@
 import api from "./client";
 import type {
   UnsyncedQuestion,
-  SyncMetrics,
   FolderCheckMetrics,
+  SyncResponse
 } from "../types/syncTypes";
 
 export class QuestionSyncAPI {
@@ -12,7 +12,7 @@ export class QuestionSyncAPI {
     const response = await api.post(`${this.base}/check_unsync`);
     return response.data;
   }
-  static async SyncQuestions(): Promise<SyncMetrics> {
+  static async SyncQuestions(): Promise<SyncResponse> {
     const response = await api.post(`${this.base}/sync_questions`);
     return response.data;
   }

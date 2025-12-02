@@ -12,6 +12,11 @@ export type SyncMetrics = {
   failed: number;
 };
 
+export type SyncResponse = {
+  sync_metrics: SyncMetrics;
+  sync_raw: UnsyncedQuestion[];
+};
+
 export type FolderCheckMetrics = {
   total_checked: number;
   deleted_from_db: number;

@@ -4,7 +4,7 @@ import type { NavigationItem } from "../../types/navbarTypes";
 
 // Pages
 import Home from "../../pages/Home";
-import ChatPage from "../ChatUI/ChatPage";
+// import ChatPage from "../ChatUI/ChatPage";
 import AccountPage from "../../pages/AccountPage";
 
 
@@ -12,7 +12,7 @@ import AccountPage from "../../pages/AccountPage";
 import TextGenerator from "../CodeGenerators/TextGenerator";
 import ImageGenerator from "../CodeGenerators/ImageGenerator";
 
-import GestaltStudio from "../Gestalt Studio/GestaltStudioPage";
+// import GestaltStudio from "../Gestalt Studio/GestaltStudioPage";
 import { QuestionViewPage } from '../QuestionView/QuestionViewPage';
 
 
@@ -56,7 +56,7 @@ export const Navigation: NavigationItem[] = [
         type: "dropdown",
         name: "Generators",
         includeNavBar: true,
-        requiresAuth: true,
+        requiresAuth: false,
         allowedRoles: [],
         items: [
             {
@@ -77,15 +77,15 @@ export const Navigation: NavigationItem[] = [
     //
     // CHAT
     //
-    {
-        type: "route",
-        name: "Chat",
-        href: "/chat",
-        element: <ChatPage />,
-        includeNavBar: true,
-        requiresAuth: false,
-        allowedRoles: []
-    },
+    // {
+    //     type: "route",
+    //     name: "Chat",
+    //     href: "/chat",
+    //     element: <ChatPage />,
+    //     includeNavBar: true,
+    //     requiresAuth: false,
+    //     allowedRoles: []
+    // },
 
     //
     // ACCOUNT PAGE
@@ -99,14 +99,14 @@ export const Navigation: NavigationItem[] = [
         requiresAuth: true,     // Protected route
         allowedRoles: []
     },
-    {
-        type: "route",
-        name: "Lecture Test",
-        href: "/lecture",
-        element: <GestaltStudio />,
-        includeNavBar: true,
-        requiresAuth: false,
-        allowedRoles: []
-    }
+    // {
+    //     type: "route",
+    //     name: "Lecture Test",
+    //     href: "/lecture",
+    //     element: <GestaltStudio />,
+    //     includeNavBar: true,
+    //     requiresAuth: false,
+    //     allowedRoles: []
+    // }
 ];
 
