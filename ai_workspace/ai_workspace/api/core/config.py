@@ -21,6 +21,7 @@ class AppSettings(BaseSettings):
     PROJECT_NAME: str
     MODE: Literal["testing", "dev", "production"] = "dev"
     BACKEND_CORS_ORIGINS: Sequence[AnyHttpUrl | str] = []
+    QUESTION_API: str
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
@@ -67,8 +68,13 @@ def get_settings() -> AppSettings:
     else:
         allowed_origins = ["http://localhost:5173"]
 
+    question_api = os.getenv("QUESTION_API", None)
+    if question_api is None:
+        raise ValueError("Question API cannot be None it needs to be set in ENV")
+
     app_settings = AppSettings(
         PROJECT_NAME="AI Gestalt",
+        QUESTION_API=question_api,
         BACKEND_CORS_ORIGINS=[] + allowed_origins,
         ROOT_PATH=ROOT_PATH,
         MODE=env_mode,
