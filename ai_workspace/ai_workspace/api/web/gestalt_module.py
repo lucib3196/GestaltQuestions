@@ -113,7 +113,7 @@ async def upload_question(question_files: Dict[str, str]):
             response = await client.post(
                 f"{QUESTION_API}/questions/files",
                 files=httpx_files,
-                data=data,  # must be "data" because multipart is used
+                json=data,  
             )
 
         logger.info(f"Question API responded with status {response.status_code}.")
@@ -171,6 +171,7 @@ async def generate_gestalt_module_image(image: UploadFile):
         HTTPException: If processing the image or generating modules fails.
     """
     try:
+        logger.info("Got an image attempting to generate")
         filename = image.filename or "untitled.png"
         with tempfile.TemporaryDirectory() as tmpdir:
             temp_path = Path(tmpdir) / filename
