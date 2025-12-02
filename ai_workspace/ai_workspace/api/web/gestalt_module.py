@@ -5,22 +5,30 @@ import shutil
 import tempfile
 from io import BytesIO
 from pathlib import Path
+from typing import Dict
 
 # Third-party
 import httpx
 from fastapi import APIRouter, HTTPException, UploadFile
 from langchain_core.runnables.config import RunnableConfig
 from pydantic import BaseModel
+from starlette import status
 
 # Local imports
 from ai_workspace.api.core.config import get_settings
 from ai_workspace.api.core.logging import logger
 from ai_workspace.api.service.gestalt_module import run_image, run_text
 
+
 router = APIRouter(prefix="/gestal_module", tags=["code_generation"])
 config: RunnableConfig = {"configurable": {"thread_id": "customer_123"}}
 
+
 QUESTION_API = get_settings().QUESTION_API
+
+
+class QuestionDataText(BaseModel):
+    question: str
 
 
 async def convert_to_upload_file(
@@ -41,39 +49,89 @@ async def read_file(file: UploadFile):
     return (file.filename, file_bytes, file.content_type or "application/octet-stream")
 
 
-class QuestionDataText(BaseModel):
-    question: str
+async def upload_question(question_files: Dict[str, str]):
+    if not question_files:
+        logger.warning("upload_question called with empty question_files dictionary.")
+        return
+
+    try:
+        logger.info("Extracting question metadata...")
+        question_meta = question_files.get("info.json")
+
+        if not question_meta:
+            logger.warning("info.json was not found in question_files.")
+            raise ValueError("Missing info.json metadata.")
+
+        # Convert dict of filename -> content into UploadFile objects
+        logger.info("Converting raw question files into UploadFile objects...")
+        upload_files = await asyncio.gather(
+            *[
+                convert_to_upload_file(filename, content)
+                for filename, content in question_files.items()
+            ]
+        )
+
+        # Prepare parallel reading of each UploadFile's bytes
+        logger.info("Reading UploadFile content into memory for HTTPX upload...")
+        file_data = await asyncio.gather(*(read_file(f) for f in upload_files))
+
+        # Format files into HTTPX multipart format
+        httpx_files = [
+            (
+                "files",
+                (
+                    filename,
+                    bytes_data,
+                    content_type or "application/octet-stream",
+                ),
+            )
+            for filename, bytes_data, content_type in file_data
+        ]
+
+        logger.info(f"Prepared {len(httpx_files)} files for upload to question API.")
+
+        # Build the additional form-data fields
+        data = {
+            "question_data": json.dumps(question_meta),
+            "auto_handle_images": "true",
+        }
+
+    except Exception as e:
+        logger.warning(f"Failed to parse and prepare question files: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to parse and prepare question files: {e}",
+        )
+
+    # Send request to Question API
+    try:
+        logger.info(
+            f"Sending prepared question files to {QUESTION_API}/questions/files"
+        )
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{QUESTION_API}/questions/files",
+                files=httpx_files,
+                data=data,  # must be "data" because multipart is used
+            )
+
+        logger.info(f"Question API responded with status {response.status_code}.")
+        return response.json()
+
+    except Exception as e:
+        logger.warning(f"Failed to send request to Question API: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to send response to question API: {e}",
+        )
 
 
 @router.post("/")
 async def generate_gestalt_module(question: QuestionDataText):
     try:
         question_files = run_text(question.question, config)
-        logger.info("Generated question success")
-        question_meta = question_files["info.json"]
-        # Prepare data
-        tasks = []
-        for filename, content in question_files.items():
-            tasks.append(convert_to_upload_file(filename, content))
-        files = await asyncio.gather(*tasks)
-
-        file_data = await asyncio.gather(*(read_file(f) for f in files))
-        httpx_files = [
-            (
-                "files",
-                (filename, bytes_data, content_type or "application/octet-stream"),
-            )
-            for filename, bytes_data, content_type in file_data
-        ]
-        data = {
-            "question_data": json.dumps(question_meta),
-            "auto_handle_images": "true",
-        }
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                f"{QUESTION_API}/questions/files", files=httpx_files, json=data
-            )
-            return response.json()
+        return await upload_question(question_files)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to handle question {e}")
 
@@ -89,31 +147,20 @@ async def generate_gestalt_module_image(image: UploadFile):
 
             result = await run_image(temp_path, config=config)
             logger.info("Generated questions success")
+
+        tasks = []
         for r in result:
-            question_files = r.get("files")
-            if not question_files:
-                continue
-            question_meta = question_files.get("info.json")
-            tasks = []
-            for filename, content in question_files.items():
-                tasks.append(convert_to_upload_file(filename, content))
-            files = await asyncio.gather(*tasks)
-            file_data = await asyncio.gather(*(read_file(f) for f in files))
-            httpx_files = [
-                (
-                    "files",
-                    (filename, bytes_data, content_type or "application/octet-stream"),
-                )
-                for filename, bytes_data, content_type in file_data
-            ]
-            data = {
-                "question_data": json.dumps(question_meta),
-                "auto_handle_images": "true",
-            }
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    f"{QUESTION_API}/questions/files", files=httpx_files, json=data
-                )
-                return response.json()
+            question_files = r.get("files", {})
+            tasks.append(upload_question(question_files))
+        # Since we may process alot of questions if there is an exception continue and log the error
+
+        responses = asyncio.gather(*tasks, return_exceptions=True)
+        for result in responses:
+            if isinstance(result, Exception):
+                logger.warning(f"Task failed: {result}")
+            else:
+                logger.info(f"Task succeeded: {result}")
+        return responses
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to handle question {e}")
