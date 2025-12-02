@@ -14,7 +14,7 @@ type SectionProps = {
 }
 
 
-export default function SectionContainer({ id, children, className, style }: SectionProps) {
+export default function SectionContainer({ id, children, className, style = "primary" }: SectionProps) {
     return <section id={id} className={clsx(style ? SectionTheme[style] : "", className)}
     > {children}</section >
 }

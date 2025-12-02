@@ -1,18 +1,19 @@
 
 // Types
 import type { NavigationItem } from "../../types/navbarTypes";
+import CreateQuestionPage from "../CreateQuestion/CreateQuestionPage";
 
 // Pages
 import Home from "../../pages/Home";
-import ChatPage from "../ChatUI/ChatPage";
+// import ChatPage from "../ChatUI/ChatPage";
 import AccountPage from "../../pages/AccountPage";
 
 
 // Generators
-import TextGenerator from "../CodeGenerators/TextGenerator";
-import ImageGenerator from "../CodeGenerators/ImageGenerator";
+// import TextGenerator from "../CodeGenerators/TextGenerator";
+// import ImageGenerator from "../CodeGenerators/ImageGenerator";
 
-import GestaltStudio from "../Gestalt Studio/GestaltStudioPage";
+// import GestaltStudio from "../Gestalt Studio/GestaltStudioPage";
 import { QuestionViewPage } from '../QuestionView/QuestionViewPage';
 
 
@@ -41,9 +42,18 @@ export const Navigation: NavigationItem[] = [
     },
     {
         type: "route",
-        name: "Questions",
+        name: "All Questions",
         href: "/questions",
         element: <QuestionViewPage />,
+        includeNavBar: true,
+        requiresAuth: false,
+        allowedRoles: []
+    },
+    {
+        type: "route",
+        name: "Create",
+        href: "/create_question",
+        element: <CreateQuestionPage />,
         includeNavBar: true,
         requiresAuth: false,
         allowedRoles: []
@@ -52,40 +62,40 @@ export const Navigation: NavigationItem[] = [
     //
     // GENERATORS DROPDOWN
     //
-    {
-        type: "dropdown",
-        name: "Generators",
-        includeNavBar: true,
-        requiresAuth: true,
-        allowedRoles: ["developer", "teacher", "admin"],
-        items: [
-            {
-                name: "Text",
-                href: "/generators/text_generator",
-                element: <TextGenerator />,
-                allowedRoles: ["developer", "teacher", "admin"]
-            },
-            {
-                name: "Image Upload",
-                href: "/generators/image_generator",
-                element: <ImageGenerator />,
-                allowedRoles: ["developer", "teacher", "admin"]
-            },
-        ],
-    },
+    // {
+    //     type: "dropdown",
+    //     name: "Generators",
+    //     includeNavBar: true,
+    //     requiresAuth: true,
+    //     allowedRoles: ["developer", "teacher", "admin"],
+    //     items: [
+    //         {
+    //             name: "Text",
+    //             href: "/generators/text_generator",
+    //             element: <TextGenerator />,
+    //             allowedRoles: ["developer", "teacher", "admin"]
+    //         },
+    //         {
+    //             name: "Image Upload",
+    //             href: "/generators/image_generator",
+    //             element: <ImageGenerator />,
+    //             allowedRoles: ["developer", "teacher", "admin"]
+    //         },
+    //     ],
+    // },
 
     //
     // CHAT
     //
-    {
-        type: "route",
-        name: "Chat",
-        href: "/chat",
-        element: <ChatPage />,
-        includeNavBar: true,
-        requiresAuth: false,
-        allowedRoles: []
-    },
+    // {
+    //     type: "route",
+    //     name: "Chat",
+    //     href: "/chat",
+    //     element: <ChatPage />,
+    //     includeNavBar: true,
+    //     requiresAuth: false,
+    //     allowedRoles: []
+    // },
 
     //
     // ACCOUNT PAGE
@@ -99,14 +109,14 @@ export const Navigation: NavigationItem[] = [
         requiresAuth: true,     // Protected route
         allowedRoles: ["developer", "teacher", "admin", "student"]
     },
-    {
-        type: "route",
-        name: "Lecture Test",
-        href: "/lecture",
-        element: <GestaltStudio />,
-        includeNavBar: true,
-        requiresAuth: false,
-        allowedRoles: []
-    }
+    // {
+    //     type: "route",
+    //     name: "Lecture Test",
+    //     href: "/lecture",
+    //     element: <GestaltStudio />,
+    //     includeNavBar: true,
+    //     requiresAuth: false,
+    //     allowedRoles: []
+    // }
 ];
 
