@@ -85,7 +85,7 @@ class JavaScriptRunner(CodeRunner):
         except subprocess.TimeoutExpired:
             raise ExecutionError("JavaScript execution timed out")
         except Exception as e:
-            raise ValueError(f"Could not run javascript code {e}")
+            raise ExecutionError(f"Could not run javascript code {e}")
 
         stdout = result.stdout.strip()
         stderr = result.stderr.strip()
@@ -94,15 +94,21 @@ class JavaScriptRunner(CodeRunner):
         last_line = stdout.splitlines()[-1]
         print_statements = stdout.splitlines()[:-1]
 
+        if result.returncode != 0:
+            raise ExecutionError(f"JS crashed:\n{result.stderr}")
         try:
             parsed = json.loads(last_line)
-            return ExecutionResult(output=parsed, logs=print_statements)
-        except Exception as e:
-            raise ValueError(
+        except json.JSONDecodeError as e:
+            raise ExecutionError(
                 f"Failed to parse JS output. Error: {e}\n"
                 f"Raw stdout:\n{stdout}\n"
                 f"Raw stderr:\n{stderr}"
             )
+
+        if "error" in parsed:
+            raise ExecutionError(f"JS execution error: {parsed['error']}")
+
+        return ExecutionResult(output=parsed, logs=print_statements)
 
 
 if __name__ == "__main__":
