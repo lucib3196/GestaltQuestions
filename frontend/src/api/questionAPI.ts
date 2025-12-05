@@ -146,12 +146,16 @@ export class QuestionAPI {
     questionId: string,
     language: "python" | "javascript"
   ) {
-    const response = await api.post(
-      `run_server/${encodeURIComponent(questionId)}/${encodeURIComponent(
-        language
-      )}`
-    );
-    return response.data;
+    try {
+      const response = await api.post(
+        `run_server/${encodeURIComponent(questionId)}/${encodeURIComponent(
+          language
+        )}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 
   static async downloadQuestion(questionId: string) {
