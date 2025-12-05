@@ -21,6 +21,12 @@ def js_script_path(get_asset_path):
     assert filepath.exists()
     return filepath
 
+@pytest.fixture
+def js_bad_code_path(get_asset_path):
+    filepath = get_asset_path / "generateWrong.js"
+    assert filepath.exists()
+    return filepath
+
 
 @pytest.fixture
 def py_script_path(get_asset_path):
