@@ -1,9 +1,63 @@
-from src.api.models.models import UserRole
-from pydantic import BaseModel
+# Standard library
+from uuid import UUID, uuid4
+from enum import Enum
+from typing import List, Optional, Literal
+
+# Third-party libraries
+from sqlmodel import Field, SQLModel, Relationship, Column
+from pydantic import BaseModel, field_validator
 
 
-class UserBase(BaseModel):
-    username: str
-    email: str
-    role: UserRole = UserRole.STUDENT
-    storage_path: str | None = None
+class UserRoles(str, Enum):
+    ADMIN = "admin"
+    TEACHER = "teacher"
+    DEVELOPER = "developer"
+    STUDENT = "student"
+
+
+# Defines the institution that they belong to
+class ValidInstitutions(str, Enum):
+    UCR = "University of California, Riverside"
+    CPP = "California State Polytechnic University, Pomona"
+    NORCO = "Norco College"
+
+
+class Institution(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    name: ValidInstitutions
+    description: str | None = None
+
+    users: List["User"] = Relationship(back_populates="institution")
+
+
+# Create a link between a user a many to many relationship
+class UserRoleLink(SQLModel, table=True):
+    role_id: UUID | None = Field(default=None, foreign_key="role.id", primary_key=True)
+    # References the user.id column
+    user_id: UUID | None = Field(default=None, foreign_key="user.id", primary_key=True)
+
+
+# Base class for our user, this is to faciliate stuff such as reading from our database
+class User(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    first_name: str
+    last_name: str
+    username: str | None = Field(unique=True)
+    fb_id: str | None
+    email: str = Field(index=True)
+
+    # Define the relationship
+    roles: List["Role"] = Relationship(
+        back_populates="users", link_model=UserRoleLink
+    )
+    institution_id: Optional[UUID] = Field(default=None, foreign_key="institution.id")
+    institution: Institution|None = Relationship(back_populates="users")
+
+
+# Role table
+class Role(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    name: UserRoles = Field(index=True)
+    description: str | None = None
+
+    users: List["User"] = Relationship(back_populates="roles", link_model=UserRoleLink)

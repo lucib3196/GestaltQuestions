@@ -7,12 +7,7 @@ from enum import Enum
 from sqlmodel import Field, Relationship, SQLModel
 
 
-# ENUMS
-class UserRole(str, Enum):
-    ADMIN = "admin"
-    TEACHER = "teacher"
-    DEVELOPER = "developer"
-    STUDENT = "student"
+
 
 
 class QuestionStatus(str, Enum):
@@ -53,15 +48,6 @@ class QuestionQTypeLink(SQLModel, table=True):
 # --------------------------------------------
 # -----------------Users----------------------
 # --------------------------------------------
-
-
-class User(SQLModel, table=True):
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
-    username: str | None
-    email: str | None
-    role: UserRole = UserRole.STUDENT
-    institution: str | None = None
-    fb_id: str | None = None
 
 
 class Question(SQLModel, table=True):

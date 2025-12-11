@@ -9,7 +9,7 @@ from starlette import status
 
 # --- Internal ---
 from src.api.core import logger
-from src.api.database import SessionDep
+from src.api.database.database import SessionDep
 from src.api.database import question as qdb
 from src.api.models.models import Question
 from src.api.models.question import QuestionData, QuestionMeta

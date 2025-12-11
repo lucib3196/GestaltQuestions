@@ -5,21 +5,30 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 from src.utils import convert_uuid
 from src.api.core import logger
-from src.api.database import SessionDep
-from src.api.models import UserBase
+from src.api.database.database import SessionDep
+from src.api.models.users import User, UserRoles
 from src.api.models.models import (
-    User,
-    UserRole,
     Question,
 )
 from src.utils import convert_uuid
 
 
 def create_user(
-    uid: str, email: str, username: str, session: SessionDep
+    uid: str,
+    first_name: str,
+    last_name: str,
+    email: str,
+    username: str,
+    session: SessionDep,
 ) -> Optional[User]:
     try:
-        user = User(fb_id=uid, email=email, username=username, role=UserRole.STUDENT)
+        user = User(
+            fb_id=uid,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            username=username,
+        )
         session.add(user)
         session.commit()
         session.refresh(user)
@@ -104,7 +113,7 @@ def delete_user(id: str | UUID, session: SessionDep) -> None:
         logger.error(f"[DB] Failed to delete user: {e}")
 
 
-def update_user(id: str | UUID, data: UserBase, session: SessionDep) -> Optional[User]:
+def update_user(id: str | UUID, data: User, session: SessionDep) -> Optional[User]:
     try:
         user = get_user(id, session)
         update_data_dict = data.model_dump(exclude_unset=True)
@@ -118,7 +127,6 @@ def update_user(id: str | UUID, data: UserBase, session: SessionDep) -> Optional
         session.rollback()
         logger.error(f"[DB] Failed to edit user: {e}")
         raise ValueError("[DB] Failed to edit user: {e}")
-
 
 
 def get_user_created_questions(user_id: str | UUID, session: SessionDep):
