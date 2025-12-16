@@ -6,7 +6,7 @@ from sqlmodel import SQLModel
 from pathlib import Path
 from alembic import context
 from dotenv import load_dotenv
-from src.api.models import *
+from src.api.db_models import *
 from src.api.core.config import AppSettings
 import os
 

@@ -6,8 +6,8 @@ from sqlmodel import select
 from src.utils import convert_uuid
 from src.api.core import logger
 from src.api.database.database import SessionDep
-from src.api.models.users import User, UserRoles
-from src.api.models.question import (
+from src.api.db_models.users import User, UserRoles
+from src.api.db_models.question import (
     Question,
 )
 from src.utils import convert_uuid
