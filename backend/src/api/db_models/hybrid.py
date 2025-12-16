@@ -1,4 +1,4 @@
-from uuid import UUID
+from uuid import UUID, uuid4
 from enum import Enum
 
 # Third-party libraries
@@ -37,11 +37,14 @@ class QuestionReview(SQLModel, table=True):
 
 class QuestionAttempt(SQLModel, table=True):
     __tablename__ = "question_attempt_link"  # type: ignore
+    # Id for the attemp history
+    id: UUID | None = SQLField(default_factory=uuid4, primary_key=True, index=True)
     question_id: UUID | None = SQLField(
         default=None, foreign_key="question.id", primary_key=True
     )
     user_id: UUID | None = SQLField(
         default=None, foreign_key="user.id", primary_key=True
     )
-    attempts: int = SQLField(default=0)
-    completed: bool = SQLField(default=False)
+
+    quiz_data: QuizData
+    submitted_data: Submitted

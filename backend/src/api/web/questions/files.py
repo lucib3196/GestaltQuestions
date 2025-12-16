@@ -21,7 +21,7 @@ from pydantic import ValidationError
 # -------------------------
 from src.api.core import logger
 from src.api.dependencies import StorageTypeDep
-from src.api.response_models import (
+from src.api.models import (
     FileData,
     SuccessDataResponse,
     SuccessFileResponse,

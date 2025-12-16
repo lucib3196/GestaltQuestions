@@ -1,5 +1,5 @@
 import axios from "axios";
-import { questionAPIURL, aiWorkspaceURL } from "../config";
+import { questionAPIURL, aiWorkspaceURL } from "../../config"
 
 axios.defaults.withCredentials = true;
 

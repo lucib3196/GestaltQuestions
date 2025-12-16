@@ -1,4 +1,4 @@
-import api from "../services/client";
+import api from "../client";
 
 type Settings = {
     storage_type: "cloud" | "local";
