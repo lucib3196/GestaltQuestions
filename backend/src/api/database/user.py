@@ -1,12 +1,12 @@
 from typing import Optional, Sequence
 from uuid import UUID
-
+from .role import get_role
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 from src.utils import convert_uuid
 from src.api.core import logger
 from src.api.database.database import SessionDep
-from src.api.db_models.users import User, UserRoles, UserBase
+from src.api.db_models.users import User, UserRoles, UserBase, UserUpdate
 from src.api.db_models.question import (
     Question,
 )
@@ -18,14 +18,17 @@ def create_user(
     session: SessionDep,
     role: UserRoles = UserRoles.STUDENT,
 ) -> Optional[User]:
+
     try:
+        r = get_role(role.value, session)
+
         user = User(
             fb_id=data.fb_id,
             first_name=data.first_name,
             last_name=data.last_name,
             email=data.email,
             username=data.username,
-            role=role
+            role=r,  # type: ignore
         )
         session.add(user)
         session.commit()
@@ -111,7 +114,9 @@ def delete_user(id: str | UUID, session: SessionDep) -> None:
         logger.error(f"[DB] Failed to delete user: {e}")
 
 
-def update_user(id: str | UUID, data: User, session: SessionDep) -> Optional[User]:
+def update_user(
+    id: str | UUID, data: UserUpdate, session: SessionDep
+) -> Optional[User]:
     try:
         user = get_user(id, session)
         update_data_dict = data.model_dump(exclude_unset=True)
@@ -128,7 +133,8 @@ def update_user(id: str | UUID, data: User, session: SessionDep) -> Optional[Use
 
 
 def get_user_created_questions(user_id: str | UUID, session: SessionDep):
-    stmt = select(Question).where(Question.created_by_id == user_id)
+    user = get_user(user_id, session)
+    stmt = select(Question).where(Question.created_by == user)
     return session.exec(stmt).all()
 
 
@@ -136,7 +142,7 @@ def set_user_created_questions(
     user_id: str | UUID, question: Question, session: SessionDep
 ):
     try:
-        question.created_by_id = convert_uuid(user_id)
+        question.created_by = get_user(user_id, session)
         session.add(question)
         session.commit()
         session.refresh(question)

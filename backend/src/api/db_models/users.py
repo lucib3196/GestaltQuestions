@@ -27,6 +27,14 @@ class ValidInstitutions(str, Enum):
     NORCO = "Norco College"
 
 
+# Create a link between a user a many to many relationship
+class UserRoleLink(SQLModel, table=True):
+    __tablename__ = "user_role_link"  # type: ignore
+    role_id: UUID | None = Field(default=None, foreign_key="role.id", primary_key=True)
+    # References the user.id column
+    user_id: UUID | None = Field(default=None, foreign_key="user.id", primary_key=True)
+
+
 class Institution(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: ValidInstitutions
@@ -35,12 +43,13 @@ class Institution(SQLModel, table=True):
     users: List["User"] = Relationship(back_populates="institution")
 
 
-# Create a link between a user a many to many relationship
-class UserRoleLink(SQLModel, table=True):
-    __tablename__ = "user_role_link"  # type: ignore
-    role_id: UUID | None = Field(default=None, foreign_key="role.id", primary_key=True)
-    # References the user.id column
-    user_id: UUID | None = Field(default=None, foreign_key="user.id", primary_key=True)
+# Role table
+class Role(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    name: str = Field(index=True)
+    description: str | None = None
+
+    users: List["User"] = Relationship(back_populates="role", link_model=UserRoleLink)
 
 
 # Base class for our user, this is to faciliate stuff such as reading from our database
@@ -63,21 +72,19 @@ class User(SQLModel, table=True):
     )
 
 
-# Role table
-class Role(SQLModel, table=True):
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
-    name: str = Field(index=True)
-    description: str | None = None
-
-    users: List["User"] = Relationship(back_populates="role", link_model=UserRoleLink)
-
-
 # Base Model for reading users
 class UserRead(BaseModel):
     first_name: str
     last_name: str
     username: str | None
     email: str
+
+
+class UserUpdate(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    username: str | None = None
+    email: str | None = None
 
 
 # This model is used for when we add users
