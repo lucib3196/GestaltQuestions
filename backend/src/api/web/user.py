@@ -9,6 +9,13 @@ from src.api.dependencies import FireBaseToken
 from fastapi import HTTPException
 from starlette import status
 from src.api.initialize_firebase import initialize_firebase_app
+from src.api.db_models.users import (
+    User,
+    UserBase,
+    UserRoles,
+    ValidInstitutions,
+    UserUpdate,
+)
 
 router = APIRouter(prefix="/users", tags=["users"])
 initialize_firebase_app()
@@ -18,7 +25,7 @@ initialize_firebase_app()
 async def create_user(
     user_manager: UserManagerDependeny,
     fb_token: FireBaseToken,
-    data: User,
+    data: UserBase,
 ) -> User:
     """
     Create a new user in the system.
@@ -33,7 +40,8 @@ async def create_user(
 
     # Check if the user already exist in the database
     try:
-        existing_user = user_manager.get_user_by_fb(uid=fb_token["uid"])
+        fb_uid = fb_token["uid"]
+        existing_user = user_manager.get_user_by_fb(fb_uid)
         if existing_user:
             logger.info(f"[DB] User already exists: {existing_user.fb_id}")
             return existing_user
@@ -42,11 +50,9 @@ async def create_user(
             "Creating user with email='%s' and fb_id='%s'",
             data.email,
         )
-        created_user = user_manager.create_user(
-            uid=fb_token["uid"],
-            email=data.email,
-            username=data.email,
-        )
+
+        data.fb_id = fb_uid
+        created_user = user_manager.create_user(data)
 
         logger.info("User created successfully: uid='%s'", created_user.id)
         return created_user
@@ -57,6 +63,17 @@ async def create_user(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occured while creating the user {e}",
         )
+
+
+@router.post("/full")
+def create_user_full(
+    user_manager: UserManagerDependeny,
+    fb_token: FireBaseToken,
+    data: UserBase,
+    role: UserRoles,
+    institution: ValidInstitutions,
+):
+    return "data"
 
 
 @router.get("/{id}")
@@ -82,30 +99,16 @@ async def get_user(
     Returns:
         User: The user with the specified ID.
     """
-
-    logger.info(f"Got token {token}")
     try:
         user = user_manager.get_user_by_fb(token["uid"])
         logger.info("Retrieved user: uid='%s', email='%s'", user.id, user.email)
         return user
     except HTTPException as e:
-        if "user not found" in e.detail.lower():
-            logger.info("[DB] User not found — creating new one.")
-            try:
-                user = user_manager.create_user(
-                    uid=token["uid"], email=token["email"], username=""
-                )
-                logger.info("[DB] User not found — creating new one.")
-                assert user
-                return user
-            except Exception as err:
-                logger.error(f"[DB] Failed to auto-create user: {err}")
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Failed to auto-create user.",
-                )
-        else:
-            raise
+        logger.error(f"[DB] User not found: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to auto-create user.",
+        )
 
 
 @router.delete("/")
@@ -137,7 +140,7 @@ async def delete_user(
 async def update_user(
     user_manager: UserManagerDependeny,
     token: FireBaseToken,
-    data: User,
+    data: UserUpdate,
 ) -> User:
     """
     Update an existing user's information.
@@ -150,10 +153,7 @@ async def update_user(
     Returns:
         User: The updated user object.
     """
-    logger.info("Updating user id='%s' with new email='%s'", id, data.email)
     user = user_manager.get_user_by_fb(token["uid"])
-
     updated_user = user_manager.update_user(user.id, data)
-
     logger.info("User updated successfully: id='%s'", id)
     return updated_user
