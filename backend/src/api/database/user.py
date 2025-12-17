@@ -7,38 +7,57 @@ from sqlmodel import select
 from src.api.core import logger
 from src.api.database.database import SessionDep
 from src.api.db_models.question import Question
-from src.api.db_models.users import User, UserBase, UserRoles, UserUpdate
+from src.api.db_models.users import (
+    User,
+    UserBase,
+    UserRoles,
+    UserUpdate,
+    ValidInstitutions,
+)
 from src.utils import convert_uuid
 
 from .role import get_role
+from .institution import get_institution
 
 
 def create_user(
     data: UserBase,
     session: SessionDep,
-    role: UserRoles = UserRoles.STUDENT,
 ) -> Optional[User]:
 
     try:
-        r = get_role(role.value, session)
-
         user = User(
             fb_id=data.fb_id,
             first_name=data.first_name,
             last_name=data.last_name,
             email=data.email,
             username=data.username,
-            role=r,  # type: ignore
         )
         session.add(user)
         session.commit()
         session.refresh(user)
-        logger.info(f"[DB] Created user {user.id}")
+        logger.info(f"[DB] Created base user {user.id}")
+        # Handle the assignment of the role and institution
+
         return user
     except SQLAlchemyError as e:
         session.rollback()
         logger.error(f"[DB] Failed to create user: {e}")
         return None
+
+
+def create_user_full(
+    data: UserBase,
+    session: SessionDep,
+    role: UserRoles = UserRoles.STUDENT,
+    institution: ValidInstitutions | None = None,
+) -> User:
+    user = create_user(data, session)
+    assert user
+    user = set_user_role(user.id, role, session)
+    if institution:
+        user = set_user_institution(user.id, institution, session)
+    return user
 
 
 def get_user(id: str | UUID, session: SessionDep):
@@ -168,6 +187,27 @@ def set_user_role(user_id: str | UUID, role: UserRoles, session: SessionDep) -> 
         if user is None:
             raise ValueError(f"Could not retrieve user {user}")
         user.role = r
+        session.commit()
+        session.refresh(user)
+        return user
+    except Exception:
+        raise
+
+
+def set_user_institution(
+    user_id: str | UUID, institution: ValidInstitutions, session: SessionDep
+) -> User:
+    try:
+        inst = get_institution(institution.value, session)
+        if inst is None:
+            raise ValueError(f"Role {inst} not present in database ")
+        user = get_user(user_id, session)
+        if user is None:
+            raise ValueError(f"Could not retrieve user {user}")
+        user.institution = inst
+        user.institution_id = inst.id
+        session.commit()
+        session.refresh(user)
         return user
     except Exception:
         raise

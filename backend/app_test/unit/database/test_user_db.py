@@ -1,8 +1,10 @@
 import pytest
 import src.api.database.user as user_db
 import src.api.database.role as role_db
+import src.api.database.institution as instituion_db
 import src.api.database.question as question_db
-from src.api.db_models.users import UserRoles, UserBase, UserUpdate
+from src.api.db_models.users import UserRoles, UserBase, UserUpdate, ValidInstitutions
+
 
 @pytest.fixture
 def user_data():
@@ -100,4 +102,39 @@ def test_set_user_role(create_user, role, db_session):
     user = user_db.set_user_role(create_user.id, role, db_session)
     print(f"This is the returned user {user}")
     assert user
+    assert user.role.name == role.value
+
+
+@pytest.mark.parametrize(
+    "institution",
+    [ValidInstitutions.CPP, ValidInstitutions.NORCO, ValidInstitutions.UCR],
+)
+def test_set_user_institution(create_user, institution, db_session):
+    inst = instituion_db.create_institution(db_session, institution)
+    assert inst
+    user = user_db.set_user_institution(create_user.id, institution, db_session)
+    print(f"This is the returned user {user}")
+    assert user
+    assert user.institution.name == institution.value  # type: ignore
+    assert user.institution_id == inst.id
+
+
+@pytest.mark.parametrize(
+    "institution",
+    [ValidInstitutions.CPP, ValidInstitutions.NORCO, ValidInstitutions.UCR, None],
+)
+@pytest.mark.parametrize(
+    "role", [UserRoles.ADMIN, UserRoles.DEVELOPER, UserRoles.STUDENT, UserRoles.TEACHER]
+)
+def test_create_user_full(user_data, institution, role, db_session):
+    # Create the institution and role
+    inst = instituion_db.create_institution(db_session, institution)
+    r = role_db.create_role(db_session, role, "")
+    assert inst
+    assert r
+    user = user_db.create_user_full(user_data, db_session, role, institution)
+    print("This is the created user ", user)
+    assert user
+    if institution:
+        assert user.institution.name == institution.value  # type: ignore
     assert user.role.name == role.value
