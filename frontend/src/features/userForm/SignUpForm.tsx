@@ -2,7 +2,7 @@ import AuthBase from "../../features/userForm/AuthBase";
 import { toast } from "react-toastify";
 import { FirebaseError } from "firebase/app";
 import { UserAPI } from "../../services/api/backend/userAPI";
-import { type UserBase } from "../../services/api/backend/userAPI";
+import { type UserBase } from "../../types/userTypes";
 import {
     createUserWithEmailAndPassword,
     sendEmailVerification,

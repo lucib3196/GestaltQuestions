@@ -2,15 +2,12 @@ import api from "../client";
 import type { User } from "firebase/auth";
 import { getIdToken } from "firebase/auth";
 
-import type { ValidInstitutions, AllowedRoles } from "../../../types/userTypes";
-
-export type UserBase = {
-  first_name: string;
-  last_name: string;
-  username: string;
-  email?: string;
-  fb_id?: string;
-};
+import type {
+  ValidInstitutions,
+  AllowedRoles,
+  UserBase,
+  UserRead,
+} from "../../../types/userTypes";
 
 export class UserAPI {
   private static readonly base = "/users";
@@ -57,10 +54,10 @@ export class UserAPI {
     return response.data;
   }
 
-  static async getUser(user: User): Promise<UserBase> {
+  static async getUser(user: User): Promise<UserRead> {
     const token = await getIdToken(user);
 
-    const response = await api.get<UserBase>(this.base, {
+    const response = await api.get<UserRead>(this.base, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

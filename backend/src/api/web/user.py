@@ -129,7 +129,7 @@ async def get_user_by_email(
                 username=user.username,
                 email=user.email,
                 institution=institution.name if institution else None,
-                role=cast(UserRoles, user.role.name),
+                role=cast(UserRoles, role),
             )
         return None
     except Exception:
@@ -143,7 +143,7 @@ async def get_user_by_email(
 async def get_user(
     user_manager: UserManagerDependeny,
     token: FireBaseToken,
-) -> User:
+) -> UserRead | None:
     """
     Retrieve a user by their unique ID.
 
@@ -156,8 +156,18 @@ async def get_user(
     """
     try:
         user = user_manager.get_user_by_fb(token["uid"])
-        logger.info("Retrieved user: uid='%s', email='%s'", user.id, user.email)
-        return user
+        if user is not None:
+            institution = user.institution
+            role = user.role.name
+            return UserRead(
+                first_name=user.first_name,
+                last_name=user.last_name,
+                username=user.username,
+                email=user.email,
+                institution=institution.name if institution else None,
+                role=cast(UserRoles, role),
+            )
+        return None
     except HTTPException as e:
         logger.error(f"[DB] User not found: {e}")
         raise HTTPException(

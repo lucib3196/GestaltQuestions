@@ -3,12 +3,13 @@ import type { User } from "firebase/auth";
 import { auth } from "../../config/firebaseClient";
 import { useState, useEffect } from "react";
 import { createContext, useContext } from "react";
-import { UserAPI, type UserBase } from "../services/api/backend/userAPI";
+import { UserAPI } from "../services/api/backend/userAPI";
+import { type UserRead } from "../types/userTypes";
 
 
 export function useStateAuth() {
     const [user, setUser] = useState<User | null>(null);
-    const [userData, setUserData] = useState<UserBase | null>(null)
+    const [userData, setUserData] = useState<UserRead | null>(null)
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -45,7 +46,7 @@ export function useStateAuth() {
 
 type AuthContextType = {
     user: User | null;
-    userData: UserBase | null
+    userData: UserRead | null
     loading: boolean;
     logout: () => Promise<void>;
 };

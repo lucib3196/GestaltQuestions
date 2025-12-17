@@ -9,3 +9,20 @@ export const AllowedInstitutions: ValidInstitutions[] = [
   "California State Polytechnic University, Pomona",
   "Norco College",
 ];
+
+export type UserBase = {
+  first_name: string;
+  last_name: string;
+  username: string;
+  email?: string;
+  fb_id?: string;
+};
+
+export type UserRead = {
+  first_name: string;
+  last_name: string;
+  username: string;
+  email: string;
+  institution: ValidInstitutions | null;
+  role: UserRole;
+};
