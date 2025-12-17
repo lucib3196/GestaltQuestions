@@ -2,9 +2,7 @@ import pytest
 import src.api.database.user as user_db
 import src.api.database.role as role_db
 import src.api.database.question as question_db
-from src.api.core import logger
-from src.api.db_models.users import User, UserRoles, UserBase, UserUpdate
-
+from src.api.db_models.users import UserRoles, UserBase, UserUpdate
 
 @pytest.fixture
 def user_data():
