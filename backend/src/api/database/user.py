@@ -79,12 +79,13 @@ def get_user(id: str | UUID, session: SessionDep):
 
 def get_user_by_email(email: str, session: SessionDep) -> Optional[User]:
     try:
+        logger.info("Running")
         stmt = select(User).where(User.email == email.strip())
         user = session.exec(stmt).first()
         if user:
-            logger.debug(f"[DB] Found user: {user.id}")
+            logger.info(f"[DB] Found user: {user.id}")
         else:
-            logger.debug(f"[DB] User not found for id: {id}")
+            logger.info(f"[DB] User not found for id: {id}")
         return user
     except SQLAlchemyError as e:
         session.rollback()

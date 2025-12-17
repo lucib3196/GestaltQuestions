@@ -16,7 +16,9 @@ from src.api.db_models.users import (
     UserRoles,
     ValidInstitutions,
     UserUpdate,
+    UserRead,
 )
+from typing import cast
 
 router = APIRouter(prefix="/users", tags=["users"])
 initialize_firebase_app()
@@ -104,12 +106,37 @@ def create_user_full(
         )
 
 
-@router.get("/{id}")
+@router.get("/by-id/{id}")
 async def get_user_by_id(user_manager: UserManagerDependeny, id: str) -> User:
     try:
         return user_manager.get_user(id)
     except Exception:
         raise
+
+
+@router.get("/by-email/")
+async def get_user_by_email(
+    user_manager: UserManagerDependeny, email: str
+) -> UserRead | None:
+    try:
+        user = user_manager.get_user_by_email(email)
+        if user is not None:
+            institution = user.institution
+            role = user.role
+            return UserRead(
+                first_name=user.first_name,
+                last_name=user.last_name,
+                username=user.username,
+                email=user.email,
+                institution=institution.name if institution else None,
+                role=cast(UserRoles, user.role.name),
+            )
+        return None
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to retrieve user by email",
+        )
 
 
 @router.get("/")
