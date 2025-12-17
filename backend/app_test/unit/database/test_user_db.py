@@ -128,9 +128,11 @@ def test_set_user_institution(create_user, institution, db_session):
 )
 def test_create_user_full(user_data, institution, role, db_session):
     # Create the institution and role
-    inst = instituion_db.create_institution(db_session, institution)
+    if institution:
+        inst = instituion_db.create_institution(db_session, institution)
+        assert inst
     r = role_db.create_role(db_session, role, "")
-    assert inst
+    
     assert r
     user = user_db.create_user_full(user_data, db_session, role, institution)
     print("This is the created user ", user)
