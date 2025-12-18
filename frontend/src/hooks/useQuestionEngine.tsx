@@ -1,6 +1,6 @@
 // questionHooks.ts
 import { useState, useCallback, useEffect, } from "react";
-import type { QuestionParams } from "../types/questionTypes";
+import type { QuizData } from "../types/quizType";
 import { useCodeEditorContext } from "../context/CodeEditorContext";
 import { QuestionAPI } from "../services/api/backend/questionAPI";
 import type { QuestionData } from "../types/questionTypes";
@@ -34,7 +34,7 @@ export function useAdaptiveParams(isAdaptive: boolean) {
   const { codeRunningSettings, setLogs } = useCodeEditorContext();
   const { selectedQuestionID } = useQuestionContext();
 
-  const [params, setParams] = useState<QuestionParams | null>(null);
+  const [params, setParams] = useState<QuizData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -108,7 +108,7 @@ type ParsedHTMLResult = {
  */
 export function useParsedQuestionHTML(
   questionHTML: string,
-  params: QuestionParams | null,
+  params: QuizData | null,
   solutionHTML?: string
 ): ParsedHTMLResult | undefined {
   const [qHTML, setQHTML] = useState<string>("");

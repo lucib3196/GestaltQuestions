@@ -46,10 +46,4 @@ export type FileName = GeneralResponse & {
   file_paths: string[];
 };
 
-export type QuestionParams = {
-  params: Record<string, string | number | any>;
-  correct_answers: Record<string, string | number>;
-  nDigits: number;
-  sigfigs: number;
-  logs?: string[];
-};
+
