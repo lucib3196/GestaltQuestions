@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 
 // --- Types ---
-type AnswerValue = string | number;
+type AnswerValue = string | number | string[];
 type AnswersMap = Record<string, AnswerValue>;
 
 interface QuestionRuntimeContextType {

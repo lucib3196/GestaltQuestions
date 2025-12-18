@@ -40,7 +40,7 @@ const PLSolutionPanel: React.FC<PLSolutionPanelProps> = ({
 
     const visibleSteps = autoShowAll ? steps : steps.slice(0, stepIndex);
 
-    
+
 
 
     return (

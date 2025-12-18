@@ -12,6 +12,7 @@ import type { PLDerivationProps } from "./PLDerivationContainer";
 import type { PLDerivationStepProps } from "./PLDerivationStep";
 import { PLDerivation } from "./PLDerivationContainer";
 import { PLDerivationStep } from "./PLDerivationStep";
+import PLMultipleChoice, { PLAnswer, type PLAnswerProps, type PLMultipleChoiceProps } from './PLMultipleChoice';
 
 // The currently available tags that are processed, this is the mapping
 // These in html look like EX: <pl-question-panel>Hello world</pl-question-panel
@@ -32,7 +33,8 @@ export type TagRegistry = {
   "pl-hint": PLHintProps;
   "pl-derivation-container": PLDerivationProps;
   "pl-derivation-step": PLDerivationStepProps;
-  "pl-multiple-choice": 
+  "pl-multiple-choice": PLMultipleChoiceProps;
+  "pl-answer": PLAnswerProps
 };
 
 export const ComponentMap: Record<
@@ -45,7 +47,9 @@ export const ComponentMap: Record<
   "pl-solution-panel": PLSolutionPanel,
   "pl-hint": PLHint,
   "pl-derivation-container": PLDerivation,
-  "pl-derivation-step": PLDerivationStep
+  "pl-derivation-step": PLDerivationStep,
+  "pl-multiple-choice": PLMultipleChoice,
+  "pl-answer": PLAnswer
 };
 // These are the raw attributes for instance <pl-number-input answer-name='c' />
 type RawAttributes = Record<string, string>;
@@ -100,4 +104,15 @@ export const TagAttributeMapping: {
     size: attrs["size"],
     variant: attrs["variant"]
   }),
+  "pl-answer": (attrs) => ({
+    "correct": attrs["correct"] === "true" ? "true" : "false"
+  }),
+  "pl-multiple-choice": (attrs) => ({
+    "answersName": attrs["answers-name"],
+    "inline": attrs["inline"] === "true" ? true : false,
+    "style": attrs["style"],
+    "multiple": attrs["multiple"] === "true" ? true : false
+  }),
 };
+
+
