@@ -9,10 +9,9 @@ from starlette import status
 
 # --- Internal ---
 from src.api.core import logger
-from src.api.database.database import SessionDep
+from src.api.core.database import SessionDep
 from src.api.database import question as qdb
-from src.api.db_models.question import Question
-from src.api.db_models.question import QuestionData, QuestionMeta
+from src.api.database.models.question import QuestionData, QuestionMeta, Question
 from src.api.core.config import get_settings
 
 settings = get_settings()
