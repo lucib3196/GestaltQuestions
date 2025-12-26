@@ -1,9 +1,15 @@
-from .models.question_attempt import QuestionAttempt
+# --- Standard Library ---
+from typing import Any, Dict, Sequence
 from uuid import UUID
-from typing import Dict, Any, Sequence
-from src.utils import convert_uuid
+
+# --- Third-Party ---
+from sqlmodel import desc, select
+
+# --- Internal ---
 from src.api.core import SessionDep
-from sqlmodel import select, desc
+from src.utils import convert_uuid
+
+from .models.question_attempt import QuestionAttempt
 
 
 ID = str | UUID
