@@ -5,30 +5,9 @@ import src.api.database.institution as instituion_db
 import src.api.database.question as question_db
 from src.api.database.models.users import (
     UserRoles,
-    UserBase,
     UserUpdate,
     ValidInstitutions,
 )
-
-
-@pytest.fixture
-def user_data():
-    return UserBase(
-        first_name="Luciano",
-        last_name="Bermudez",
-        username="luci123",
-        email="luci123@gmail.com",
-        fb_id="1234",
-    )
-
-
-@pytest.fixture
-def create_user(user_data, db_session):
-    user = user_db.create_user(
-        user_data,
-        session=db_session,
-    )
-    return user
 
 
 def test_user_create(create_user):
