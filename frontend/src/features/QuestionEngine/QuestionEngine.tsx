@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useAdaptiveParams } from "../../services";
 import { useRawQuestionHTML, useParsedQuestionHTML } from "../../services";
-import { useQuestionContext } from "../../context/QuestionContext";
+import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
 import { useQuestionRuntime } from "../../context/QuestionAnswerContext";
 import { trueish } from "../../utils";
 import { Error } from "../../components/Generic/Error";
@@ -18,15 +18,14 @@ import { QuestionButtons } from "./QuestionButtons";
 import DisplayCorrectAnswer from "./DisplayCorrectAnswer";
 import QuestionHTMLToReact from "../QuestionComponents/ParseQuestionHTML";
 import { getIdToken } from "firebase/auth";
-import { UserAPI } from "../../services/api/backend/userAPI";
 
 import { useAuth } from "../../context/AuthContext";
 
 
 export default function QuestionEngine() {
-  const { questionMeta: qdata } = useQuestionContext();
+  const { questionMeta: qdata } = useQuestionCollectionContext();
   const { answers, setSolution, setShowSolution } = useQuestionRuntime();
-  const {user} = useAuth()
+  const { user } = useAuth()
 
   const [formattedQuestion, setFormattedQuestion] = useState<string>("");
   const [isSubmitted, setIsSubmitted] = useState(false);

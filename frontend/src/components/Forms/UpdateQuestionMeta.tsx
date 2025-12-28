@@ -1,4 +1,4 @@
-import { useQuestionContext } from "../../context/QuestionContext";
+import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
 import type { QuestionMeta } from "../../types/questionTypes";
 import { InputTextForm } from "./InputComponents";
 import { useState, type FormEvent } from "react";
@@ -17,7 +17,7 @@ function QuestionFormHeader({ questionMeta }: { questionMeta: QuestionMeta }) {
     );
 }
 export default function QuestionUpdateForm() {
-    const { questionMeta, selectedQuestionID } = useQuestionContext();
+    const { questionMeta, selectedQuestionID } = useQuestionCollectionContext();
 
     const [title, setTitle] = useState<string>(questionMeta?.title ?? "");
     const [topics, setTopics] = useState<string>(

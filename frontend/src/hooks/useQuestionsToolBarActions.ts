@@ -1,9 +1,9 @@
 import { QuestionAPI } from "../services";
-import { useQuestionContext } from "./../context/QuestionContext";
+import { useQuestionCollectionContext } from "../context/QuestionCollectionContext";
 import { toast } from "react-toastify";
 import { downloadZip } from "../utils/downloadUtils";
 export function useQuestionToolBarActions() {
-  const { selectedQuestions } = useQuestionContext();
+  const { selectedQuestions } = useQuestionCollectionContext();
 
   const handleQuestionDownloads = async () => {
     if (!selectedQuestions.length) return;

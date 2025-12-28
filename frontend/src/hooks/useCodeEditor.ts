@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { toast } from "react-toastify";
 
 import { useCodeEditorContext } from "../context/CodeEditorContext";
-import { useQuestionContext } from "../context/QuestionContext";
+import { useQuestionCollectionContext } from "../context/QuestionCollectionContext";
 import { QuestionAPI } from "../services/api/backend/questionAPI";
 
 import type { FileData } from "../types/questionTypes";
@@ -10,7 +10,7 @@ import type { FileData } from "../types/questionTypes";
 export function useQuestionFiles() {
   const { setFileNames, selectedFile, setFileContent, refreshKey } =
     useCodeEditorContext();
-  const { selectedQuestionID } = useQuestionContext();
+  const { selectedQuestionID } = useQuestionCollectionContext();
 
   const [filesData, setFileData] = useState<FileData[]>([]);
   const [loading, setLoading] = useState(false);

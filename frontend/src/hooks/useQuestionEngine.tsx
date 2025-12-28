@@ -3,36 +3,15 @@ import { useState, useCallback, useEffect, } from "react";
 import type { QuizData } from "../types/quizType";
 import { useCodeEditorContext } from "../context/CodeEditorContext";
 import { QuestionAPI } from "../services/api/backend/questionAPI";
-import type { QuestionData } from "../types/questionTypes";
-import { useQuestionContext } from "../context/QuestionContext";
+import { useQuestionCollectionContext } from "../context/QuestionCollectionContext";
+
 import applyPlaceHolders from "../utils/flattenParams";
 
-export function useRetrievedQuestions({
-  questionFilter,
-  showAllQuestions,
-}: {
-  questionFilter: QuestionData;
-  showAllQuestions: boolean;
-}) {
-  const { setQuestions } = useQuestionContext();
-  const fetchQuestions = useCallback(async () => {
-    try {
-      const filter = showAllQuestions ? {} : questionFilter;
-      const retrieved = await QuestionAPI.filterQuestions(filter);
-      setQuestions(retrieved);
-    } catch (error) {
-      console.error("Failed to fetch questions:", error);
-    }
-  }, [showAllQuestions, questionFilter, setQuestions]);
 
-  useEffect(() => {
-    fetchQuestions();
-  }, [fetchQuestions]);
-}
 
 export function useAdaptiveParams(isAdaptive: boolean) {
   const { codeRunningSettings, setLogs } = useCodeEditorContext();
-  const { selectedQuestionID } = useQuestionContext();
+  const { selectedQuestionID } = useQuestionCollectionContext();
 
   const [params, setParams] = useState<QuizData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -64,7 +43,7 @@ export function useAdaptiveParams(isAdaptive: boolean) {
 
 
 export function useRawQuestionHTML() {
-  const { selectedQuestionID } = useQuestionContext();
+  const { selectedQuestionID } = useQuestionCollectionContext();
   const { refreshKey } = useCodeEditorContext()
   const [questionHtml, setQuestionHtml] = useState<string | null>(null);
   const [solutionHTML, setSolutionHTML] = useState<| null | string>(null);
