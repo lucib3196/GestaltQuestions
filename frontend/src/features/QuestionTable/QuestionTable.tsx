@@ -11,17 +11,15 @@ import {
 } from "@mui/material";
 import { ValidTableCol } from "./config";
 import { QuestionRow } from "./QuestionRow";
-import { useQuestionCollectionContext } from './../../context/QuestionCollectionContext';
-import { useQuestionTableContext } from './QuestionTableContext';
-
+import { useQuestionCollectionContext } from "./../../context/QuestionCollectionContext";
+import { useQuestionTableContext } from "./QuestionTableContext";
 
 export default function QuestionTable() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const { questions } = useQuestionCollectionContext();
-    console.log("These are the questions", questions)
-    const { multiSelect } = useQuestionTableContext()
+    const { multiSelect } = useQuestionTableContext();
 
     const paged = useMemo(
         () => questions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
@@ -38,7 +36,6 @@ export default function QuestionTable() {
                 component={Paper}
                 className="rounded-lg shadow-md dark:bg-gray-900"
             >
-
                 <Table aria-label="question table" stickyHeader>
                     {/* Define the table cols */}
                     <TableHead>
@@ -47,21 +44,14 @@ export default function QuestionTable() {
                                 // Skip the first column when multiSelect is true
                                 if (!multiSelect && v === "Select") return null;
 
-                                return (
-                                    <TableCell key={index} >
-                                        {v}
-                                    </TableCell>
-                                );
+                                return <TableCell key={index}>{v}</TableCell>;
                             })}
                         </TableRow>
                     </TableHead>
                     {/* The Actual Body of the questions */}
                     <TableBody>
                         {paged.map((q) => (
-                            <QuestionRow
-                                key={q.id}
-                                question={q}
-                            />
+                            <QuestionRow key={q.id} question={q} />
                         ))}
                     </TableBody>
                 </Table>
@@ -76,8 +66,8 @@ export default function QuestionTable() {
                     rowsPerPage={rowsPerPage}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-
                 />
             </div>
-        </div>)
+        </div>
+    );
 }
