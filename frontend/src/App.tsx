@@ -4,12 +4,12 @@ import { AuthProvider } from "./context/AuthContext";
 import NavBar from "./features/NavBar/NavBar";
 import { ToastContainer } from "react-toastify";
 import CodeEditorProvider from "./context/CodeEditorContext";
-import { QuestionProvider } from "./context/QuestionCollectionContext";
+import { QuestionCollectionProvider } from "./context/QuestionCollectionContext";
 import { QuestionRuntimeProvider } from "./context/QuestionAnswerContext";
 import { AuthModeProvider } from "./context/AuthMode";
 import { QuestionTableProvider } from "./features/QuestionTable/QuestionTableContext";
 import QuestionBuilderProvider from "./features/QuestionBuilder/QuestionBuilderContext";
-import QuestionCollectionProvider from "./features/QuestionBuilder/QuestionCollectionViewContext";
+
 
 const config = {
   loader: { load: ["[tex]/ams"] },
@@ -40,7 +40,7 @@ function App() {
               <AuthModeProvider>
                 <QuestionRuntimeProvider>
                   <QuestionSettingsProvider>
-                    <QuestionProvider>
+                    <QuestionCollectionProvider>
                       <CodeEditorProvider>
                         {/* Main Content */}
                         <NavBar />
@@ -50,7 +50,7 @@ function App() {
                         {/* <LegacyQuestion /> */}
                         {/* End of Main Content */}
                       </CodeEditorProvider>
-                    </QuestionProvider>
+                    </QuestionCollectionProvider>
                   </QuestionSettingsProvider>
                 </QuestionRuntimeProvider>
               </AuthModeProvider>

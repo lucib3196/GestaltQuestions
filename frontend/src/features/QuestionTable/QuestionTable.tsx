@@ -15,11 +15,12 @@ import { useQuestionCollectionContext } from './../../context/QuestionCollection
 import { useQuestionTableContext } from './QuestionTableContext';
 
 
-export function QuestionTable() {
+export default function QuestionTable() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const { questions } = useQuestionCollectionContext();
+    console.log("These are the questions", questions)
     const { multiSelect } = useQuestionTableContext()
 
     const paged = useMemo(

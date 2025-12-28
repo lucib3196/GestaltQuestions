@@ -1,13 +1,13 @@
 
-import { QuestionTable } from "../QuestionTable/QuestionTable";
+
 import { ResizableQuestionContainer } from "../Question/ResizableQuestion";
 import SyncQuestions from "../QuestionSync/QuestionSync";
-import { useQuestionContext } from "../../context/QuestionCollectionContext";
+import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
 import QuestionPageHeader from "./QuestionPageHeader";
 import QuestionViewToolBar from "./QuestionViewToolBar";
-
+import QuestionTable from './../../features/QuestionTable/QuestionTable';
 export function QuestionViewPage() {
-  const { selectedQuestionID } = useQuestionContext();
+  const { selectedQuestionID } = useQuestionCollectionContext();
 
   return (
     <section className="w-full flex flex-col items-center py-12 space-y-16">

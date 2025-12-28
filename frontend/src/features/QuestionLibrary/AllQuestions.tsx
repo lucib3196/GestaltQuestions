@@ -1,5 +1,5 @@
 import QuestionLibraryHeader from "./Header";
-import { QuestionTable } from "../QuestionTable/QuestionTable";
+import { QuestionTable } from "../QuestionTable";
 export default function AllQuestions() {
   return (
     <>

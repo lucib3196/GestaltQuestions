@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useAdaptiveParams } from "../../services";
 import { useRawQuestionHTML, useParsedQuestionHTML } from "../../services";
-import { useQuestionContext } from "../../context/QuestionCollectionContext";
+import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
 import { useQuestionRuntime } from "../../context/QuestionAnswerContext";
 import { trueish } from "../../utils";
 import { Error } from "../../components/Generic/Error";
@@ -23,7 +23,7 @@ import { useAuth } from "../../context/AuthContext";
 
 
 export default function QuestionEngine() {
-  const { questionMeta: qdata } = useQuestionContext();
+  const { questionMeta: qdata } = useQuestionCollectionContext();
   const { answers, setSolution, setShowSolution } = useQuestionRuntime();
   const { user } = useAuth()
 

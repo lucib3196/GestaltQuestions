@@ -25,7 +25,7 @@ export const QuestionContext = createContext<QuestionCollectionContext | null>(
   null
 );
 
-export function QuestionProvider({ children }: { children: ReactNode }) {
+export function QuestionCollectionProvider({ children }: { children: ReactNode }) {
   const [questions, setQuestions] = useState<QuestionMeta[]>([]);
   const [questionMeta, setQuestionMeta] = useState<QuestionMeta | null>(null);
   const [selectedQuestionID, setSelectedQuestionID] = useState<string>("");
@@ -68,7 +68,7 @@ export function useQuestionCollectionContext() {
 
   if (!context) {
     throw new Error(
-      "useQuestionContext must be used within a <QuestionProvider>"
+      "useQuestionCollectionContext must be used within a <QuestionProvider>"
     );
   }
 

@@ -28,7 +28,7 @@ export function useQuestionTableContext() {
 
     if (!context) {
         throw new Error(
-            "useQuestionContext must be used within a <QuestionProvider>"
+            "useQuestionCollectionContext must be used within a <QuestionProvider>"
         );
     }
 
