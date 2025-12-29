@@ -6,6 +6,7 @@ export type InputStyleVariant =
   | "filled"
   | "hidden"
   | "inline"
+  | "createQuestion";
 
 type InputStyleConfig = {
   wrapper: string;
@@ -47,10 +48,18 @@ export const inputStyles: Record<InputStyleVariant, InputStyleConfig> = {
     label: "block text-sm font-medium text-gray-700 mb-1",
     input:
       "block w-full rounded-md bg-transparent px-3 py-1 border border-gray-400 text-black placeholder:text-gray-500 focus:border-indigo-500",
-  }
+  },
+  createQuestion: {
+    wrapper: "w-full flex flex-col gap-1",
+    label:
+      "text-xs font-semibold uppercase tracking-wide text-slate-600",
+    input:
+      "block w-full rounded-md bg-white px-3 py-2 text-sm text-slate-900 " +
+      "border border-slate-300 shadow-sm " +
+      "placeholder:text-slate-400 " +
+      "focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20",
+  },
 };
-
-
 
 export type InputComponentProps =
   React.InputHTMLAttributes<HTMLInputElement> & {
@@ -74,17 +83,11 @@ export function InputTextForm({
         {label}
       </label>
 
-      <input
-        {...props}
-        className={clsx(styles.input, className)}
-      />
+      <input {...props} className={clsx(styles.input, className)} />
 
-      {hint && (
-        <p className="mt-1 text-xs text-gray-500">{hint}</p>
-      )}
+      {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
     </div>
   );
 }
 
-
-export default InputTextForm
+export default InputTextForm;
