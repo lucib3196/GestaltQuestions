@@ -1,14 +1,13 @@
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import { useState } from "react";
+import { useCreateMode, type CreateMode } from "./context";
 
-type Mode = "blank" | "upload";
 export default function ModeToggle() {
-    const [mode, setMode] = useState<Mode>("blank");
+    const { mode, setMode } = useCreateMode()
 
     const handleModeChange = (
         _: React.MouseEvent<HTMLElement>,
-        newMode: Mode
+        newMode: CreateMode
     ) => {
         setMode(newMode);
     };
