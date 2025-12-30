@@ -4,6 +4,7 @@ import Divider from "../../components/Base/Divider";
 import { Section } from "../../components/Section";
 import { Button } from "../../components/Button/Button";
 import QuestionMeta from "./QuestionMetadataField";
+import ModeToggle from "./ModeToggle";
 
 const Templates = ["TemplateA", "TemplateB", "TemplateC", "TemplateD"];
 
@@ -39,6 +40,8 @@ export default function CreateQuestion() {
                 </div>
             </Header>
             <Divider />
+            <ModeToggle />
+
             <QuestionMeta />
             <Divider />
             {/* Question Creation */}
