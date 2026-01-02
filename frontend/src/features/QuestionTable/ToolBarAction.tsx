@@ -4,7 +4,7 @@ import { MdDelete } from "react-icons/md";
 import { IoSettings } from "react-icons/io5";
 import { FaSyncAlt } from "react-icons/fa";
 import { type IconType } from "react-icons";
-import type { QuestionData, QuestionMeta } from "../../types/questionTypes";
+import type { QuestionData } from "../../types/questionTypes";
 
 export type ToolBarAction =
     | "TOGGLE_MULTI_SELECT"
@@ -31,11 +31,11 @@ export type ToolBarItem =
     })
     | (ToolBarItemBase & {
         kind: "dropdown";
-        items: ToolBarDropdownItem<QuestionData | QuestionMeta>[];
+        items: ToolBarDropdownItem<QuestionData>[];
     });
 
 export const QuestionTableDropdownItems: ToolBarDropdownItem<
-    QuestionData | QuestionMeta
+    QuestionData
 >[] = [
         {
             key: "title",
