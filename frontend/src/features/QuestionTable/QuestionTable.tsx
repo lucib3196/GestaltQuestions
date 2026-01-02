@@ -9,12 +9,9 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import { QuestionTableColumns } from "./config";
 import { useQuestionCollectionContext } from "./../../context/QuestionCollectionContext";
 import { useQuestionTableContext } from "./QuestionTableContext";
 import { Checkbox } from "@mui/material";
-
-
 
 export default function QuestionTable() {
   const [page, setPage] = useState(0);
@@ -27,7 +24,8 @@ export default function QuestionTable() {
     selectedQuestions,
     questions,
   } = useQuestionCollectionContext();
-  const { multiSelect, setResetKey, resetKey, columns, setColumns } = useQuestionTableContext();
+  const { multiSelect, setResetKey, resetKey, columns } =
+    useQuestionTableContext();
 
   const paged = useMemo(
     () => questions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
@@ -58,8 +56,7 @@ export default function QuestionTable() {
     setResetKey((k) => k + 1);
   }, [multiSelect]);
 
-
-  console.log("Inside the table", columns)
+  console.log("Inside the table", columns);
 
   return (
     <div className="w-full lg:w-3/4 mt-10">
@@ -71,7 +68,7 @@ export default function QuestionTable() {
           {/* Define the table cols */}
           <TableHead>
             <TableRow>
-              {QuestionTableColumns.map((v, index) => {
+              {columns.map((v, index) => {
                 // Skip the first column when multiSelect is true
                 if (!multiSelect && v.key === "select") return null;
 
@@ -86,7 +83,7 @@ export default function QuestionTable() {
                         ))} */}
             {paged.map((question) => (
               <TableRow key={question.id}>
-                {QuestionTableColumns.map((col) => {
+                {columns.map((col) => {
                   if (col.key === "select") {
                     if (!multiSelect) return null;
                     else
@@ -111,11 +108,11 @@ export default function QuestionTable() {
                       >
                         {col.render
                           ? col.render(
-                            question,
-                            selectedQuestionID === question.id
-                              ? "font-semibold text-indigo-700"
-                              : ""
-                          )
+                              question,
+                              selectedQuestionID === question.id
+                                ? "font-semibold text-indigo-700"
+                                : ""
+                            )
                           : null}
                       </TableCell>
                     );

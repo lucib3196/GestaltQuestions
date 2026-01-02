@@ -10,7 +10,10 @@ import { SearchBar } from "../../components/SearchBar";
 import { useRetrievedQuestions } from "../../hooks";
 import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
 import { useQuestionTableContext } from "./QuestionTableContext";
-import { ToolBarItems, type ToolBarAction } from "./ToolBarAction";
+import {
+  type ToolBarAction,
+} from "./types";
+import { QuestionTableColumns, ToolBarItems } from "./config";
 import { MdRadioButtonChecked } from "react-icons/md";
 import { MdRadioButtonUnchecked } from "react-icons/md";
 
@@ -64,14 +67,26 @@ export default function TableToolBar() {
     }
   };
 
-  const handleColumnSelect = (val: string) => {
+  const handleColumnSelect = (key: string) => {
     setSelectedColumns((prev) => {
-      if (prev.includes(val)) {
-        return prev.filter((v) => v != val);
-      } else return [...prev, val];
+      const exists = prev.some((col) => col.key === key);
+
+      if (exists) {
+        return prev.filter((col) => col.key !== key);
+      }
+
+      const column = QuestionTableColumns.find((col) => col.key === key);
+
+      if (!column) {
+        console.warn("Column not found:", key);
+        return prev;
+      }
+
+      return [...prev, column];
     });
   };
 
+  console.log("Inside toolbar", selectedColumns);
   return (
     <div
       className={clsx(
@@ -121,7 +136,7 @@ export default function TableToolBar() {
                       return {
                         value: v.key,
                         label: v.label,
-                        icon: selectedColumns.includes(v.key)
+                        icon: selectedColumns.find((q) => q.key === v.key)
                           ? MdRadioButtonChecked
                           : MdRadioButtonUnchecked,
                       };
