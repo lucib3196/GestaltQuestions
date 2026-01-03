@@ -7,7 +7,7 @@ import CodeEditorProvider from "./context/CodeEditorContext";
 import { QuestionCollectionProvider } from "./context/QuestionCollectionContext";
 import { QuestionRuntimeProvider } from "./context/QuestionAnswerContext";
 import { AuthModeProvider } from "./context/AuthMode";
-import { QuestionTableProvider } from "./features/QuestionTable/QuestionTableContext";
+import { QuestionTableProvider } from "./features/QuestionTable/context";
 import {
   QuestionBuilderProvider,
   QuestionCollectionViewProvider,

@@ -92,37 +92,37 @@ export const QuestionTableColumns: TableColumn<QuestionData | QuestionMeta>[] =
 export const ToolBarItems: ToolBarItem<
   TableColumn<QuestionData | QuestionMeta>
 >[] = [
-  {
-    label: "Multi-Select",
-    action: "TOGGLE_MULTI_SELECT",
-    icon: BiSelectMultiple,
-    kind: "button",
-  },
-  {
-    label: "Download",
-    action: "DOWNLOAD",
-    icon: IoMdDownload,
-    multiSelect: true,
-    kind: "button",
-  },
-  {
-    label: "Delete Question",
-    action: "DELETE",
-    icon: MdDelete,
-    multiSelect: true,
-    kind: "button",
-  },
-  {
-    label: "Sync",
-    action: "SYNC",
-    icon: FaSyncAlt,
-    kind: "button",
-  },
-  {
-    label: "Table Settings",
-    action: "TABLE_SETTINGS",
-    icon: IoSettings,
-    kind: "dropdown",
-    items: QuestionTableColumns,
-  },
-];
+    {
+      label: "Multi-Select",
+      action: "TOGGLE_MULTI_SELECT",
+      icon: BiSelectMultiple,
+      kind: "button",
+    },
+    {
+      label: "Download",
+      action: "DOWNLOAD",
+      icon: IoMdDownload,
+      multiSelect: true,
+      kind: "button",
+    },
+    {
+      label: "Delete Question",
+      action: "DELETE",
+      icon: MdDelete,
+      multiSelect: true,
+      kind: "button",
+    },
+    {
+      label: "Sync",
+      action: "SYNC",
+      icon: FaSyncAlt,
+      kind: "button",
+    },
+    {
+      label: "Table Settings",
+      action: "TABLE_SETTINGS",
+      icon: IoSettings,
+      kind: "dropdown",
+      items: QuestionTableColumns,
+    },
+  ];

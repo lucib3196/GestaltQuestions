@@ -2,8 +2,8 @@ import { useState, useMemo } from "react";
 
 import { useDebounce } from "@uidotdev/usehooks";
 import { useRetrievedQuestions } from "../../hooks";
-import { useQuestionTableContext } from "../../features/QuestionTable/QuestionTableContext";
-import { useQuestionToolBarActions } from "../../hooks/useQuestionsToolBarActions";
+import { useQuestionTableContext } from "../../features/QuestionTable/context";
+import { useQuestionToolBarActions } from "../../features/QuestionTable/hooks";
 
 import clsx from "clsx";
 import { ActionButton } from "../Button";

@@ -2,7 +2,6 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import { type TableColumn } from "./types";
 import type { QuestionData, QuestionMeta } from "../../types/questionTypes";
 
-
 type QuestionTableContextType = {
   multiSelect: boolean;
   setMultiSelect: React.Dispatch<React.SetStateAction<boolean>>;

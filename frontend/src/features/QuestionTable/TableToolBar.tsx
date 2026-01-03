@@ -1,21 +1,21 @@
-// React
 import { useMemo, useState } from "react";
+
 import clsx from "clsx";
 import { useDebounce } from "@uidotdev/usehooks";
-import DropDownAdvance from "../../components/DropDown/DropDownAdvance";
 
+import { MdRadioButtonChecked, MdRadioButtonUnchecked } from "react-icons/md";
+
+import DropDownAdvance from "../../components/DropDown/DropDownAdvance";
 import { ActionButton } from "../../components/Button";
 import { SearchBar } from "../../components/SearchBar";
 
 import { useRetrievedQuestions } from "../../hooks";
 import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
-import { useQuestionTableContext } from "./QuestionTableContext";
-import {
-  type ToolBarAction,
-} from "./types";
+
+import { useQuestionTableContext } from "./context";
+import { useQuestionToolBarActions } from "./hooks";
 import { QuestionTableColumns, ToolBarItems } from "./config";
-import { MdRadioButtonChecked } from "react-icons/md";
-import { MdRadioButtonUnchecked } from "react-icons/md";
+import type { ToolBarAction } from "./types";
 
 export default function TableToolBar() {
   const [searchTitle, setSearchTitle] = useState<string>("");
@@ -35,24 +35,26 @@ export default function TableToolBar() {
     [debouncedSearchTerm]
   );
 
+  const { handleQuestionDownloads, handleDeleteQuestions } =
+    useQuestionToolBarActions();
+
   useRetrievedQuestions({
     questionFilter: questionFilter,
     showAllQuestions: false,
   });
 
-  const handleAction = (action: ToolBarAction) => {
+  const handleAction = async (action: ToolBarAction) => {
     switch (action) {
       case "TOGGLE_MULTI_SELECT":
         setMultiSelect((v) => !v);
         break;
 
       case "DOWNLOAD":
-        console.log("Donwloading");
-
+        await handleQuestionDownloads();
         break;
 
       case "DELETE":
-        console.log("Deleting");
+        await handleDeleteQuestions();
 
         break;
 
@@ -61,7 +63,6 @@ export default function TableToolBar() {
         break;
 
       case "TABLE_SETTINGS":
-        console.log("open column selector");
         setShowDropDown((prev) => !prev);
         break;
     }
@@ -70,13 +71,10 @@ export default function TableToolBar() {
   const handleColumnSelect = (key: string) => {
     setSelectedColumns((prev) => {
       const exists = prev.some((col) => col.key === key);
-
       if (exists) {
         return prev.filter((col) => col.key !== key);
       }
-
       const column = QuestionTableColumns.find((col) => col.key === key);
-
       if (!column) {
         console.warn("Column not found:", key);
         return prev;
@@ -86,7 +84,6 @@ export default function TableToolBar() {
     });
   };
 
-  console.log("Inside toolbar", selectedColumns);
   return (
     <div
       className={clsx(
@@ -120,6 +117,7 @@ export default function TableToolBar() {
                 onClick={() => handleAction(item.action)}
               />
             );
+          // This is the settings
           else if (item.kind === "dropdown")
             return (
               <div className="relative w-full">

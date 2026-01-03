@@ -10,7 +10,7 @@ import {
   Paper,
 } from "@mui/material";
 import { useQuestionCollectionContext } from "./../../context/QuestionCollectionContext";
-import { useQuestionTableContext } from "./QuestionTableContext";
+import { useQuestionTableContext } from "./context";
 import { Checkbox } from "@mui/material";
 
 export default function QuestionTable() {
