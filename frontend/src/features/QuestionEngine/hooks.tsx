@@ -1,7 +1,9 @@
 import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { QuestionAPI } from "../../services";
 import type { QuizData } from "../../types/quizType";
+import { useQuestionEngineContext } from "./context";
+import applyPlaceHolders from "../../utils/flattenParams";
 
 export function getCurrentQuestionMetadata() {
   const { selectedQuestionID, setQuestionMeta, questionMeta } =
@@ -67,11 +69,8 @@ export function fetchQuestion() {
   return { questionHtml, solutionHtml, loading, error };
 }
 
-export function fetchAdaptiveParameters({
-  serverSettings,
-}: {
-  serverSettings: "javascript" | "python";
-}) {
+export function fetchAdaptiveParameters() {
+  const { serverSetting } = useQuestionEngineContext();
   const { selectedQuestionID } = useQuestionCollectionContext();
   // Storing the parameters for the question
   const [params, setParams] = useState<QuizData | null>(null);
@@ -88,7 +87,7 @@ export function fetchAdaptiveParameters({
     try {
       const res = await QuestionAPI.runServer(
         selectedQuestionID,
-        serverSettings
+        serverSetting
       );
       setParams(res);
     } catch (error: any) {
@@ -100,7 +99,7 @@ export function fetchAdaptiveParameters({
     } finally {
       setLoading(false);
     }
-  }, [selectedQuestionID, serverSettings]);
+  }, [selectedQuestionID, serverSetting]);
 
   useEffect(() => {
     fetchParams();
@@ -108,4 +107,77 @@ export function fetchAdaptiveParameters({
 
   // Refetch is used if we want to get new values
   return { params, loading, error, refetch: fetchParams };
+}
+
+type UseQuestionArgs = {
+  isAdaptive: boolean;
+};
+
+export function useQuestion({ isAdaptive }: UseQuestionArgs) {
+  const [formattedQuestion, setFormattedQuestion] = useState<string | null>(
+    null
+  );
+  const [formattedSolution, setFormattedSolution] = useState<string | null>(
+    null
+  );
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch the question data first
+  const {
+    questionHtml,
+    solutionHtml,
+    loading: questionLoading,
+    error: questionError,
+  } = fetchQuestion();
+
+  const {
+    params,
+    loading: paramsLoading,
+    error: paramsError,
+    refetch,
+  } = fetchAdaptiveParameters();
+
+  const processed = useMemo(() => {
+    if (!questionHtml) return null;
+    if (!isAdaptive || !params) {
+      return {
+        question: questionHtml,
+        solution: solutionHtml ?? null,
+      };
+    }
+    return {
+      question: applyPlaceHolders(questionHtml, params),
+      solution: solutionHtml ? applyPlaceHolders(solutionHtml, params) : null,
+    };
+  }, [isAdaptive, questionHtml, solutionHtml, params]);
+
+  useEffect(() => {
+    if (questionError) {
+      setError(questionError);
+      return;
+    }
+
+    if (paramsError) {
+      setError(paramsError);
+      return;
+    }
+
+    if (!processed) {
+      setFormattedQuestion(null);
+      setFormattedSolution(null);
+      return;
+    }
+
+    setFormattedQuestion(processed.question);
+    setFormattedSolution(processed.solution);
+    setError(null);
+  }, [processed, questionError, paramsError]);
+
+  return {
+    formattedQuestion,
+    formattedSolution,
+    loading: questionLoading || (isAdaptive && paramsLoading),
+    error,
+    refetch,
+  };
 }
