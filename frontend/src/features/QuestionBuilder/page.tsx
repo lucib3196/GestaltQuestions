@@ -8,16 +8,10 @@ import {
 } from "react-icons/tb";
 
 import { Section } from "../../components/Section";
-import CodeEditorBase from "../../components/CodeEditor/CodeEditorBase";
 
-import QuestionBuilderHeader from "./Header";
-import { QuestionEditorSections } from "./QuestionEditorSections";
-import QuestionBuilderSideBar from "../QuestionWorkspace/QuestionBuilderSideBar";
-import { useQuestionBuildingContext, useQuestionCollectionViewContext } from "./context";
-
-
-
-
+import QuestionBuilderSideBar from "./QuestionBuilderSideBar";
+import { useQuestionCollectionViewContext } from "./context";
+import QuestionWorkspace from "./../QuestionWorkspace/page";
 
 export default function QuestionBuilder() {
   const [showDashboard, setShowDashboard] = useState(true);
@@ -71,13 +65,14 @@ export default function QuestionBuilder() {
         <Panel className="bg-slate-50" defaultSize={22} minSize={18}>
           <div className="p-6 max-w-[1400px] mx-auto">
             {view === "current" ? (
-              <MainContent />
+              <QuestionWorkspace />
             ) : view === "all" ? (
               <AllQuestions />
             ) : view === "create" ? (
               <CreateQuestion />
-            ) :
-              <div>{view}</div>}
+            ) : (
+              <div>{view}</div>
+            )}
           </div>
         </Panel>
       </PanelGroup>

@@ -8,5 +8,3 @@ export const QuestionBuilderSectionLabels: Record<
   metadata: "Question Metadata",
   solution: "Question Solution",
 };
-
-

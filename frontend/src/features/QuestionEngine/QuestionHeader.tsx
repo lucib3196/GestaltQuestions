@@ -1,7 +1,7 @@
 import type { QuestionData, QuestionMeta } from "../../types/questionTypes";
 import { GenericInfo } from "../../components/Generic/GenericInfo";
 import { Pill } from "../../components/Base/Pill";
-import { SimpleToggle } from "../../components/Generic/SimpleToggle";
+import { ToggleField } from "../../components/Toggles";
 import { useState } from "react";
 import { FaPython } from "react-icons/fa";
 import { IoLogoJavascript } from "react-icons/io5";
@@ -48,11 +48,12 @@ export function QuestionHeader({ question }: { question: QuestionData | Question
           )}
         </h1>
       </div>
-      <SimpleToggle
+      <ToggleField
         setToggle={() => setShowMeta((prev) => !prev)}
         label="Show Question Metadata"
         id="meta-toggle"
         checked={showMeta}
+        variant="emphasis"
       />
       {/* Divider */}
       <hr className="border-t border-gray-300 dark:border-gray-700 mx-auto w-2/3 sm:w-1/2" />

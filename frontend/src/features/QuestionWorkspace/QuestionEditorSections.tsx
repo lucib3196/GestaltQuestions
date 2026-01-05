@@ -1,10 +1,8 @@
-import {
-  type QuestionBuilderSection,
-  useQuestionBuildingContext,
-} from "./context";
+import { type QuestionWorkspaceOptions } from "./types";
+import { useQuestionWorkspaceContext } from "./context";
 import { type SectionItem, SectionToolBar } from "../../components/SectionTabs";
 
-export const SectionItems: SectionItem<QuestionBuilderSection>[] = [
+export const SectionItems: SectionItem<QuestionWorkspaceOptions>[] = [
   { key: "question", label: "Question View" },
   { key: "code", label: "Code Editor" },
   { key: "metadata", label: "Metadata" },
@@ -12,13 +10,13 @@ export const SectionItems: SectionItem<QuestionBuilderSection>[] = [
 ] as const;
 
 export function QuestionEditorSections() {
-  const { section, setSection } = useQuestionBuildingContext();
+  const { option, setOption } = useQuestionWorkspaceContext();
   return (
     <div>
       <SectionToolBar
         options={SectionItems}
-        selected={section}
-        setSelected={(val) => setSection(val as QuestionBuilderSection)}
+        selected={option}
+        setSelected={(val) => setOption(val as QuestionWorkspaceOptions)}
       />
     </div>
   );

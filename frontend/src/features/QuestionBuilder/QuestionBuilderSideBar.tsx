@@ -1,8 +1,14 @@
+import { IoMdAddCircleOutline } from "react-icons/io";
 
+import { Button } from "../../components/Button";
+import { Divider } from "../../components/Divider";
+import { SideBar } from "../../components/SideBar";
 
-
-
-
+import { sidebarItems } from "./config";
+import {
+  type QuestionCollectionView,
+  useQuestionCollectionViewContext,
+} from "./context";
 
 export default function QuestionBuilderSideBar() {
   const { view, setView } = useQuestionCollectionViewContext();
