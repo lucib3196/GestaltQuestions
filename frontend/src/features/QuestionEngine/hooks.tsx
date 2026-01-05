@@ -137,6 +137,8 @@ export function useQuestion({ isAdaptive }: UseQuestionArgs) {
     refetch,
   } = fetchAdaptiveParameters();
 
+
+
   const processed = useMemo(() => {
     if (!questionHtml) return null;
     if (!isAdaptive || !params) {

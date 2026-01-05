@@ -108,21 +108,24 @@
 // }
 
 import { QuestionHeader } from "./QuestionHeader";
-import { getCurrentQuestionMetadata, fetchQuestion } from "./hooks";
+import { useQuestion, getCurrentQuestionMetadata } from "./hooks";
 import { QuestionHTMLToReact } from "../QuestionComponents";
 import { Section } from "../../components/Section";
+import { useQuestionRuntime } from "../../context/QuestionAnswerContext";
 
 export default function QuestionEngine() {
   // Load up the current question meta
-  const { questionMeta, error: metaError } = getCurrentQuestionMetadata();
-  const { questionHtml, solutionHtml, loading, error } = fetchQuestion();
+  const { formattedQuestion, error, loading, refetch } = useQuestion({
+    isAdaptive: true,
+  });
+  const { questionMeta } = getCurrentQuestionMetadata();
 
   if (!questionMeta) return <div>Error: Could not get question</div>;
   return (
     <Section>
       <div className="rounded-md border-2 border-gray-400">
         <QuestionHeader question={questionMeta} />
-        <QuestionHTMLToReact html={questionHtml} />
+        <QuestionHTMLToReact html={formattedQuestion} />
       </div>
     </Section>
   );
