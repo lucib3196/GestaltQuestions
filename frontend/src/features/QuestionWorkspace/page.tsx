@@ -1,9 +1,8 @@
 import { Header } from "../../components/Header";
-import CodeEditorBase from "../../components/CodeEditor/CodeEditorBase";
 import { QuestionEditorSections } from "./QuestionEditorSections";
 import { useQuestionWorkspaceContext } from "./context";
 import { QuestionEngine } from "../QuestionEngine";
-
+import { QuestionEditor } from "../QuestionEditor";
 const Mockdata = {
   title: "Adding 2 Numbers",
 };
@@ -16,7 +15,7 @@ export default function QuestionWorkspace() {
       <QuestionEditorSections />
       <div className="w-full h-8/10">
         {option === "code" ? (
-          <CodeEditorBase />
+          <QuestionEditor />
         ) : option === "question" ? (
           <QuestionEngine />
         ) : (

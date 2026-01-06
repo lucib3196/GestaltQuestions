@@ -2,8 +2,7 @@ import React, { memo, useMemo, useCallback, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import type { OnChange } from "@monaco-editor/react";
 import type { editor as MonacoEditor } from "monaco-editor";
-import { useCodeEditorContext } from "../../context/CodeEditorContext";
-import { useEffect } from "react";
+import { useCodeEditorContext } from "../../features/QuestionEditor";
 import { debounce } from "lodash";
 
 

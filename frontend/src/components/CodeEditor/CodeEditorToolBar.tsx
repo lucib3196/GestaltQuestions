@@ -1,14 +1,10 @@
 import { Button } from "../Button";
 import FileDropDown from "../Generic/FileDropDown";
-import { useCodeEditorContext } from "./../../context/CodeEditorContext";
+import { useCodeEditorContext } from "../../features/QuestionEditor";
 import { CodeSettings } from "../QuestionFilter/CodeSettings";
-import { MyModal } from "../Base/MyModal";
+import { MyModal } from "../Modal/Modal";
 import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
-import {
-  useDeleteQuestionFile,
-  useSaveQuestionFile,
-  useUploadQuestionFiles,
-} from "../../hooks/useCodeEditor";
+
 import { useState } from "react";
 import { UploadCodeFile } from "./UploadCodeFiles";
 import { DeleteCodeFile } from "./DeletedCodeFiles";
@@ -19,8 +15,6 @@ export function CodeEditorToolBar() {
     fileNames,
     selectedFile,
     setSelectedFile,
-    setCodeRunningSettings,
-    codeRunningSettings,
     fileContent,
     setRefreshKey,
     setShowLogs,

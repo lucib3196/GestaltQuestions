@@ -1,6 +1,6 @@
 import { UseAuthMode, type UserMode } from "../context/AuthMode";
 import { Section } from "../components/Section";
-import { MyModal } from "../components/Base/MyModal";
+import { MyModal } from "../components/Modal/Modal";
 import { useAuth } from "../context/AuthContext";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";

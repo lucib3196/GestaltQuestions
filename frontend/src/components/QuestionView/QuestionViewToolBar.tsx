@@ -10,7 +10,7 @@ import { ActionButton } from "../Button";
 
 
 import SearchBar from "../SearchBar/SearchBar";
-import { MyModal } from "../Base/MyModal";
+import { MyModal } from "../Modal/Modal";
 
 import UploadZipQuestionModal from "../../features/CreateQuestion/UploadZipQuestionModal";
 

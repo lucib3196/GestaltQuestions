@@ -9,7 +9,7 @@ import NavBar from "./features/NavBar/NavBar";
 import { AuthProvider } from "./context/AuthContext";
 import { AuthModeProvider } from "./context/AuthMode";
 import QuestionSettingsProvider from "./context/GeneralSettingsContext";
-import CodeEditorProvider from "./context/CodeEditorContext";
+import CodeEditorProvider from "./features/QuestionEditor/context";
 import { QuestionCollectionProvider } from "./context/QuestionCollectionContext";
 import { QuestionRuntimeProvider } from "./context/QuestionAnswerContext";
 

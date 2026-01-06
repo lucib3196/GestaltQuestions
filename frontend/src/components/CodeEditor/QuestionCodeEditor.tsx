@@ -1,9 +1,9 @@
 import CodeEditor from "./CodeEditorBase";
 import { LogOutput } from "./LogPrint";
 import { Loading } from "../Loading";
-import { useCodeEditorContext } from "../../context/CodeEditorContext";
+import { useCodeEditorContext } from "../../features/QuestionEditor";
 import { CodeEditorToolBar } from "./CodeEditorToolBar";
-import { useQuestionFiles } from "../../hooks/useCodeEditor";
+import { useQuestionFiles } from "../../features/QuestionEditor/hooks";
 import { useState, useEffect } from "react";
 import { getImageBase64FileData, isImageExt } from "../../utils/parsers";
 
@@ -26,11 +26,11 @@ export default function QuestionCodeEditor() {
     } else {
       setImage(null)
     }
-  }, [filesData,selectedFile]);
+  }, [filesData, selectedFile]);
 
   if (loading) return <Loading />;
 
-  
+
 
   return (
     <>
