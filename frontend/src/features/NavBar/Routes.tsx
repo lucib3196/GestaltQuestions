@@ -1,5 +1,5 @@
 import { Route } from "react-router-dom";
-import type { NavigationItem } from "../../types/navbarTypes";
+import type { NavigationItem } from "./types";
 import ProtectedRoute from "./ProtectedRoute";
 
 export function handleRoutes(navigation: NavigationItem[]) {

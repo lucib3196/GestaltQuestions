@@ -72,7 +72,7 @@ export const QuestionTableColumns: TableColumn<QuestionData | QuestionMeta>[] =
     {
       key: "storage_path",
       label: "Storage Path",
-      default: false,
+      default: true,
       render: (q) => (
         <code className="text-xs opacity-70">{q.storage_path}</code>
       ),
@@ -80,7 +80,7 @@ export const QuestionTableColumns: TableColumn<QuestionData | QuestionMeta>[] =
     {
       key: "status",
       label: "Status",
-      default: true,
+      default: false,
       render: (q) => (
         <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
           {q.status}

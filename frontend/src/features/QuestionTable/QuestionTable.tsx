@@ -12,6 +12,8 @@ import {
 import { useQuestionCollectionContext } from "./../../context/QuestionCollectionContext";
 import { useQuestionTableContext } from "./context";
 import { Checkbox } from "@mui/material";
+import { QuestionTableColumns } from './config';
+
 
 export default function QuestionTable() {
   const [page, setPage] = useState(0);
@@ -24,7 +26,7 @@ export default function QuestionTable() {
     selectedQuestions,
     questions,
   } = useQuestionCollectionContext();
-  const { multiSelect, setResetKey, resetKey, columns } =
+  const { multiSelect, setResetKey, resetKey, columns, setColumns } =
     useQuestionTableContext();
 
   const paged = useMemo(
@@ -56,6 +58,13 @@ export default function QuestionTable() {
     setResetKey((k) => k + 1);
   }, [multiSelect]);
 
+
+
+  useEffect(() => {
+    setColumns(QuestionTableColumns.filter((v) => v.default) ?? [])
+  }, [])
+  console.log("These are the keys on mount", columns)
+
   return (
     <div className="w-full mt-10">
       <TableContainer
@@ -69,6 +78,7 @@ export default function QuestionTable() {
               {columns.map((v, index) => {
                 // Skip the first column when multiSelect is true
                 if (!multiSelect && v.key === "select") return null;
+                if (v.default) return <TableCell key={index}>{v.key}</TableCell>
 
                 return <TableCell key={index}>{v.key}</TableCell>;
               })}
