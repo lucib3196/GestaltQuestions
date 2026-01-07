@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AllQuestions from "../AllQuestionsView/page";
+import AllQuestions from "../QuestionTable/page";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { CreateQuestion } from "../CreateQuestion";
 import {

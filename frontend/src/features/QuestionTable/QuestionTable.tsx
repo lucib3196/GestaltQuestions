@@ -12,12 +12,13 @@ import {
 import { useQuestionCollectionContext } from "./../../context/QuestionCollectionContext";
 import { useQuestionTableContext } from "./context";
 import { Checkbox } from "@mui/material";
-import { QuestionTableColumns } from './config';
-
+import { QuestionTableColumns } from "./config";
+import { useNavigate } from "react-router-dom";
 
 export default function QuestionTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const navigate = useNavigate();
 
   const {
     selectedQuestionID,
@@ -58,12 +59,10 @@ export default function QuestionTable() {
     setResetKey((k) => k + 1);
   }, [multiSelect]);
 
-
-
   useEffect(() => {
-    setColumns(QuestionTableColumns.filter((v) => v.default) ?? [])
-  }, [])
-  console.log("These are the keys on mount", columns)
+    setColumns(QuestionTableColumns.filter((v) => v.default) ?? []);
+  }, []);
+  console.log("These are the keys on mount", columns);
 
   return (
     <div className="w-full mt-10">
@@ -78,7 +77,8 @@ export default function QuestionTable() {
               {columns.map((v, index) => {
                 // Skip the first column when multiSelect is true
                 if (!multiSelect && v.key === "select") return null;
-                if (v.default) return <TableCell key={index}>{v.key}</TableCell>
+                if (v.default)
+                  return <TableCell key={index}>{v.key}</TableCell>;
 
                 return <TableCell key={index}>{v.key}</TableCell>;
               })}
@@ -112,7 +112,11 @@ export default function QuestionTable() {
                     return (
                       <TableCell
                         key={question.id}
-                        onClick={() => setSelectedQuestionID(question.id ?? "")}
+                        onClick={() => {
+                          setSelectedQuestionID(question.id ?? "");
+
+                          return navigate("/question_builder/current");
+                        }}
                       >
                         {col.render
                           ? col.render(

@@ -3,17 +3,14 @@ import type { NavigationItem } from "./types";
 // Pages
 import Home from "../../pages/Home";
 // import ChatPage from "../ChatUI/ChatPage";
-import AccountPage from "../../pages/AccountPage";
 import QuestionBuilder from "../QuestionBuilder/page";
 
 // Generators
-import TextGenerator from "../../components/CodeGenerators/TextGenerator";
-import ImageGenerator from "../../components/CodeGenerators/ImageGenerator";
 
 // import GestaltStudio from "../Gestalt Studio/GestaltStudioPage";
-import GestaltStudio from "../GestaltStudio/GestaltStudioPage";
-import QuestionPlayGroundPage from "../QuestionPlayGround/page";
-import AllQuestions from "../AllQuestionsView/page";
+import AllQuestions from "../QuestionTable/page";
+import { QuestionWorkspace } from "../QuestionWorkspace";
+import { CreateQuestion } from "../CreateQuestion";
 
 export const Navigation: NavigationItem[] = [
     {
@@ -47,6 +44,16 @@ export const Navigation: NavigationItem[] = [
                 displayName: "AllQuestions",
                 element: <AllQuestions />,
                 path: "/question_builder/all",
+            },
+            {
+                displayName: "CurrentQuestion",
+                element: <QuestionWorkspace />,
+                path: "/question_builder/current",
+            },
+            {
+                displayName: "Create Question",
+                element: <CreateQuestion />,
+                path: "/question_builder/create",
             },
         ],
     },

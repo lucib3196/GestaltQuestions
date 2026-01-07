@@ -1,4 +1,4 @@
-import { QuestionTable, TableToolBar } from "../QuestionTable";
+import { QuestionTable, TableToolBar } from ".";
 import { useRetrievedQuestions } from "../../hooks";
 import { useMemo } from "react";
 import { Header } from "../../components/Header";
