@@ -5,7 +5,7 @@ import { toast } from "react-toastify"
 
 
 export function useQuestionCreation() {
-    const { files, isAdaptive, questionData } = useCreateMode();
+    const { files, isAdaptive, questionData, additionalFiles } = useCreateMode();
 
     const createQuestion = async () => {
         try {
@@ -51,12 +51,16 @@ export function useQuestionCreation() {
             /* -----------------------------
              Create upload files
             ------------------------------ */
-            const uploadFiles = templates.map(
-                (v) =>
-                    new File([v.template], v.filename, {
-                        type: "text/html",
-                    })
-            );
+            const uploadFiles: File[] = [
+                ...templates.map(
+                    (v) =>
+                        new File([v.template], v.filename, {
+                            type: "text/html",
+                        })
+                ),
+                ...(additionalFiles ? Array.from(additionalFiles) : []),
+            ];
+
 
             /* -----------------------------
              Submit

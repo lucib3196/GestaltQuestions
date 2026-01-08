@@ -9,6 +9,9 @@ type CreateQuestionContextType = {
     files: Filenames[];
     setFiles: React.Dispatch<React.SetStateAction<Filenames[]>>;
 
+    additionalFiles: File[]
+    setAdditionalFiles: React.Dispatch<React.SetStateAction<File[]>>
+
     questionData: QuestionData;
     setQuestionData: React.Dispatch<React.SetStateAction<QuestionData>>;
     isAdaptive: boolean;
@@ -28,10 +31,11 @@ const CreateQuestionProvider = ({
     const [files, setFiles] = useState<Filenames[]>(["question.html"]);
     const [isAdaptive, setIsAdaptive] = useState<boolean>(false); // When users says question is adaptive in the field this flag is set
     const [questionData, setQuestionData] = useState<QuestionData>({})
+    const [additionalFiles, setAdditionalFiles] = useState<File[]>([])
 
     return (
         <CreateQuestionContext.Provider
-            value={{ mode, setMode, files, setFiles, isAdaptive, setIsAdaptive, questionData, setQuestionData }}
+            value={{ mode, setMode, files, setFiles, isAdaptive, setIsAdaptive, questionData, setQuestionData, additionalFiles, setAdditionalFiles }}
         >
             {children}{" "}
         </CreateQuestionContext.Provider>

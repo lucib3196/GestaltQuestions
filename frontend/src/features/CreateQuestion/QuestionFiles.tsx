@@ -1,21 +1,12 @@
 import Checkbox from "@mui/material/Checkbox";
 import Divider from "../../components/Divider/Divider";
 import { useEffect } from "react";
-import { type Filenames } from "./types";
+import { type Filenames, type QuestionFileSpec } from "./types";
 import { useCreateMode } from "./context";
 import { QUESTION_FILE_SPECS } from "./config";
-
-
-type QuestionFileSpec = {
-    filename: Filenames;
-    required: boolean;
-    description: string;
-    isAdaptive: boolean;
-};
-
-
-
-
+import { UploadFiles } from "../../components/UploadFile";
+import { ToggleField } from "../../components/Toggles";
+import { useState } from "react";
 function QuestionFileDisplay({
     filename,
     required,
@@ -74,6 +65,7 @@ function QuestionFileDisplay({
 
                 <p className="text-sm text-slate-500">{description}</p>
             </div>
+
         </div>
     );
 }
@@ -81,12 +73,62 @@ function QuestionFileDisplay({
 
 
 export default function QuestionFiles() {
+    const { setAdditionalFiles } = useCreateMode();
+    const [showExtras, setShowExtras] = useState(false);
 
     return (
-        <div className="flex flex-col gap-2 border rounded-2xl bg-gray-100 py-4 px-4">
-            <h1 className="text-lg self-center">Files for Question</h1>
+        <section className="flex flex-col gap-4 rounded-2xl border bg-gray-100 px-4 py-4 my-2">
+            {/* Header */}
+            <div className="flex flex-col items-center gap-1">
+                <h2 className="text-lg font-semibold text-slate-800">
+                    Question Files
+                </h2>
+                <p className="text-sm text-slate-500 text-center max-w-sm">
+                    Select the core files required to build your question.
+                </p>
+            </div>
+
             <Divider />
-            {QUESTION_FILE_SPECS.map((v) => QuestionFileDisplay(v))}
-        </div>
+
+            {/* Required / Standard Files */}
+            <div className="flex flex-col gap-2">
+                {QUESTION_FILE_SPECS.map((spec) => QuestionFileDisplay(spec))}
+            </div>
+
+            <Divider />
+
+            {/* Optional Assets Toggle */}
+            <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col">
+                    <span className="font-medium text-slate-800">
+                        Optional supporting files
+                    </span>
+                    <span className="text-sm text-slate-500">
+                        Upload assets like images (<code>.png</code>, <code>.jpg</code>),
+                        data files, or other resources your question may need.
+                    </span>
+                </div>
+
+                <ToggleField
+                    id="extra_files"
+                    checked={showExtras}
+                    setToggle={() => setShowExtras((prev) => !prev)}
+                    label=""
+                />
+            </div>
+
+            {/* Upload Area */}
+            {showExtras && (
+                <div className="mt-2 rounded-lg border border-dashed border-slate-300 bg-white p-3">
+                    <UploadFiles
+                        variant="outline"
+                        size="sm"
+                        accept="images"
+                        onFilesSelected={(files) => setAdditionalFiles(files)}
+                    />
+
+                </div>
+            )}
+        </section>
     );
 }
