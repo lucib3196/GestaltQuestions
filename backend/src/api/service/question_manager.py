@@ -94,7 +94,7 @@ class QuestionManager:
 
     async def update_question(
         self, question_id: str | UUID, data: QuestionData | dict
-    ) -> QuestionMeta:
+    ) -> QuestionData:
         """Update question metadata in the DB."""
         try:
             if isinstance(data, dict):
@@ -110,7 +110,7 @@ class QuestionManager:
                 detail=f"Could not update question data {e}",
             )
 
-    async def get_question_data(self, id: str | UUID | None) -> QuestionMeta:
+    async def get_question_data(self, id: str | UUID | None) -> QuestionData:
         try:
             return await qdb.get_question_data(id, self.session)
         except Exception as e:
@@ -121,7 +121,7 @@ class QuestionManager:
 
     async def get_all_question_data(
         self, offset: int = 0, limit: int = 100
-    ) -> Sequence[QuestionMeta]:
+    ) -> Sequence[QuestionData]:
         try:
             return await qdb.get_all_question_data(self.session, offset, limit)
         except Exception as e:

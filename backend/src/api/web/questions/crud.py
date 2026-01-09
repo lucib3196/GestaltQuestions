@@ -151,7 +151,7 @@ async def get_question(id: str | UUID, qm: QuestionManagerDependency) -> Questio
 @router.get("/{id}/all_data")
 async def get_question_all_data(
     id: str | UUID, qm: QuestionManagerDependency, storage_type: StorageTypeDep
-) -> QuestionMeta:
+) -> QuestionData:
     """
     Retrieve a question and all associated metadata by its ID.
 
@@ -179,7 +179,7 @@ async def get_question_all_data(
 @router.get("/{offset:int}/{limit:int}/all_data")
 async def get_all_questions_data(
     qm: QuestionManagerDependency, offset: int, limit: int
-) -> Sequence[QuestionMeta]:
+) -> Sequence[QuestionData]:
     try:
         question_meta =  await qm.get_all_question_data(offset, limit)
         return question_meta
@@ -227,7 +227,7 @@ async def update_question(
     storage: StorageDependency,
     storage_type: StorageTypeDep,
     update_storage: bool = True,
-) -> QuestionMeta:
+) -> QuestionData:
     """
     Update a question in the database and optionally rename its associated storage directory.
 
@@ -308,7 +308,7 @@ async def update_question(
 @router.post("/filter")
 async def filter_questions(
     filter_data: QuestionData, qm: QuestionManagerDependency
-) -> Sequence[QuestionMeta]:
+) -> Sequence[QuestionData]:
     try:
         logger.info("Retrieved filter %s", filter_data)
         return await qm.filter_questions(filter_data)

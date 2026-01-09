@@ -1,7 +1,7 @@
 # --- Standard Library ---
 import asyncio
 from pathlib import Path
-from typing import Literal, Sequence
+from typing import Literal, Sequence, List
 from uuid import UUID
 
 # --- Third-Party ---
@@ -141,7 +141,7 @@ def delete_question(id: str | UUID | None, session: SessionDep) -> bool:
 async def get_question_data(
     id: str | UUID | None,
     session: SessionDep,
-) -> QuestionMeta:
+) -> QuestionData:
     """
     Retrieve a Question as a dict and include specified relationship data.
 
@@ -161,12 +161,15 @@ async def get_question_data(
         if not question:
             logger.info("Question is none")
             raise ValueError("Could not get question data question is None")
+        # Get the topics,languages and qtypes
+        topics = await gdb.get_relationship_data(question, "topics", mode="list")
+        languages = await gdb.get_relationship_data(question, "languages", mode="list")
+        qtypes = await gdb.get_relationship_data(question, "qtypes", mode="list")
 
-        relationship_data = gdb.get_all_model_relationship_data(question, Question)
-        logger.debug("Getting relationship data %s", relationship_data)
-
-        question_data = question.model_dump()
-        q = QuestionMeta(**question_data, **relationship_data)
+        relationship_data = {"topics": topics, "languages": languages, "qtypes": qtypes}
+        # Exclude might be redundant used just incase
+        question_data = question.model_dump(exclude={"topics", "languages", "qtypes"})
+        q = QuestionData(**question_data, **relationship_data) # type: ignore
         logger.debug("Getting data complete %s", q)
         return q
     except ValidationError as e:
@@ -176,7 +179,7 @@ async def get_question_data(
 
 async def get_all_question_data(
     session: SessionDep, offset: int = 0, limit: int = 100
-) -> Sequence[QuestionMeta]:
+) -> Sequence[QuestionData]:
     """
     Retrieve paginated Questions and return each as a dict with relationships.
 
@@ -196,7 +199,7 @@ async def get_all_question_data(
 
 async def update_question(
     id: str | UUID, update_data: QuestionData, session: SessionDep
-) -> QuestionMeta:
+) -> QuestionData:
     # Basic validation for the question and data
     question = get_question(id, session)
     if not question:
@@ -229,7 +232,7 @@ async def filter_questions(
     data: QuestionData,
     session: SessionDep,
     relationship_field: str = "name",
-) -> Sequence[QuestionMeta]:
+) -> Sequence[QuestionData]:
     relationships = gdb.get_all_model_relationships(Question)
     filters = []
     joins = set()
