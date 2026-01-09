@@ -5,7 +5,7 @@ import React, {
   type Dispatch,
   type ReactNode,
 } from "react";
-import type { QuestionData, QuestionMeta } from "../types/questionTypes";
+import type { QuestionData } from "../types/questionTypes";
 
 type QuestionCollectionContext = {
   selectedQuestionID: string | null;
