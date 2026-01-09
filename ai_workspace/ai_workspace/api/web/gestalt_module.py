@@ -92,8 +92,7 @@ async def upload_question(question_files: Dict[str, str]):
 
         # Build the additional form-data fields
         data = {
-            "question_data": json.dumps(question_meta),
-            "auto_handle_images": "true",
+            "question_data": question_meta,
         }
 
     except Exception as e:
@@ -109,11 +108,12 @@ async def upload_question(question_files: Dict[str, str]):
             f"Sending prepared question files to {QUESTION_API}/questions/files"
         )
 
+        logger.info("This is the data to be passed in %s", data)
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{QUESTION_API}/questions/files",
                 files=httpx_files,
-                json=data,  
+                data=data,
             )
 
         logger.info(f"Question API responded with status {response.status_code}.")
