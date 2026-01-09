@@ -1,6 +1,7 @@
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import { useCreateMode, type CreateMode } from "./context";
+import { useCreateMode } from "./context";
+import type { CreateMode } from "./types";
 
 export default function ModeToggle() {
     const { mode, setMode } = useCreateMode()
