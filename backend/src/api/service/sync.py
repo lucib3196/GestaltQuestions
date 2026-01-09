@@ -2,7 +2,7 @@
 import asyncio
 import json
 from collections import defaultdict
-from typing import List, Literal, Sequence, Union, Tuple
+from typing import Literal, Sequence, Union, Tuple
 from pathlib import Path
 
 # --- Third-Party ---
@@ -11,10 +11,6 @@ from pydantic import ValidationError
 # --- Internal ---
 from src.api.core import logger
 from src.api.database.models.question import Question, QuestionData
-from src.api.service.question_manager import (
-    QuestionManagerDependency,
-    get_question_manager,
-)
 from src.api.response_models.sync_models import (
     UnsyncedQuestion,
     SyncMetrics,
@@ -27,11 +23,6 @@ from src.api.service.question_resource import (
     get_question_resource,
 )
 from src.api.core.database import get_session
-
-metadata_name = ["metadata.json", "info.json", "info2.json"]
-excluded_path_names = ["downloads"]
-
-# Utils for resolving
 
 
 class QuestionSync:
@@ -146,7 +137,7 @@ class QuestionSync:
         }
         if metadata is None:
             detail = (
-                f"No `{metadata_name}` found in {question_dir.name}. "
+                f"No `{self.flags}` found in {question_dir.name}. "
                 "This question cannot be indexed or referenced until metadata is generated."
             )
             logger.warning(detail)
@@ -156,7 +147,7 @@ class QuestionSync:
         try:
             question_data = json.loads(metadata.read_text())
         except json.JSONDecodeError as e:
-            detail = f"Failed to parse JSON in {metadata_name}: {e}"
+            detail = f"Failed to parse JSON in {self.flags}: {e}"
             logger.error(detail)
             payload["detail"] = detail
             payload["status"] = "invalid_metadata_json"
@@ -165,7 +156,7 @@ class QuestionSync:
         question_id = question_data.get("id", None)
         if not question_id:
             detail = (
-                f"`{metadata_name}` found for {question_dir.name}, but no 'id' key present. "
+                f"`{self.flags}` found for {question_dir.name}, but no 'id' key present. "
                 "This likely means the question was never inserted into the database."
             )
             logger.warning(detail)
