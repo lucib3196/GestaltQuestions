@@ -248,7 +248,6 @@ async def filter_questions(
         if key in relationships:
             relationship_model = relationships[key]
             joins.add(key)
-            logger.debug("This is join %s", joins)
             if isinstance(value, list):
                 rel_conds = [
                     filter_conditional(

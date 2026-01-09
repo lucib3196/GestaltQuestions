@@ -90,7 +90,7 @@ export class QuestionAPI {
   }
 
   /** Filter questions by given criteria */
-  static async filterQuestions(filter: QuestionData): Promise<QuestionMeta[]> {
+  static async filterQuestions(filter: QuestionData): Promise<QuestionData[]> {
     const response = await api.post(`${this.base}/filter`, filter);
     return response.data;
   }

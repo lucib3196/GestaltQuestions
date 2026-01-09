@@ -14,8 +14,8 @@ type QuestionCollectionContext = {
   setQuestionMeta: React.Dispatch<React.SetStateAction<QuestionData | null>>;
   selectedQuestions: string[];
   setSelectedQuestions: React.Dispatch<React.SetStateAction<string[]>>;
-  questions: QuestionMeta[];
-  setQuestions: Dispatch<React.SetStateAction<QuestionMeta[]>>;
+  questions: QuestionData[];
+  setQuestions: Dispatch<React.SetStateAction<QuestionData[]>>;
 };
 
 export const QuestionContext = createContext<QuestionCollectionContext | null>(
@@ -27,7 +27,7 @@ export function QuestionCollectionProvider({
 }: {
   children: ReactNode;
 }) {
-  const [questions, setQuestions] = useState<QuestionMeta[]>([]);
+  const [questions, setQuestions] = useState<QuestionData[]>([]);
   const [questionMeta, setQuestionMeta] = useState<QuestionData | null>(null);
 
   const [selectedQuestionID, setSelectedQuestionID] = useState<string>("");

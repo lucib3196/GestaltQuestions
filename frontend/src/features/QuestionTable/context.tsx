@@ -7,9 +7,9 @@ type QuestionTableContextType = {
   setMultiSelect: React.Dispatch<React.SetStateAction<boolean>>;
   resetKey: number;
   setResetKey: React.Dispatch<React.SetStateAction<number>>;
-  columns: TableColumn<QuestionData | QuestionMeta>[];
+  columns: TableColumn<QuestionData>[];
   setColumns: React.Dispatch<
-    React.SetStateAction<TableColumn<QuestionData | QuestionMeta>[]>
+    React.SetStateAction<TableColumn<QuestionData>[]>
   >;
 };
 
@@ -20,7 +20,7 @@ export function QuestionTableProvider({ children }: { children: ReactNode }) {
   const [multiSelect, setMultiSelect] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [columns, setColumns] = useState<
-    TableColumn<QuestionData | QuestionMeta>[]
+    TableColumn<QuestionData>[]
   >([]);
 
   return (
