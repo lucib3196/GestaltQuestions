@@ -1,7 +1,7 @@
 from uuid import uuid4
 from src.api.core import logger
 from src.utils import pick
-from src.api.database.models.question import Question, QuestionMeta, QuestionData
+from src.api.database.models.question import Question, QuestionData
 import pytest
 
 QUESTION_KEYS = [
@@ -116,7 +116,7 @@ def test_get_all_questions_metadata(api_client, create_question_and_return_quest
     logger.info("This is the response from the get all %s", question_data)
     assert response.status_code == 200
 
-    assert QuestionMeta.model_validate(question_data)
+    assert QuestionData.model_validate(question_data)
 
 
 def test_get_get_all_question_data(create_multiple_question_responses, api_client):
@@ -140,7 +140,7 @@ def test_get_get_all_question_data(create_multiple_question_responses, api_clien
     validated_questions = []
     for idx, q in enumerate(data):
         try:
-            validated = QuestionMeta.model_validate(q)
+            validated = QuestionData.model_validate(q)
             validated_questions.append(validated)
         except Exception as e:
             pytest.fail(f"Question at index {idx} failed schema validation: {e}")
