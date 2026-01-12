@@ -20,7 +20,7 @@ from sqlmodel import SQLModel, select
 
 # --- Internal ---
 from src.api.core import logger
-from src.api.core.database import SessionDep
+from src.database import SessionDep
 
 
 T = TypeVar("T", bound=SQLModel)

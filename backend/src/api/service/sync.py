@@ -17,12 +17,12 @@ from src.api.response_models.sync_models import (
     FolderCheckMetrics,
 )
 from src.utils import to_serializable
-from src.api.service.storage_manager import StorageDependency, get_storage_manager
-from src.api.service.question_resource import (
+from src.services.storage.dependecies import StorageDependency, get_storage_manager
+from src.services.question_manager.question_manager import (
     QuestionResourceDepencency,
     get_question_resource,
 )
-from src.api.core.database import get_session
+from src.api.database.database import get_session
 
 
 class QuestionSync:

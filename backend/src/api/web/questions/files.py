@@ -28,10 +28,10 @@ from src.api.response_models import (
     SuccessFileResponse,
 )
 from src.api.database.question import Question, QuestionData
-from src.api.service.file_service import FileServiceDep, FileService
+from src.services.file_service.file_service import FileServiceDep, FileService
 from src.api.service.question_manager import QuestionManagerDependency
-from src.api.service.question_resource import QuestionResourceDepencency
-from src.api.service.storage_manager import StorageDependency
+from src.services.question_manager.question_manager import QuestionResourceDepencency
+from src.services.storage.dependecies import StorageDependency
 from src.utils import encode_image
 
 

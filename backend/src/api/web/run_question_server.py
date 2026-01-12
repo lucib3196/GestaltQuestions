@@ -16,7 +16,7 @@ from fastapi import APIRouter, HTTPException
 # Local application imports
 from src.api.core import logger
 from src.code_runner.models import QuizData
-from src.api.service.question_resource import QuestionResourceDepencency
+from src.services.question_manager.question_manager import QuestionResourceDepencency
 from src.api.dependencies import SettingDependency
 from pydantic import BaseModel
 

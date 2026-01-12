@@ -1,6 +1,6 @@
 import pytest
 from uuid import UUID, uuid4
-from src.utils.database_utils import *
+from src.database.utils.utils import *
 
 
 def test_convert_uuid_passes_uuid():

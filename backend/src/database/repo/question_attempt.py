@@ -9,7 +9,7 @@ from sqlmodel import desc, select
 from src.api.core import SessionDep
 from src.utils import convert_uuid
 
-from .models.question_attempt import QuestionAttempt
+from ..models.question_attempt import QuestionAttempt
 
 
 ID = str | UUID

@@ -3,8 +3,8 @@ from typing import List
 from fastapi import HTTPException
 from fastapi.routing import APIRouter
 
-from src.api.service.question_resource import QuestionResourceDepencency
-from src.api.service.storage_manager import StorageDependency
+from src.services.question_manager.question_manager import QuestionResourceDepencency
+from src.services.storage.dependecies import StorageDependency
 from src.api.response_models.sync_models import *
 from src.api.service.sync import QuestionSync
 
