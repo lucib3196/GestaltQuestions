@@ -1,5 +1,15 @@
 # --- Standard Library ---
-from typing import Any, Dict, List, Type, TypeVar, Sequence
+from enum import Enum
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Sequence,
+    Type,
+    TypeVar,
+)
 
 # --- Third-Party ---
 from sqlalchemy import func
@@ -7,8 +17,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlmodel import SQLModel, select
-from enum import Enum
-from typing import Literal, Iterable
 
 # --- Internal ---
 from src.api.core import logger
