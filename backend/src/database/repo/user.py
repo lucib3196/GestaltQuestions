@@ -1,225 +1,179 @@
-from typing import Optional, Sequence, Dict
-from uuid import UUID
+from typing import Sequence, Annotated
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
+from fastapi import Depends
 
 from src.api.core import logger
-from src.api.database.database import SessionDep
-from src.api.database.models.question import Question
-from src.api.database.models.users import (
+from src.database import SessionDep
+from src.database.models.question import Question
+from src.database.models.users import (
     User,
     UserBase,
     UserRoles,
+    Role,
     UserUpdate,
+    Institution,
     ValidInstitutions,
 )
+from . import ID
+
 from pydantic import ValidationError
-from src.utils import convert_uuid
-
-from .role import get_role
-from .institution import get_institution
+from src.database.utils import convert_uuid
 
 
-def create_user(
-    data: UserBase | Dict[str, str],
-    session: SessionDep,
-) -> Optional[User]:
+class UserDB:
+    def __init__(self, session: SessionDep):
+        self.session = session
 
-    # Try to convert
-    try:
-        if isinstance(data, dict):
-            data = UserBase.model_validate(data)
-    except ValidationError as e:
-        logger.error("Validation error for user %s", e)
-        raise
+    async def create_user(self, data: UserBase | dict) -> User:
+        data = await self.validate_data(data)
+        try:
+            user = User(
+                fb_id=data.fb_id,
+                first_name=data.first_name,
+                last_name=data.last_name,
+                username=data.username,
+                email=data.email,
+            )
+            self.session.add(user)
+            self.session.commit()
+            self.session.refresh(user)
+            return user
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            error_message = f"[DB] Failed to create user: {e}"
+            logger.error(error_message)
+            raise Exception(error_message)
 
-    try:
-
-        user = User(
-            fb_id=data.fb_id,
-            first_name=data.first_name,
-            last_name=data.last_name,
-            email=data.email,
-            username=data.username,
-        )
-        session.add(user)
-        session.commit()
-        session.refresh(user)
-        logger.info(f"[DB] Created base user {user.id}")
-        # Handle the assignment of the role and institution
-
-        return user
-    except SQLAlchemyError as e:
-        session.rollback()
-        logger.error(f"[DB] Failed to create user: {e}")
-        return None
-
-
-def create_user_full(
-    data: UserBase,
-    session: SessionDep,
-    role: UserRoles = UserRoles.STUDENT,
-    institution: ValidInstitutions | None = None,
-) -> User:
-    user = create_user(data, session)
-    logger.debug(f"User created succesfully {user}")
-    assert user
-    user = set_user_role(user.id, role, session)
-    if institution:
-        user = set_user_institution(user.id, institution, session)
-    return user
-
-
-def get_user(id: str | UUID, session: SessionDep):
-    try:
+    async def get_user(self, id: ID) -> User | None:
+        if id is None:
+            raise ValueError("[DB] Failed to retrieve user. ID cannot be None")
         id = convert_uuid(id)
-        stmt = select(User).where(User.id == id)
-        user = session.exec(stmt).first()
-        if user:
-            logger.debug(f"[DB] Found user: {user.id}")
-        else:
-            logger.debug(f"[DB] User not found for id: {id}")
-        return user
-    except SQLAlchemyError as e:
-        session.rollback()
-        logger.error(f"[DB] Failed to get user: {e}")
-        return None
+        try:
+            stmt = select(User).where(User.id == id)
+            user = self.session.exec(stmt).first()
+            return user
+        except Exception as e:
+            self.session.rollback()
+            error_message = f"[DB] Failed to get user: {e}"
+            raise ValueError(error_message)
 
+    async def get_user_by_email(self, email: str) -> User | None:
+        try:
+            stmt = select(User).where(User.email == email.strip())
+            user = self.session.exec(stmt).first()
+            return user
+        except Exception as e:
+            self.session.rollback()
+            error_message = f"[DB] Failed to get user: {e}"
+            raise ValueError(error_message)
 
-def get_user_by_email(email: str, session: SessionDep) -> Optional[User]:
-    try:
-        logger.info("Running")
-        stmt = select(User).where(User.email == email.strip())
-        user = session.exec(stmt).first()
-        if user:
-            logger.info(f"[DB] Found user: {user.id}")
-        else:
-            logger.info(f"[DB] User not found for id: {id}")
-        return user
-    except SQLAlchemyError as e:
-        session.rollback()
-        logger.error(f"[DB] Failed to get user: {e}")
-        return None
+    async def get_user_by_token(self, token: str) -> User | None:
+        try:
+            stmt = select(User).where(User.fb_id == token.strip())
+            user = self.session.exec(stmt).first()
+            return user
+        except Exception as e:
+            self.session.rollback()
+            error_message = f"[DB] Failed to get user: {e}"
+            raise ValueError(error_message)
 
+    async def get_all_users(self, offset: int = 0, limit: int = 100) -> Sequence[User]:
+        try:
+            stmt = select(User).offset(offset).limit(limit)
+            return self.session.exec(stmt).all()
+        except Exception as e:
+            self.session.rollback()
+            error_message = "[DB] failed to get all users"
+            raise Exception(error_message)
 
-def get_user_by_fb(id: str, session: SessionDep) -> Optional[User]:
-    try:
-
-        stmt = select(User).where(User.fb_id == id)
-        user = session.exec(stmt).first()
-        if user:
-            logger.debug(f"[DB] Found user: {id}")
-        else:
-            logger.debug(f"[DB] User not found for id: {id}")
-        return user
-    except SQLAlchemyError as e:
-        session.rollback()
-        logger.error(f"[DB] Failed to get user: {e}")
-        return None
-
-
-def get_all_users(
-    session: SessionDep,
-    offset: int = 0,
-    limit: int = 100,
-) -> Sequence[User]:
-    stmt = select(User).offset(offset).limit(limit)
-    return session.exec(stmt).all()
-
-
-def delete_user(id: str | UUID, session: SessionDep) -> None:
-    """Delete a user from the database by ID."""
-    try:
-        logger.info("[DB] Deleting user...")
-        user = get_user(id, session)
+    async def delete_user(self, id: ID) -> bool:
+        user = await self.get_user(id)
         if not user:
-            logger.warning(f"[DB] No user found for id: {id}")
-            return
+            logger.warn(f"DB User not found cannot delete")
+            return False
+        try:
+            self.session.delete(user)
+            self.session.commit()
+            logger.info(f"[DB] Deleted user {user.id} successfully")
+            return True
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            error_message = f"[DB] Failed to delete user: {e}"
+            logger.error(error_message)
+            raise ValueError(error_message)
 
-        session.delete(user)
-        session.commit()
-        logger.info(f"[DB] Deleted user {user.id} successfully")
-    except SQLAlchemyError as e:
-        session.rollback()
-        logger.error(f"[DB] Failed to delete user: {e}")
+    async def validate_data(self, data: UserBase | dict):
+        try:
+            if isinstance(data, dict):
+                data = UserBase.model_validate(data)
+            return data
+        except ValidationError as e:
+            logger.error("Validation error for user %s", e)
+            raise
 
+    async def update_user(self, id: ID, data: UserUpdate):
+        user = await self.get_user(id)
+        if not user:
+            raise ValueError("[DB] Failed to get user")
+        try:
+            for key, value in data.model_dump().items():
+                setattr(user, key, value)
+            self.session.add(user)
+            self.session.commit()
+            self.session.refresh(user)
+            return user
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            logger.error(f"[DB] Failed to edit user: {e}")
+            raise ValueError("[DB] Failed to edit user: {e}")
 
-def update_user(
-    id: str | UUID, data: UserUpdate, session: SessionDep
-) -> Optional[User]:
-    try:
-        user = get_user(id, session)
-        update_data_dict = data.model_dump(exclude_unset=True)
-        for key, value in update_data_dict.items():
-            setattr(user, key, value)
-        session.add(user)
-        session.commit()
-        session.refresh(user)
-        return user
-    except SQLAlchemyError as e:
-        session.rollback()
-        logger.error(f"[DB] Failed to edit user: {e}")
-        raise ValueError("[DB] Failed to edit user: {e}")
-
-
-def get_user_created_questions(user_id: str | UUID, session: SessionDep):
-    user = get_user(user_id, session)
-    stmt = select(Question).where(Question.created_by == user)
-    return session.exec(stmt).all()
-
-
-# -------------------------
-# --------Hybrid-----------
-# -------------------------
-
-# these are database stuff that usually deals with relationship and or some other stuff
-
-
-def set_user_created_questions(
-    user_id: str | UUID, question: Question, session: SessionDep
-):
-    try:
-        question.created_by = get_user(user_id, session)
-        session.add(question)
-        session.commit()
-        session.refresh(question)
-    except SQLAlchemyError as e:
-        session.rollback()
-        logger.error(f"[DB] Failed to set question to user: {e}")
-        raise ValueError("[DB] Failed to set question to user: {e}")
-
-
-def set_user_role(user_id: str | UUID, role: UserRoles, session: SessionDep) -> User:
-    try:
-        r = get_role(role.value, session)
+    async def set_user_role(self, id: ID, role: UserRoles):
+        r = self.session.get(Role, role.value)
         if r is None:
             raise ValueError(f"Role {r} not present in database ")
-        user = get_user(user_id, session)
-        if user is None:
-            raise ValueError(f"Could not retrieve user {user}")
-        user.role = r
-        session.commit()
-        session.refresh(user)
-        return user
-    except Exception:
-        raise
+        user = await self.get_user(id)
+        if not user:
+            raise ValueError("[DB] Failed to get user")
+        try:
+            user.role = r
+            self.session.commit()
+            self.session.refresh(user)
+            return user
+        except Exception:
+            raise
+
+    async def set_user_question(self, id: ID, question: Question) -> User:
+        user = await self.get_user(id)
+        if not user:
+            raise ValueError("[DB] Failed to get user")
+        try:
+            user.created_questions.append(question)
+            self.session.commit()
+            self.session.refresh(user)
+            return user
+        except Exception:
+            raise
+
+    async def set_user_institution(
+        self, id: ID, institution: ValidInstitutions
+    ) -> User:
+        user = await self.get_user(id)
+        r = self.session.get(Institution, institution.value)
+        if not user:
+            raise ValueError("[DB] Failed to get user")
+        try:
+            user.institution = r
+            self.session.commit()
+            self.session.refresh(user)
+            return user
+        except Exception:
+            raise
 
 
-def set_user_institution(
-    user_id: str | UUID, institution: ValidInstitutions, session: SessionDep
-) -> User:
-    try:
-        inst = get_institution(institution.value, session)
-        if inst is None:
-            raise ValueError(f"Role {inst} not present in database ")
-        user = get_user(user_id, session)
-        if user is None:
-            raise ValueError(f"Could not retrieve user {user}")
-        user.institution = inst
-        user.institution_id = inst.id
-        session.commit()
-        session.refresh(user)
-        return user
-    except Exception:
-        raise
+def get_user_database(session: SessionDep) -> UserDB:
+    return UserDB(session)
+
+
+UserManagerDependeny = Annotated[UserDB, Depends(get_user_database)]

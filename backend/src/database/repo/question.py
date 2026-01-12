@@ -281,4 +281,4 @@ def get_question_database(session: SessionDep) -> QuestionDB:
     return QuestionDB(session)
 
 
-QuestionManagerDependency = Annotated[QuestionDB, Depends(get_question_database)]
+QuestionDBDependency = Annotated[QuestionDB, Depends(get_question_database)]

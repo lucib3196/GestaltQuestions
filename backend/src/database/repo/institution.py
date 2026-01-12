@@ -1,9 +1,10 @@
 # --- Standard Library ---
-from typing import Dict, Union, overload
+from typing import Dict, Union, overload, Annotated
 
 # --- Third-Party ---
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
+from fastapi import Depends
 
 # --- Internal ---
 from src.api.core import logger
@@ -92,3 +93,10 @@ class InstitutionDB:
         for institution, desc in institutions.items():
             if not await self.get_institution(institution):
                 await self.create_institution(institution, desc)
+
+
+def get_institution_database(session: SessionDep) -> InstitutionDB:
+    return InstitutionDB(session)
+
+
+InstitutionDependency = Annotated[InstitutionDB, Depends(get_institution_database)]
