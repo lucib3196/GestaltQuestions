@@ -7,8 +7,33 @@ from src.api.core import logger
 from src.database import SessionDep
 from src.database.models.users import UserRoles,Role
 
-def seed_roles(session: SessionDep) -> None:
-    roles: Dict[UserRoles, str] = {
+
+class RoleManager:
+    def __init__(self, session:SessionDep ):
+        self.session = session
+        
+    async def create_role(self,
+        role: UserRoles,
+        description: str | None = "",
+    ) -> Optional[Role]:
+        try:
+            r = Role(name=role.value, description=description)
+            self.session.add(r)
+            self.session.commit()
+            self.session.refresh(r)
+            logger.debug("[DB] Role created successfully")
+            return r
+
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            logger.error(f"[DB] Failed to create role: {e}")
+            return None
+        
+    async def get_role_data(self,role: str,) -> Role | None:
+        r = self.session.exec(select(Role).where(Role.name == role)).first()
+        return r
+    async def seed_roles(self):
+        roles: Dict[UserRoles, str] = {
         UserRoles.ADMIN: (
             "Full system access. Can manage users, roles, institutions, "
             "questions, grading, and all platform settings."
@@ -28,45 +53,20 @@ def seed_roles(session: SessionDep) -> None:
         ),
     }
 
-    try:
-        for r, des in roles.items():
-            if does_role_exist(session, r):
-                continue
-            create_role(session, r, description=des)
-    except Exception:
-        raise
+        try:
+            for r, des in roles.items():
+                if self.does_role_exist( r):
+                    continue
+                await self.create_role(r, description=des)
+        except Exception:
+            raise
+    def does_role_exist(self,
+        role: UserRoles,
+    ) -> bool | None:
+        try:
+            return bool(self.session.exec(select(Role).where(Role.name == role.value)).first())
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            logger.error(f"[DB] Failed to get role: {e}")
+            return None
 
-
-def create_role(
-    session: SessionDep,
-    role: UserRoles,
-    description: str | None = "",
-) -> Optional[Role]:
-    try:
-        r = Role(name=role.value, description=description)
-        session.add(r)
-        session.commit()
-        session.refresh(r)
-        logger.debug("[DB] Role created successfully")
-        return r
-
-    except SQLAlchemyError as e:
-        session.rollback()
-        logger.error(f"[DB] Failed to create role: {e}")
-        return None
-
-
-def does_role_exist(
-    session: SessionDep,
-    role: UserRoles,
-) -> bool | None:
-    try:
-        return bool(session.exec(select(Role).where(Role.name == role.value)).first())
-    except SQLAlchemyError as e:
-        session.rollback()
-        logger.error(f"[DB] Failed to get role: {e}")
-        return None
-
-
-def get_role(role: str, session: SessionDep) -> Role | None:
-    return session.exec(select(Role).where(Role.name == role)).first()

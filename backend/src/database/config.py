@@ -1,10 +1,9 @@
 from typing import Annotated, Generator
+
 from dotenv import load_dotenv
 from fastapi import Depends
 from sqlmodel import SQLModel, Session, create_engine
-
-from src.api.core.config import get_settings
-from src.api.core import logger
+from src.api.core import logger,get_settings
 
 app_settings = get_settings()
 
