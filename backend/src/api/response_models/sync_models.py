@@ -1,6 +1,6 @@
 from typing import Sequence, Literal
 from pydantic import BaseModel
-from src.api.database.models.question import Question
+from src.database.models.question import Question
 
 
 SyncStatus = Literal[

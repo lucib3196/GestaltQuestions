@@ -1,6 +1,6 @@
 import pytest
-from src.api.database import question as qdb
-from src.api.database.models.question import Question, QuestionData, QuestionMeta
+from src.database.repo import question as qdb
+from src.database.models.question import Question, QuestionData, QuestionMeta
 from src.api.core.logging import logger
 from app_test.mock_data import QUESTION_FULL, QUESTIONS, ADDITIONAL_METADATA
 

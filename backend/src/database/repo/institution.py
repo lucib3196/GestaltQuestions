@@ -9,7 +9,7 @@ from fastapi import Depends
 # --- Internal ---
 from src.api.core import logger
 from src.database import SessionDep
-from src.database.utils import convert_uuid
+from src.utils import convert_uuid
 from ..models.institution import Institution, ValidInstitutions
 from . import ID
 

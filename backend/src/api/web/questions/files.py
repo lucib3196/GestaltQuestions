@@ -1,25 +1,24 @@
-# -------------------------
+# =========================
 # Standard Library Imports
-# -------------------------
+# =========================
 import asyncio
 import json
 import mimetypes
+from pathlib import Path
 from typing import List, Optional
 from uuid import UUID
-from pathlib import Path
 
-# -------------------------
+# =========================
 # Third-Party Imports
-# -------------------------
-from fastapi import APIRouter, HTTPException, UploadFile
+# =========================
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import Response
-from starlette import status
 from pydantic import ValidationError
-from fastapi import UploadFile, File, Form
+from starlette import status
 
-# -------------------------
+# =========================
 # Internal Project Imports
-# -------------------------
+# =========================
 from src.api.core import logger
 from src.api.dependencies import StorageTypeDep
 from src.api.response_models import (
@@ -27,10 +26,8 @@ from src.api.response_models import (
     SuccessDataResponse,
     SuccessFileResponse,
 )
-from src.api.database.question import Question, QuestionData
-from src.services.file_service.file_service import FileServiceDep, FileService
-from src.api.service.question_manager import QuestionManagerDependency
-from src.services.question_manager.question_manager import QuestionResourceDepencency
+from src.database.models.question import Question, QuestionData
+from src.services import FileService,QuestionResourceDepencency
 from src.services.storage.dependecies import StorageDependency
 from src.utils import encode_image
 
@@ -236,7 +233,6 @@ async def update_file(
 async def upload_files_to_question(
     id: str | UUID,
     files: list[UploadFile],
-    fm: FileServiceDep,
     qr: QuestionResourceDepencency,
     auto_handle_images: bool = True,
 ) -> dict:
@@ -271,7 +267,7 @@ async def upload_files_to_question(
             or storage operations.
     """
     try:
-        tasks = [fm.convert_to_filedata(f) for f in (files or [])]
+        tasks = [FileService().convert_to_filedata(f) for f in (files or [])]
         fdata = await asyncio.gather(*tasks)
         return await qr.upload_files_to_question(id, fdata, auto_handle_images)
 
@@ -288,7 +284,7 @@ async def upload_files_to_question(
 @router.get("/filedata/{qid}")
 async def get_filedata(
     qid: str | UUID,
-    qm: QuestionManagerDependency,
+    qm: QuestionResourceDepencency,
     storage: StorageDependency,
     storage_type: StorageTypeDep,
 ) -> List[FileData]:
@@ -337,11 +333,10 @@ async def get_filedata(
 @router.post("/files/{qid}/download")
 async def download_question(
     qid: str | UUID,
-    qm: QuestionManagerDependency,
     qr: QuestionResourceDepencency,
 ):
     try:
-        question = qm.get_question(qid)
+        question = qr.qm.get_question(qid)
         data = await qr.get_question_filepaths(qid)
         folder_name = f"{question.title}_download"
 
@@ -370,7 +365,7 @@ async def download_question(
 async def download_question_file(
     qid: str | UUID,
     filename: str,
-    qm: QuestionManagerDependency,
+    qm: QuestionResourceDepencency,
     qr: QuestionResourceDepencency,
 ):
     try:

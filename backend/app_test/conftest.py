@@ -16,7 +16,7 @@ from src.api.main import get_application
 from src.api.response_models import FileData
 
 from src.database import QuestionDB
-from src.database.config import Base, SessionDep, get_session
+from src.database.config import Base, get_session
 
 from src.services import (
     FirebaseStorage,

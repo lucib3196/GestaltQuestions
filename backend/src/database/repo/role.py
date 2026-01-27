@@ -4,9 +4,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
 from src.api.core import logger
-from src.api.database.database import SessionDep
-from src.api.database.models.users import Role, UserRoles
-
+from src.database import SessionDep
+from src.database.models.users import UserRoles,Role
 
 def seed_roles(session: SessionDep) -> None:
     roles: Dict[UserRoles, str] = {

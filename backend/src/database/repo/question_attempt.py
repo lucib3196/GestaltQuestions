@@ -6,7 +6,7 @@ from uuid import UUID
 from sqlmodel import desc, select
 
 # --- Internal ---
-from src.api.core import SessionDep
+from src.database import SessionDep
 from src.utils import convert_uuid
 
 from ..models.question_attempt import QuestionAttempt

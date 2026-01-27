@@ -14,8 +14,8 @@ from sqlmodel import delete, select
 # --- Internal ---
 from src.api.core import logger
 from src.database import SessionDep
-from src.database.utils import generic as gdb
-from src.database.utils import convert_uuid
+from src.database.repo import generic as gdb
+from src.utils import convert_uuid
 from src.database.models.question import (
     Question,
     QuestionData,

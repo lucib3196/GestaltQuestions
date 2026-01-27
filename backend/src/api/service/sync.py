@@ -10,7 +10,8 @@ from pydantic import ValidationError
 
 # --- Internal ---
 from src.api.core import logger
-from src.api.database.models.question import Question, QuestionData
+from src.database import get_session
+from src.database.models.question import Question, QuestionData
 from src.api.response_models.sync_models import (
     UnsyncedQuestion,
     SyncMetrics,
@@ -22,7 +23,7 @@ from src.services.question_manager.question_manager import (
     QuestionResourceDepencency,
     get_question_resource,
 )
-from src.api.database.database import get_session
+
 
 
 class QuestionSync:

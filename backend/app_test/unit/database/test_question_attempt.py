@@ -1,4 +1,4 @@
-from src.api.database import question_attempt as qa
+from src.database.repo import question_attempt as qa
 from src.api.core import logger
 import pytest
 from app_test.mock_data.question_submission import SCENARIOS, ATTEMPTS

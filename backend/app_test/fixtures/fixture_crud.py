@@ -1,6 +1,5 @@
 from typing import Literal
 import pytest
-import pytest_asyncio
 
 
 from src.api.core import logger

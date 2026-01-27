@@ -7,7 +7,7 @@ from pydantic import ValidationError
 import json
 from starlette import status
 from typing import Dict, Any
-from src.api.service.user_manager import UserManagerDependeny
+from src.database import UserManagerDependeny
 from src.api.dependencies import FireBaseToken
 
 # Third-party libraries

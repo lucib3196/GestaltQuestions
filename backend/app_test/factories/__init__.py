@@ -5,13 +5,13 @@ from typing import Tuple
 import pytest
 
 # --- Internal ---
-from src.api.database import question as qdb
-from src.api.database import question_attempt as qa
-import src.api.database.user as user_db
+from src.database.repo import question as qdb
+from src.database.repo import question_attempt as qa
+import src.database.repo.user as user_db
 
-from src.api.database.models.question import Question, QuestionData
-from src.api.database.models.question_attempt import QuestionAttempt
-from src.api.database.models.users import User, UserBase
+from src.database.models.question import Question, QuestionData
+from src.database.models.question_attempt import QuestionAttempt
+from src.database.models.users import User, UserBase
 
 
 @pytest.fixture

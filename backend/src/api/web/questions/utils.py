@@ -6,7 +6,7 @@ from typing import Optional
 # --- Internal ---
 from src.api.core.config import get_settings
 from src.api.core import logger
-from src.api.database.models.question import Question
+from src.database.models.question import Question
 from src.utils import serialized_to_dict
 
 app_settings = get_settings()

@@ -9,7 +9,7 @@ from starlette import status
 # --- Internal ---
 from src.api.core.firebase import initialize_firebase_app
 from src.api.core.logging import logger
-from src.api.database.models.users import (
+from src.database.models.users import (
     User,
     UserBase,
     UserRead,
@@ -18,7 +18,8 @@ from src.api.database.models.users import (
     ValidInstitutions,
 )
 from src.api.dependencies import FireBaseToken
-from src.api.service.user_manager import UserManagerDependeny
+from src.database.repo.user import UserManagerDependeny
+
 
 
 router = APIRouter(prefix="/users", tags=["users"])

@@ -13,13 +13,13 @@ from src.database.models.users import (
     UserRoles,
     Role,
     UserUpdate,
-    Institution,
-    ValidInstitutions,
 )
+from src.database.models.institution import (Institution,
+    ValidInstitutions,)
 from . import ID
 
 from pydantic import ValidationError
-from src.database.utils import convert_uuid
+from src.utils import convert_uuid
 
 
 class UserDB:

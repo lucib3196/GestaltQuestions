@@ -1,6 +1,6 @@
 import pytest
 import pytest_asyncio
-from src.api.database.models.question import Question
+from src.database.models.question import Question
 from src.api.service import refactor_question_storage_service as qs
 from src.api.response_models import FileData
 from src.api.core.config import get_settings

@@ -1,10 +1,11 @@
 import pytest
-import src.api.database.user as user_db
-import src.api.database.role as role_db
-import src.api.database.institution as instituion_db
+from src.database.repo import user as user_db
+from src.database.repo import role as role_db
+from src.database.repo import institution as institution_db
+
 from app_test.mock_data import USERS
 from src.api.core import logger
-from src.api.database.models.users import (
+from src.database.models.users import (
     UserRoles,
     UserUpdate,
     ValidInstitutions,
