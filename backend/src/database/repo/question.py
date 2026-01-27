@@ -206,16 +206,20 @@ class QuestionDB:
             raise ValueError(f"[DB] failed todelete all questions an error occured {e}")
 
     # Setter and Getters
-    async def get_question_path(self, id: ID, storage_type: STORAGE_TYPE) -> str | None:
+    async def get_question_path(self, id: ID, storage_type: STORAGE_TYPE) -> str:
         question = await self.get_question(id)
         if not question:
             raise ValueError("Question not found")
         if storage_type == "cloud":
-            return question.blob_path
+            path = question.blob_path
         elif storage_type == "local":
-            return question.local_path
+            path = question.local_path
         else:
             raise ValueError(f"Invalid storage type: {storage_type}")
+        
+        if path is None:
+            raise ValueError("[DB] Failed to get storage path")
+        return path
 
     async def set_question_path(
         self, id: ID, storage_type: STORAGE_TYPE, path: Path | str

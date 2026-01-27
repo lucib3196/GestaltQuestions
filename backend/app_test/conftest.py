@@ -5,28 +5,31 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlmodel import Session, create_engine
+
 from app_test.fixtures.fixture_crud import *
-from src.api.core import logger, in_test_ctx
+
+from src.api.core import in_test_ctx, logger
 from src.api.core.config import get_settings
-from src.api.database.database import Base, get_session
+from src.api.core.firebase import initialize_firebase_app
+from src.api.dependencies import get_storage_type
 from src.api.main import get_application
 from src.api.response_models import FileData
-from src.storage.base import StorageService
-from src.api.service.question_manager import (
-    QuestionManager,
-    get_question_manager,
+
+from src.database import QuestionDB
+from src.database.config import Base, SessionDep, get_session
+
+from src.services import (
+    FirebaseStorage,
+    LocalStorageService,
+    StorageService,
 )
-from src.services.storage.dependecies import (
-    get_storage_manager,
-)
-from src.api.core.firebase import initialize_firebase_app
-from src.storage.firebase_storage import FirebaseStorage
-from src.storage.local_storage import LocalStorageService
+
+from src.services.storage.dependecies import get_storage_manager
 from src.services.question_manager.question_manager import (
     QuestionResourceService,
     get_question_resource,
 )
-from src.api.dependencies import get_storage_type
+
 
 settings = get_settings()
 initialize_firebase_app()
@@ -136,7 +139,7 @@ def question_manager(db_session):
     """
     Provides a fresh QuestionManager for each test.
     """
-    return QuestionManager(db_session)
+    return QuestionDB(db_session)
 
 
 @pytest.fixture(scope="function")
@@ -195,7 +198,7 @@ def api_client(
         yield storage_mode
 
     app.dependency_overrides[get_session] = override_get_db
-    app.dependency_overrides[get_question_manager] = override_get_question_manager
+    app.dependency_overrides[get_question_resource] = override_get_question_manager
     app.dependency_overrides[get_question_resource] = override_get_question_resource
     app.dependency_overrides[get_storage_manager] = override_get_storage
     app.dependency_overrides[get_storage_type] = override_storage_mode

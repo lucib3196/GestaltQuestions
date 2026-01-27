@@ -12,9 +12,8 @@ from src.utils import to_serializable
 # --- Internal ---
 from src.api.core import logger
 from src.api.dependencies import StorageType, StorageTypeDep
-from src.api.database.models.question import QuestionData, Question
+from src.database import Question,QuestionData,QuestionDBDependency
 from src.api.response_models.models import FileData
-from src.api.service.question_manager import QuestionManager, QuestionManagerDependency
 from src.services.storage.dependecies import StorageDependency, StorageService
 from src.utils import safe_dir_name
 from src.api.response_models.models import (
@@ -37,7 +36,7 @@ class QuestionResourceService:
 
     def __init__(
         self,
-        qm: QuestionManager,
+        qm: QuestionDBDependency,
         storage_manager: StorageService,
         storage_type: StorageType,
         image_location="clientFiles",
@@ -58,7 +57,9 @@ class QuestionResourceService:
     async def get_question_path(
         self, qid: str | UUID, relative: bool = True
     ) -> str | Path:
-        rel_path = self.qm.get_question_path(qid, self.storage_type)  # type: ignore
+        rel_path = await self.qm.get_question_path(qid, self.storage_type)  # type: ignore
+        if not rel_path:
+            raise ValueError("Relative path is none")
         if relative:
             return rel_path
         return self.storage_manager.get_storage_path(rel_path, False)
@@ -152,7 +153,9 @@ class QuestionResourceService:
             )
 
         # Resolve question directory (relative DB path)
-        relative_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+        relative_path = await self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+        if not relative_path:
+            raise ValueError("Failed to get question path")
         abs_path = self.storage_manager.get_storage_path(relative_path, relative=False)
 
         logger.debug(
@@ -252,8 +255,8 @@ class QuestionResourceService:
         """
         logger.debug("Fetching file list for question_id=%s", question_id)
 
-        question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
-        assert question_path
+        question_path = await self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+
 
         files = self.storage_manager.list_file_names(question_path)
 
@@ -266,8 +269,7 @@ class QuestionResourceService:
         self, question_id: str | UUID
     ) -> SuccessFileResponse:
         logger.debug("Fetching filepath list for question_id=%s", question_id)
-        question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
-        assert question_path
+        question_path = await self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
         filepaths = self.storage_manager.list_file_paths(question_path)
         logger.debug("Found %d files for question_id=%s", len(filepaths), question_id)
         return SuccessFileResponse(
@@ -280,8 +282,8 @@ class QuestionResourceService:
         """
         logger.debug("Resolving file '%s' for question_id=%s", filename, question_id)
 
-        question_path = self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
-        assert question_path
+        question_path = await self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+
 
         # Direct images to client folder
         if await FileService().is_image(filename):
@@ -310,13 +312,15 @@ class QuestionResourceService:
             if not question:
                 raise HTTPException(status_code=404, detail="Question {qid} not found")
 
-            question_path = self.qm.get_question_path(qid, self.storage_type)  # type: ignore
+            question_path = await self.qm.get_question_path(qid, self.storage_type)  # type: ignore
+            if not question_path:
+                raise ValueError("Failed to get question path")
             storage = self.storage_manager.get_storage_path(
                 question_path, relative=False
             )
 
             # First delete from database
-            self.qm.delete_question(qid)
+            await self.qm.delete_question(qid)
             self.storage_manager.delete_storage(storage)
             return {"status": "ok", "detail": "Deleted Question"}
         except HTTPException:
@@ -493,7 +497,7 @@ class QuestionResourceService:
 
 @lru_cache
 def get_question_resource(
-    qm: QuestionManagerDependency,
+    qm: QuestionDBDependency,
     storage: StorageDependency,
     storage_type: StorageTypeDep,
 ):
