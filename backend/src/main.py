@@ -14,7 +14,7 @@ from sqlmodel import Session
 
 # Local application imports
 from src.data import RoleManager, InstitutionDB
-from src.web.web import routes
+from src.web.startup import routes
 from src.core import get_settings, create_db_and_tables
 
 

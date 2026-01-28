@@ -4,34 +4,24 @@ from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from firebase_admin.auth import verify_id_token
 from starlette import status
-
+from src.types import STORAGE_TYPE
 from src.core.config import AppSettings, get_settings
 
 
-StorageType = Literal["local", "cloud"]
-
-
 def get_app_settings() -> AppSettings:
-    """
-    Dependency that provides application settings from environment or config file.
-    """
     return get_settings()
 
 
 SettingDependency = Annotated[AppSettings, Depends(get_app_settings)]
 
 
-def get_STORAGE_TYPE(
+def get_storage_type(
     settings: SettingDependency,
-) -> StorageType:
-    """
-    Dependency that extracts the storage type from the global app settings.
-    """
+) -> STORAGE_TYPE:
     return settings.STORAGE_SERVICE
 
 
-# Type alias for injecting storage type directly
-StorageTypeDep = Annotated[StorageType, Depends(get_STORAGE_TYPE)]
+StorageTypeDep = Annotated[STORAGE_TYPE, Depends(get_storage_type)]
 
 
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -43,8 +33,7 @@ def get_firebase_user_from_token(
     try:
         if not token:
             raise ValueError("No Token")
-        user = verify_id_token(token.credentials)
-        return user
+        return verify_id_token(token.credentials)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
