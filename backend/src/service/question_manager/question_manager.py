@@ -19,7 +19,7 @@ from src.types import (
     SuccessFileResponse,
 )
 from src.utils import safe_dir_name, to_serializable
-from src.web.dependencies import StorageType, StorageTypeDep
+from src.web.dependencies import  StorageTypeDep
 from src.types import STORAGE_TYPE
 
 

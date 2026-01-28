@@ -28,7 +28,7 @@ from src.service import (
 from src.data import QuestionDB
 from src.service import QuestionManager
 from src.types import FileData, QuestionBase
-from src.web.dependencies import get_STORAGE_TYPE
+from src.web.dependencies import get_storage_type
 
 
 settings = get_settings()
@@ -199,7 +199,7 @@ def api_client(
     app.dependency_overrides[get_question_manager] = override_get_question_manager
     app.dependency_overrides[get_question_manager] = override_get_question_manager
     app.dependency_overrides[get_storage_manager] = override_get_storage
-    app.dependency_overrides[get_STORAGE_TYPE] = override_storage_mode
+    app.dependency_overrides[get_storage_type] = override_storage_mode
 
     # --- Start test client ---
     with TestClient(app, raise_server_exceptions=True) as client:
