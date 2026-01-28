@@ -73,7 +73,7 @@ class QuestionDB:
 
     async def get_all_questions(
         self,
-        offset: int,
+        offset: int=0,
         limit: int = 100,
         method: Literal["default", "full"] = "default",
     ) -> Sequence[Question | QuestionData]:
@@ -194,7 +194,7 @@ class QuestionDB:
             logger.error(error_msg)
             raise ValueError(error_msg)
 
-    def delete_all_questions(self) -> bool:
+    async def delete_all_questions(self) -> bool:
         try:
             statement = delete(Question)
             self.session.exec(statement)

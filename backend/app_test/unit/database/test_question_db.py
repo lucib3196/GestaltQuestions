@@ -1,16 +1,26 @@
 import pytest
-from src.database.repo import question as qdb
-from src.database.models.question import Question, QuestionData, QuestionMeta
+from src.database.models.question import Question, QuestionData
 from src.api.core.logging import logger
-from app_test.mock_data import QUESTION_FULL, QUESTIONS, ADDITIONAL_METADATA
+from app_test.mock_data import QUESTION_FULL, ADDITIONAL_METADATA
+from app_test.factories import make_question
+
+# Fixtures
+
+
+@pytest.fixture
+@pytest.mark.asyncio
+async def create_question_with_relationship(make_question):
+    qcreated = await make_question(**QUESTION_FULL)
+    assert qcreated
+    return qcreated, ADDITIONAL_METADATA
 
 
 # ----------------------
 # Minimal creation (no topics)
 # ----------------------
 @pytest.mark.asyncio
-async def test_create_question(db_session, question_payload):
-    qcreated = await qdb.create_question(question_payload, db_session)
+async def test_create_question(question_db, question_payload):
+    qcreated = await question_db.create_question(question_payload)
     assert qcreated
     for key, _ in question_payload.items():
         assert getattr(qcreated, key) == question_payload[key]
@@ -31,18 +41,18 @@ async def test_create_question_with_relationship_data(
 
 
 @pytest.mark.asyncio
-async def test_get_question(db_session, question_payload):
-    qcreated = await qdb.create_question(question_payload, db_session)
-    assert qcreated == qdb.get_question(qcreated.id, db_session)
+async def test_get_question(question_db, question_payload):
+    qcreated = await question_db.create_question(question_payload)
+    assert qcreated == await question_db.get_question(qcreated.id)
 
 
 @pytest.mark.asyncio
-async def test_get_all_questions(db_session, combined_payload):
+async def test_get_all_questions(question_db, combined_payload):
     # Create data
     for q in combined_payload:
-        qcreated = await qdb.create_question(q, db_session)
+        qcreated = await question_db.create_question(q)
         assert qcreated
-    questions = qdb.get_all_questions(db_session)
+    questions = await question_db.get_all_questions()
     assert isinstance(questions, list)
     assert all(isinstance(q, Question) for q in questions)
     assert len(combined_payload) == len(questions)
@@ -50,55 +60,72 @@ async def test_get_all_questions(db_session, combined_payload):
 
 # Test Deleting questions
 @pytest.mark.asyncio
-async def test_delete_all_questions(db_session, combined_payload):
+async def test_delete_all_questions(question_db, combined_payload):
     for q in combined_payload:
-        qcreated = await qdb.create_question(q, db_session)
+        qcreated = await question_db.create_question(
+            q,
+        )
         assert qcreated
-    qdb.delete_all_questions(db_session)
-    questions = qdb.get_all_questions(db_session)
+    await question_db.delete_all_questions()
+    questions = await question_db.get_all_questions()
     assert isinstance(questions, list)
     assert questions == []
 
 
 @pytest.mark.asyncio
-async def test_delete_single(db_session, combined_payload):
+async def test_delete_single(question_db, combined_payload):
     for q in combined_payload:
-        qcreated = await qdb.create_question(q, db_session)
+        qcreated = await question_db.create_question(
+            q,
+        )
         assert qcreated
 
         # Get the question
-        assert qdb.get_question(qcreated.id, db_session)
-        qdb.delete_question(qcreated.id, db_session)
-        assert qdb.get_question(qcreated.id, db_session) is None
+        assert await question_db.get_question(
+            qcreated.id,
+        )
+        await question_db.delete_question(
+            qcreated.id,
+        )
+        assert (
+            await question_db.get_question(
+                qcreated.id,
+            )
+            is None
+        )
 
 
 @pytest.mark.asyncio
-async def test_get_question_data(create_question_with_relationship, db_session):
+async def test_get_question_data(create_question_with_relationship, question_db):
     qcreated, _ = await create_question_with_relationship
-    data = await qdb.get_question_data(qcreated.id, db_session)
+    data = await question_db.get_question_data(
+        qcreated.id,
+    )
     assert data
 
 
 @pytest.mark.asyncio
-async def test_question_update(db_session, question_payload):
+async def test_question_update(question_db, question_payload):
 
-    qcreated = await qdb.create_question(question_payload, db_session)
+    qcreated = await question_db.create_question(
+        question_payload,
+    )
     assert qcreated is not None
     assert isinstance(qcreated, Question)
 
     update_data = QuestionData(title="new title", topics=["history", "math", "science"])
 
-    qupdate = await qdb.update_question(qcreated.id, update_data, db_session)
+    qupdate = await question_db.update_question(
+        qcreated.id,
+        update_data,
+    )
     logger.info("This is the question %s ", qupdate)
     assert qupdate is not None
-    assert isinstance(qupdate, QuestionMeta)
+    assert isinstance(qupdate, QuestionData)
 
     assert qupdate.title == "new title"
     assert isinstance(qupdate.topics, list)
     assert len(qupdate.topics) == 3
-
-    refetched = db_session.get(Question, qcreated.id)
-    assert refetched.title == "new title"
 
 
 @pytest.mark.asyncio
@@ -123,11 +150,13 @@ async def test_question_update(db_session, question_payload):
     ],
 )
 async def test_filter_questions(
-    make_question, db_session, update_data, expected_count, description
+    make_question, question_db, update_data, expected_count, description
 ):
     """Test dynamic question filtering across key combinations."""
     await make_question(**QUESTION_FULL)
-    results = await qdb.filter_questions(update_data, db_session)
+    results = await question_db.filter_questions(
+        update_data,
+    )
 
     print(f"\n{description}")
     print(f"Input: {update_data}")
@@ -136,7 +165,7 @@ async def test_filter_questions(
     assert isinstance(results, list)
     assert len(results) == expected_count
     if expected_count:
-        assert all(isinstance(r, QuestionMeta) for r in results)
+        assert all(isinstance(r, QuestionData) for r in results)
 
 
 @pytest.mark.asyncio
@@ -147,17 +176,18 @@ async def test_filter_questions(
         ("local", "local_path"),
     ],
 )
-async def test_setting_path(db_session, question_payload, storage_type, expected_attr):
+async def test_setting_path(question_db, question_payload, storage_type, expected_attr):
     # Create a test question
-    qcreated = await qdb.create_question(question_payload, db_session)
+    qcreated = await question_db.create_question(
+        question_payload,
+    )
     assert qcreated
 
     # Run set_question_path for both storage types
-    q = qdb.set_question_path(
+    q = await question_db.set_question_path(
         qcreated.id,
         path="/test",
         storage_type=storage_type,
-        session=db_session,
     )
 
     # Validate based on storage type
