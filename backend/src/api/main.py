@@ -12,7 +12,7 @@ from pathlib import Path
 from src.api.core import logger
 from sqlmodel import Session
 # Local application imports
-from src.database import create_db_and_tables,seed_roles,InstitutionDB,Session
+from src.database import create_db_and_tables,RoleManager,InstitutionDB,Session
 from src.api.web import routes
 from src.api.core.config import get_settings
 
@@ -27,7 +27,7 @@ async def on_startup(app: FastAPI):
     engine = create_db_and_tables()
     # Ensures that the roles are present at startup
     with Session(engine) as session:
-        seed_roles(session)
+        await RoleManager(session).seed_roles()
         logger.info("[Initialization] Roles Created/verified Successfully")
         session.commit()
         await InstitutionDB(session).seed_institution()

@@ -15,7 +15,10 @@ from src.api.dependencies import get_storage_type
 from src.api.main import get_application
 from src.api.response_models import FileData
 
-from src.database import QuestionDB
+from src.database import QuestionDB,UserDB,RoleManager
+
+
+
 from src.database.config import Base, get_session
 
 from src.services import (
@@ -34,6 +37,13 @@ from src.services.question_manager.question_manager import (
 settings = get_settings()
 initialize_firebase_app()
 
+
+@pytest.fixture
+def role_manager(db_session)->RoleManager:
+    return RoleManager(db_session)
+@pytest.fixture
+def user_db(db_session)->UserDB:
+    return UserDB(db_session)
 
 @asynccontextmanager
 async def on_startup_test(app: FastAPI):

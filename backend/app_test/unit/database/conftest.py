@@ -2,7 +2,7 @@ import pytest
 from app_test.mock_data import QUESTION_FULL, QUESTIONS, ADDITIONAL_METADATA
 
 # Keep these factories present
-from app_test.factories import make_question, make_submission_attempt, make_user
+from app_test.factories import make_question, make_submission_attempt,make_user
 
 
 @pytest.fixture

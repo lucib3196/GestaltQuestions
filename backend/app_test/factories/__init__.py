@@ -7,34 +7,12 @@ import pytest
 # --- Internal ---
 from src.database.repo import question as qdb
 from src.database.repo import question_attempt as qa
-import src.database.repo.user as user_db
 
 from src.database.models.question import Question, QuestionData
 from src.database.models.question_attempt import QuestionAttempt
-from src.database.models.users import User, UserBase
+from src.database.models.users import User
+from .user_factory import make_user
 
-
-@pytest.fixture
-def make_user(db_session):
-    def make(
-        *,
-        session=db_session,
-        **overrides,
-    ) -> User:
-        defaults = {
-            "first_name": "Luciano",
-            "last_name": "Bermudez",
-            "username": "luci123",
-            "email": "luci123@gmail.com",
-            "fb_id": "1234",
-        }
-
-        data = UserBase(**(defaults | overrides))  # type: ignore
-        user = user_db.create_user(data, session)
-        assert user
-        return user
-
-    return make
 
 
 @pytest.fixture

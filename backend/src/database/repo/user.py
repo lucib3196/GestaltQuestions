@@ -1,25 +1,24 @@
-from typing import Sequence, Annotated
+from typing import Annotated, Sequence
 
+from fastapi import Depends
+from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
-from fastapi import Depends
 
 from src.api.core import logger
 from src.database import SessionDep
+from src.database.models.institution import Institution, ValidInstitutions
 from src.database.models.question import Question
 from src.database.models.users import (
+    Role,
     User,
     UserBase,
     UserRoles,
-    Role,
     UserUpdate,
 )
-from src.database.models.institution import (Institution,
-    ValidInstitutions,)
-from . import ID
-
-from pydantic import ValidationError
 from src.utils import convert_uuid
+
+from . import ID
 
 
 class UserDB:
@@ -118,7 +117,7 @@ class UserDB:
         if not user:
             raise ValueError("[DB] Failed to get user")
         try:
-            for key, value in data.model_dump().items():
+            for key, value in data.model_dump(exclude_none=True).items():
                 setattr(user, key, value)
             self.session.add(user)
             self.session.commit()
@@ -127,7 +126,7 @@ class UserDB:
         except SQLAlchemyError as e:
             self.session.rollback()
             logger.error(f"[DB] Failed to edit user: {e}")
-            raise ValueError("[DB] Failed to edit user: {e}")
+            raise ValueError(f"[DB] Failed to edit user: {e}")
 
     async def set_user_role(self, id: ID, role: UserRoles):
         r = self.session.get(Role, role.value)

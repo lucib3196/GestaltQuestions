@@ -32,6 +32,7 @@ class RoleManager:
     async def get_role_data(self,role: str,) -> Role | None:
         r = self.session.exec(select(Role).where(Role.name == role)).first()
         return r
+    
     async def seed_roles(self):
         roles: Dict[UserRoles, str] = {
         UserRoles.ADMIN: (
@@ -52,7 +53,6 @@ class RoleManager:
             "grade questions, view student submissions, and monitor progress."
         ),
     }
-
         try:
             for r, des in roles.items():
                 if self.does_role_exist( r):
@@ -60,7 +60,7 @@ class RoleManager:
                 await self.create_role(r, description=des)
         except Exception:
             raise
-    def does_role_exist(self,
+    async def does_role_exist(self,
         role: UserRoles,
     ) -> bool | None:
         try:
