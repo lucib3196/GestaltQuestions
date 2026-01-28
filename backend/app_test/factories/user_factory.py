@@ -1,6 +1,8 @@
 import pytest
-from src.model.users import User, UserBase
+from src.model.users import User
+from src.types import UserBase
 from src.data import UserDB
+
 
 @pytest.fixture
 def make_user(user_db: UserDB):
@@ -13,7 +15,7 @@ def make_user(user_db: UserDB):
             "fb_id": "1234",
         }
 
-        data = UserBase(**(defaults | overrides)) # type: ignore
+        data = UserBase(**(defaults | overrides))  # type: ignore
         user = await user_db.create_user(data)
 
         assert user is not None

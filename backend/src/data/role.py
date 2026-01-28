@@ -4,7 +4,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
 from src.core import logger, SessionDep
-from src.model.users import UserRoles, Role
+from src.model.users import Role
+from src.types import UserRoles
 
 
 class RoleManager:

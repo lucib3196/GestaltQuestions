@@ -1,24 +1,14 @@
 # Standard library
 from uuid import UUID, uuid4
-from enum import Enum
 from typing import List, Optional, TYPE_CHECKING
 
 # Third-party libraries
 from sqlmodel import Field, SQLModel, Relationship
-from pydantic import BaseModel
 from .question_ownership import QuestionOwnership
-from .institution import ValidInstitutions
 
 if TYPE_CHECKING:
     from .question import Question
-    from .institution import ValidInstitutions, Institution
-
-
-class UserRoles(str, Enum):
-    ADMIN = "admin"
-    TEACHER = "teacher"
-    DEVELOPER = "developer"
-    STUDENT = "student"
+    from .institution import Institution
 
 
 # Create a link between a user a many to many relationship
@@ -56,25 +46,3 @@ class User(SQLModel, table=True):
     created_questions: List["Question"] = Relationship(
         back_populates="created_by", link_model=QuestionOwnership
     )
-
-
-# Base Model for reading users
-class UserRead(BaseModel):
-    first_name: str
-    last_name: str
-    username: str | None
-    email: str
-    institution: ValidInstitutions | None = None
-    role: UserRoles | None = None
-
-
-class UserUpdate(BaseModel):
-    first_name: str | None = None
-    last_name: str | None = None
-    username: str | None = None
-    email: str | None = None
-
-
-# This model is used for when we add users
-class UserBase(UserRead):
-    fb_id: str | None = None

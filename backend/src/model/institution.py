@@ -5,17 +5,10 @@ from typing import List, TYPE_CHECKING
 
 # Third-party libraries
 from sqlmodel import Field, SQLModel, Relationship
-
+from src.types import ValidInstitutions
 
 if TYPE_CHECKING:
     from .users import User
-
-
-# Defines the institution that they belong to
-class ValidInstitutions(str, Enum):
-    UCR = "University of California, Riverside"
-    CPP = "California State Polytechnic University, Pomona"
-    NORCO = "Norco College"
 
 
 class Institution(SQLModel, table=True):

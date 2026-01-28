@@ -11,13 +11,10 @@ from src.model.question import Question
 from src.model.users import (
     Role,
     User,
-    UserBase,
-    UserRoles,
-    UserUpdate,
 )
 from src.utils import convert_uuid
 
-from src.types import ID
+from src.types import ID, UserBase, UserRoles, UserUpdate
 
 
 class UserDB:

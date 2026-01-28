@@ -1,7 +1,7 @@
 import pytest
 from app_test.factories import make_user
 from src.core import logger
-from src.model.users import (
+from src.types import (
     ValidInstitutions,
 )
 

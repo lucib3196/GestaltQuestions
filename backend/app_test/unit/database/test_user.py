@@ -1,7 +1,7 @@
 import pytest
 
 from src.core import logger
-from src.model.users import (
+from src.types import (
     UserUpdate,
 )
 

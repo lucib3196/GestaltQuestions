@@ -11,6 +11,8 @@ from src.core.firebase import initialize_firebase_app
 from src.core.logging import logger
 from src.model.users import (
     User,
+)
+from src.types import (
     UserBase,
     UserRead,
     UserRoles,
@@ -19,7 +21,6 @@ from src.model.users import (
 )
 from src.web.dependencies import FireBaseToken
 from src.data.user import UserManagerDependeny
-
 
 
 router = APIRouter(prefix="/users", tags=["users"])
