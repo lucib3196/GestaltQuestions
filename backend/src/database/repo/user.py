@@ -156,14 +156,17 @@ class UserDB:
             raise
 
     async def set_user_institution(
-        self, id: ID, institution: ValidInstitutions
+        self, id: ID, institution: Institution | ValidInstitutions
     ) -> User:
         user = await self.get_user(id)
-        r = self.session.get(Institution, institution.value)
         if not user:
             raise ValueError("[DB] Failed to get user")
+        if isinstance(institution, ValidInstitutions):
+            institution = self.session.exec(
+                select(Institution).where(Institution.name == institution.value)
+            ).one()
         try:
-            user.institution = r
+            user.institution = institution
             self.session.commit()
             self.session.refresh(user)
             return user

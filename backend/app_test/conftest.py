@@ -15,7 +15,7 @@ from src.api.dependencies import get_storage_type
 from src.api.main import get_application
 from src.api.response_models import FileData
 
-from src.database import QuestionDB, UserDB, RoleManager
+from src.database import QuestionDB, UserDB, RoleManager, InstitutionDB
 
 
 from src.database.config import Base, get_session
@@ -50,6 +50,11 @@ def user_db(db_session) -> UserDB:
 @pytest.fixture
 def question_db(db_session) -> QuestionDB:
     return QuestionDB(db_session)
+
+
+@pytest.fixture
+def institution_db(db_session) -> InstitutionDB:
+    return InstitutionDB(db_session)
 
 
 @asynccontextmanager
