@@ -108,6 +108,31 @@ class QuestionAttemptDB:
 
             raise RuntimeError("Failed to retrieve attempts for question") from e
 
+    async def get_attempt_by_user_and_question(
+        self, question_id: ID, user_id: ID
+    ) -> Sequence[QuestionAttempt]:
+        try:
+            stmt = select(QuestionAttempt).where(
+                QuestionAttempt.question_id == convert_uuid(question_id)
+                and QuestionAttempt.user_id == convert_uuid(user_id)
+            )
+            results = self.session.exec(stmt).all()
+            logger.debug(
+                "[DB] Retrieved %d attempts for question | question_id=%s",
+                len(results),
+                question_id,
+            )
+            return results
+        except SQLAlchemyError as e:
+            self.session.rollback()
+
+            logger.exception(
+                "[DB] Failed to retrieve attempts for question | question_id=%s",
+                question_id,
+            )
+
+            raise RuntimeError("Failed to retrieve attempts for question") from e
+
     async def get_latest_attempt(
         self, question_id: ID, user_id: ID
     ) -> QuestionAttempt | None:

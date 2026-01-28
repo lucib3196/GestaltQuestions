@@ -5,3 +5,4 @@ from .repo.role import RoleManager
 from .repo.institution import *
 from .repo.user import UserManagerDependeny, UserDB
 from .repo.generic import *
+from .repo.question_attempt import QuestionAttemptDB

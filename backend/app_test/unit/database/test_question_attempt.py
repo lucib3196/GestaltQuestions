@@ -1,4 +1,4 @@
-from src.database.repo import question_attempt as qa
+from app_test.factories import make_submission_attempt, make_question, make_user
 from src.api.core import logger
 import pytest
 from app_test.mock_data.question_submission import SCENARIOS, ATTEMPTS
@@ -64,7 +64,7 @@ async def test_multiple_attempts(make_submission_attempt, attempt_case):
     ATTEMPTS,
     ids=lambda x: f"quiz={x['quiz_data']}-n={len(x['submissions'])}",
 )
-async def test_get_attempts_by_user(make_submission_attempt, attempt_case, db_session):
+async def test_get_attempts_by_user(make_submission_attempt, attempt_case, qa_attempt_db):
     quiz_data = attempt_case["quiz_data"]
     submissions = attempt_case["submissions"]
     user = None
@@ -79,7 +79,7 @@ async def test_get_attempts_by_user(make_submission_attempt, attempt_case, db_se
             question=question,
         )
         results.append(attempt)
-    attempts = qa.get_attempt_by_user(user.id, db_session)  # type: ignore
+    attempts = await qa_attempt_db.get_attempts_by_user(user.id)  # type: ignore
     assert len(attempts) == len(submissions)
     assert all([a.user_id == user.id for a in attempts])  # type: ignore
 
@@ -91,7 +91,7 @@ async def test_get_attempts_by_user(make_submission_attempt, attempt_case, db_se
     ids=lambda x: f"quiz={x['quiz_data']}-n={len(x['submissions'])}",
 )
 async def test_get_attempts_by_question(
-    make_submission_attempt, attempt_case, db_session
+    make_submission_attempt, attempt_case, qa_attempt_db
 ):
     user = None
     question = None
@@ -106,7 +106,7 @@ async def test_get_attempts_by_question(
             question=question,
         )
         results.append(attempt)
-    attempts = qa.get_attemps_by_question(question.id, db_session)  # type: ignore
+    attempts = await qa_attempt_db.get_attempts_by_question(question.id)  # type: ignore
 
     assert all(a.question_id == question.id for a in attempts)  # type: ignore
 
@@ -114,7 +114,7 @@ async def test_get_attempts_by_question(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("scenario", SCENARIOS)
 async def test_student_question_scenarios(
-    scenario, make_user, make_question, make_submission_attempt, db_session
+    scenario, make_user, make_question, make_submission_attempt, qa_attempt_db
 ):
     logger.debug(f"\n{'*'*25}\n")
     logger.debug("This is the scenario\n %s", scenario)
@@ -130,7 +130,7 @@ async def test_student_question_scenarios(
     assert isinstance(submissions, list) and submissions
 
     # Create users and questions
-    created_users = [make_user(**u) for u in users_data]
+    created_users = [await make_user(**u) for u in users_data]
     created_questions = [await make_question(**q) for q in questions_data]
 
     seen_attempt_ids = set()
@@ -154,6 +154,6 @@ async def test_student_question_scenarios(
     # retrieve all the information
     for u in created_users:
         for q in created_questions:
-            a = qa.get_attempt_by_user_and_question(q.id, u.id, db_session)
+            a = qa_attempt_db.get_attempt_by_user_and_question(q.id, u.id)
             logger.debug("This is the users attempt for the question  % s", a)
             assert a is not None, f"No attempt found for user={u.id} question={q.id}"
