@@ -2,7 +2,6 @@ import pytest
 from src.database.models.users import UserRoles, Role
 from src.api.core import logger
 
-
 @pytest.mark.asyncio
 async def test_create_role(role_manager):
     r = await role_manager.create_role(UserRoles.ADMIN)

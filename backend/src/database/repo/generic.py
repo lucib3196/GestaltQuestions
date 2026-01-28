@@ -1,4 +1,3 @@
-# --- Standard Library ---
 from enum import Enum
 from typing import (
     Any,
@@ -11,14 +10,12 @@ from typing import (
     TypeVar,
 )
 
-# --- Third-Party ---
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlmodel import SQLModel, select
 
-# --- Internal ---
 from src.api.core import logger
 from src.database import SessionDep
 
