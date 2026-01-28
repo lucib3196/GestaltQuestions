@@ -5,66 +5,94 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlmodel import Session, create_engine
-from src.types import QuestionBase
+
 from app_test.shared.fixtures.fixture_crud import *
 
-from src.core import in_test_ctx, logger, get_settings, initialize_firebase_app
-
-from src.web.dependencies import get_storage_type
-from src.main import get_application
-from src.types import FileData
-
-from src.data import (
-    QuestionDB,
-    UserDB,
-    RoleManager,
-    InstitutionDB,
-    QuestionAttemptDB,
+from src.core import (
+    get_settings,
+    in_test_ctx,
+    initialize_firebase_app,
+    logger,
+    get_session,
+    Base,
 )
-
-
-from src.core.database_config import Base, get_session
-
+from src.main import get_application
 from src.service import (
     FirebaseStorage,
     LocalStorageService,
     StorageService,
-)
-
-from src.service.storage.dependecies import get_storage_manager
-from src.service.question_manager.question_manager import (
+    get_storage_manager,
+    get_question_manager,
     QuestionManager,
-    get_question_resource,
 )
+from src.data import QuestionDB
+from src.service import QuestionManager
+from src.types import FileData, QuestionBase
+from src.web.dependencies import get_STORAGE_TYPE
 
 
 settings = get_settings()
 initialize_firebase_app()
 
 
-@pytest.fixture
-def role_manager(db_session) -> RoleManager:
-    return RoleManager(db_session)
-
-
-@pytest.fixture
-def user_db(db_session) -> UserDB:
-    return UserDB(db_session)
-
-
+# DATA Fixtures
 @pytest.fixture
 def question_db(db_session) -> QuestionDB:
     return QuestionDB(db_session)
 
 
-@pytest.fixture
-def institution_db(db_session) -> InstitutionDB:
-    return InstitutionDB(db_session)
+# SERVICE FIXTURES
 
 
-@pytest.fixture
-def qa_attempt_db(db_session) -> QuestionAttemptDB:
-    return QuestionAttemptDB(db_session)
+# -----------------------------
+# Storage Fixtures
+# -----------------------------
+@pytest.fixture(scope="function")
+def cloud_storage_service():
+    """Provide a FirebaseStorage instance connected to the test bucket."""
+    root = "test"
+    base = "questions"
+    return FirebaseStorage(settings.STORAGE_BUCKET, root=root, base=base)
+
+
+@pytest.fixture(scope="function")
+def local_storage(tmp_path):
+    """Provide a LocalStorageService rooted in a temporary directory."""
+    root = tmp_path
+    base = "questions"
+    return LocalStorageService(root, base="questions")
+
+
+@pytest.fixture(autouse=True)
+def clean_up_cloud(cloud_storage_service):
+    """Clean up the test bucket after each test."""
+    yield
+    cloud_storage_service.hard_delete()
+    logger.debug("Deleting Bucket - Cleaning Up")
+
+
+@pytest.fixture(scope="function")
+def question_manager(
+    storage_mode,
+    cloud_storage_service,
+    local_storage,
+    question_db,
+):
+    """
+    Provides a configured QuestionManager based on the active storage backend.
+    """
+    if storage_mode == "cloud":
+        storage = cloud_storage_service
+    elif storage_mode == "local":
+        storage = local_storage
+    else:
+        raise ValueError(f"Invalid storage type: {storage_mode}")
+
+    return QuestionManager(
+        question_db,
+        storage,
+        storage_mode,
+    )
 
 
 @asynccontextmanager
@@ -106,33 +134,6 @@ def _clean_db(db_session, test_engine):
     Base.metadata.create_all(test_engine)
 
 
-# -----------------------------
-# Storage Fixtures
-# -----------------------------
-@pytest.fixture(scope="function")
-def cloud_storage_service():
-    """Provide a FirebaseStorage instance connected to the test bucket."""
-    root = "test"
-    base = "questions"
-    return FirebaseStorage(settings.STORAGE_BUCKET, root=root, base=base)
-
-
-@pytest.fixture(scope="function")
-def local_storage(tmp_path):
-    """Provide a LocalStorageService rooted in a temporary directory."""
-    root = tmp_path
-    base = "questions"
-    return LocalStorageService(root, base="questions")
-
-
-@pytest.fixture(autouse=True)
-def clean_up_cloud(cloud_storage_service):
-    """Clean up the test bucket after each test."""
-    yield
-    cloud_storage_service.hard_delete()
-    logger.debug("Deleting Bucket - Cleaning Up")
-
-
 # =========================================
 # API Fixtures
 # =========================================
@@ -167,38 +168,6 @@ def active_storage_backend(
 
 
 @pytest.fixture(scope="function")
-def question_manager(db_session):
-    """
-    Provides a fresh QuestionManager for each test.
-    """
-    return QuestionDB(db_session)
-
-
-@pytest.fixture(scope="function")
-def question_resource(
-    storage_mode,
-    cloud_storage_service,
-    local_storage,
-    question_manager,
-):
-    """
-    Provides a configured QuestionManager based on the active storage backend.
-    """
-    if storage_mode == "cloud":
-        storage = cloud_storage_service
-    elif storage_mode == "local":
-        storage = local_storage
-    else:
-        raise ValueError(f"Invalid storage type: {storage_mode}")
-
-    return QuestionManager(
-        question_manager,
-        storage,
-        storage_mode,
-    )
-
-
-@pytest.fixture(scope="function")
 def api_client(
     db_session,
     question_manager,
@@ -220,9 +189,6 @@ def api_client(
     async def override_get_question_manager():
         yield question_manager
 
-    async def override_get_question_resource():
-        yield question_resource
-
     async def override_get_storage():
         yield active_storage_backend
 
@@ -230,10 +196,10 @@ def api_client(
         yield storage_mode
 
     app.dependency_overrides[get_session] = override_get_db
-    app.dependency_overrides[get_question_resource] = override_get_question_manager
-    app.dependency_overrides[get_question_resource] = override_get_question_resource
+    app.dependency_overrides[get_question_manager] = override_get_question_manager
+    app.dependency_overrides[get_question_manager] = override_get_question_manager
     app.dependency_overrides[get_storage_manager] = override_get_storage
-    app.dependency_overrides[get_storage_type] = override_storage_mode
+    app.dependency_overrides[get_STORAGE_TYPE] = override_storage_mode
 
     # --- Start test client ---
     with TestClient(app, raise_server_exceptions=True) as client:

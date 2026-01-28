@@ -21,7 +21,7 @@ def get_app_settings() -> AppSettings:
 SettingDependency = Annotated[AppSettings, Depends(get_app_settings)]
 
 
-def get_storage_type(
+def get_STORAGE_TYPE(
     settings: SettingDependency,
 ) -> StorageType:
     """
@@ -31,7 +31,7 @@ def get_storage_type(
 
 
 # Type alias for injecting storage type directly
-StorageTypeDep = Annotated[StorageType, Depends(get_storage_type)]
+StorageTypeDep = Annotated[StorageType, Depends(get_STORAGE_TYPE)]
 
 
 bearer_scheme = HTTPBearer(auto_error=False)

@@ -5,7 +5,7 @@ from src.utils import normalize, normalize_newlines
 from io import BytesIO
 
 
-storage_type: Literal["local", "cloud"]
+STORAGE_TYPE: Literal["local", "cloud"]
 
 
 @pytest.fixture

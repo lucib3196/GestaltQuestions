@@ -16,7 +16,7 @@ from fastapi import APIRouter, HTTPException
 # Local application imports
 from src.core import logger
 from src.types import QuizData
-from src.service.question_manager.question_manager import QuestionResourceDepencency
+from src.service.question_manager.question_manager import QuestionManagerDependency
 from src.web.dependencies import SettingDependency
 from pydantic import BaseModel
 
@@ -35,7 +35,7 @@ class ExecutionResult(BaseModel):
 async def run_server(
     qid: str | UUID,
     server_language: Literal["python", "javascript"],
-    qr: QuestionResourceDepencency,
+    qr: QuestionManagerDependency,
     app_settings: SettingDependency,
 ) -> QuizData:
 

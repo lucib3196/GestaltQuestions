@@ -17,8 +17,8 @@ from src.model.question import Question
 from src.utils import to_serializable
 from src.service.storage.dependecies import StorageDependency, get_storage_manager
 from src.service.question_manager.question_manager import (
-    QuestionResourceDepencency,
-    get_question_resource,
+    QuestionManagerDependency,
+    get_question_manager,
 )
 
 
@@ -26,7 +26,7 @@ class QuestionSync:
     def __init__(
         self,
         storage: StorageDependency,
-        qr: QuestionResourceDepencency,
+        qr: QuestionManagerDependency,
         flag: Sequence[str] = [
             "info2.json",
             "metadata.json",
@@ -268,7 +268,7 @@ async def main():
     try:
         q = QuestionSync(
             storage=get_storage_manager(),
-            qr=get_question_resource(session),
+            qr=get_question_manager(session),
         )
         await q.check_all_unsync()
 

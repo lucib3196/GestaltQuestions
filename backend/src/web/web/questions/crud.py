@@ -8,11 +8,11 @@ from src.core import logger
 from src.service.storage.dependecies import StorageDependency
 from src.model.question import Question
 from src.types import QuestionData
-from src.types import *
 from src.utils import safe_dir_name
 from src.web.dependencies import StorageTypeDep
-from src.service.question_manager.question_manager import QuestionResourceDepencency
+from src.service.question_manager.question_manager import QuestionManagerDependency
 from src.types import ID
+
 router = APIRouter(
     prefix="/questions",
     tags=[
@@ -23,20 +23,20 @@ router = APIRouter(
 
 @router.post("/")
 async def create_question(
-    qs: QuestionResourceDepencency,
+    qs: QuestionManagerDependency,
     question: QuestionData,
 ) -> Question:
     """
     Create a new question, store it in the database, and initialize its corresponding storage path.
 
     This function performs three main operations:
-    1. Creates a new `Question` entry in the database via the `QuestionResourceDepencency`.
+    1. Creates a new `Question` entry in the database via the `QuestionManagerDependency`.
     2. Generates a sanitized directory name for the question based on its title and ID.
     3. Initializes the appropriate storage path (local or cloud) and updates the database record
        with the correct relative path reference.
 
     Args:
-        qm (QuestionResourceDepencency):
+        qm (QuestionManagerDependency):
         storage (StorageDependency):
         question (QuestionData): Input data model containing details of the question to be created.
 
@@ -55,7 +55,7 @@ async def create_question(
 
 @router.delete("/")
 async def delete_all(
-    qm: QuestionResourceDepencency,
+    qm: QuestionManagerDependency,
     storage: StorageDependency,
     delete_storage: bool = False,
 ):
@@ -67,7 +67,7 @@ async def delete_all(
     **Use caution**: enabling this flag will permanently remove *all* files and subdirectories under the storage path.
 
     Args:
-        qm (QuestionResourceDepencency): Handles bulk deletion of all question records from the database.
+        qm (QuestionManagerDependency): Handles bulk deletion of all question records from the database.
         storage (StorageDependency): Provides access to the file storage system (local or cloud).
         delete_storage (bool, optional): When `True`, deletes the entire storage directory on disk or in cloud storage.
             This operation is irreversible and should be used only when you are certain that all files can be removed.
@@ -91,7 +91,7 @@ async def delete_all(
 
 @router.get("/{offset:int}/{limit:int}")
 async def get_all_questions(
-    qm: QuestionResourceDepencency, offset: int = 0, limit: int = 100
+    qm: QuestionManagerDependency, offset: int = 0, limit: int = 100
 ) -> Sequence[Question]:
     """
     Retrieve a paginated list of all questions stored in the database.
@@ -101,7 +101,7 @@ async def get_all_questions(
     batch retrieval through the `offset` and `limit` parameters.
 
     Args:
-        qm (QuestionResourceDepencency): Dependency responsible for database queries related to questions.
+        qm (QuestionManagerDependency): Dependency responsible for database queries related to questions.
         offset (int, optional): The starting index for pagination. Defaults to 0.
         limit (int, optional): The maximum number of questions to retrieve. Defaults to 100.
 
@@ -118,7 +118,7 @@ async def get_all_questions(
 
 
 @router.get("/{id}")
-async def get_question(id: ID, qm: QuestionResourceDepencency) -> Question:
+async def get_question(id: ID, qm: QuestionManagerDependency) -> Question:
     """
     Retrieve a single question from the database by its ID.
 
@@ -127,7 +127,7 @@ async def get_question(id: ID, qm: QuestionResourceDepencency) -> Question:
 
     Args:
         id (ID): The unique identifier of the question to retrieve.
-        qm (QuestionResourceDepencency): Manages database operations for question retrieval.
+        qm (QuestionManagerDependency): Manages database operations for question retrieval.
 
     Returns:
         Question: The retrieved `Question` SQLModel instance.
@@ -150,7 +150,7 @@ async def get_question(id: ID, qm: QuestionResourceDepencency) -> Question:
 
 @router.get("/{id}/all_data")
 async def get_question_all_data(
-    id: ID, qm: QuestionResourceDepencency, storage_type: StorageTypeDep
+    id: ID, qm: QuestionManagerDependency, STORAGE_TYPE: StorageTypeDep
 ) -> QuestionData:
     """
     Retrieve a question and all associated metadata by its ID.
@@ -160,7 +160,7 @@ async def get_question_all_data(
 
     Args:
         id (ID): The unique identifier of the question to retrieve.
-        qm (QuestionResourceDepencency): Provides access to detailed question data and metadata.
+        qm (QuestionManagerDependency): Provides access to detailed question data and metadata.
 
     Returns:
         QuestionMeta: The combined question and metadata information.
@@ -170,7 +170,7 @@ async def get_question_all_data(
     """
     try:
         question_data = await qm.get_question_data(id)
-        question_data.question_path = qm.get_question_path(id, storage_type)
+        question_data.question_path = qm.get_question_path(id, STORAGE_TYPE)
         return question_data
     except Exception:
         raise
@@ -178,17 +178,17 @@ async def get_question_all_data(
 
 @router.get("/{offset:int}/{limit:int}/all_data")
 async def get_all_questions_data(
-    qm: QuestionResourceDepencency, offset: int, limit: int
+    qm: QuestionManagerDependency, offset: int, limit: int
 ) -> Sequence[QuestionData]:
     try:
-        question_meta =  await qm.get_all_question_data(offset, limit)
+        question_meta = await qm.get_all_question_data(offset, limit)
         return question_meta
     except Exception:
         raise
 
 
 @router.delete("/{id}")
-async def delete_question(id: ID, qr: QuestionResourceDepencency):
+async def delete_question(id: ID, qr: QuestionManagerDependency):
     """
     Delete a question from the database and remove any associated stored files.
 
@@ -203,7 +203,7 @@ async def delete_question(id: ID, qr: QuestionResourceDepencency):
 
     Args:
         id (ID): The unique identifier of the question to delete.
-        qm (QuestionResourceDepencency): Handles database deletion of the question.
+        qm (QuestionManagerDependency): Handles database deletion of the question.
         storage (StorageDependency): Deletes storage resources, either locally or in cloud storage.
 
     Returns:
@@ -223,9 +223,9 @@ async def delete_question(id: ID, qr: QuestionResourceDepencency):
 async def update_question(
     id: ID,
     update: QuestionData,
-    qm: QuestionResourceDepencency,
+    qm: QuestionManagerDependency,
     storage: StorageDependency,
-    storage_type: StorageTypeDep,
+    STORAGE_TYPE: StorageTypeDep,
     update_storage: bool = True,
 ) -> QuestionData:
     """
@@ -239,7 +239,7 @@ async def update_question(
     Args:
         id (ID): Unique identifier of the question to update.
         update (QuestionData): Updated data for the question.
-        qm (QuestionResourceDepencency): Handles database operations related to questions.
+        qm (QuestionManagerDependency): Handles database operations related to questions.
         storage (StorageDependency): Manages storage paths and renaming operations.
         update_storage (bool): If True, renames the existing storage directory when the title changes.
 
@@ -265,7 +265,7 @@ async def update_question(
                 f"Updating storage directory for question '{existing_question.title}' → '{update.title}'"
             )
 
-            old_storage_path = qm.get_question_path(id, storage_type)
+            old_storage_path = qm.get_question_path(id, STORAGE_TYPE)
             if not old_storage_path:
                 logger.error(f"No valid storage path found for question ID {id}")
                 raise HTTPException(
@@ -284,7 +284,7 @@ async def update_question(
                 new_storage_path, relative=True
             )
             qm.set_question_path(
-                existing_question.id, updated_relative_path, storage_type
+                existing_question.id, updated_relative_path, STORAGE_TYPE
             )
             qm.session.commit()
 
@@ -307,7 +307,7 @@ async def update_question(
 
 @router.post("/filter")
 async def filter_questions(
-    filter_data: QuestionData, qm: QuestionResourceDepencency
+    filter_data: QuestionData, qm: QuestionManagerDependency
 ) -> Sequence[QuestionData]:
     try:
         logger.debug("Retrieved filter %s", filter_data)

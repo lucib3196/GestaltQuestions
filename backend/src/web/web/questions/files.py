@@ -27,7 +27,7 @@ from src.types import (
     SuccessFileResponse,
 )
 from src.model.question import Question
-from src.service import FileService,QuestionResourceDepencency
+from src.service import FileService,QuestionManagerDependency
 from src.service.storage.dependecies import StorageDependency
 from src.utils import encode_image
 
@@ -49,7 +49,7 @@ def get_file(files: list[UploadFile], name: str) -> UploadFile | None:
 
 @router.post("/files")
 async def create_question_file_upload(
-    qr: QuestionResourceDepencency,
+    qr: QuestionManagerDependency,
     files: List[UploadFile],
     question_data: Optional[str] = Form(None),
     auto_handle_images: bool = True,
@@ -104,7 +104,7 @@ async def create_question_file_upload(
 @router.get("/files/{qid}")
 async def get_question_file_names(
     qid: str | UUID,
-    qr: QuestionResourceDepencency,
+    qr: QuestionManagerDependency,
 ) -> SuccessFileResponse:
     """
     Retrieve the list of files stored for a specific question.
@@ -116,7 +116,7 @@ async def get_question_file_names(
     Args:
         qid: The unique identifier of the question.
         qr: Injected QuestionResource service.
-        storage_type: Indicates whether local or cloud storage is active.
+        STORAGE_TYPE: Indicates whether local or cloud storage is active.
 
     Returns:
         SuccessFileResponse: Contains a list of filenames and a success status.
@@ -137,7 +137,7 @@ async def get_question_file_names(
 
 
 @router.delete("/files/{qid}/{filename}")
-async def delete_file(qid: str | UUID, filename: str, qr: QuestionResourceDepencency):
+async def delete_file(qid: str | UUID, filename: str, qr: QuestionManagerDependency):
     """
     Delete a single file associated with a given question.
 
@@ -160,7 +160,7 @@ async def delete_file(qid: str | UUID, filename: str, qr: QuestionResourceDepenc
 
 @router.get("/files/{qid}/{filename}")
 async def read_question_file(
-    qid: str | UUID, filename: str, qr: QuestionResourceDepencency
+    qid: str | UUID, filename: str, qr: QuestionManagerDependency
 ) -> SuccessDataResponse:
     """
     Read and return the contents of a specific file belonging to a question.
@@ -197,7 +197,7 @@ async def update_file(
     qid: str | UUID,
     filename: str,
     new_content: str | dict,
-    qr: QuestionResourceDepencency,
+    qr: QuestionManagerDependency,
 ) -> SuccessDataResponse:
     """
     Overwrite or update an existing file belonging to a question.
@@ -233,7 +233,7 @@ async def update_file(
 async def upload_files_to_question(
     id: str | UUID,
     files: list[UploadFile],
-    qr: QuestionResourceDepencency,
+    qr: QuestionManagerDependency,
     auto_handle_images: bool = True,
 ) -> dict:
     """
@@ -284,13 +284,13 @@ async def upload_files_to_question(
 @router.get("/filedata/{qid}")
 async def get_filedata(
     qid: str | UUID,
-    qm: QuestionResourceDepencency,
+    qm: QuestionManagerDependency,
     storage: StorageDependency,
-    storage_type: StorageTypeDep,
+    STORAGE_TYPE: StorageTypeDep,
 ) -> List[FileData]:
     try:
         question = qm.get_question(qid)
-        question_path = qm.get_question_path(question.id, storage_type)
+        question_path = qm.get_question_path(question.id, STORAGE_TYPE)
         file_paths = [
             Path(f) for f in storage.list_file_paths(question_path, recursive=True)
         ]
@@ -333,7 +333,7 @@ async def get_filedata(
 @router.post("/files/{qid}/download")
 async def download_question(
     qid: str | UUID,
-    qr: QuestionResourceDepencency,
+    qr: QuestionManagerDependency,
 ):
     try:
         question = qr.qm.get_question(qid)
@@ -365,8 +365,8 @@ async def download_question(
 async def download_question_file(
     qid: str | UUID,
     filename: str,
-    qm: QuestionResourceDepencency,
-    qr: QuestionResourceDepencency,
+    qm: QuestionManagerDependency,
+    qr: QuestionManagerDependency,
 ):
     try:
         question = qm.get_question(qid)

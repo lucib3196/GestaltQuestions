@@ -1,37 +1,26 @@
-from functools import lru_cache
-from typing import Annotated, Dict, List, Optional, Tuple
-from pathlib import Path
-from uuid import UUID
 import json
+from functools import lru_cache
+from pathlib import Path
+from typing import Annotated, Dict, List, Optional, Tuple, Set
+from uuid import UUID
 
-# --- Third-Party ---
 from fastapi import Depends, HTTPException
 from starlette import status
-from src.utils import to_serializable
 
-# --- Internal ---
 from src.core import logger
-from src.web.dependencies import StorageType, StorageTypeDep
-
-from src.model.question import Question
 from src.data import QuestionDBDependency
-
-from src.types import QuestionData
-from src.service.storage.dependecies import StorageDependency, StorageService
-from src.utils import safe_dir_name
+from src.model.question import Question
+from src.service import StorageService, StorageDependency
+from src.service.file_service import FileService
 from src.types import (
     FileData,
-    SuccessFileResponse,
+    QuestionData,
     SuccessDataResponse,
+    SuccessFileResponse,
 )
-from ..file_service.file_service import FileService
-
-client_file_extensions = {
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".pdf",
-}
+from src.utils import safe_dir_name, to_serializable
+from src.web.dependencies import StorageType, StorageTypeDep
+from src.types import STORAGE_TYPE
 
 
 class QuestionManager:
@@ -41,26 +30,33 @@ class QuestionManager:
         self,
         qdb: QuestionDBDependency,
         storage_manager: StorageService,
-        storage_type: StorageType,
+        STORAGE_TYPE: STORAGE_TYPE,
         image_location="clientFiles",
+        client_file_extensions: Set[str] = {
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".pdf",
+        },
     ):
         """_summary_
 
         Args:
             qdb (QuestionManager): Manages database interactions for creating and committing the question.
             storage_manager (StorageService):  Handles file system or cloud storage initialization for the question.
-            storage_type (StorageType): Wether we are working with the cloud or local storage
+            STORAGE_TYPE (StorageType): Wether we are working with the cloud or local storage
         """
         self.qdb = qdb
         self.storage_manager = storage_manager
-        self.storage_type = storage_type
+        self.STORAGE_TYPE = STORAGE_TYPE
         self.client_path = image_location
+        self.client_ext = client_file_extensions
 
     # Basic retrieval and checks
     async def get_question_path(
         self, qid: str | UUID, relative: bool = True
     ) -> str | Path:
-        rel_path = await self.qdb.get_question_path(qid, self.storage_type)  # type: ignore
+        rel_path = await self.qdb.get_question_path(qid, self.STORAGE_TYPE)  # type: ignore
         if not rel_path:
             raise ValueError("Relative path is none")
         if relative:
@@ -116,7 +112,11 @@ class QuestionManager:
         )
 
         # --- Step 4: Always store relative path in the DB ---
-        self.qdb.set_question_path(qcreated.id, relative_path, self.storage_type)  # type: ignore
+        await self.qdb.set_question_path(
+            qcreated.id,
+            self.STORAGE_TYPE,
+            relative_path,
+        )
         self.qdb.session.commit()
 
         logger.info(
@@ -156,7 +156,7 @@ class QuestionManager:
             )
 
         # Resolve question directory (relative DB path)
-        relative_path = await self.qdb.get_question_path(question_id, self.storage_type)  # type: ignore
+        relative_path = await self.qdb.get_question_path(question_id, self.STORAGE_TYPE)  # type: ignore
         if not relative_path:
             raise ValueError("Failed to get question path")
         abs_path = self.storage_manager.get_storage_path(relative_path, relative=False)
@@ -203,7 +203,7 @@ class QuestionManager:
                 )
 
             ext = Path(f.filename).suffix.lower()
-            if ext in client_file_extensions:
+            if ext in self.client_ext:
                 client_files.append(f)
             else:
                 other_files.append(f)
@@ -258,7 +258,8 @@ class QuestionManager:
         """
         logger.debug("Fetching file list for question_id=%s", question_id)
 
-        question_path = await self.qdb.get_question_path(question_id, self.storage_type)  # type: ignore
+        logger.info("This is the storage settings %s", self.STORAGE_TYPE)
+        question_path = await self.qdb.get_question_path(question_id, self.STORAGE_TYPE)  # type: ignore
 
         files = self.storage_manager.list_file_names(question_path)
 
@@ -271,7 +272,7 @@ class QuestionManager:
         self, question_id: str | UUID
     ) -> SuccessFileResponse:
         logger.debug("Fetching filepath list for question_id=%s", question_id)
-        question_path = await self.qdb.get_question_path(question_id, self.storage_type)  # type: ignore
+        question_path = await self.qdb.get_question_path(question_id, self.STORAGE_TYPE)  # type: ignore
         filepaths = self.storage_manager.list_file_paths(question_path)
         logger.debug("Found %d files for question_id=%s", len(filepaths), question_id)
         return SuccessFileResponse(
@@ -284,7 +285,7 @@ class QuestionManager:
         """
         logger.debug("Resolving file '%s' for question_id=%s", filename, question_id)
 
-        question_path = await self.qdb.get_question_path(question_id, self.storage_type)  # type: ignore
+        question_path = await self.qdb.get_question_path(question_id, self.STORAGE_TYPE)  # type: ignore
 
         # Direct images to client folder
         if await FileService().is_image(filename):
@@ -313,7 +314,7 @@ class QuestionManager:
             if not question:
                 raise HTTPException(status_code=404, detail="Question {qid} not found")
 
-            question_path = await self.qdb.get_question_path(qid, self.storage_type)  # type: ignore
+            question_path = await self.qdb.get_question_path(qid, self.STORAGE_TYPE)  # type: ignore
             if not question_path:
                 raise ValueError("Failed to get question path")
             storage = self.storage_manager.get_storage_path(
@@ -452,7 +453,7 @@ class QuestionManager:
 
             # Save the updated path into the question's DB record
             self.qdb.set_question_path(
-                created_question.id, relative_storage_path, self.storage_type  # type: ignore
+                created_question.id, relative_storage_path, self.STORAGE_TYPE  # type: ignore
             )
 
             # 5. Load full question metadata from DB to write to disk
@@ -497,12 +498,12 @@ class QuestionManager:
 
 
 @lru_cache
-def get_question_resource(
+def get_question_manager(
     qdb: QuestionDBDependency,
     storage: StorageDependency,
-    storage_type: StorageTypeDep,
+    STORAGE_TYPE: StorageTypeDep,
 ):
-    return QuestionManager(qdb, storage, storage_type)
+    return QuestionManager(qdb, storage, STORAGE_TYPE)
 
 
-QuestionResourceDepencency = Annotated[QuestionManager, Depends(get_question_resource)]
+QuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]

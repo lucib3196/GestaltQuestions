@@ -171,13 +171,13 @@ async def test_filter_questions(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "storage_type, expected_attr",
+    "STORAGE_TYPE, expected_attr",
     [
         ("cloud", "blob_path"),
         ("local", "local_path"),
     ],
 )
-async def test_setting_path(question_db, question_payload, storage_type, expected_attr):
+async def test_setting_path(question_db, question_payload, STORAGE_TYPE, expected_attr):
     # Create a test question
     qcreated = await question_db.create_question(
         question_payload,
@@ -188,7 +188,7 @@ async def test_setting_path(question_db, question_payload, storage_type, expecte
     q = await question_db.set_question_path(
         qcreated.id,
         path="/test",
-        storage_type=storage_type,
+        STORAGE_TYPE=STORAGE_TYPE,
     )
 
     # Validate based on storage type
