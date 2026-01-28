@@ -129,7 +129,7 @@ class UserDB:
             raise ValueError(f"[DB] Failed to edit user: {e}")
 
     async def set_user_role(self, id: ID, role: UserRoles):
-        r = self.session.get(Role, role.value)
+        r = self.session.exec(select(Role).where(Role.name == role)).first()
         if r is None:
             raise ValueError(f"Role {r} not present in database ")
         user = await self.get_user(id)
