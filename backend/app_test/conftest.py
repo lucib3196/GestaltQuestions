@@ -171,7 +171,6 @@ def active_storage_backend(
 def api_client(
     db_session,
     question_manager,
-    question_resource,
     active_storage_backend,
     storage_mode,
 ):
@@ -196,7 +195,6 @@ def api_client(
         yield storage_mode
 
     app.dependency_overrides[get_session] = override_get_db
-    app.dependency_overrides[get_question_manager] = override_get_question_manager
     app.dependency_overrides[get_question_manager] = override_get_question_manager
     app.dependency_overrides[get_storage_manager] = override_get_storage
     app.dependency_overrides[get_storage_type] = override_storage_mode
