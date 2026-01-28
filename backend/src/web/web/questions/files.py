@@ -21,7 +21,7 @@ from starlette import status
 # =========================
 from src.core import logger
 from src.web.dependencies import StorageTypeDep
-from src.web.response_models import (
+from src.types import (
     FileData,
     SuccessDataResponse,
     SuccessFileResponse,

@@ -4,7 +4,7 @@ import pytest
 
 from src.core import logger
 from src.utils import *
-from src.web.response_models import (
+from src.types import (
     SuccessFileResponse,
     SuccessDataResponse,
 )

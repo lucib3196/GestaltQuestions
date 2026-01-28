@@ -15,11 +15,11 @@ from src.web.dependencies import StorageType, StorageTypeDep
 
 from src.model.question import Question
 from src.data import QuestionDBDependency
-from src.web.response_models.models import FileData
+
 from src.types import QuestionData
 from src.service.storage.dependecies import StorageDependency, StorageService
 from src.utils import safe_dir_name
-from src.web.response_models.models import (
+from src.types import (
     FileData,
     SuccessFileResponse,
     SuccessDataResponse,
@@ -505,6 +505,4 @@ def get_question_resource(
     return QuestionManager(qdb, storage, storage_type)
 
 
-QuestionResourceDepencency = Annotated[
-    QuestionManager, Depends(get_question_resource)
-]
+QuestionResourceDepencency = Annotated[QuestionManager, Depends(get_question_resource)]

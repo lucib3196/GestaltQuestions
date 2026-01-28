@@ -8,11 +8,11 @@ from src.core import logger
 from src.service.storage.dependecies import StorageDependency
 from src.model.question import Question
 from src.types import QuestionData
-from src.web.response_models import *
+from src.types import *
 from src.utils import safe_dir_name
 from src.web.dependencies import StorageTypeDep
 from src.service.question_manager.question_manager import QuestionResourceDepencency
-
+from src.types import ID
 router = APIRouter(
     prefix="/questions",
     tags=[
@@ -118,7 +118,7 @@ async def get_all_questions(
 
 
 @router.get("/{id}")
-async def get_question(id: str | UUID, qm: QuestionResourceDepencency) -> Question:
+async def get_question(id: ID, qm: QuestionResourceDepencency) -> Question:
     """
     Retrieve a single question from the database by its ID.
 
@@ -126,7 +126,7 @@ async def get_question(id: str | UUID, qm: QuestionResourceDepencency) -> Questi
     If no question is found matching the provided identifier, an HTTP 404 error is raised.
 
     Args:
-        id (str | UUID): The unique identifier of the question to retrieve.
+        id (ID): The unique identifier of the question to retrieve.
         qm (QuestionResourceDepencency): Manages database operations for question retrieval.
 
     Returns:
@@ -150,7 +150,7 @@ async def get_question(id: str | UUID, qm: QuestionResourceDepencency) -> Questi
 
 @router.get("/{id}/all_data")
 async def get_question_all_data(
-    id: str | UUID, qm: QuestionResourceDepencency, storage_type: StorageTypeDep
+    id: ID, qm: QuestionResourceDepencency, storage_type: StorageTypeDep
 ) -> QuestionData:
     """
     Retrieve a question and all associated metadata by its ID.
@@ -159,7 +159,7 @@ async def get_question_all_data(
     (such as relationships, tags, and supplemental data) for comprehensive inspection.
 
     Args:
-        id (str | UUID): The unique identifier of the question to retrieve.
+        id (ID): The unique identifier of the question to retrieve.
         qm (QuestionResourceDepencency): Provides access to detailed question data and metadata.
 
     Returns:
@@ -188,7 +188,7 @@ async def get_all_questions_data(
 
 
 @router.delete("/{id}")
-async def delete_question(id: str | UUID, qr: QuestionResourceDepencency):
+async def delete_question(id: ID, qr: QuestionResourceDepencency):
     """
     Delete a question from the database and remove any associated stored files.
 
@@ -202,7 +202,7 @@ async def delete_question(id: str | UUID, qr: QuestionResourceDepencency):
     that storage cleanup could not be performed.
 
     Args:
-        id (str | UUID): The unique identifier of the question to delete.
+        id (ID): The unique identifier of the question to delete.
         qm (QuestionResourceDepencency): Handles database deletion of the question.
         storage (StorageDependency): Deletes storage resources, either locally or in cloud storage.
 
@@ -221,7 +221,7 @@ async def delete_question(id: str | UUID, qr: QuestionResourceDepencency):
 
 @router.put("/{id}")
 async def update_question(
-    id: str | UUID,
+    id: ID,
     update: QuestionData,
     qm: QuestionResourceDepencency,
     storage: StorageDependency,
@@ -237,7 +237,7 @@ async def update_question(
     with the question’s current metadata.
 
     Args:
-        id (str | UUID): Unique identifier of the question to update.
+        id (ID): Unique identifier of the question to update.
         update (QuestionData): Updated data for the question.
         qm (QuestionResourceDepencency): Handles database operations related to questions.
         storage (StorageDependency): Manages storage paths and renaming operations.

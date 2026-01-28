@@ -13,7 +13,7 @@ from starlette import status
 
 # --- Internal ---
 from src.core import logger
-from src.web.response_models import FileData, SuccessFileServiceResponse
+from src.types import FileData, SuccessFileServiceResponse
 from src.utils import safe_dir_name
 from .config import *
 

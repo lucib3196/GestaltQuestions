@@ -12,7 +12,7 @@ from src.core import in_test_ctx, logger, get_settings, initialize_firebase_app
 
 from src.web.dependencies import get_storage_type
 from src.main import get_application
-from src.web.response_models import FileData
+from src.types import FileData
 
 from src.data import (
     QuestionDB,
