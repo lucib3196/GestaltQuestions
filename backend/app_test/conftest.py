@@ -11,7 +11,7 @@ from app_test.shared.fixtures.fixture_crud import *
 from src.core import in_test_ctx, logger, get_settings, initialize_firebase_app
 
 from src.web.dependencies import get_storage_type
-from src.web.main import get_application
+from src.main import get_application
 from src.web.response_models import FileData
 
 from src.data import (

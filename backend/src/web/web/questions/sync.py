@@ -6,7 +6,7 @@ from fastapi.routing import APIRouter
 from src.service.question_manager.question_manager import QuestionResourceDepencency
 from src.service.storage.dependecies import StorageDependency
 from src.types import UnsyncedQuestion, SyncResponse, FolderCheckMetrics
-from src.web.service.sync import QuestionSync
+from src.web.sync import QuestionSync
 
 
 router = APIRouter(prefix="/questions", tags=["questions", "sync", "dev", "local"])

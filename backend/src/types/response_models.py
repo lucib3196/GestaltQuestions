@@ -1,22 +1,7 @@
-# --- Standard Library ---
 from pathlib import Path
-from typing import Any, List, Union
-from uuid import UUID
-
-# --- Third-Party ---
+from typing import List, Union
 from pydantic import BaseModel, Field
-
-# --- Internal ---
-
-
-class FileData(BaseModel):
-    filename: str
-    content: dict | str | Any | bytes
-    mime_type: str = "application/octet-stream"
-
-
-class FilesData(BaseModel):
-    files: List[FileData]
+from .file_data import FileData
 
 
 class SuccessfulResponse(BaseModel):
@@ -51,13 +36,6 @@ class SuccessFileResponse(SuccessfulResponse):
 class Response(BaseModel):
     status: int
     detail: str
-
-
-class UpdateFile(BaseModel):
-    question_id: str | UUID
-    filename: str
-    new_content: str | dict
-
 
 class SuccessFileServiceResponse(SuccessfulResponse):
     path: str | Path

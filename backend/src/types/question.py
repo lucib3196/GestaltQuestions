@@ -1,9 +1,6 @@
 from typing import Optional, Sequence
 from uuid import UUID
-
-
 from pydantic import BaseModel, ConfigDict, Field
-
 
 # Base Models
 class QuestionBase(BaseModel):
@@ -23,3 +20,9 @@ class QRelationshipData(BaseModel):
 
 class QuestionData(QuestionBase, QRelationshipData):
     pass
+
+
+class UpdateFile(BaseModel):
+    question_id: str | UUID
+    filename: str
+    new_content: str | dict

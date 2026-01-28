@@ -10,7 +10,7 @@ from pydantic import ValidationError
 
 # --- Internal ---
 from src.core import logger, get_session
-from src.types import UnsyncedQuestion, SyncMetrics, FolderCheckMetrics
+from src.types import UnsyncedQuestion, SyncMetrics, FolderCheckMetrics, QuestionData
 
 from src.model.question import Question
 
@@ -81,7 +81,7 @@ class QuestionSync:
 
     async def prune_all(self) -> FolderCheckMetrics:
         """Prunes any missing questions"""
-        all_questions = self.qr.qdb.get_all_questions(
+        all_questions = await self.qr.qdb.get_all_questions(
             0,
             1000,
         )
@@ -94,7 +94,7 @@ class QuestionSync:
             )
         total_checked = len(all_questions)
         prune_status = await asyncio.gather(
-            *[self.prune_question(q) for q in all_questions]
+            *[self.prune_question(q) for q in all_questions]  # type: ignore
         )
         categorized = defaultdict(list)
         for question, status in zip(all_questions, prune_status):
@@ -117,7 +117,7 @@ class QuestionSync:
                 return "ok"
             else:
                 # Just delete from database record, this should eventually be more robust but it should work
-                self.qr.qdb.delete_question(q.id)
+                await self.qr.qdb.delete_question(q.id)
                 return "deleted"
         except Exception as e:
             logger.exception(f"⚠️ Failed to delete '{q.title}' from DB: {e}")
@@ -167,7 +167,7 @@ class QuestionSync:
             return UnsyncedQuestion(**payload)
         logger.info(f"Found Question ID: {question_id}")
         try:
-            qdb = self.qr.qdb.get_question(question_id)
+            qdb = await self.qr.qdb.get_question(question_id)
         except Exception:
             logger.info("Question is not in database")
             detail = (
@@ -182,7 +182,7 @@ class QuestionSync:
         logger.info(
             f"✅ Question {question_name} is properly synced with the database (ID: {question_id})"
         )
-        return qdb
+        return qdb  # type: ignore
 
     async def sync_question(self, unsynced: UnsyncedQuestion):
         # Check metadata
