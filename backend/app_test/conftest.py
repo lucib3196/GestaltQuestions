@@ -5,7 +5,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlmodel import Session, create_engine
-
+from src.types import QuestionBase
 from app_test.fixtures.fixture_crud import *
 
 from src.core import in_test_ctx, logger, get_settings, initialize_firebase_app
@@ -298,3 +298,17 @@ def question_additional_metadata():
         "languages": ["python", "javascript"],
         "qtype": ["numeric"],
     }
+
+
+@pytest.fixture
+def question_payload():
+    return {
+        "title": "Sample Question",
+        "ai_generated": True,
+        "isAdaptive": False,
+    }
+
+
+@pytest.fixture
+def question_payload_2():
+    return QuestionBase(title="Question 2", ai_generated=False, isAdaptive=True)
