@@ -1,5 +1,5 @@
 import pytest
-from app_test.factories import make_user
+from app_test.shared.factories import make_user
 from src.core import logger
 from src.types import (
     ValidInstitutions,
@@ -21,5 +21,5 @@ async def test_set_user_institution(make_user, institution_db, institution, user
         institution,
     )
     assert user
-    assert user.institution.name == institution.value  
+    assert user.institution.name == institution.value
     assert user.institution_id == inst.id

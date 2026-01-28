@@ -242,7 +242,7 @@ async def upload_files_to_question(
     This endpoint allows clients to upload new files—such as HTML files, scripts,
     metadata, or images—to an already-existing question. All uploaded files are
     converted into internal `FileData` objects and saved to the appropriate storage
-    location (local or cloud) via `QuestionResourceService`.
+    location (local or cloud) via `QuestionManager`.
 
     When `auto_handle_images` is enabled, image-like or client-facing assets
     (e.g., `.png`, `.jpg`, `.jpeg`, `.pdf`) are automatically routed into a

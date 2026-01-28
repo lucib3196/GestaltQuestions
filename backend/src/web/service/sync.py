@@ -81,7 +81,7 @@ class QuestionSync:
 
     async def prune_all(self) -> FolderCheckMetrics:
         """Prunes any missing questions"""
-        all_questions = self.qr.qm.get_all_questions(
+        all_questions = self.qr.qdb.get_all_questions(
             0,
             1000,
         )
@@ -117,7 +117,7 @@ class QuestionSync:
                 return "ok"
             else:
                 # Just delete from database record, this should eventually be more robust but it should work
-                self.qr.qm.delete_question(q.id)
+                self.qr.qdb.delete_question(q.id)
                 return "deleted"
         except Exception as e:
             logger.exception(f"⚠️ Failed to delete '{q.title}' from DB: {e}")
@@ -167,7 +167,7 @@ class QuestionSync:
             return UnsyncedQuestion(**payload)
         logger.info(f"Found Question ID: {question_id}")
         try:
-            qdb = self.qr.qm.get_question(question_id)
+            qdb = self.qr.qdb.get_question(question_id)
         except Exception:
             logger.info("Question is not in database")
             detail = (

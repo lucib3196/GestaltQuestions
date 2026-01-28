@@ -10,6 +10,7 @@ QUESTIONS = [
         "isAdaptive": False,
     },
 ]
+
 ADDITIONAL_METADATA = {
     "topics": ["math", "science", "engineering"],
     "languages": ["python"],
@@ -18,7 +19,7 @@ ADDITIONAL_METADATA = {
 
 QUESTION_FULL = {**QUESTIONS[0], **ADDITIONAL_METADATA}
 
-
+QUESTIONS_FULL = [{**q, **ADDITIONAL_METADATA} for q in QUESTIONS]
 QUESTION_GROUPS = [
     {"case": "single_question", "questions": [QUESTIONS[0]]},
     {"case": "multiple_questions", "questions": QUESTIONS},

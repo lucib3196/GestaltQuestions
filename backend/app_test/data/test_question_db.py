@@ -2,8 +2,8 @@ import pytest
 from src.model.question import Question
 from src.types import QuestionData
 from src.core.logging import logger
-from app_test.mock_data import QUESTION_FULL, ADDITIONAL_METADATA
-from app_test.factories import make_question
+from app_test.shared.mock_data import QUESTION_FULL, ADDITIONAL_METADATA
+from app_test.shared.factories import make_question
 
 # Fixtures
 

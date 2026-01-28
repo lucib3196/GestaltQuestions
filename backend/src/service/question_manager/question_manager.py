@@ -34,12 +34,12 @@ client_file_extensions = {
 }
 
 
-class QuestionResourceService:
+class QuestionManager:
     """Service that coordinates storage and database operations for questions."""
 
     def __init__(
         self,
-        qm: QuestionDBDependency,
+        qdb: QuestionDBDependency,
         storage_manager: StorageService,
         storage_type: StorageType,
         image_location="clientFiles",
@@ -47,11 +47,11 @@ class QuestionResourceService:
         """_summary_
 
         Args:
-            qm (QuestionManager): Manages database interactions for creating and committing the question.
+            qdb (QuestionManager): Manages database interactions for creating and committing the question.
             storage_manager (StorageService):  Handles file system or cloud storage initialization for the question.
             storage_type (StorageType): Wether we are working with the cloud or local storage
         """
-        self.qm = qm
+        self.qdb = qdb
         self.storage_manager = storage_manager
         self.storage_type = storage_type
         self.client_path = image_location
@@ -60,7 +60,7 @@ class QuestionResourceService:
     async def get_question_path(
         self, qid: str | UUID, relative: bool = True
     ) -> str | Path:
-        rel_path = await self.qm.get_question_path(qid, self.storage_type)  # type: ignore
+        rel_path = await self.qdb.get_question_path(qid, self.storage_type)  # type: ignore
         if not rel_path:
             raise ValueError("Relative path is none")
         if relative:
@@ -95,11 +95,11 @@ class QuestionResourceService:
         question_data = QuestionData.model_validate(
             question_data,
         )
-        logger.info(f"[QuestionResourceService] Creating '{question_data.title}'")
+        logger.info(f"[QuestionManager] Creating '{question_data.title}'")
 
         # --- Step 1: Create DB record ---
-        qcreated = await self.qm.create_question(question_data)
-        logger.debug(f"[QuestionResourceService] DB entry created (ID={qcreated.id})")
+        qcreated = await self.qdb.create_question(question_data)
+        logger.debug(f"[QuestionManager] DB entry created (ID={qcreated.id})")
 
         # --- Step 2: Build folder name ---
         path_name = safe_dir_name(f"{qcreated.title}_{str(qcreated.id)[:8]}")
@@ -112,22 +112,22 @@ class QuestionResourceService:
         absolute_path = self.storage_manager.get_storage_path(path, relative=False)
 
         logger.info(
-            f"[QuestionResourceService] Paths ready — relative='{relative_path}', absolute='{absolute_path}'"
+            f"[QuestionManager] Paths ready — relative='{relative_path}', absolute='{absolute_path}'"
         )
 
         # --- Step 4: Always store relative path in the DB ---
-        self.qm.set_question_path(qcreated.id, relative_path, self.storage_type)  # type: ignore
-        self.qm.session.commit()
+        self.qdb.set_question_path(qcreated.id, relative_path, self.storage_type)  # type: ignore
+        self.qdb.session.commit()
 
         logger.info(
-            f"[QuestionResourceService] Stored relative path '{relative_path}' in DB for question {qcreated.id}"
+            f"[QuestionManager] Stored relative path '{relative_path}' in DB for question {qcreated.id}"
         )
 
         # --- Step 5: Save files using absolute filesystem path ---
         await self.handle_question_files(files or [], absolute_path, handle_images)
 
         logger.info(
-            f"[QuestionResourceService] Files saved successfully for '{qcreated.title}'"
+            f"[QuestionManager] Files saved successfully for '{qcreated.title}'"
         )
 
         return qcreated
@@ -148,7 +148,7 @@ class QuestionResourceService:
         """
         logger.debug("Starting upload for question_id=%s", question_id)
 
-        question = self.qm.get_question(question_id)
+        question = self.qdb.get_question(question_id)
         if not question:
             logger.warning("Upload failed — question %s not found", question_id)
             raise HTTPException(
@@ -156,7 +156,7 @@ class QuestionResourceService:
             )
 
         # Resolve question directory (relative DB path)
-        relative_path = await self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+        relative_path = await self.qdb.get_question_path(question_id, self.storage_type)  # type: ignore
         if not relative_path:
             raise ValueError("Failed to get question path")
         abs_path = self.storage_manager.get_storage_path(relative_path, relative=False)
@@ -258,7 +258,7 @@ class QuestionResourceService:
         """
         logger.debug("Fetching file list for question_id=%s", question_id)
 
-        question_path = await self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+        question_path = await self.qdb.get_question_path(question_id, self.storage_type)  # type: ignore
 
         files = self.storage_manager.list_file_names(question_path)
 
@@ -271,7 +271,7 @@ class QuestionResourceService:
         self, question_id: str | UUID
     ) -> SuccessFileResponse:
         logger.debug("Fetching filepath list for question_id=%s", question_id)
-        question_path = await self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+        question_path = await self.qdb.get_question_path(question_id, self.storage_type)  # type: ignore
         filepaths = self.storage_manager.list_file_paths(question_path)
         logger.debug("Found %d files for question_id=%s", len(filepaths), question_id)
         return SuccessFileResponse(
@@ -284,7 +284,7 @@ class QuestionResourceService:
         """
         logger.debug("Resolving file '%s' for question_id=%s", filename, question_id)
 
-        question_path = await self.qm.get_question_path(question_id, self.storage_type)  # type: ignore
+        question_path = await self.qdb.get_question_path(question_id, self.storage_type)  # type: ignore
 
         # Direct images to client folder
         if await FileService().is_image(filename):
@@ -309,11 +309,11 @@ class QuestionResourceService:
     async def delete_question(self, qid: str | UUID) -> Dict[str, str]:
         try:
             # Check if question is in database
-            question = self.qm.get_question(qid)
+            question = self.qdb.get_question(qid)
             if not question:
                 raise HTTPException(status_code=404, detail="Question {qid} not found")
 
-            question_path = await self.qm.get_question_path(qid, self.storage_type)  # type: ignore
+            question_path = await self.qdb.get_question_path(qid, self.storage_type)  # type: ignore
             if not question_path:
                 raise ValueError("Failed to get question path")
             storage = self.storage_manager.get_storage_path(
@@ -321,7 +321,7 @@ class QuestionResourceService:
             )
 
             # First delete from database
-            await self.qm.delete_question(qid)
+            await self.qdb.delete_question(qid)
             self.storage_manager.delete_storage(storage)
             return {"status": "ok", "detail": "Deleted Question"}
         except HTTPException:
@@ -415,7 +415,7 @@ class QuestionResourceService:
 
         try:
             # 1. Create the question DB entry
-            created_question = await self.qm.create_question(question_data)
+            created_question = await self.qdb.create_question(question_data)
 
             # Resolve the original absolute path from whatever format is passed in
             abs_original_path = Path(
@@ -451,12 +451,12 @@ class QuestionResourceService:
             )
 
             # Save the updated path into the question's DB record
-            self.qm.set_question_path(
+            self.qdb.set_question_path(
                 created_question.id, relative_storage_path, self.storage_type  # type: ignore
             )
 
             # 5. Load full question metadata from DB to write to disk
-            question_metadata = await self.qm.get_question_data(created_question.id)
+            question_metadata = await self.qdb.get_question_data(created_question.id)
 
             # Write it to info2.json inside the renamed folder
             metadata_path = (Path(absolute_storage_path) / "info2.json").resolve()
@@ -498,13 +498,13 @@ class QuestionResourceService:
 
 @lru_cache
 def get_question_resource(
-    qm: QuestionDBDependency,
+    qdb: QuestionDBDependency,
     storage: StorageDependency,
     storage_type: StorageTypeDep,
 ):
-    return QuestionResourceService(qm, storage, storage_type)
+    return QuestionManager(qdb, storage, storage_type)
 
 
 QuestionResourceDepencency = Annotated[
-    QuestionResourceService, Depends(get_question_resource)
+    QuestionManager, Depends(get_question_resource)
 ]

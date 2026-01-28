@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlmodel import Session, create_engine
 from src.types import QuestionBase
-from app_test.fixtures.fixture_crud import *
+from app_test.shared.fixtures.fixture_crud import *
 
 from src.core import in_test_ctx, logger, get_settings, initialize_firebase_app
 
@@ -33,7 +33,7 @@ from src.service import (
 
 from src.service.storage.dependecies import get_storage_manager
 from src.service.question_manager.question_manager import (
-    QuestionResourceService,
+    QuestionManager,
     get_question_resource,
 )
 
@@ -182,7 +182,7 @@ def question_resource(
     question_manager,
 ):
     """
-    Provides a configured QuestionResourceService based on the active storage backend.
+    Provides a configured QuestionManager based on the active storage backend.
     """
     if storage_mode == "cloud":
         storage = cloud_storage_service
@@ -191,7 +191,7 @@ def question_resource(
     else:
         raise ValueError(f"Invalid storage type: {storage_mode}")
 
-    return QuestionResourceService(
+    return QuestionManager(
         question_manager,
         storage,
         storage_mode,
