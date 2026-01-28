@@ -1,4 +1,4 @@
-from src.api.core import logger
+from src.core import logger
 
 
 def test_startup_connection(api_client):

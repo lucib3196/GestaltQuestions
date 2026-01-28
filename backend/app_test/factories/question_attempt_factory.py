@@ -1,8 +1,8 @@
 from typing import Tuple
 import pytest
-from src.database.models.question import Question
-from src.database.models.question_attempt import QuestionAttempt
-from src.database.models.users import User
+from src.model.question import Question
+from src.model.question_attempt import QuestionAttempt
+from src.model.users import User
 from .user_factory import make_user
 from .question_factory import make_question
 

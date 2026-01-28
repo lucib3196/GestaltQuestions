@@ -1,6 +1,7 @@
 import pytest
-from src.database.models.question import Question, QuestionData
-from src.api.core.logging import logger
+from src.model.question import Question
+from src.types import QuestionData
+from src.core.logging import logger
 from app_test.mock_data import QUESTION_FULL, ADDITIONAL_METADATA
 from app_test.factories import make_question
 

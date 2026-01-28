@@ -1,5 +1,5 @@
 from app_test.factories import make_submission_attempt, make_question, make_user
-from src.api.core import logger
+from src.core import logger
 import pytest
 from app_test.mock_data.question_submission import SCENARIOS, ATTEMPTS
 

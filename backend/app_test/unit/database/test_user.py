@@ -1,7 +1,7 @@
 import pytest
 
-from src.api.core import logger
-from src.database.models.users import (
+from src.core import logger
+from src.model.users import (
     UserUpdate,
 )
 

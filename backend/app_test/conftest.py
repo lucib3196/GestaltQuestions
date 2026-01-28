@@ -8,14 +8,13 @@ from sqlmodel import Session, create_engine
 
 from app_test.fixtures.fixture_crud import *
 
-from src.api.core import in_test_ctx, logger
-from src.api.core.config import get_settings
-from src.api.core.firebase import initialize_firebase_app
-from src.api.dependencies import get_storage_type
-from src.api.main import get_application
-from src.api.response_models import FileData
+from src.core import in_test_ctx, logger, get_settings, initialize_firebase_app
 
-from src.database import (
+from src.web.dependencies import get_storage_type
+from src.web.main import get_application
+from src.web.response_models import FileData
+
+from src.data import (
     QuestionDB,
     UserDB,
     RoleManager,
@@ -24,16 +23,16 @@ from src.database import (
 )
 
 
-from src.database.config import Base, get_session
+from src.core.database_config import Base, get_session
 
-from src.services import (
+from src.service import (
     FirebaseStorage,
     LocalStorageService,
     StorageService,
 )
 
-from src.services.storage.dependecies import get_storage_manager
-from src.services.question_manager.question_manager import (
+from src.service.storage.dependecies import get_storage_manager
+from src.service.question_manager.question_manager import (
     QuestionResourceService,
     get_question_resource,
 )

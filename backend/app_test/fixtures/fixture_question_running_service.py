@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
-from src.database.models.question import Question
-from src.database import question
+from src.model.question import Question
+from src.data import question
 
 
 

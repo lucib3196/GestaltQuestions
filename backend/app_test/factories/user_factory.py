@@ -1,6 +1,6 @@
 import pytest
-from src.database.models.users import User, UserBase
-from src.database import UserDB
+from src.model.users import User, UserBase
+from src.data import UserDB
 
 @pytest.fixture
 def make_user(user_db: UserDB):

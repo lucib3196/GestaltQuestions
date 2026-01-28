@@ -2,15 +2,12 @@ from typing import Literal
 import pytest
 
 
-from src.api.core import logger
+from src.core import logger
 from src.utils import *
-from src.api.response_models import (
+from src.web.response_models import (
     SuccessFileResponse,
     SuccessDataResponse,
 )
-
-
-
 
 
 # --- Domain-Specific Payloads ---

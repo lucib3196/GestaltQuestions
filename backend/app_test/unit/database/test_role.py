@@ -1,6 +1,6 @@
 import pytest
-from src.database.models.users import UserRoles, Role
-from src.api.core import logger
+from src.model.users import UserRoles, Role
+from src.core import logger
 
 @pytest.mark.asyncio
 async def test_create_role(role_manager):
