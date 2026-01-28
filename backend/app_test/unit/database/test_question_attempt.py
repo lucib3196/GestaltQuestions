@@ -154,6 +154,6 @@ async def test_student_question_scenarios(
     # retrieve all the information
     for u in created_users:
         for q in created_questions:
-            a = qa_attempt_db.get_attempt_by_user_and_question(q.id, u.id)
+            a = await qa_attempt_db.get_attempt_by_user_and_question(q.id, u.id)
             logger.debug("This is the users attempt for the question  % s", a)
             assert a is not None, f"No attempt found for user={u.id} question={q.id}"
