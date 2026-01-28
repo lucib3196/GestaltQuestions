@@ -1,79 +1,144 @@
-# --- Standard Library ---
 from typing import Any, Dict, Sequence
-from uuid import UUID
 
-# --- Third-Party ---
-from sqlmodel import desc, select
+from sqlalchemy import desc
+from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import select
 
-# --- Internal ---
+from src.api.core import logger
 from src.database import SessionDep
+from src.database.models.question_attempt import QuestionAttempt
 from src.utils import convert_uuid
 
-from ..models.question_attempt import QuestionAttempt
+from . import ID
 
 
-ID = str | UUID
+class QuestionAttemptDB:
+    def __init__(self, session: SessionDep):
+        self.session = session
 
-
-def create_attempt(
-    question_id: ID,
-    user_id: ID,
-    quiz_data: Dict[str, Any],
-    submitted_answer: Dict[str, Any],
-    session: SessionDep,
-) -> QuestionAttempt:
-    attempt = QuestionAttempt(
-        question_id=convert_uuid(question_id),
-        user_id=convert_uuid(user_id),
-        quiz_data=quiz_data,
-        submitted_answer=submitted_answer,
-        is_correct=False,
-    )
-    session.add(attempt)
-    session.commit()
-    session.refresh(attempt)
-    return attempt
-
-
-def get_attempt_by_user(user_id: ID, session: SessionDep) -> Sequence[QuestionAttempt]:
-    """Retrieves all the submission attempts of a user. This is a general one
-
-    Args:
-        user_id (ID): The ID of the user
-        session (SessionDep): The database session
-
-    Returns:
-        _type_: _description_
-    """
-    stmt = select(QuestionAttempt).where(user_id == convert_uuid(user_id))
-    results = session.exec(stmt).all()
-    return results
-
-
-def get_attemps_by_question(
-    question_id: ID, session: SessionDep
-) -> Sequence[QuestionAttempt]:
-    stmt = select(QuestionAttempt).where(question_id == convert_uuid(question_id))
-    results = session.exec(stmt).all()
-    return results
-
-
-def get_attempt_by_user_and_question(
-    question_id: ID, user_id: ID, session: SessionDep
-) -> Sequence[QuestionAttempt]:
-    stmt = select(QuestionAttempt).where(
-        question_id == convert_uuid(question_id) and user_id == convert_uuid(user_id)
-    )
-    return session.exec(stmt).all()
-
-
-def get_latest_attemp():
-    stmt = (
-        select(QuestionAttempt)
-        .where(
-            question_id == convert_uuid(question_id)
-            and user_id == convert_uuid(user_id)
+    async def create_attempt(
+        self,
+        question_id: ID,
+        user_id: ID,
+        quiz_data: Dict[str, Any],
+        submitted_answer: Dict[str, Any],
+    ) -> QuestionAttempt:
+        attempt = QuestionAttempt(
+            question_id=convert_uuid(question_id),
+            user_id=convert_uuid(user_id),
+            quiz_data=quiz_data,
+            submitted_answer=submitted_answer,
+            is_correct=False,
         )
-        .order_by(desc(QuestionAttempt.attemption_time))
-    )
-    return session.exec(stmt).all()
+
+        try:
+            self.session.add(attempt)
+            self.session.commit()
+            self.session.refresh(attempt)
+
+            logger.debug(
+                "[DB] Created question attempt | question_id=%s user_id=%s attempt_id=%s",
+                attempt.question_id,
+                attempt.user_id,
+                attempt.id,
+            )
+
+            return attempt
+
+        except SQLAlchemyError as e:
+            self.session.rollback()
+
+            logger.exception(
+                "[DB] Failed to create question attempt | question_id=%s user_id=%s",
+                question_id,
+                user_id,
+            )
+
+            raise RuntimeError("Failed to create question attempt") from e
+
+    async def get_attempts_by_user(self, user_id: ID) -> Sequence[QuestionAttempt]:
+        try:
+            stmt = select(QuestionAttempt).where(
+                QuestionAttempt.user_id == convert_uuid(user_id)
+            )
+            results = self.session.exec(stmt).all()
+
+            logger.debug(
+                "[DB] Retrieved %d attempts for user | user_id=%s",
+                len(results),
+                user_id,
+            )
+
+            return results
+
+        except SQLAlchemyError as e:
+            self.session.rollback()
+
+            logger.exception(
+                "[DB] Failed to retrieve attempts for user | user_id=%s",
+                user_id,
+            )
+
+            raise RuntimeError("Failed to retrieve attempts for user") from e
+
+    async def get_attempts_by_question(
+        self, question_id: ID
+    ) -> Sequence[QuestionAttempt]:
+        try:
+            stmt = select(QuestionAttempt).where(
+                QuestionAttempt.question_id == convert_uuid(question_id)
+            )
+            results = self.session.exec(stmt).all()
+
+            logger.debug(
+                "[DB] Retrieved %d attempts for question | question_id=%s",
+                len(results),
+                question_id,
+            )
+
+            return results
+
+        except SQLAlchemyError as e:
+            self.session.rollback()
+
+            logger.exception(
+                "[DB] Failed to retrieve attempts for question | question_id=%s",
+                question_id,
+            )
+
+            raise RuntimeError("Failed to retrieve attempts for question") from e
+
+    async def get_latest_attempt(
+        self, question_id: ID, user_id: ID
+    ) -> QuestionAttempt | None:
+        try:
+            stmt = (
+                select(QuestionAttempt)
+                .where(
+                    QuestionAttempt.question_id == convert_uuid(question_id),
+                    QuestionAttempt.user_id == convert_uuid(user_id),
+                )
+                .order_by(desc(QuestionAttempt.attemption_time))  # type: ignore
+            )
+
+            attempt = self.session.exec(stmt).first()
+
+            logger.debug(
+                "[DB] Retrieved latest attempt | question_id=%s user_id=%s found=%s",
+                question_id,
+                user_id,
+                attempt is not None,
+            )
+
+            return attempt
+
+        except SQLAlchemyError as e:
+            self.session.rollback()
+
+            logger.exception(
+                "[DB] Failed to retrieve latest attempt | question_id=%s user_id=%s",
+                question_id,
+                user_id,
+            )
+
+            raise RuntimeError("Failed to retrieve latest attempt") from e
