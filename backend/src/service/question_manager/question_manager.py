@@ -8,7 +8,7 @@ from fastapi import Depends, HTTPException
 from starlette import status
 
 from src.core import logger
-from src.data import QuestionDBDependency
+from src.data import QuestionDBDependency, QuestionDB
 from src.model.question import Question
 from src.service import StorageService, StorageDependency
 from src.service.file_service import FileService
@@ -19,7 +19,7 @@ from src.types import (
     SuccessFileResponse,
 )
 from src.utils import safe_dir_name, to_serializable
-from src.web.dependencies import  StorageTypeDep
+from src.web.dependencies import StorageTypeDep
 from src.types import STORAGE_TYPE
 
 
@@ -28,7 +28,7 @@ class QuestionManager:
 
     def __init__(
         self,
-        qdb: QuestionDBDependency,
+        qdb: QuestionDB,
         storage_manager: StorageService,
         STORAGE_TYPE: STORAGE_TYPE,
         image_location="clientFiles",

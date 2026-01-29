@@ -43,3 +43,5 @@ def get_firebase_user_from_token(
 
 
 FireBaseToken = Annotated[dict, Depends(get_firebase_user_from_token)]
+
+
