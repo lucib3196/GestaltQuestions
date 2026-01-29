@@ -95,12 +95,6 @@ def question_manager(
     )
 
 
-@asynccontextmanager
-async def on_startup_test(app: FastAPI):
-    """Async startup context for tests (skips DB initialization)."""
-    yield
-
-
 # -----------------------------
 # Database Fixtures
 # -----------------------------
@@ -137,12 +131,6 @@ def _clean_db(db_session, test_engine):
 # =========================================
 # API Fixtures
 # =========================================
-@pytest.fixture(scope="session")
-def app_instance():
-    """Create the FastAPI app once for all tests."""
-    app = get_application()
-    app.router.lifespan_context = on_startup_test
-    return app
 
 
 @pytest.fixture(scope="function", params=["local", "cloud"])
@@ -165,43 +153,6 @@ def active_storage_backend(
     if storage_mode == "local":
         return local_storage
     raise ValueError(f"Invalid storage type: {storage_mode}")
-
-
-@pytest.fixture(scope="function")
-def api_client(
-    db_session,
-    question_manager,
-    active_storage_backend,
-    storage_mode,
-):
-    """
-    Provides a FastAPI TestClient with dependency overrides for DB, storage,
-    question manager, and resource service.
-    """
-    app = get_application()
-    app.router.lifespan_context = on_startup_test
-
-    # --- Dependency overrides ---
-    def override_get_db():
-        yield db_session
-
-    async def override_get_question_manager():
-        yield question_manager
-
-    async def override_get_storage():
-        yield active_storage_backend
-
-    async def override_storage_mode():
-        yield storage_mode
-
-    app.dependency_overrides[get_session] = override_get_db
-    app.dependency_overrides[get_question_manager] = override_get_question_manager
-    app.dependency_overrides[get_storage_manager] = override_get_storage
-    app.dependency_overrides[get_storage_type] = override_storage_mode
-
-    # --- Start test client ---
-    with TestClient(app, raise_server_exceptions=True) as client:
-        yield client
 
 
 # ---------------------------------------------------------------------------
