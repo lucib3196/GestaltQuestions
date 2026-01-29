@@ -126,7 +126,7 @@ def _clean_db(db_session, test_engine):
 
 
 @pytest.fixture(scope="function", params=["local", "cloud"])
-def storage_mode(request):
+def storage_mode(request) -> Literal["local", "cloud"]:
     """
     Controls whether tests run against local or cloud-backed storage.
     """
@@ -158,19 +158,6 @@ def mark_logs_in_test():
     token = in_test_ctx.set(True)
     yield
     in_test_ctx.reset(token)
-
-
-@pytest.fixture
-def question_payload_full_dict():
-    """Full question payload including topics, qtypes, and languages."""
-    return {
-        "title": "SomeTitle",
-        "ai_generated": True,
-        "isAdaptive": True,
-        "topics": ["Topic1", "Topic2"],
-        "qtype": ["Numerical", "Matrix"],
-        "languages": ["Python", "Go", "Rust"],
-    }
 
 
 @pytest.fixture

@@ -1,23 +1,33 @@
 import json
-
+from src.model.question import Question
 import pytest
 from src.core import logger
 
 
+# Test question creation
 @pytest.mark.asyncio
-async def test_create_question(question_manager, question_payload_full_dict):
-    qcreated = await question_manager.create_question(question_payload_full_dict)
+async def test_create_question(question_manager, question_payload):
+    qcreated = await question_manager.create_question(question_payload)
     assert qcreated
+    assert isinstance(qcreated, Question)
 
+@pytest.mark.asyncio
+async def test_get_question_path(question_manager, question_payload,storage_mode):
+    q = await question_manager.create_question(question_payload)
+    path = await question_manager.get_question_path(q.id)
+    if storage_mode == "local":
+        path = "questions/{}"
 
+# Test path operations
+@pytest.mark.asyncio
 @pytest.mark.asyncio
 async def test_create_question_with_files(
     question_manager,
-    question_payload_full_dict,
+    question_payload,
     question_file_payload,
 ):
     qcreated = await question_manager.create_question(
-        question_payload_full_dict,
+        question_payload,
         files=question_file_payload,
     )
     assert qcreated
@@ -43,11 +53,11 @@ async def test_handle_question_files(
 @pytest.mark.asyncio
 async def test_get_question_files(
     question_manager,
-    question_payload_full_dict,
+    question_payload,
     question_file_payload,
 ):
     qcreated = await question_manager.create_question(
-        question_payload_full_dict,
+        question_payload,
         files=question_file_payload,
     )
     logger.info("This is the created question %s", qcreated)
@@ -60,11 +70,11 @@ async def test_get_question_files(
 @pytest.mark.asyncio
 async def test_get_question_file(
     question_manager,
-    question_payload_full_dict,
+    question_payload,
     question_file_payload,
 ):
     qcreated = await question_manager.create_question(
-        question_payload_full_dict,
+        question_payload,
         files=question_file_payload,
     )
 
@@ -79,11 +89,11 @@ async def test_get_question_file(
 @pytest.mark.asyncio
 async def test_delete_file(
     question_manager,
-    question_payload_full_dict,
+    question_payload,
     question_file_payload,
 ):
     qcreated = await question_manager.create_question(
-        question_payload_full_dict,
+        question_payload,
         files=question_file_payload,
     )
 
@@ -96,11 +106,11 @@ async def test_delete_file(
 @pytest.mark.asyncio
 async def test_read_file(
     question_manager,
-    question_payload_full_dict,
+    question_payload,
     question_file_payload,
 ):
     qcreated = await question_manager.create_question(
-        question_payload_full_dict,
+        question_payload,
         files=question_file_payload,
     )
 

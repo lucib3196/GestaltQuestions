@@ -31,8 +31,6 @@ def user_db(db_session) -> UserDB:
     return UserDB(db_session)
 
 
-
-
 @pytest.fixture
 def institution_db(db_session) -> InstitutionDB:
     return InstitutionDB(db_session)

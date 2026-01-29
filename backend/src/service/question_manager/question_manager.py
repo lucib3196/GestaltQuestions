@@ -60,8 +60,8 @@ class QuestionManager:
 
     async def set_question_path(
         self,
-        path: str | Path | None,
         qid: ID,
+        path: str | Path | None = None,
     ) -> Tuple[str | Path, str | Path]:
 
         q = await self.qdb.get_question(qid)
@@ -125,34 +125,10 @@ class QuestionManager:
         qcreated = await self.qdb.create_question(question_data)
         logger.debug(f"[QuestionManager] DB entry created (ID={qcreated.id})")
 
-        # --- Step 2: Build folder name ---
-        path_name = safe_dir_name(f"{qcreated.title}_{str(qcreated.id)[:8]}")
-
-        # StorageManager creates actual folder and returns the path string or Path
-        path = self.storage_manager.create_storage_path(path_name)
-
-        # --- Step 3: Derive relative + absolute paths ---
-        relative_path = self.storage_manager.get_storage_path(path, relative=True)
-        absolute_path = self.storage_manager.get_storage_path(path, relative=False)
-
-        logger.info(
-            f"[QuestionManager] Paths ready — relative='{relative_path}', absolute='{absolute_path}'"
-        )
-
-        # --- Step 4: Always store relative path in the DB ---
-        await self.qdb.set_question_path(
-            qcreated.id,
-            self.STORAGE_TYPE,
-            relative_path,
-        )
-        self.qdb.session.commit()
-
-        logger.info(
-            f"[QuestionManager] Stored relative path '{relative_path}' in DB for question {qcreated.id}"
-        )
+        _, abs_path = await self.set_question_path(qcreated.id)
 
         # --- Step 5: Save files using absolute filesystem path ---
-        await self.handle_question_files(files or [], absolute_path, handle_images)
+        await self.handle_question_files(files or [], abs_path, handle_images)
 
         logger.info(
             f"[QuestionManager] Files saved successfully for '{qcreated.title}'"
