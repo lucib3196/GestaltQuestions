@@ -28,7 +28,7 @@ from src.types import (
 )
 from src.model.question import Question
 from src.service import FileService
-from src.service.storage.dependecies import StorageDependency
+from src.web.dependencies import StorageDependency
 from src.utils import encode_image
 from src.web.dependencies import QuestionManagerDependency
 

@@ -15,8 +15,7 @@ from src.types import UnsyncedQuestion, SyncMetrics, FolderCheckMetrics, Questio
 from src.model.question import Question
 
 from src.utils import to_serializable
-from src.service.storage.dependecies import get_storage_manager, StorageService
-from src.service.question_manager.question_manager import QuestionManager
+from src.service import StorageService, QuestionManager
 
 
 class QuestionSync:
@@ -257,7 +256,7 @@ class QuestionSync:
 
 # For testing
 async def main():
-    from src.web.dependencies import get_question_manager
+    from src.web.dependencies import get_question_manager, get_storage_manager
 
     print("Running")
 

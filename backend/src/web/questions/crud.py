@@ -5,11 +5,15 @@ from typing import Sequence
 
 # --- Internal ---
 from src.core import logger
-from src.service.storage.dependecies import StorageDependency
 from src.model.question import Question
 from src.types import QuestionData
 from src.utils import safe_dir_name
-from src.web.dependencies import StorageTypeDep,QuestionDBDependency, QuestionManagerDependency
+from src.web.dependencies import (
+    StorageTypeDep,
+    QuestionDBDependency,
+    QuestionManagerDependency,
+    StorageDependency,
+)
 from src.types import ID
 
 
