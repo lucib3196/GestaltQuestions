@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import delete, select
 
 from src.core import SessionDep, logger
+from sqlmodel import Session
 from src.data import generic as gdb
 from src.model.question import (
     Language,
@@ -23,7 +24,7 @@ from src.types import STORAGE_TYPE, ID
 
 
 class QuestionDB:
-    def __init__(self, session: SessionDep):
+    def __init__(self, session: Session):
         self.session = session
         self.metadata_rel = ["topics", "languages", "qtypes"]
         self.relationship_map = {
@@ -274,8 +275,3 @@ class QuestionDB:
             raise Exception(f"Question is not type QuestionData Validation Error {e}")
 
 
-def get_question_database(session: SessionDep) -> QuestionDB:
-    return QuestionDB(session)
-
-
-QuestionDBDependency = Annotated[QuestionDB, Depends(get_question_database)]

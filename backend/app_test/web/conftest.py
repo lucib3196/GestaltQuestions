@@ -7,11 +7,10 @@ from fastapi.testclient import TestClient
 
 from src.main import get_application
 from src.service import (
-    get_question_manager,
     get_storage_manager,
 )
 from src.types import FileData
-from src.web.dependencies import get_storage_type
+from src.web.dependencies import get_storage_type, get_question_manager
 from src.core import get_session
 
 

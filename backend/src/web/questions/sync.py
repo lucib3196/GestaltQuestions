@@ -3,7 +3,7 @@ from typing import List, Sequence
 from fastapi import HTTPException
 from fastapi.routing import APIRouter
 
-from src.service.question_manager.question_manager import QuestionManagerDependency
+from src.web.dependencies import QuestionManagerDependency
 from src.service.storage.dependecies import StorageDependency
 from src.types import UnsyncedQuestion, SyncResponse, FolderCheckMetrics
 from src.service.question_sync.sync import QuestionSync

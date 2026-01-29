@@ -1,9 +1,6 @@
-from contextlib import asynccontextmanager
 from typing import List
 
 import pytest
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
 from sqlmodel import Session, create_engine
 
 from app_test.shared.fixtures.fixture_crud import *
@@ -13,22 +10,17 @@ from src.core import (
     in_test_ctx,
     initialize_firebase_app,
     logger,
-    get_session,
     Base,
 )
-from src.main import get_application
 from src.service import (
     FirebaseStorage,
     LocalStorageService,
     StorageService,
-    get_storage_manager,
-    get_question_manager,
     QuestionManager,
 )
 from src.data import QuestionDB
 from src.service import QuestionManager
 from src.types import FileData, QuestionBase
-from src.web.dependencies import get_storage_type
 
 
 settings = get_settings()
