@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 from sqlmodel import Session, create_engine
 
@@ -20,7 +18,6 @@ from src.service import (
 )
 from src.data import QuestionDB
 from src.service import QuestionManager
-from src.types import FileData, QuestionBase
 
 
 settings = get_settings()
@@ -158,51 +155,3 @@ def mark_logs_in_test():
     token = in_test_ctx.set(True)
     yield
     in_test_ctx.reset(token)
-
-
-@pytest.fixture
-def file_data_payload() -> List[FileData]:
-    """Provide a list of FileData objects with string, dict, and binary content."""
-    text_content = "Hello World"
-    dict_content = {"key": "value", "number": 123}
-    binary_content = b"\x00\x01\x02\x03"
-
-    return [
-        FileData(filename="Test.txt", content=text_content),
-        FileData(filename="Config.json", content=dict_content),
-        FileData(filename="Binary.bin", content=binary_content),
-    ]
-
-
-@pytest.fixture
-def question_file_payload() -> List[FileData]:
-    files_data = [
-        ("question.html", "Some question text"),
-        ("solution.html", "Some solution"),
-        ("server.js", "some code content"),
-        ("meta.json", {"content": "some content"}),
-    ]
-    return [FileData(filename=f[0], content=f[1]) for f in files_data]
-
-
-@pytest.fixture
-def question_additional_metadata():
-    return {
-        "topics": ["Mechanics", "Statics"],
-        "languages": ["python", "javascript"],
-        "qtype": ["numeric"],
-    }
-
-
-@pytest.fixture
-def question_payload():
-    return {
-        "title": "Sample Question",
-        "ai_generated": True,
-        "isAdaptive": False,
-    }
-
-
-@pytest.fixture
-def question_payload_2():
-    return QuestionBase(title="Question 2", ai_generated=False, isAdaptive=True)

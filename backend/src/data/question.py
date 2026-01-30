@@ -200,7 +200,7 @@ class QuestionDB:
             raise ValueError(f"[DB] failed todelete all questions an error occured {e}")
 
     # Setter and Getters
-    async def get_question_path(self, id: ID, STORAGE_TYPE: STORAGE_TYPE) -> str:
+    async def get_question_path(self, id: ID, STORAGE_TYPE: STORAGE_TYPE) -> str | None:
         question = await self.get_question(id)
         if not question:
             raise ValueError("Question not found")
@@ -210,9 +210,6 @@ class QuestionDB:
             path = question.local_path
         else:
             raise ValueError(f"Invalid storage type: {STORAGE_TYPE}")
-
-        if path is None:
-            raise ValueError("[DB] Failed to get storage path")
         return path
 
     async def set_question_path(
@@ -273,5 +270,3 @@ class QuestionDB:
             return question
         except ValidationError as e:
             raise Exception(f"Question is not type QuestionData Validation Error {e}")
-
-

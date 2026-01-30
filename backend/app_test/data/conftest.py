@@ -39,3 +39,9 @@ def institution_db(db_session) -> InstitutionDB:
 @pytest.fixture
 def qa_attempt_db(db_session) -> QuestionAttemptDB:
     return QuestionAttemptDB(db_session)
+
+
+@pytest.fixture
+def question_payload():
+    """Full question payload including topics, qtypes, and languages."""
+    return QUESTIONS[0]
