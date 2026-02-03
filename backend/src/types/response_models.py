@@ -17,25 +17,11 @@ class SuccessDataResponse(SuccessfulResponse):
     data: Union[str, bytes, None] = None
 
 
-class SuccessFileResponse(SuccessfulResponse):
-    """Success response with one or more file objects."""
-
-    filedata: List[FileData] = Field(
-        default_factory=list,
-        description="List of file objects or file strings",
-    )
-    filenames: List[str] | List[Path] = Field(
-        default_factory=list,
-        description="List of relative file paths",
-    )
-
-    class Config:
-        populate_by_name = True  # allows using both aliases & python names
-
-
 class Response(BaseModel):
     status: int
     detail: str
 
+
 class SuccessFileServiceResponse(SuccessfulResponse):
     path: str | Path
+
