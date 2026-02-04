@@ -2,6 +2,7 @@ from src.utils import validate_response_payload
 from src.model.question import Question
 from src.types import QuestionData
 from src.core import logger
+from uuid import uuid4
 import pytest
 from app_test.shared.mock_data import QUESTION_FIELDS
 from app_test.shared.mock_data import QUESTIONS_FULL
@@ -56,6 +57,18 @@ def test_get_question(make_question_web, payload, make_retrieve_question):
     assert qretrieved
 
 
+def test_get_question_bad_id(api_client):
+    bad_id = uuid4()
+    r = api_client.get(f"/questions/{bad_id}")
+    assert r.status_code == 400
+
+
+def test_get_question_data_all_not_found(api_client):
+    bad_id = uuid4()
+    r = api_client.get(f"/questions/{bad_id}/all_data")
+    assert r.status_code == 400
+
+
 @pytest.mark.parametrize("payload", [q for q in QUESTIONS_FULL])
 def test_get_question_all_data(make_question_web, payload, make_retrieve_question_full):
     resp = make_question_web(**payload)
@@ -81,27 +94,7 @@ def test_qet_all_questions(api_client, make_question_web):
     logger.info("these are the questions %s", questions)
 
 
-# def test_get_all_questions_metadata(api_client, create_question_and_return_question):
-#     question_id = create_question_and_return_question.id
-#     logger.info("This is teh question id %s", question_id)
-#     response = api_client.get(f"/questions/{question_id}/all_data")
-#     question_data = response.json()
-#     logger.info("This is the response from the get all %s", question_data)
-#     assert response.status_code == 200
 
-#     assert QuestionData.model_validate(question_data)
-
-
-# def test_get_question_bad_id(api_client):
-#     bad_id = uuid4()
-#     r = api_client.get(f"/questions/{bad_id}")
-#     assert r.status_code == 404
-
-
-# def test_get_question_data_all_not_found(api_client):
-#     bad_id = uuid4()
-#     r = api_client.get(f"/questions/{bad_id}/all_data")
-#     assert r.status_code == 500
 
 
 # # Deletion Test
