@@ -32,6 +32,14 @@ def make_bad_question_web(api_client):
 def make_retrieve_question(api_client):
     def make(qid: str | UUID):
         return api_client.get(f"/questions/{qid}")
+
+    return make
+
+
+@pytest.fixture
+def make_delete_question(api_client):
+    def make(qid: str | UUID):
+        return api_client.delete(f"/questions/{qid}")
     return make
 
 
@@ -39,4 +47,5 @@ def make_retrieve_question(api_client):
 def make_retrieve_question_full(api_client):
     def make(qid: str | UUID):
         return api_client.get(f"/questions/{qid}/all_data")
+
     return make

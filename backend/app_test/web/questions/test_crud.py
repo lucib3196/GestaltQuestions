@@ -11,6 +11,7 @@ from app_test.shared.factories import (
     make_question_web,
     make_retrieve_question,
     make_retrieve_question_full,
+    make_delete_question,
 )
 
 
@@ -94,39 +95,24 @@ def test_qet_all_questions(api_client, make_question_web):
     logger.info("these are the questions %s", questions)
 
 
+@pytest.mark.parametrize("payload", [q for q in QUESTIONS_FULL])
+def test_delete_question(
+    payload, make_question_web, make_delete_question, make_retrieve_question
+):
+    resp = make_question_web(**payload)
+    qid = Question.model_validate(resp.json()).id
+    dresp = make_delete_question(qid)
+    assert dresp.status_code == 200
+    rresp = make_retrieve_question(qid)
+    assert rresp.status_code == 404
+    assert "not found" in rresp.json()["detail"].lower()
 
 
-
-# # Deletion Test
-# def test_delete_question(api_client, create_question_and_return_question):
-#     qid = create_question_and_return_question.id
-#     response = api_client.delete(f"/questions/{qid}")
-#     logger.debug(f"This is the response {response.json()}")
-#     assert response.status_code == 200
-#     assert "Deleted".lower() in response.json()["detail"].lower()
-
-#     # Try getting the data
-#     response = api_client.get(f"/{qid}")
-#     assert response.status_code == 404
-#     assert "not found" in response.json()["detail"].lower()
-
-
-# def test_delete_question_not_valid_id(api_client):
-#     bad_id = uuid4()
-#     response = api_client.delete(f"/questions/{bad_id}")
-#     assert response.status_code == 404
-#     assert "not exist" in response.json()["detail"]
-
-
-# def test_delete_all(api_client, create_multiple_question_responses):
-#     qpayloads = create_multiple_question_responses
-#     response = api_client.delete("/questions")
-#     assert response.status_code == 200
-#     offset, limit = 0, 100
-#     response = api_client.get(f"/questions/{offset}/{limit}")
-#     retrieved = response.json()
-#     assert isinstance(retrieved, list), "Expected response to be a list"
-#     assert len(retrieved) == 0
+def test_delete_question_not_valid_id(api_client):
+    bad_id = uuid4()
+    response = api_client.delete(f"/questions/{bad_id}")
+    assert response.status_code == 404
+    assert "not exist" in response.json()["detail"]
 
 
 # # Updates
