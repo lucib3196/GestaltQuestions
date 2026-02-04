@@ -11,6 +11,14 @@ from src.types import FileData
 from src.web.dependencies import get_storage_type, get_question_manager,get_storage_manager
 from src.core import get_session
 
+from app_test.shared.mock_data import QUESTION_FULL,QUESTIONS_FULL
+
+@pytest.fixture
+def question_payload():
+    return QUESTION_FULL
+@pytest.fixture
+def multiple_question_payloads():
+    return QUESTION_FULL
 
 @asynccontextmanager
 async def on_startup_test(app: FastAPI):
@@ -83,14 +91,7 @@ def qpayload_bad():
     return {"Data": "Some Content"}
 
 
-@pytest.fixture
-def question_payload():
-    """Minimal question payload with required fields only."""
-    return {
-        "title": "SomeTitle",
-        "ai_generated": True,
-        "isAdaptive": True,
-    }
+
 
 
 @pytest.fixture

@@ -28,3 +28,12 @@ QUESTION_GROUPS = [
         "questions": [{**q, **ADDITIONAL_METADATA} for q in QUESTIONS],
     },
 ]
+
+QUESTION_KEYS = {
+    "title",
+    "ai_generated",
+    "isAdaptive",
+}
+METAKEYS = {"topics", "languages", "qtypes"}
+
+QUESTION_FIELDS = {*QUESTION_KEYS, *METAKEYS}

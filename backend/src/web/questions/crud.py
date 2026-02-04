@@ -31,14 +31,18 @@ async def create_question(
     question: QuestionData,
 ) -> Question:
     try:
+        assert question.title
         qcreated = await qm.create_question(question, files=None)
         return qcreated
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create question {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to create question {e}",
+        )
 
 
 # Retrieving
-@router.get("/{id}")
+@router.get("/{qid}")
 async def get_question(qid: ID, qm: QuestionManagerDependency) -> Question:
     try:
         question = await qm.qdb.get_question(qid)
@@ -52,6 +56,19 @@ async def get_question(qid: ID, qm: QuestionManagerDependency) -> Question:
         raise HTTPException(status_code=400, detail=f"Failed to get question {e}")
 
 
+@router.get("/{id}/all_data")
+async def get_question_all_data(id: ID, qm: QuestionManagerDependency) -> QuestionData:
+    try:
+        question_data = await qm.qdb.get_question_data(id)
+        path = await qm.get_question_path(id, relative=True)
+        if isinstance(path, Path):
+            path = path.as_posix()
+        question_data.question_path = path
+        return question_data
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to retrieve question {e}")
+
+
 @router.get("/{offset:int}/{limit:int}")
 async def get_all_questions(
     qdb: QuestionDBDependency, offset: int = 0, limit: int = 100
@@ -63,19 +80,6 @@ async def get_all_questions(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to get all questions {e}",
         )
-
-
-@router.get("/{id}/all_data")
-async def get_question_all_data(id: ID, qm: QuestionManagerDependency) -> QuestionData:
-    try:
-        question_data = await qm.qdb.get_question_data(id)
-        path = await qm.get_question_path(id, relative=True)
-        if isinstance(path, Path):
-            path = path.as_posix()
-        question_data.question_path = path
-        return question_data
-    except Exception:
-        raise
 
 
 @router.get("/{offset:int}/{limit:int}/all_data")
@@ -146,7 +150,6 @@ async def update_question(
                     detail=f"Storage path missing for question {id}.",
                 )
             new_path = await qm.set_question_path(id)
-
             logger.info(
                 f"Renamed storage path for question {id}: {old_storage_path} → {new_path}"
             )
