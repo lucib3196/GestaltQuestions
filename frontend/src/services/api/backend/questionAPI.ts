@@ -7,9 +7,7 @@ import type {
 import type { SuccessDataResponse } from "../../../types/responseModels";
 import type { FileData } from "../../../types/questionTypes";
 import type {
-  ServerExecutionError,
   ServerRunResponse,
-  ServerRunSuccess,
 } from "../../../types";
 import type { QuizData } from "../../../features/QuestionEngine";
 import { type AxiosResponse } from "axios";
