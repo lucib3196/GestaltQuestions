@@ -4,6 +4,7 @@ import pytest
 from src.core import logger
 from src.utils import safe_dir_name
 from pathlib import Path
+from app_test.shared.mock_data import QUESTIONS_FULL
 
 
 # Test question creation
@@ -30,8 +31,9 @@ async def test_create_question_with_files(
 
 # Test path functionality
 @pytest.mark.asyncio
-async def test_get_question_path(question_manager, question_payload, storage_mode):
-    q = await question_manager.create_question(question_payload)
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
+async def test_get_question_path(question_manager, payload, storage_mode):
+    q = await question_manager.create_question(payload)
     path = await question_manager.get_question_path(q.id)
     logger.info(f"Testing getting path Path:  {path}")
     dir_name = safe_dir_name(f"{q.title}_{str(q.id)[:8]}")
@@ -42,14 +44,16 @@ async def test_get_question_path(question_manager, question_payload, storage_mod
 
 
 @pytest.mark.asyncio
-async def test_does_question_path_exist(question_manager, question_payload):
-    q = await question_manager.create_question(question_payload)
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
+async def test_does_question_path_exist(question_manager, payload):
+    q = await question_manager.create_question(payload)
     assert await question_manager.does_question_path_exist(q.id)
 
 
 @pytest.mark.asyncio
-async def test_set_question_path_override_false(question_manager, question_payload):
-    q = await question_manager.create_question(question_payload)
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
+async def test_set_question_path_override_false(question_manager, payload):
+    q = await question_manager.create_question(payload)
     with pytest.raises(ValueError) as exc_info:
         await question_manager.set_question_path(q.id, path="myNewPath", override=False)
     assert (
@@ -58,8 +62,9 @@ async def test_set_question_path_override_false(question_manager, question_paylo
 
 
 @pytest.mark.asyncio
-async def test_set_question_path(question_manager, question_payload):
-    q = await question_manager.create_question(question_payload)
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
+async def test_set_question_path(question_manager, payload):
+    q = await question_manager.create_question(payload)
     await question_manager.set_question_path(q.id, path="myNewPath", override=True)
     assert (
         await question_manager.get_question_path(q.id, relative=True)
@@ -69,11 +74,12 @@ async def test_set_question_path(question_manager, question_payload):
 
 # Question file test
 @pytest.mark.asyncio
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
 async def test_get_question_file_names(
-    question_manager, question_payload, question_file_payload
+    question_manager, payload, question_file_payload
 ):
     qcreated = await question_manager.create_question(
-        question_payload,
+        payload,
         files=question_file_payload,
     )
     filenames = await question_manager.get_question_file_names(qcreated.id)
@@ -84,13 +90,14 @@ async def test_get_question_file_names(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
 async def test_get_question_filepaths(
     question_manager,
-    question_payload,
+    payload,
     question_file_payload,
 ):
     qcreated = await question_manager.create_question(
-        question_payload,
+        payload,
         files=question_file_payload,
     )
     logger.info("This is the created question %s", qcreated)
@@ -104,13 +111,14 @@ async def test_get_question_filepaths(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
 async def test_get_question_file(
     question_manager,
-    question_payload,
+    payload,
     question_file_payload,
 ):
     qcreated = await question_manager.create_question(
-        question_payload,
+        payload,
         files=question_file_payload,
     )
     for f in question_file_payload:
@@ -123,13 +131,14 @@ async def test_get_question_file(
 
 # Test for reading and writting
 @pytest.mark.asyncio
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
 async def test_read_file(
     question_manager,
-    question_payload,
+    payload,
     question_file_payload,
 ):
     qcreated = await question_manager.create_question(
-        question_payload,
+        payload,
         files=question_file_payload,
     )
 
@@ -143,13 +152,14 @@ async def test_read_file(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
 async def test_update_file(
     question_manager,
-    question_payload,
+    payload,
     question_file_payload,
 ):
     qcreated = await question_manager.create_question(
-        question_payload,
+        payload,
         files=question_file_payload,
     )
     logger.info("This is the file payload", question_file_payload)
@@ -163,13 +173,14 @@ async def test_update_file(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
 async def test_delete_file(
     question_manager,
-    question_payload,
+    payload,
     question_file_payload,
 ):
     qcreated = await question_manager.create_question(
-        question_payload,
+        payload,
         files=question_file_payload,
     )
 

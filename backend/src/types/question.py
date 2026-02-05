@@ -12,6 +12,7 @@ class QuestionBase(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
 
+
 class QRelationshipData(BaseModel):
     topics: Sequence[str] = Field(default_factory=list)
     qtypes: Sequence[str] = Field(default_factory=list)

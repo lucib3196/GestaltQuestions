@@ -51,8 +51,8 @@ export function fetchQuestion() {
         QuestionAPI.getQuestionFile(selectedQuestionID, "question.html"),
         QuestionAPI.getQuestionFile(selectedQuestionID, "solution.html"),
       ]);
-      setQuestionHTML(rawHTMLRes.data);
-      setSolutionHTML(rawSolutionRes.data);
+      setQuestionHTML(rawHTMLRes);
+      setSolutionHTML(rawSolutionRes);
     } catch (error: any) {
       let errorMessage =
         ErrorBase + (error.message ?? "Failed to fetch base html files");

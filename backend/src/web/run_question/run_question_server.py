@@ -1,79 +1,107 @@
-# Standard library
-from pathlib import Path
-from typing import Literal, Sequence
-from uuid import UUID
-import httpx
-from pydantic import ValidationError
 import json
-from starlette import status
-from typing import Dict, Any
-from src.data import UserManagerDependeny
-from src.web.dependencies import FireBaseToken
+from pathlib import Path
+from typing import Any, Dict, Tuple
+from uuid import UUID
 
-# Third-party libraries
-from fastapi import APIRouter, HTTPException
+import httpx
+from fastapi import APIRouter
 
-# Local application imports
 from src.core import logger
-from src.types import QuizData
-from src.web.dependencies import QuestionManagerDependency,SettingDependency
-from pydantic import BaseModel
+from src.data import UserManagerDependeny
+from src.types import (
+    AllowedLanguages,
+    AllowedServer,
+    ID,
+    MappingServer,
+    QuizData,
+    SandboxResponse,
+    ServerExecutionError,
+    ServerRunResponse,
+    ServerRunSuccess,
+)
+from src.web.dependencies import (
+    FireBaseToken,
+    QuestionManagerDependency,
+    SettingDependency,
+)
+
 
 router = APIRouter(prefix="/run_server", tags=["code_running", "questions"])
 
-MAPPING_DB = {"python": "server.py", "javascript": "server.js"}
-MAPPPING_FILENAME = {"python": "server.py", "javascript": "server.js"}
+
+async def get_server_file(
+    qid: ID, qm: QuestionManagerDependency, server_language: AllowedLanguages
+) -> Tuple[AllowedServer, bool]:
+    server_file = MappingServer.get(server_language)
+    question_files = await qm.get_question_file_names(qid)
+    if not server_file:
+        raise ValueError(
+            f"[WEB Run Server]: {server_language} not allowed for execution"
+        )
+    return server_file, server_file in question_files
 
 
-class ExecutionResult(BaseModel):
-    output: str | dict  # final returned value
-    logs: Sequence[str] = []
+async def _validate(res: Any, language: AllowedLanguages) -> ServerRunResponse:
+    # Ensure data is of right type
+    try:
+        raw_data = res.json()
+        data = SandboxResponse.model_validate(raw_data)
+    except Exception as e:
+        raw_data = res.text
+        return ServerExecutionError(
+            error_type="validation",
+            language=language,
+            message=f"[WEB Question Running Failed to validate data Error: {e}",
+        )
+    # Check if the data output is not noen
+    if not data.output:
+        msg = (
+            f"Sandbox executed file success but returned no quiz output. "
+            f"Logs: {data.logs}"
+        )
+        logger.error(msg)
+        return ServerExecutionError(
+            error_type="validation", message=msg, language=language
+        )
+    try:
+        # Try to validate the output and get the quiz data
+        if isinstance(data.output, str):
+            data.output = json.loads(data.output)
+        quiz_data = QuizData.model_validate(data.output)
+        # Append the log to the quiz data
+        quiz_data.logs.extend(data.logs)
+        logger.info(
+            f"QuizData successfully generated for question . "
+            f"Logs count: {len(quiz_data.logs)}"
+        )
+        return ServerRunSuccess(data=quiz_data)
+    except Exception as e:
+        msg = "Failed to get the quiz data Error: {e}"
+        return ServerExecutionError(
+            error_type="validation", language=language, message=msg
+        )
 
 
-@router.post("/{qid}/{server_language}")
+@router.post("/{qid}/{server_language}", response_model=ServerRunResponse)
 async def run_server(
     qid: str | UUID,
-    server_language: Literal["python", "javascript"],
-    qr: QuestionManagerDependency,
+    server_language: AllowedLanguages,
+    qm: QuestionManagerDependency,
     app_settings: SettingDependency,
-) -> QuizData:
+) -> ServerRunResponse:
 
     sandbox_url = app_settings.SANDBOX_URL
-
-    # -----------------------
-    # Validate input language
-    # -----------------------
-    if server_language not in MAPPPING_FILENAME:
-        msg = f"Unsupported server language '{server_language}'. Allowed: {list(MAPPPING_FILENAME.keys())}"
-        logger.error(msg)
-        raise HTTPException(status_code=400, detail=msg)
-
-    server_file = MAPPPING_FILENAME[server_language]
-
-    # -----------------------
-    # Validate server file exists
-    # -----------------------
-    question_files = await qr.list_all_question_files(qid)
-    if server_file not in question_files:
-        msg = (
-            f"Missing server file '{server_file}' for question '{qid}'. "
-            f"Available files: {question_files}"
+    filename, exist = await get_server_file(qid, qm, server_language)
+    if not exist:
+        return ServerExecutionError(
+            error_type="dependency",
+            language=server_language,
+            message=f"[WEB Server]: Failed to execute server. File {server_language} does not exist for question {qid}",
         )
-        logger.error(msg)
-        raise HTTPException(status_code=404, detail=msg)
-
-    # -----------------------
-    # Run file in sandbox
-    # -----------------------
+    # Execute the file
     try:
-        server_path = await qr.get_question_file(qid, server_file)
-        server_content = Path(server_path).read_text()
-
-        logger.info(
-            f"Executing {server_language} server file '{server_file}' "
-            f"for question '{qid}' using sandbox at {sandbox_url}"
-        )
-
+        server_path = await qm.get_question_file(qid, filename)
+        server_content = Path(server_path).read_text(encoding="utf-8")
         async with httpx.AsyncClient() as client:
             generate_endpoint = f"{sandbox_url}/code_runner/generate"
             payload = {
@@ -84,73 +112,16 @@ async def run_server(
             res.raise_for_status()
 
     except httpx.HTTPStatusError as e:
-        logger.error(
+        message = (
             f"Sandbox execution failed for question '{qid}' "
-            f"language='{server_language}' file='{server_file}'"
+            f"language='{server_language}' file='{filename} error: {e.response.text}'"
         )
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e.response.text}"
+        logger.error(message)
+        return ServerExecutionError(
+            error_type="runtime", message=message, language=server_language
         )
-    try:
-        raw_data = res.json()
-    except ValueError:
-        raw_data = res.text
-        logger.warning(
-            f"Sandbox returned non-JSON response for question '{qid}': {raw_data}"
-        )
-
-    try:
-        data = ExecutionResult.model_validate(raw_data)
-    except ValidationError as e:
-        logger.error("ExecutionResult validation failed", extra={"response": raw_data})
-        raise HTTPException(
-            status_code=500,
-            detail=f"Execution result was malformed: {e}",
-        )
-
-    if not data.output:
-        msg = (
-            f"Sandbox executed file '{server_file}' but returned no quiz output. "
-            f"Logs: {data.logs}"
-        )
-        logger.error(msg)
-        raise HTTPException(status_code=500, detail=msg)
-
-    # -----------------------
-    # Build QuizData + attach logs
-    # -----------------------
-
-    # Ensure that the output data is a dict or convert
-    if isinstance(data.output, str):
-        try:
-            data.output = json.loads(data.output)
-        except json.JSONDecodeError:
-            logger.error(f"Output string was not valid JSON: {data.output}")
-            raise HTTPException(
-                status_code=500,
-                detail="Sandbox returned output as a string that could not be parsed into JSON.",
-            )
-
-    try:
-        quiz_data = QuizData.model_validate(data.output)
-        quiz_data.logs.extend(data.logs)
-
-    except ValidationError as e:
-        logger.error(
-            f"QuizData validation failed for question '{qid}'. Raw output:",
-            extra={"output": data.output},
-        )
-        raise HTTPException(
-            status_code=400,
-            detail=f"Quiz data is not in the expected format: {e}",
-        )
-
-    logger.info(
-        f"QuizData successfully generated for question '{qid}'. "
-        f"Logs count: {len(quiz_data.logs)}"
-    )
-
-    return quiz_data
+    # Validate the data and return the response
+    return await _validate(res, server_language)
 
 
 @router.post("/submit")

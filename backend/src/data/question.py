@@ -106,6 +106,7 @@ class QuestionDB:
         qid: ID,
         update: QuestionData | dict,
     ) -> QuestionData:
+
         q = await self.get_question(qid)
         if not q:
             raise ValueError("[DB] Question does not exist")
@@ -267,12 +268,17 @@ class QuestionDB:
 
     def validate_data(self, question: QuestionData | dict) -> QuestionData:
         try:
-            if isinstance(question, dict):
-                question = QuestionData.model_validate(question)
-
-            if hasattr(question, "id") and getattr(question, "id"):
+            data = (
+                question.model_dump(exclude={"question_path"}, exclude_none=True)
+                if isinstance(question, QuestionData)
+                else question
+            )
+            question = QuestionData.model_validate(data)
+            if question.id:
                 logger.info("[QDB] Question ID is in data converting")
                 question.id = convert_uuid(question.id)
             return question
         except ValidationError as e:
-            raise Exception(f"Question is not type QuestionData Validation Error {e}")
+            raise ValueError(
+                f"Question is not type QuestionData. Validation error: {e}"
+            ) from e

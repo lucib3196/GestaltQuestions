@@ -14,3 +14,8 @@ def pick(obj: Any, *keys: str, default: Any = None) -> Any:
             if hasattr(obj, k):
                 return getattr(obj, k)
     return default
+
+
+def validate_response_payload(payload: dict, created: dict, key: str) -> bool:
+    """Compare a given key in the request payload and response payload."""
+    return pick(payload, key) == pick(created, key)

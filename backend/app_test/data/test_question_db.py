@@ -2,7 +2,7 @@ import pytest
 from src.model.question import Question
 from src.types import QuestionData
 from src.core.logging import logger
-from app_test.shared.mock_data import QUESTION_FULL, ADDITIONAL_METADATA
+from app_test.shared.mock_data import QUESTION_FULL,QUESTIONS_FULL, ADDITIONAL_METADATA
 from app_test.shared.factories import make_question
 
 # Fixtures
@@ -42,8 +42,9 @@ async def test_create_question_with_relationship_data(
 
 
 @pytest.mark.asyncio
-async def test_get_question(question_db, question_payload):
-    qcreated = await question_db.create_question(question_payload)
+@pytest.mark.parametrize("payload",QUESTIONS_FULL)
+async def test_get_question(question_db, payload):
+    qcreated = await question_db.create_question(payload)
     assert qcreated == await question_db.get_question(qcreated.id)
 
 
