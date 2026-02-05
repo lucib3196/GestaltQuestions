@@ -191,18 +191,17 @@ async def test_delete_file(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("payload", QUESTIONS_FULL)
 async def test_handle_question_files(
     question_manager,
-    payload,
+    question_file_payload,
 ):
     storage_path = "qs_test"
 
     data = await question_manager.handle_question_files(
-        payload,
+        question_file_payload,
         storage_path,
         True,
     )
 
     assert data["client_files"] == []
-    assert len(data["other_files"]) == len(payload)
+    assert len(data["other_files"]) == len(question_file_payload)
