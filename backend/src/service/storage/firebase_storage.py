@@ -85,6 +85,17 @@ class FirebaseStorage(StorageService):
         blob.upload_from_string("")
         return str(blob.name)
 
+    def copy_storage(self, old: str | Path, new: str | Path) -> str:
+        old = self.get_storage_path(old, relative=False)
+        new = self.get_storage_path(new, relative=True)
+
+        old_blob = self.bucket.get_blob(old)
+        new_blob = self.bucket.copy_blob(old_blob, self.bucket, new)
+        assert old_blob
+        old_blob.delete()
+        logger.info(f"[FirebaseStorage] Copied {old} → {new}")
+        return str(new_blob.name)
+
     def ensure_storage_path(self, target: str | Path) -> str:
         if not self.does_storage_path_exist(target):
             logger.info("Storage Path does not exist creating one ")
@@ -104,7 +115,7 @@ class FirebaseStorage(StorageService):
         new_path = self.get_storage_path(new, relative=False)
 
         old_blob = self.bucket.get_blob(old_path)
-        logger.info(f"This is the old blob {old_path}, {old_blob}")
+        logger.debug(f"This is the old blob {old_path}, {old_blob}")
         # Copy the blob to the new location
         new_blob = self.bucket.copy_blob(old_blob, self.bucket, new_path)
         # Delete the original blob
