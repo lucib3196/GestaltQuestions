@@ -1,13 +1,9 @@
-# --- Standard Library ---
+
 from pathlib import Path
 from typing import IO, List, Optional
 import json
-
-# --- Third-Party ---
 from firebase_admin import storage
 from google.cloud.storage.blob import Blob
-
-# --- Local Modules ---
 from src.core.logging import logger
 from .base import StorageService
 from src.service.file_service.file_service import FileService

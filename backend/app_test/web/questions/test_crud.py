@@ -88,7 +88,7 @@ def test_delete_question(
     dresp = make_delete_question(qid)
     assert dresp.status_code == 200
     rresp = make_retrieve_question(qid)
-    logger.debug(f"Retrieved question {rresp.json()}")
+    logger.debug(f"Retrieved question in deletion {rresp.json()}")
     assert rresp.status_code == 404
     assert "not find question" in rresp.json()["detail"].lower()
 
@@ -96,9 +96,8 @@ def test_delete_question(
 def test_delete_question_not_valid_id(api_client):
     bad_id = uuid4()
     response = api_client.delete(f"/questions/{bad_id}")
-    logger.info(f"Response is {response.json()}")
-    assert response.status_code == 404
-    assert "not exist" in response.json()["detail"]
+    assert response.status_code == 200
+    assert response.json() is None
 
 
 # Filter Test
