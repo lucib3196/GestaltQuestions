@@ -13,7 +13,7 @@ from src.web.dependencies import (
 )
 
 router = APIRouter(
-    prefix="/questions/download/",
+    prefix="/questions/download",
     tags=["questions", "download"],
 )
 

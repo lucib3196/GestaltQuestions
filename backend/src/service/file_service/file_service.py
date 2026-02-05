@@ -6,7 +6,6 @@ import shutil
 import zipfile
 from pathlib import Path
 from typing import List, Optional, Sequence, Union, cast
-import os
 import base64
 
 # --- Third-Party ---
@@ -18,7 +17,6 @@ from src.core import logger
 from src.types import FileData, SuccessFileServiceResponse
 from src.utils import safe_dir_name
 from .config import *
-from src.utils import encode_image
 
 FILE = str | UploadFile | FileData
 

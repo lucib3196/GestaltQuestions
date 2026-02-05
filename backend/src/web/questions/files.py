@@ -1,7 +1,5 @@
 import asyncio
 import json
-import mimetypes
-from pathlib import Path
 from typing import List, Optional
 from uuid import UUID
 
@@ -11,17 +9,15 @@ from starlette import status
 
 
 from src.core import logger
-from src.types import FileData, SuccessDataResponse, QuestionData
+from src.types import FileData, QuestionData
 from src.model.question import Question
 from src.service import FileService, FileConverter
 from src.web.dependencies import (
-    StorageDependency,
     QuestionManagerDependency,
 )
-from src.utils import encode_image
 
 router = APIRouter(
-    prefix="/questions/files/",
+    prefix="/questions/files",
     tags=["questions", "files"],
 )
 
@@ -80,7 +76,7 @@ async def create_question_file_upload(
 # Files
 @router.post("/{qid}")
 async def upload_files_to_question(
-    id: str | UUID,
+    qid: str | UUID,
     files: list[UploadFile],
     qm: QuestionManagerDependency,
     auto_handle_images: bool = True,
@@ -117,7 +113,7 @@ async def upload_files_to_question(
     try:
         tasks = [FileService().convert_to_filedata(f) for f in (files or [])]
         fdata = await asyncio.gather(*tasks)
-        return await qm.upload_files_to_question(id, fdata, auto_handle_images)
+        return await qm.upload_files_to_question(qid, fdata, auto_handle_images)
     except Exception as e:
         logger.exception("Error uploading files for question %s: %s", id, e)
         raise HTTPException(
@@ -188,12 +184,10 @@ async def update_file(
             detail=f"Could not write file content: {e}",
         )
 
+
 @router.delete("/{qid}/{filename}")
 async def delete_file(qid: str | UUID, filename: str, qr: QuestionManagerDependency):
     try:
         return await qr.delete_file(qid, filename)
     except HTTPException:
         raise
-
-
-
