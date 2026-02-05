@@ -269,7 +269,7 @@ class QuestionDB:
     def validate_data(self, question: QuestionData | dict) -> QuestionData:
         try:
             data = (
-                question.model_dump(exclude={"question_path"})
+                question.model_dump(exclude={"question_path"}, exclude_none=True)
                 if isinstance(question, QuestionData)
                 else question
             )
