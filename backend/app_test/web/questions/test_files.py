@@ -2,11 +2,12 @@ from src.core import logger
 from app_test.shared.mock_data import QUESTIONS_FULL
 from src.model.question import Question
 import pytest
+from pathlib import Path
 
 
 @pytest.mark.parametrize("payload", QUESTIONS_FULL)
 def test_make_question_with_files(make_question_with_files, payload):
-    response = make_question_with_files(overrides=payload)
+    response, _ = make_question_with_files(overrides=payload)
     assert response.status_code == 200
     assert Question.model_validate(response.json())
 
@@ -15,3 +16,15 @@ def test_make_question_with_files(make_question_with_files, payload):
 def test_upload_files_to_question(payload, make_upload_files_to_question):
     response = make_upload_files_to_question(question_payload=payload)
     assert response.status_code == 200
+
+
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
+def test_get_question_file_names(make_question_with_files, payload, api_client):
+    response, file_paths = make_question_with_files(overrides=payload)
+    question = Question.model_validate(response.json())
+    assert question
+    rfiles = api_client.get(f"/questions/files/{str(question.id)}").json()
+    logger.info(f"Retrieved files {rfiles}")
+    expected_names = {Path(p).name for p in file_paths}
+    returned_names = {Path(r).name for r in rfiles}
+    assert returned_names == expected_names

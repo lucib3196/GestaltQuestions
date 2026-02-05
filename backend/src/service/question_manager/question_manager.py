@@ -285,13 +285,12 @@ class QuestionManager:
         """
         Return a list of stored filenames for a question.
         """
-        logger.debug("Fetching file list for question_id=%s", qid)
-        logger.info("This is the storage settings %s", self.STORAGE_TYPE)
         question_path = await self.get_question_path(qid, relative=False)
         if question_path is None:
             raise ValueError("Could not get question path. Question path is None")
         files = self.storage_manager.list_file_names(question_path)
-        logger.debug("Found %d files for question_id=%s", len(files), qid)
+        image_path = Path(question_path) / self.client_path
+        files.extend(self.storage_manager.list_file_names(image_path))
         return files
 
     async def get_question_filepaths(self, qid: ID) -> List[str]:

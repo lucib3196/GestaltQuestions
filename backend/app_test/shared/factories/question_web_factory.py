@@ -39,7 +39,7 @@ def make_question_with_files(api_client):
 
         data = QuestionData(**(defaults | (overrides or {})))
 
-        file_paths = files or ASSETS_DIR.iterdir()
+        file_paths = files or list(ASSETS_DIR.iterdir())
 
         multipart_files = []
         opened_files = []
@@ -61,7 +61,7 @@ def make_question_with_files(api_client):
                 data={"question_data": data.model_dump_json()},
             )
 
-            return response
+            return response,file_paths
 
         finally:
             for f in opened_files:
