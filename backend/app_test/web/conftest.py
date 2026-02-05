@@ -5,20 +5,34 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from src.main import get_application
-
-from src.types import FileData
-from src.web.dependencies import get_storage_type, get_question_manager,get_storage_manager
-from src.core import get_session
-
+from app_test.shared.factories import (
+    make_bad_question_web,
+    make_delete_question,
+    make_question_web,
+    make_retrieve_question,
+    make_retrieve_question_full,
+)
 from app_test.shared.mock_data import QUESTION_FULL,QUESTIONS_FULL
+
+from src.core import get_session
+from src.main import get_application
+from src.types import FileData
+from src.web.dependencies import (
+    get_question_manager,
+    get_storage_manager,
+    get_storage_type,
+)
+
 
 @pytest.fixture
 def question_payload():
     return QUESTION_FULL
+
+
 @pytest.fixture
 def multiple_question_payloads():
-    return QUESTION_FULL
+    return QUESTIONS_FULL
+
 
 @asynccontextmanager
 async def on_startup_test(app: FastAPI):
@@ -63,19 +77,6 @@ def api_client(
         yield client
 
 
-#  OLD
-@pytest.fixture
-def question_data():
-    """Minimal question payload."""
-    return {
-        "title": "SomeTitle",
-        "ai_generated": True,
-        "isAdaptive": True,
-        "createdBy": "John Doe",
-        "user_id": 1,
-    }
-
-
 @pytest.fixture
 def server_files():
     """Static assets used by question endpoints."""
@@ -84,56 +85,3 @@ def server_files():
         FileData(filename="server.js", content=(base / "generate.js").read_bytes()),
         FileData(filename="server.py", content=(base / "generate.py").read_bytes()),
     ]
-
-
-@pytest.fixture
-def qpayload_bad():
-    return {"Data": "Some Content"}
-
-
-
-
-
-@pytest.fixture
-def question_payload_thermo():
-    """Thermodynamics question payload with metadata."""
-    return {
-        "title": "Thermodynamics First Law",
-        "ai_generated": False,
-        "isAdaptive": False,
-        "topics": ["Thermodynamics", "Energy Balance"],
-        "languages": ["python", "javascript"],
-        "qtype": ["conceptual"],
-    }
-
-
-@pytest.fixture
-def question_payload_fluids():
-    """Fluid dynamics question payload with metadata."""
-    return {
-        "title": "Bernoulli Equation",
-        "ai_generated": True,
-        "isAdaptive": True,
-        "topics": ["Fluid Dynamics", "Flow Analysis"],
-        "languages": ["javascript"],
-        "qtype": ["multiple-choice"],
-    }
-
-
-@pytest.fixture
-def create_question_web(api_client, question_payload):
-    """POST a minimal valid question payload to /questions/."""
-    return api_client.post("/questions/", json=question_payload)
-
-
-@pytest.fixture
-def create_question_bad_payload_response(api_client, qpayload_bad):
-    """POST an invalid question payload to /questions/."""
-    return api_client.post("/questions/", json=qpayload_bad)
-
-
-@pytest.fixture
-def multi_payload_questions(
-    question_payload, question_payload_thermo, question_payload_fluids
-):
-    return [question_payload, question_payload_fluids, question_payload_thermo]

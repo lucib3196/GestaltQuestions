@@ -1,19 +1,15 @@
-# --- Third-Party ---
+
 from fastapi import APIRouter, HTTPException
 from starlette import status
 from typing import Sequence
 from pathlib import Path
 
-# --- Internal ---
 from src.core import logger
 from src.model.question import Question
 from src.types import QuestionData
-from src.utils import safe_dir_name
 from src.web.dependencies import (
-    StorageTypeDep,
     QuestionDBDependency,
     QuestionManagerDependency,
-    StorageDependency,
 )
 from src.types import ID
 
@@ -53,7 +49,7 @@ async def get_question(qid: ID, qm: QuestionManagerDependency) -> Question:
             )
         return question
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to get question {e}")
+        raise HTTPException(status_code=404, detail=f"Failed to get question {e}")
 
 
 @router.get("/{id}/all_data")
@@ -66,7 +62,7 @@ async def get_question_all_data(id: ID, qm: QuestionManagerDependency) -> Questi
         question_data.question_path = path
         return question_data
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to retrieve question {e}")
+        raise HTTPException(status_code=404, detail=f"Failed to retrieve question {e}")
 
 
 @router.get("/{offset:int}/{limit:int}")
@@ -114,8 +110,8 @@ async def filter_questions(
 async def delete_question(id: ID, qr: QuestionManagerDependency):
     try:
         return await qr.delete_question(id)
-    except Exception:
-        raise
+    except Exception as e:
+        HTTPException(status_code=400, detail=f"Failed to delete question {e}")
 
 
 @router.put("/{id}")
@@ -123,8 +119,6 @@ async def update_question(
     id: ID,
     update: QuestionData,
     qm: QuestionManagerDependency,
-    storage: StorageDependency,
-    STORAGE_TYPE: StorageTypeDep,
     update_storage: bool = True,
 ) -> QuestionData:
 

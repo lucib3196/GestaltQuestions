@@ -6,22 +6,6 @@ from uuid import uuid4
 import pytest
 from app_test.shared.mock_data import QUESTION_FIELDS
 from app_test.shared.mock_data import QUESTIONS_FULL
-from app_test.shared.factories import (
-    make_bad_question_web,
-    make_question_web,
-    make_retrieve_question,
-    make_retrieve_question_full,
-    make_delete_question,
-)
-
-
-def retrieve_question(client, qid):
-    resp = client.get(f"/questions/{qid}")
-    assert resp.status_code == 200, resp.text
-    response_data = resp.json()
-    qretrieved = Question.model_validate(response_data)
-    assert qretrieved
-    return qretrieved
 
 
 @pytest.mark.parametrize("payload", [q for q in QUESTIONS_FULL])
@@ -61,13 +45,13 @@ def test_get_question(make_question_web, payload, make_retrieve_question):
 def test_get_question_bad_id(api_client):
     bad_id = uuid4()
     r = api_client.get(f"/questions/{bad_id}")
-    assert r.status_code == 400
+    assert r.status_code == 404
 
 
 def test_get_question_data_all_not_found(api_client):
     bad_id = uuid4()
     r = api_client.get(f"/questions/{bad_id}/all_data")
-    assert r.status_code == 400
+    assert r.status_code == 404
 
 
 @pytest.mark.parametrize("payload", [q for q in QUESTIONS_FULL])
@@ -80,8 +64,8 @@ def test_get_question_all_data(make_question_web, payload, make_retrieve_questio
     assert qretrieved
 
 
-def test_qet_all_questions(api_client, make_question_web):
-    for q in QUESTIONS_FULL:
+def test_qet_all_questions(api_client, make_question_web, multiple_question_payloads):
+    for q in multiple_question_payloads:
         make_question_web(**q)
     offset, limit = 0, 100
     # Ensure that response was succesful
@@ -90,8 +74,8 @@ def test_qet_all_questions(api_client, make_question_web):
     questions = response.json()
     assert isinstance(questions, list), "Expected response to be a list"
     assert len(questions) == len(
-        QUESTIONS_FULL
-    ), f"Expected {len(QUESTIONS_FULL)} questions, got {len(questions)}"
+        multiple_question_payloads
+    ), f"Expected {len(multiple_question_payloads)} questions, got {len(questions)}"
     logger.info("these are the questions %s", questions)
 
 
@@ -104,8 +88,9 @@ def test_delete_question(
     dresp = make_delete_question(qid)
     assert dresp.status_code == 200
     rresp = make_retrieve_question(qid)
+    logger.debug(f"Retrieved question {rresp.json()}")
     assert rresp.status_code == 404
-    assert "not found" in rresp.json()["detail"].lower()
+    assert "not find question" in rresp.json()["detail"].lower()
 
 
 def test_delete_question_not_valid_id(api_client):
@@ -115,59 +100,61 @@ def test_delete_question_not_valid_id(api_client):
     assert "not exist" in response.json()["detail"]
 
 
-# # Updates
-# @pytest.mark.asyncio
-# async def test_filter_questions_no_match(
-#     api_client, create_multiple_question_responses
-# ):
-#     """
-#     Filtering with values that should not match anything.
-#     Expect an empty list.
-#     """
-#     payload = QuestionData(title="NonExistent", ai_generated=True)
+# Filter Test
+@pytest.mark.asyncio
+async def test_filter_questions_no_match(api_client):
+    """
+    Filtering with values that should not match anything.
+    Expect an empty list.
+    """
+    payload = QuestionData(title="NonExistent", ai_generated=True)
 
-#     response = api_client.post("/questions/filter", json=payload.model_dump())
-#     assert response.status_code == 200
+    response = api_client.post("/questions/filter", json=payload.model_dump())
+    assert response.status_code == 200
 
-#     data = response.json()
-#     logger.info("Filter with no match response: %s", data)
+    data = response.json()
+    logger.info("Filter with no match response: %s", data)
 
-#     assert isinstance(data, list)
-#     assert len(data) == 0
+    assert isinstance(data, list)
+    assert len(data) == 0
 
 
-# @pytest.mark.asyncio
-# async def test_question_filter_by_title(api_client, create_multiple_question_responses):
-#     """
-#     Filter questions by a substring in the title.
-#     Expects at least one match from create_multiple_questions fixture.
-#     """
-#     payload = QuestionData(title="Thermodynamics First Law")
+@pytest.mark.asyncio
+async def test_question_filter_by_title(
+    api_client, make_question_web, multiple_question_payloads
+):
+    """
+    Filter questions by a substring in the title.
+    Expects at least one match from create_multiple_questions fixture.
+    """
+    for q in multiple_question_payloads:
+        make_question_web(**q)
+    payload = QuestionData(title=multiple_question_payloads[0].get("title"))
 
-#     response = api_client.post("/questions/filter", json=payload.model_dump())
-#     assert response.status_code == 200
+    response = api_client.post("/questions/filter", json=payload.model_dump())
+    assert response.status_code == 200
 
-#     data = response.json()
-#     logger.info("Filter by title response: %s", data)
+    data = response.json()
+    logger.info("Filter by title response: %s", data)
 
-#     assert isinstance(data, list)
-#     assert len(data) > 0
+    assert isinstance(data, list)
+    assert len(data) > 0
 
 
-# @pytest.mark.asyncio
-# async def test_update_question(api_client, create_question_and_return_question):
-#     question = create_question_and_return_question
-#     updates = QuestionData(title="Updated Title", isAdaptive=True)
+@pytest.mark.asyncio
+async def test_update_question(api_client, create_question_and_return_question):
+    question = create_question_and_return_question
+    updates = QuestionData(title="Updated Title", isAdaptive=True)
 
-#     logger.info("This is the question %s", question)
+    logger.info("This is the question %s", question)
 
-#     patch_resp = api_client.put(
-#         f"/questions/{question.id}",
-#         json=updates.model_dump(),
-#     )
-#     logger.info(f"This is the path response {patch_resp}")
-#     assert patch_resp.status_code == 200
+    patch_resp = api_client.put(
+        f"/questions/{question.id}",
+        json=updates.model_dump(),
+    )
+    logger.info(f"This is the path response {patch_resp}")
+    assert patch_resp.status_code == 200
 
-#     updated = patch_resp.json()
-#     assert updated["title"] == "Updated Title"
-#     assert updated["isAdaptive"] is True
+    updated = patch_resp.json()
+    assert updated["title"] == "Updated Title"
+    assert updated["isAdaptive"] is True

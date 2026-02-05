@@ -152,28 +152,19 @@ class QuestionManager:
         return await self.qdb.update_question(qid, update=question_data)
 
     async def delete_question(self, qid: ID) -> Dict[str, str]:
-        try:
-            # Check if question is in database
-            question = self.qdb.get_question(qid)
-            if not question:
-                raise HTTPException(status_code=404, detail="Question {qid} not found")
-            question_path = await self.qdb.get_question_path(qid, self.STORAGE_TYPE)  # type: ignore
-            if not question_path:
-                raise ValueError("Failed to get question path")
-            storage = self.storage_manager.get_storage_path(
-                question_path, relative=False
-            )
+        # Check if question is in database
+        question = self.qdb.get_question(qid)
+        if not question:
+            raise HTTPException(status_code=404, detail="Question {qid} not found")
+        question_path = await self.qdb.get_question_path(qid, self.STORAGE_TYPE)  # type: ignore
+        if not question_path:
+            raise ValueError("Failed to get question path")
+        storage = self.storage_manager.get_storage_path(question_path, relative=False)
 
-            # First delete from database
-            await self.qdb.delete_question(qid)
-            self.storage_manager.delete_storage(storage)
-            return {"status": "ok", "detail": "Deleted Question"}
-        except HTTPException:
-            raise
-        except Exception as e:
-            raise HTTPException(
-                status_code=500, detail=f"Failed to delete question {e}"
-            )
+        # First delete from database
+        await self.qdb.delete_question(qid)
+        self.storage_manager.delete_storage(storage)
+        return {"status": "ok", "detail": "Deleted Question"}
 
     # Handle any uploads to files
     async def handle_question_files(
