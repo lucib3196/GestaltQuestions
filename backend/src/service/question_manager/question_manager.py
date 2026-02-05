@@ -145,11 +145,36 @@ class QuestionManager:
         return qcreated
 
     async def update_question(
+        self, qid: ID, update: QuestionData | dict, update_storage: bool = False
+    ):
+        q = await self.qdb.get_question(qid)
+        update = QuestionData.model_validate(update)
+        if not q:
+            logger.warning(f"Question with ID {qid} not found — cannot update.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Question {id} not found.",
+            )
+        if update_storage and update.title:
+            await self.handle_storage_update(qid)
+        return await self.qdb.update_question(qid, update=update)
+
+    async def handle_storage_update(
         self,
         qid: ID,
-        question_data: QuestionData | dict,
-    ):
-        return await self.qdb.update_question(qid, update=question_data)
+    ) -> None:
+        old = await self.get_question_path(qid, relative=False)
+        if not old:
+            logger.error(f"No valid storage path found for question ID {qid}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Storage path missing for question {qid}.",
+            )
+        rel, abs_new = await self.set_question_path(qid, override=True)
+        logger.debug(f"Renamed storage path for question {id}: {old} → {abs_new}")
+        self.storage_manager.copy_storage(old, abs_new)
+        self.storage_manager.delete_storage(old)
+        return None
 
     async def delete_question(self, qid: ID) -> Dict[str, str]:
         # Check if question is in database

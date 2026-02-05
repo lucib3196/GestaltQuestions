@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, HTTPException
 from starlette import status
 from typing import Sequence
@@ -123,35 +122,7 @@ async def update_question(
 ) -> QuestionData:
 
     try:
-        existing_question = await qm.qdb.get_question(id)
-        if not existing_question:
-            logger.warning(f"Question with ID {id} not found — cannot update.")
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Question {id} not found.",
-            )
-
-        # Handle renaming the storage directory if required
-        if update_storage:
-            logger.info(
-                f"Updating storage directory for question '{existing_question.title}' → '{update.title}'"
-            )
-            old_storage_path = qm.get_question_path(id)
-            if not old_storage_path:
-                logger.error(f"No valid storage path found for question ID {id}")
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Storage path missing for question {id}.",
-                )
-            new_path = await qm.set_question_path(id)
-            logger.info(
-                f"Renamed storage path for question {id}: {old_storage_path} → {new_path}"
-            )
-        # Proceed with updating database fields
-        updated_question = await qm.qdb.update_question(id, update)
-        logger.info(f"Successfully updated question {id}")
-
-        return updated_question
+        return await qm.update_question(id, update, update_storage)
     except Exception as e:
         logger.exception(f"Error while updating question {id}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to update question {e}")
