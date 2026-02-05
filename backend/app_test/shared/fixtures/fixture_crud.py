@@ -9,22 +9,6 @@ from src.types import (
 )
 
 
-# --- Domain-Specific Payloads ---
-
-
-@pytest.fixture
-def question_payload_mechanics():
-    """Mechanics/statics question payload with metadata."""
-    return {
-        "title": "Statics Basics",
-        "ai_generated": True,
-        "isAdaptive": True,
-        "createdBy": "tester_mech",
-        "user_id": 1,
-        "topics": ["Mechanics", "Statics"],
-        "languages": ["python"],
-        "qtype": ["numeric"],
-    }
 
 
 # --- Aggregate Fixture ---

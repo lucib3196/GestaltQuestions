@@ -141,15 +141,15 @@ async def test_question_filter_by_title(
     assert len(data) > 0
 
 
+@pytest.mark.parametrize("payload", [q for q in QUESTIONS_FULL])
 @pytest.mark.asyncio
-async def test_update_question(api_client, create_question_and_return_question):
-    question = create_question_and_return_question
+async def test_update_question(api_client, make_question_web, payload):
+    q = make_question_web(**payload).json().id
+    assert q and isinstance(q, Question)
     updates = QuestionData(title="Updated Title", isAdaptive=True)
 
-    logger.info("This is the question %s", question)
-
     patch_resp = api_client.put(
-        f"/questions/{question.id}",
+        f"/questions/{q.id}",
         json=updates.model_dump(),
     )
     logger.info(f"This is the path response {patch_resp}")

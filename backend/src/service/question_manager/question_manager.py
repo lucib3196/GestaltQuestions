@@ -153,7 +153,7 @@ class QuestionManager:
 
     async def delete_question(self, qid: ID) -> Dict[str, str]:
         # Check if question is in database
-        question = self.qdb.get_question(qid)
+        question = await self.qdb.get_question(qid)
         if not question:
             raise HTTPException(status_code=404, detail="Question {qid} not found")
         question_path = await self.qdb.get_question_path(qid, self.STORAGE_TYPE)  # type: ignore

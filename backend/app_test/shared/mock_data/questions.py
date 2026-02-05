@@ -28,6 +28,16 @@ MECH_QUESTIONS = [
         "languages": ["python", "javascript"],
         "qtype": ["conceptual"],
     },
+    {
+        "title": "Statics Basics",
+        "ai_generated": True,
+        "isAdaptive": True,
+        "createdBy": "tester_mech",
+        "user_id": 1,
+        "topics": ["Mechanics", "Statics"],
+        "languages": ["python"],
+        "qtype": ["numeric"],
+    },
 ]
 
 ADDITIONAL_METADATA = {
