@@ -10,30 +10,6 @@ from src.types import (
 
 
 
-
-# --- Aggregate Fixture ---
-
-
-@pytest.fixture
-def all_question_payloads(
-    question_payload_minimal_dict,
-    question_payload_full_dict,
-    question_payload_mechanics,
-    question_payload_thermo,
-    question_payload_fluids,
-):
-    """
-    Aggregate of all question payload fixtures for easy iteration in tests.
-    """
-    return [
-        question_payload_minimal_dict,
-        question_payload_full_dict,
-        question_payload_mechanics,
-        question_payload_thermo,
-        question_payload_fluids,
-    ]
-
-
 @pytest.fixture
 def invalid_question_payloads():
     # Values that should NOT work

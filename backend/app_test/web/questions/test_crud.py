@@ -96,6 +96,7 @@ def test_delete_question(
 def test_delete_question_not_valid_id(api_client):
     bad_id = uuid4()
     response = api_client.delete(f"/questions/{bad_id}")
+    logger.info(f"Response is {response.json()}")
     assert response.status_code == 404
     assert "not exist" in response.json()["detail"]
 
@@ -144,12 +145,12 @@ async def test_question_filter_by_title(
 @pytest.mark.parametrize("payload", [q for q in QUESTIONS_FULL])
 @pytest.mark.asyncio
 async def test_update_question(api_client, make_question_web, payload):
-    q = make_question_web(**payload).json().id
-    assert q and isinstance(q, Question)
+    resp = make_question_web(**payload)
+    qid = Question.model_validate(resp.json()).id
     updates = QuestionData(title="Updated Title", isAdaptive=True)
 
     patch_resp = api_client.put(
-        f"/questions/{q.id}",
+        f"/questions/{qid}",
         json=updates.model_dump(),
     )
     logger.info(f"This is the path response {patch_resp}")
