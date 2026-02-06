@@ -9,9 +9,9 @@ import type { CreateMode } from "./types";
 import UploadZipQuestionModal from "./UploadZipQuestionModal";
 
 
-const MODE_COMPONENTS: Record<CreateMode, React.ReactNode> = {
+const MODE_COMPONENTS: Partial<Record<CreateMode, React.ReactNode>> = {
   blank: <CreateQuestionFromBlank />,
-  upload: <UploadZipQuestionModal setShowModal={() => {}} />,
+  upload: <UploadZipQuestionModal setShowModal={() => { }} />,
   // "text-ai": <TextGenerator />,
   // "image-ai": <ImageGenerator />,
 };
