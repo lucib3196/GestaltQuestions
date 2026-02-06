@@ -28,3 +28,13 @@ def test_get_question_file_names(make_question_with_files, payload, api_client):
     expected_names = {Path(p).name for p in file_paths}
     returned_names = {Path(r).name for r in rfiles}
     assert returned_names == expected_names
+
+
+@pytest.mark.parametrize("payload", QUESTIONS_FULL)
+def test_get_filedata(make_question_with_files, payload, api_client):
+    response, _ = make_question_with_files(overrides=payload)
+    question = Question.model_validate(response.json())
+    res = api_client.get(f"/questions/files/filedata/{str(question.id)}")
+    rfiles = res.json()
+    logger.info(f"Retrieved files {rfiles}")
+    assert res.status_code == 200

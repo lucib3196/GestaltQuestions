@@ -143,11 +143,7 @@ async def get_filedata(
     qm: QuestionManagerDependency,
 ) -> List[FileData]:
     try:
-        file_paths = await qm.get_question_filepaths(qid)
-        file_data = await asyncio.gather(
-            *[FileConverter().convert_to_filedata(f) for f in file_paths]
-        )
-        return file_data
+        return await qm.get_question_filedata(qid)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Could not get file data {e}")
 
@@ -156,7 +152,6 @@ async def get_filedata(
 async def read_question_file(
     qid: str | UUID, filename: str, qr: QuestionManagerDependency
 ) -> str | None:
-
     try:
         return await qr.read_file(qid, filename)
     except Exception as e:
@@ -176,8 +171,6 @@ async def update_file(
 ) -> bool:
     try:
         return await qr.update_file(qid, filename, new_content)
-    except HTTPException:
-        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -189,5 +182,5 @@ async def update_file(
 async def delete_file(qid: str | UUID, filename: str, qr: QuestionManagerDependency):
     try:
         return await qr.delete_file(qid, filename)
-    except HTTPException:
-        raise
+    except Exception:
+        raise HTTPException(status_code=500, detail="Failed to delete the question")
