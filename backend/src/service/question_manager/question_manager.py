@@ -316,12 +316,12 @@ class QuestionManager:
                     or mime_type.startswith("application/json")
                 ):
                     content = await self.read_file(qid, f)
+                    if content:
+                        content = content.decode("utf-8")
                 else:
                     image_data = await self.read_file(qid, f)
                     assert image_data
-                    content = base64.b64encode(image_data.encode("utf-8")).decode(
-                        "utf-8"
-                    )
+                    content = base64.b64encode(image_data).decode("utf-8")
                 data.append(
                     FileData(
                         filename=f,
@@ -350,15 +350,14 @@ class QuestionManager:
         return self.storage_manager.get_file_path(filepath)
 
     # Reading and writting and deleting files
-    async def read_file(self, qid: ID, filename: str) -> str | None:
+    async def read_file(self, qid: ID, filename: str) -> bytes | None:
         """
         Read a file and return its text contents.
         """
         logger.debug("Reading file '%s' for question_id=%s", filename, qid)
         file = await self.get_question_file(qid, filename)
         raw_data = self.storage_manager.read_file(file)
-        if raw_data:
-            return raw_data.decode("utf-8")
+        return raw_data
 
     async def update_file(self, qid: ID, filename: str, content: str | dict) -> bool:
         """
@@ -423,7 +422,7 @@ class QuestionManager:
         file = await self.get_question_file(qid, filename)
         with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as z:
             arcname = f"{folder_name}/{Path(file).name}"
-            content = self.storage_manager.read_file(arcname)
+            content = self.storage_manager.read_file(file)
             if content:
                 z.writestr(arcname, content)
         buffer.seek(0)

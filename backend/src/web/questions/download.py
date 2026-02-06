@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 from starlette import status
-
+from src.core import logger
 
 from src.web.dependencies import (
     QuestionManagerDependency,
@@ -38,15 +38,15 @@ async def download_question(
         )
 
 
-@router.post("/{qid}/filename")
+@router.post("/{qid}/{filename}")
 async def download_question_file(
     qid: str | UUID,
     filename: str,
     qm: QuestionManagerDependency,
-    qr: QuestionManagerDependency,
 ):
     try:
         zip_bytes, folder_name = await qm.download_file_as_zip(qid, filename)
+        logger.debug(f"This is the folder name, {folder_name}")
         return Response(
             content=zip_bytes,
             media_type="application/zip",

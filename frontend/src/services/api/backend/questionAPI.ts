@@ -6,9 +6,7 @@ import type {
 } from "../../../types/questionTypes";
 import type { SuccessDataResponse } from "../../../types/responseModels";
 import type { FileData } from "../../../types/questionTypes";
-import type {
-  ServerRunResponse,
-} from "../../../types";
+import type { ServerRunResponse } from "../../../types";
 import type { QuizData } from "../../../features/QuestionEngine";
 import { type AxiosResponse } from "axios";
 export class QuestionAPI {
@@ -113,7 +111,7 @@ export class QuestionAPI {
 
   static async getQuestionFiles(questionID: string): Promise<FileData[]> {
     const response = await api.get(
-      `/questions/filedata/${encodeURIComponent(questionID)}`,
+      `/questions/files/filedata/${encodeURIComponent(questionID)}`,
     );
     return response.data;
   }
@@ -139,7 +137,7 @@ export class QuestionAPI {
         formData.append("files", file);
       });
       const response = await api.post(
-        `${this.base}/${encodeURIComponent(questionId)}/upload_files`,
+        `${this.base}/files/${encodeURIComponent(questionId)}`,
         formData,
         {
           headers: {
@@ -147,6 +145,7 @@ export class QuestionAPI {
           },
         },
       );
+      console.log("Response", response.data);
       return response.data;
     } catch (error) {
       throw error;
@@ -189,7 +188,7 @@ export class QuestionAPI {
 
   static async downloadQuestion(questionId: string) {
     const response = await api.post(
-      `${this.base}/files/${encodeURIComponent(questionId)}/download`,
+      `${this.base}/download/${encodeURIComponent(questionId)}`,
       null,
       {
         responseType: "blob",
@@ -202,9 +201,9 @@ export class QuestionAPI {
   }
   static async downloadQuestionFile(questionId: string, filename: string) {
     const response = await api.post(
-      `${this.base}/files/${encodeURIComponent(
+      `${this.base}/download/${encodeURIComponent(
         questionId,
-      )}/${encodeURIComponent(filename)}/download`,
+      )}/${encodeURIComponent(filename)}`,
       null,
       {
         responseType: "blob",
