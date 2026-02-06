@@ -5,6 +5,7 @@ import type { QuizData } from "./types";
 import { useQuestionEngineContext } from "./context";
 import applyPlaceHolders from "../../utils/flattenParams";
 
+import { useCodeEditorContext } from "../QuestionEditor";
 export function useCurrentQuestionMeta() {
   const { selectedQuestionID, setQuestionMeta, questionMeta } =
     useQuestionCollectionContext();
@@ -27,7 +28,7 @@ export function useCurrentQuestionMeta() {
   return { questionMeta, error };
 }
 
-export function fetchQuestion() {
+export function fetchQuestion(refreshKey?: number | null) {
   const { selectedQuestionID } = useQuestionCollectionContext();
 
   // Content to fetch
@@ -61,7 +62,7 @@ export function fetchQuestion() {
     } finally {
       setLoading(false);
     }
-  }, [selectedQuestionID]);
+  }, [selectedQuestionID, refreshKey]);
 
   useEffect(() => {
     fetchFiles();
@@ -69,7 +70,7 @@ export function fetchQuestion() {
   return { questionHtml, solutionHtml, loading, error };
 }
 
-export function fetchAdaptiveParameters() {
+export function fetchAdaptiveParameters(refreshKey?: number | null) {
   const { serverSetting, setLogs } = useQuestionEngineContext();
   const { selectedQuestionID } = useQuestionCollectionContext();
   // Storing the parameters for the question
@@ -101,7 +102,7 @@ export function fetchAdaptiveParameters() {
     } finally {
       setLoading(false);
     }
-  }, [selectedQuestionID, serverSetting]);
+  }, [selectedQuestionID, serverSetting, refreshKey]);
 
   useEffect(() => {
     fetchParams();
@@ -123,21 +124,24 @@ export function useQuestion({ isAdaptive }: UseQuestionArgs) {
     null
   );
   const [error, setError] = useState<string | null>(null);
-
+  const { refreshKey } =
+    useCodeEditorContext();
   // Fetch the question data first
   const {
     questionHtml,
     solutionHtml,
     loading: questionLoading,
     error: questionError,
-  } = fetchQuestion();
+  } = fetchQuestion(refreshKey);
 
   const {
     params,
     loading: paramsLoading,
     error: paramsError,
     refetch,
-  } = fetchAdaptiveParameters();
+  } = fetchAdaptiveParameters(refreshKey);
+
+
 
   const processed = useMemo(() => {
     if (!questionHtml) return null;

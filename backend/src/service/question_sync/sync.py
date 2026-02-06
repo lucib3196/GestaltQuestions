@@ -144,7 +144,7 @@ class QuestionSync:
 
     async def prune_question(self, q: Question) -> Literal["ok", "deleted", "bug"]:
         try:
-            qdb = await self.qr.does_question_path_exist(q.id)  # type: ignore
+            qdb = await self.qr.does_question_path_exist(q.id)
             if qdb:
                 return "ok"
             else:

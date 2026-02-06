@@ -153,7 +153,10 @@ async def read_question_file(
     qid: str | UUID, filename: str, qr: QuestionManagerDependency
 ) -> str | None:
     try:
-        return await qr.read_file(qid, filename)
+        data = await qr.read_file(qid, filename)
+        if data:
+            content = data.decode("utf-8")
+            return content
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

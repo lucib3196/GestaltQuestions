@@ -1,11 +1,10 @@
 import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Set
-import asyncio
 from fastapi import HTTPException
 from starlette import status
 import base64
-
+import io
 import mimetypes
 from src.core import logger
 from src.data import QuestionDB
@@ -16,7 +15,8 @@ from src.types import (
     FileData,
     QuestionData,
 )
-from src.utils import safe_dir_name, to_serializable
+import zipfile
+from src.utils import safe_dir_name
 from src.types import STORAGE_TYPE, ID
 
 
@@ -316,12 +316,12 @@ class QuestionManager:
                     or mime_type.startswith("application/json")
                 ):
                     content = await self.read_file(qid, f)
+                    if content:
+                        content = content.decode("utf-8")
                 else:
                     image_data = await self.read_file(qid, f)
                     assert image_data
-                    content = base64.b64encode(image_data.encode("utf-8")).decode(
-                        "utf-8"
-                    )
+                    content = base64.b64encode(image_data).decode("utf-8")
                 data.append(
                     FileData(
                         filename=f,
@@ -350,15 +350,14 @@ class QuestionManager:
         return self.storage_manager.get_file_path(filepath)
 
     # Reading and writting and deleting files
-    async def read_file(self, qid: ID, filename: str) -> str | None:
+    async def read_file(self, qid: ID, filename: str) -> bytes | None:
         """
         Read a file and return its text contents.
         """
         logger.debug("Reading file '%s' for question_id=%s", filename, qid)
         file = await self.get_question_file(qid, filename)
         raw_data = self.storage_manager.read_file(file)
-        if raw_data:
-            return raw_data.decode("utf-8")
+        return raw_data
 
     async def update_file(self, qid: ID, filename: str, content: str | dict) -> bool:
         """
@@ -385,6 +384,50 @@ class QuestionManager:
         self.storage_manager.delete_file(file)
         logger.info("Deleted file '%s' for question_id=%s", filename, qid)
         return True
+
+    async def download_as_zip(
+        self, qid: ID, folder_name: str | None = None
+    ) -> Tuple[bytes, str]:
+        q = await self.qdb.get_question(qid)
+        # Validation and setup
+        if not q:
+            raise ValueError("Failed to download question. Question does not exist")
+        if not folder_name:
+            folder_name = q.title
+
+        buffer = io.BytesIO()
+        files = await self.get_question_filepaths(qid)
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as z:
+            for path in files:
+                path = Path(path)
+                arcname = f"{folder_name}/{path.name}"
+                content = await self.read_file(qid, path.name)
+                if content:
+                    z.writestr(arcname, content)
+        buffer.seek(0)
+        assert folder_name
+        return buffer.getvalue(), folder_name  # type: bytes
+
+    async def download_file_as_zip(
+        self, qid: ID, filename: str, folder_name: str | None = None
+    ):
+
+        q = await self.qdb.get_question(qid)
+        # Validation and setup
+        if not q:
+            raise ValueError("Failed to download question. Question does not exist")
+        if not folder_name:
+            folder_name = q.title
+        buffer = io.BytesIO()
+        file = await self.get_question_file(qid, filename)
+        with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as z:
+            arcname = f"{folder_name}/{Path(file).name}"
+            content = self.storage_manager.read_file(file)
+            if content:
+                z.writestr(arcname, content)
+        buffer.seek(0)
+        assert folder_name
+        return buffer.getvalue(), folder_name  # type: bytes
 
     # helpers
     async def save_batch_files(

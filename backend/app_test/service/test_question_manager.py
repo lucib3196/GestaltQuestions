@@ -148,7 +148,7 @@ async def test_read_file(
         if f.filename.endswith(".json"):
             assert json.loads(content) == f.content
         else:
-            assert f.content == content
+            assert f.content == content.decode("utf-8")
 
 
 @pytest.mark.asyncio
@@ -169,7 +169,7 @@ async def test_update_file(
             qcreated.id, filename=f.filename, content=new_content
         )
         content = await question_manager.read_file(qcreated.id, f.filename)
-        assert content == new_content
+        assert content.decode("utf-8") == new_content
 
 
 @pytest.mark.asyncio

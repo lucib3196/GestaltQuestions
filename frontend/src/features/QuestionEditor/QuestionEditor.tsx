@@ -16,6 +16,7 @@ export default function QuestionEditor() {
         selectedFile,
         setSelectedFile,
         fileContent,
+        refreshKey,
         setFileContent,
         showLogs,
         setShowLogs,
@@ -39,7 +40,7 @@ export default function QuestionEditor() {
         } else {
             setImage(null);
         }
-    }, [filesData, selectedFile]);
+    }, [filesData, selectedFile,refreshKey]);
 
     return (
         <div className="flex flex-col gap-4 w-full h-full" >
