@@ -24,7 +24,7 @@ export class QuestionAPI {
 
     files.forEach((file) => formData.append("files", file));
     const response = await api.post(
-      `${this.base}/files`,
+      `${this.base}/files/`,
 
       formData,
 
