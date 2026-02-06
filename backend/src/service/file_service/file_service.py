@@ -33,7 +33,7 @@ class FileConverter:
         self.content_type_mapping = content_type_mapping
 
     async def convert_to_filedata(self, file: FILE) -> FileData:
- 
+
         if isinstance(file, FileData):
             return file
         if isinstance(file, UploadFile) or hasattr(file, "file"):
