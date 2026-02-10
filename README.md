@@ -1,4 +1,3 @@
-
 ---
 
 # Gestalt Question Review — Local Development Setup
@@ -35,15 +34,14 @@ cd Gestalt_Question_Review
 
 The application consists of three main components that must be running:
 
-1. **Backend API** (FastAPI)
-2. **AI Workspace** (LangChain & LangGraph utilities)
-3. **Frontend** (Vite + React)
+1. **Backend API** (FastAPI): Main api for questions 
+2. **Code_Sandbox** (Fastapi): A sandbox env for code execution
+3. **Frontend** (Vite + React): Ui for viewing the questions
 
 Each service can be started individually in separate terminals, or all three can be started automatically using **Docker Compose**.
 
 Installation and setup instructions for each component can be found at the following links:
 
-* [AI Workspace Setup Guide](https://github.com/lucib3196/GestaltQuestions/tree/feature/docker_install/ai_workspace)  
 
 * [Backend Setup Guide](https://github.com/lucib3196/GestaltQuestions/tree/feature/docker_install/backend)
 
@@ -60,14 +58,7 @@ Alternative installation methods (pip, virtualenv, etc.) are detailed in the lin
 
 ```bash
 cd backend
-poetry run python -m src.api.main
-```
-
-### AI Workspace
-
-```bash
-cd ai_workspace
-poetry run python -m ai_workspace.api.main
+poetry run python -m src.main
 ```
 
 ### Frontend
@@ -92,7 +83,7 @@ docker compose up --build
 Docker Compose will:
 
 * Build the correct Dockerfiles for each service
-* Start Backend, AI Workspace, and Frontend
+* Start Backend, Code Sandbox, and Frontend
 * Automatically handle networking between services
 
 This is the easiest method for running the entire stack.
@@ -106,4 +97,5 @@ If you encounter issues or need assistance with the setup, feel free to reach ou
 **[lberm007@ucr.edu](mailto:lberm007@ucr.edu)**
 
 ---
+
 
