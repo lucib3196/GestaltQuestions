@@ -1,12 +1,10 @@
 # Standard library
-from typing import List, Optional, Sequence, Literal, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 from uuid import UUID, uuid4
 from enum import Enum
 
 # Third-party libraries
-from pydantic import BaseModel, ConfigDict, Field
 from sqlmodel import Field as SQLField, Relationship, SQLModel
-from sqlalchemy import text
 from .question_ownership import QuestionOwnership
 
 if TYPE_CHECKING:
