@@ -8,6 +8,7 @@ import shutil
 from .base import StorageService
 from src.core import logger
 from google.cloud.storage.blob import Blob
+from . import TARGET
 
 
 class LocalStorageService(StorageService):
@@ -21,93 +22,17 @@ class LocalStorageService(StorageService):
     # Initialization / Lifecycle
     # -------------------------------------------------------------------------
 
-    def __init__(self, root_path: str | Path, base: str, create: bool = True):
+    def __init__(
+        self,
+    ):
         """
         Initialize the local storage service with a base_path directory.
 
         Args:
             _root_path: Path or string specifying the _root_path storage directory.
         """
-        self._root_path = Path(root_path).resolve()
-        self.base_path = (self._root_path / base).resolve()
-        # The actual name of where the data is stored
-        self.base = base
-        # Ensure that the storage is created
-        if create:
-            self._root_path.mkdir(parents=True, exist_ok=True)
-        logger.debug(
-            f"Initialized the storage, questions will be stored at {self.base_path}"
-        )
 
-    # -------------------------------------------------------------------------
-    # base_path path operations
-    # -------------------------------------------------------------------------
-
-    def get_base_path(self) -> str:
-        """
-        Return the absolute path to the base_path directory for local storage.
-
-        Returns:
-            Path: The resolved base_path directory path.
-        """
-        return Path(self.base_path).as_posix()
-
-    def get_root_path(self) -> str:
-        """Returns the _root_path path"""
-        return self._root_path.as_posix()
-
-    def get_relative_to_base(self, target: str | Path | Blob) -> str:
-        if isinstance(target, Blob):
-            target = str(target.name)
-        # Convert to Path
-        target_path = Path(target)
-
-        # Case 1: Absolute path inside the storage _root_path
-        try:
-            relative_path = target_path.relative_to(self._root_path)
-            logger.debug("Retrieved relative path fine %s", relative_path)
-        except ValueError:
-            # Case 2: Not inside _root_path (likely already relative or external)
-            relative_path = target_path
-
-        # Convert to posix string
-        rel_str = relative_path.as_posix().lstrip("/")
-
-        # 1. Avoid duplication
-        base = self.base
-        if rel_str == base:
-            return rel_str
-
-        # 2.  If rel_str starts with "questions/", do NOT prefix
-        if rel_str.startswith(f"{base}/"):
-            return rel_str
-        # Case 3: Ensure prefix, if it does not start
-        if not rel_str.startswith(f"{self.base}/"):
-            rel_str = f"{self.base}/{rel_str}"
-
-        return rel_str
-
-    # =========================================================================
-    # Storage path operations
-    # =========================================================================
-    def get_storage_path(self, target: str | Path | Blob, relative: bool = True) -> str:
-        """
-        Build the absolute path for a resource based on its identifier.
-
-        Args:
-            identifier: Unique identifier for the stored resource.
-
-        Returns:
-            Path: Path to the resource directory.
-        """
-        rel_str = self.get_relative_to_base(target)
-        logger.debug("This is the rel str %s", rel_str)
-        if relative:
-            return rel_str
-        absolute_path = Path(self._root_path) / rel_str
-        return absolute_path.as_posix()
-
-    def create_storage_path(self, target: str | Path) -> str:
+    def create_storage_path(self, target: TARGET) -> str:
         """
         Create a directory for the given identifier if it does not exist.
 
@@ -117,18 +42,22 @@ class LocalStorageService(StorageService):
         Returns:
             Path: Path to the created directory.
         """
-        storage = Path(self.get_storage_path(target, relative=False))
-        storage.mkdir(parents=True, exist_ok=True)
+        if isinstance(target, Blob):
+            raise ValueError("Local storage cannot handle blobs")
+        storage = Path(target).resolve()
+        if storage.is_dir:
+            storage.mkdir(parents=True, exist_ok=True)
         return storage.as_posix()
 
-    def ensure_storage_path(self, target: str | Path) -> str:
+    def ensure_storage_path_exist(self, target: TARGET) -> str:
         if not self.does_storage_path_exist(target):
             logger.debug("Storage Path does not exist creating one ")
             return self.create_storage_path(target)
-        logger.debug("Storage path exist")
-        return self.get_storage_path(target, relative=False)
+        if not isinstance(target, (str, Path)):
+            raise ValueError("Local storage cannot handle blobs ")
+        return Path(target).as_posix()
 
-    def does_storage_path_exist(self, target: str | Path) -> bool:
+    def does_storage_path_exist(self, target: TARGET) -> bool:
         """
         Check if a directory exists for a given identifier.
 
@@ -138,22 +67,27 @@ class LocalStorageService(StorageService):
         Returns:
             bool: True if the directory exists, False otherwise.
         """
-        return Path(self.get_storage_path(target, relative=False)).exists()
+        if not isinstance(target, (str, Path)):
+            raise ValueError("Local storage cannot handle blobs ")
+        return Path(target).exists()
 
     def rename_storage(self, old: str | Path, new: str | Path) -> str:
-        old = Path(old)
-        new = Path(new)
+        old_path = Path(old)
+        new_path = Path(new)
 
-        logger.debug(f"[LocalStorage]: Renaming {old}->{new}")
+        logger.debug(f"[LocalStorage]: Renaming {old_path} -> {new_path}")
 
-        if not old.is_absolute():
-            old = self.get_storage_path(old, relative=False)
-        if not new.is_absolute():
-            new = self.get_storage_path(new, relative=False)
+        if not old_path.exists():
+            raise FileNotFoundError(f"Cannot rename. Source does not exist: {old_path}")
 
-        Path(old).rename(new)
-        logger.debug("[LocalStorage]: Renamed file  ok!")
-        return Path(new).as_posix()
+        # Ensure destination parent exists
+        new_path.parent.mkdir(parents=True, exist_ok=True)
+
+        old_path.rename(new_path)
+
+        logger.debug("[LocalStorage]: Rename successful")
+
+        return new_path.as_posix()
 
     # =========================================================================
     # File operations: read, write, fetch
@@ -184,7 +118,7 @@ class LocalStorageService(StorageService):
         return self.read_file(target, filename)
 
     def get_file_path(self, target: str | Path, filename: str | None = None) -> str:
-        target = Path(self.get_storage_path(target, relative=False))
+        target = Path(target)
         if filename:
             target = target / filename
             return target.as_posix()
@@ -225,11 +159,11 @@ class LocalStorageService(StorageService):
             Path: Full path to the file.
         """
         if filename:
-            path = Path(self.get_storage_path(target, relative=False)) / filename
+            path = Path(target) / filename
             return path.as_posix()
 
         else:
-            return self.get_storage_path(target)
+            return Path(target).as_posix()
 
     def save_file(
         self,
@@ -249,31 +183,53 @@ class LocalStorageService(StorageService):
 
         Returns:
             Path: The full path to the saved file.
+
+        Raises:
+            ValueError: If arguments are invalid or file exists without overwrite permission.
+            IOError: If file write operation fails.
         """
-        if filename:
-            target = Path(self.get_storage_path(target, relative=False))
-            target.mkdir(parents=True, exist_ok=True)
-            file_path = (Path(target) / filename).resolve()
+        # Validate inputs
+        if target is None:
+            raise ValueError("Target path cannot be None")
+        if content is None:
+            raise ValueError("Content cannot be None")
+
+        try:
+            target = Path(self.ensure_storage_path_exist(target))
+        except Exception as e:
+            raise IOError(f"Failed to ensure storage path exists: {e}")
+
+        # Determine file path
+        if target.is_dir():
+            if not filename:
+                raise ValueError("Filename must be provided when target is a directory")
+            file_path = (target / filename).resolve()
+        elif target.is_file():
+            file_path = target
         else:
-            file_path = Path(target).resolve()
-            file_path.parent.mkdir(parents=True, exist_ok=True)
+            raise ValueError(f"Target path is invalid or inaccessible: {target}")
 
         # Handle overwrite rules
-        if not overwrite and file_path.exists():
-            raise ValueError(f"Cannot overwrite file: {file_path}")
+        if file_path.exists() and not overwrite:
+            raise ValueError(f"File already exists and overwrite is disabled: {file_path}")
 
-        # --- Write depending on content type ---
-        if isinstance(content, (dict, list)):
-            file_path.write_text(json.dumps(content, indent=2))
+        # Ensure parent directory exists
+        try:
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            raise IOError(f"Failed to create parent directories: {e}")
 
-        elif isinstance(content, (bytes, bytearray)):
-            mode = "wb"
-            with open(file_path, mode) as f:
-                f.write(content)
-
-        else:
-            logger.debug("Saving text %s to path %s", content, file_path)
-            file_path.write_text(str(content))
+        # Write depending on content type
+        try:
+            if isinstance(content, (dict, list)):
+                file_path.write_text(json.dumps(content, indent=2))
+            elif isinstance(content, (bytes, bytearray)):
+                file_path.write_bytes(content)
+            else:
+                logger.debug("Saving text %s to path %s", content, file_path)
+                file_path.write_text(str(content),encoding="utf-8")
+        except Exception as e:
+            raise IOError(f"Failed to write file {file_path}: {e}")
 
         return file_path
 
@@ -304,7 +260,7 @@ class LocalStorageService(StorageService):
         ]
 
     def list_file_paths(self, target: str | Path, recursive: bool = False) -> List[str]:
-        target = Path(self.get_storage_path(target, relative=False))
+        target = Path(target)
         if not target.exists():
             logger.warning(f"Target path does not exist for {target}")
             return []
@@ -317,7 +273,7 @@ class LocalStorageService(StorageService):
         return super().does_file_exist(target, filename)
 
     def iterate(self, target: str | Path, recursive: bool = False):
-        target_path = Path(self.get_storage_path(target, relative=False))
+        target_path = Path(target)
         return target_path.rglob("*") if recursive else target_path.iterdir()
 
     # =========================================================================
@@ -388,7 +344,7 @@ class LocalStorageService(StorageService):
         Args:
             identifier: Unique identifier for the stored resource.
         """
-        target = Path(self.get_storage_path(target))
+        target = Path(target)
         logger.debug(f"Target to delete {target}")
         if target.exists():
             for f in target.iterdir():
@@ -396,8 +352,12 @@ class LocalStorageService(StorageService):
                     f.unlink()
             shutil.rmtree(target)
 
-    def hard_delete(self) -> None:
-        target = Path(self.get_base_path())
+    def hard_delete(self, target: TARGET | None) -> None:
+        if not target:
+            raise ValueError("Target must be passed")
+        if not isinstance(target, (str, Path)):
+            raise ValueError("Target of type Blob not allowed")
+        target = Path(target)
         if target.exists():
             for f in target.iterdir():
                 if f.is_file():

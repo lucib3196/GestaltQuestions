@@ -27,9 +27,12 @@ class AppSettings(BaseSettings):
     DATABASE_URI: str | None = None
     POSTGRES_URL: str | None = None
     SQLITE_DB_PATH: str | None = None
-
+    # FIREBASE CONFIG
     FIREBASE_CRED: str | None = None
     STORAGE_BUCKET: str | None = None
+    # FIREBASE EMULATOR
+    FIREBASE_AUTH_EMULATOR_HOST: str | None = None
+    STORAGE_EMULATOR_HOST: str | None = None
 
     SANDBOX_URL: str | None = None
     QUESTIONS_DIRNAME: str | Path
@@ -65,6 +68,16 @@ def get_settings() -> AppSettings:
         allowed_origins = allowed_origins.split(",")
     else:
         allowed_origins = ["http://localhost:5173"]
+
+    # Verify storage
+    if env_mode == "dev":
+        auth_emulator = os.getenv("FIREBASE_AUTH_EMULATOR_HOST", None)
+        storage_emulator = os.getenv("STORAGE_EMULATOR_HOST", None)
+
+        if auth_emulator is None:
+            raise ValueError("Env Mode set to dev. Auth emulator must be set")
+        if storage_emulator is None:
+            raise ValueError("Env Mode set to dev. Storage emulator must be set")
 
     app_settings = AppSettings(
         PROJECT_NAME="GestaltQuestions",

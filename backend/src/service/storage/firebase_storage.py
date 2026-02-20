@@ -6,84 +6,35 @@ from google.cloud.storage.blob import Blob
 from src.core.logging import logger
 from .base import StorageService
 from src.service.file_service.file_service import FileService
+from . import TARGET
+from src.core.firebase import initialize_firebase_app
+import os
+
+
+def is_emulator():
+    return "FIREBASE_STORAGE_EMULATOR_HOST" in os.environ
 
 
 class FirebaseStorage(StorageService):
-    def __init__(self, bucket, root, base):
+    def __init__(self, bucket):
         logger.info("[Firebase]: Intializing firebase storage ")
+        initialize_firebase_app()
         self.bucket = storage.bucket(bucket)
-        # The base is the name of where the storage starts
 
-        # This is the root of the cloud storage
-        #  This is meant for things such as UCRQUestions or CalPolyQuestions
-        self.root = root
-        # The base would be used for specific users such as UCRQuestions/Luciano
-        self.base = base
-
-    # =========================================================================
-    # Base path and metadata
-    # =========================================================================
-    def get_root_path(self) -> str:
-        return Path(self.root).as_posix()
-
-    def get_base_path(self) -> str:
-        return (Path(self.root) / self.base).as_posix()
-
-    def get_relative_to_base(self, target: str | Path | Blob) -> str:
-        if isinstance(target, Blob):
-            target = str(target.name)
-        # Convert to Path
-        target_path = Path(target)
-
-        # Case 1: Absolute path inside the storage _root_path
-        try:
-            relative_path = target_path.relative_to(self.root)
-            logger.info("Retrieved relative path fine %s", relative_path)
-        except ValueError:
-            # Case 2: Not inside _root_path (likely already relative or external)
-            relative_path = target_path
-
-        # Convert to posix string
-        rel_str = relative_path.as_posix().lstrip("/")
-
-        # 1. Avoid duplication
-        base = self.base
-        if rel_str == base:
-            return rel_str
-
-        # 2.  If rel_str starts with "questions/", do NOT prefix
-        if rel_str.startswith(f"{base}/"):
-            return rel_str
-        # Case 3: Ensure prefix, if it does not start
-        if not rel_str.startswith(f"{self.base}/"):
-            rel_str = f"{self.base}/{rel_str}"
-
-        return rel_str
-
-    # =========================================================================
-    # Storage path operations
-    # =========================================================================
-
-    def get_storage_path(self, target: str | Path | Blob, relative: bool = True) -> str:
-        """
-        The relative will always be returned
-        """
-        rel_str = self.get_relative_to_base(target)
-        if relative:
-            return rel_str
-
-        return (Path(self.get_root_path()) / rel_str).as_posix()
-
-    def create_storage_path(self, target: str | Path) -> str:
-        target_blob = self.get_storage_path(target, relative=False)
-        blob: Blob = self.bucket.blob(target_blob)
+    # Basic stuff
+    def create_storage_path(self, target: TARGET) -> str:
+        blob: Blob = self.bucket.blob(target)
         blob.upload_from_string("")
         return str(blob.name)
 
-    def copy_storage(self, old: str | Path, new: str | Path) -> str:
-        old = self.get_storage_path(old, relative=False)
-        new = self.get_storage_path(new, relative=True)
+    def does_storage_path_exist(self, target: TARGET) -> bool:
+        blob = self.bucket.get_blob(target)
+        if blob:
+            return True
+        else:
+            return False
 
+    def copy_storage(self, old: str | Path, new: str | Path) -> str:
         old_blob = self.bucket.get_blob(old)
         new_blob = self.bucket.copy_blob(old_blob, self.bucket, new)
         assert old_blob
@@ -91,34 +42,28 @@ class FirebaseStorage(StorageService):
         logger.info(f"[FirebaseStorage] Copied {old} → {new}")
         return str(new_blob.name)
 
-    def ensure_storage_path(self, target: str | Path) -> str:
+    def ensure_storage_path_exist(self, target: TARGET) -> str:
         if not self.does_storage_path_exist(target):
             logger.info("Storage Path does not exist creating one ")
             return self.create_storage_path(target)
         logger.info("Storage path exist")
-        return self.get_storage_path(target, relative=False)
+        if isinstance(target, Blob):
+            return str(target.name)
+        if isinstance(target,Path):
+            return target.as_posix()
+        return target
 
-    def does_storage_path_exist(self, target: str | Path) -> bool:
-        target = self.get_storage_path(target, relative=False)
-        blobs = list(self.bucket.list_blobs(prefix=target, max_results=1))
-        has_others = len(blobs) > 0
-        return len(blobs) > 0 or has_others
+    def rename_storage(self, old: TARGET, new: TARGET) -> str:
+        if not self.does_storage_path_exist(old):
+            raise ValueError("Old blob does not exist")
 
-    def rename_storage(self, old: str | Path, new: str | Path) -> str:
-        # Ensure that we get the blobs in the correct path
-        old_path = self.get_storage_path(old, relative=False)
-        new_path = self.get_storage_path(new, relative=False)
-
-        old_blob = self.bucket.get_blob(old_path)
-        logger.debug(f"This is the old blob {old_path}, {old_blob}")
-        # Copy the blob to the new location
-        new_blob = self.bucket.copy_blob(old_blob, self.bucket, new_path)
-        # Delete the original blob
-        assert old_blob
+        old_blob = self.bucket.blob(old)
+        old_content = old_blob.download_as_bytes()
+        renamed_blob = self.bucket.blob(new)
+        renamed_blob.upload_from_string(old_content)
         old_blob.delete()
 
-        logger.info(f"[FirebaseStorage] Renamed {old_path} → {new_path}")
-        return str(new_blob.name)
+        return str(renamed_blob.name)
 
     # =========================================================================
     # File operations: read, write, fetch
@@ -142,10 +87,9 @@ class FirebaseStorage(StorageService):
         return self.read_file(target, filename)
 
     def get_file_path(self, target: str | Path, filename: str | None = None) -> str:
-        storage = Path(self.get_storage_path(target, relative=False))
         if filename:
-            return (storage / filename).as_posix()
-        return storage.as_posix()
+            return (Path(target) / filename).as_posix()
+        return Path(target).as_posix()
 
     def open_file_stream(self, target: str | Path, filename: str) -> IO[bytes]:
         return super().open_file_stream(target, filename)
@@ -160,16 +104,15 @@ class FirebaseStorage(StorageService):
         """
         Upload a file to Firebase Storage. Supports both raw bytes and file-like objects.
         """
-        target_dir = Path(self.get_storage_path(target, relative=False))
-
+        target = Path(target)
         # Determine final file path
         if filename:
-            file_path = target_dir / filename
+            file_path = target / filename
         else:
-            if not target_dir.is_file():
+            if not target.is_file():
                 raise ValueError("A filename must be provided for non-file targets.")
-            filename = target_dir.name
-            file_path = target_dir
+            filename = target.name
+            file_path = target
         blob = self.bucket.blob(file_path.as_posix())
 
         # --- Case 1: raw bytes passed directly
@@ -201,26 +144,27 @@ class FirebaseStorage(StorageService):
         overwrite: bool = True,
     ) -> str:
 
+        # Validate inputs
+        if target is None:
+            raise ValueError("Target path cannot be None")
+        if content is None:
+            raise ValueError("Content cannot be None")
+
         try:
-            # Resolve directory path
-            target_dir = Path(self.get_storage_path(target, relative=False))
+            target = self.ensure_storage_path_exist(target)
+        except Exception as e:
+            raise IOError(f"Failed to ensure storage path exists: {e}")
 
-            # Determine final file path
-            if filename:
-                file_path = target_dir / filename
-            else:
-                if not target_dir.is_file():
-                    raise ValueError(
-                        "A filename must be provided for non-file targets."
-                    )
-                filename = target_dir.name
-                file_path = target_dir
+        if target.endswith("/"):
+            if not filename:
+                raise ValueError("Filename must be provided when target is a directory")
+            file_path = f"{target}/{filename}"
+        else:
+            file_path = target
 
-            # Ensure directory exists (make sure this is a DIRECTORY)
-            self.ensure_storage_path(target_dir.as_posix())
-
+        try:
             # Create Firebase blob reference
-            blob = self.bucket.blob(file_path.as_posix())
+            blob = self.bucket.blob(file_path)
 
             # Normalize content
             if isinstance(content, (dict, list)):
@@ -236,7 +180,7 @@ class FirebaseStorage(StorageService):
                 raise ValueError(f"Unsupported content type: {type(content)}")
 
             # Content type detection
-            content_type = FileService().get_content_type(filename)
+            content_type = FileService().get_content_type(file_path.split("/")[-1])
 
             # Upload to Firebase
             blob.upload_from_string(
@@ -273,7 +217,7 @@ class FirebaseStorage(StorageService):
         ]
 
     def list_file_paths(self, target: str | Path, recursive: bool = False) -> List[str]:
-        target = Path(self.get_storage_path(target, relative=False)).as_posix()
+        target = Path(target).as_posix()
 
         # Ensure consistent prefix ending
         if not target.endswith("/"):
@@ -332,5 +276,7 @@ class FirebaseStorage(StorageService):
         for f in file_paths:
             self.delete_file(f)
 
-    def hard_delete(self) -> None:
-        self.delete_storage(self.get_root_path())
+    def hard_delete(self, target=None) -> None:
+        blobs = self.bucket.list_blobs()
+        for blob in blobs:
+            blob.delete()

@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Optional, List, IO
 from google.cloud.storage.blob import Blob
 from src.core import logger
+from . import TARGET
 
 
 class StorageService:
@@ -13,44 +14,27 @@ class StorageService:
     with a given storage target.
     """
 
-    # =========================================================================
-    # Base path and metadata
-    # =========================================================================
-    def get_base_path(self) -> str:
-        raise NotImplementedError("get_base_path must be implemented by subclass")
+    # Basic creation and getting
+    def create_storage_path(self, target: TARGET) -> str:
+        raise NotImplementedError("create_storage_path must be implemented")
 
-    def get_root_path(self) -> str:
-        raise NotImplementedError("get_root_path must be implemented by subclass")
-
-    def get_relative_to_base(self, target: str | Path | Blob) -> str:
+    def does_storage_path_exist(self, target: TARGET) -> bool:
         raise NotImplementedError(
-            "get_relative_to_base must be implemented by subclass"
+            "does_storage_path_exist must be implemented by parent"
         )
-
-    # =========================================================================
-    # Storage path operations
-    # =========================================================================
-    def get_storage_path(self, target: str | Path, relative: bool = False) -> str:
-        """Return absolute or relative directory path for the given target."""
-        raise NotImplementedError
-
-    def create_storage_path(self, target: str | Path) -> Path | str:
-        """Create a directory or container for the storage target."""
-        raise NotImplementedError
-
-    def ensure_storage_path(self, target: str | Path) -> Path | str:
-        """
-        Create the target directory if it does not exist.
-        Equivalent to mkdir -p or cloud bucket ensure.
-        """
-        raise NotImplementedError
-
-    def does_storage_path_exist(self, target: str | Path) -> bool:
-        raise NotImplementedError
-
+    def get_storage_path(self,target: TARGET)->str:
+        raise NotImplementedError(
+            "get_storage_path must be implemented by parent"
+        )
+    def ensure_storage_path_exist(self, target: TARGET) -> str:
+        raise NotImplementedError(
+            "ensure_storage_path_exist must be implemented by parent"
+        )
+        
     def rename_storage(self, old: str | Path, new: str | Path) -> str:
-        raise NotImplementedError
-
+        raise NotImplementedError(
+            "rename_storage must be implemented by parent"
+        )
     # =========================================================================
     # File operations: read, write, fetch
     # =========================================================================
@@ -167,6 +151,6 @@ class StorageService:
     def delete_storage(self, target: str | Path) -> None:
         raise NotImplementedError
 
-    def hard_delete(self) -> None:
+    def hard_delete(self, target: TARGET | None) -> None:
         """Destructive: remove all storage contents for this backend."""
         raise NotImplementedError

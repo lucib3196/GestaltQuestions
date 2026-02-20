@@ -6,18 +6,12 @@ from app_test.shared.fixtures.fixture_crud import *
 from src.core import (
     get_settings,
     in_test_ctx,
-    initialize_firebase_app,
     logger,
     Base,
 )
-from src.service import (
-    FirebaseStorage,
-    LocalStorageService,
-    StorageService,
-    QuestionManager,
-)
+
+from . import FirebaseStorage, LocalStorageService, StorageService, QuestionManager, initialize_firebase_app
 from src.data import QuestionDB
-from src.service import QuestionManager
 
 
 settings = get_settings()
@@ -39,25 +33,22 @@ def question_db(db_session) -> QuestionDB:
 @pytest.fixture(scope="function")
 def cloud_storage_service():
     """Provide a FirebaseStorage instance connected to the test bucket."""
-    root = "test"
-    base = "questions"
-    return FirebaseStorage(settings.STORAGE_BUCKET, root=root, base=base)
 
+    return FirebaseStorage(settings.STORAGE_BUCKET)
+@pytest.fixture(autouse=True)
+def clean_firebase(cloud_storage_service):
+    return cloud_storage_service.hard_delete()
+    
 
 @pytest.fixture(scope="function")
-def local_storage(tmp_path):
+def local_storage()->LocalStorageService:
     """Provide a LocalStorageService rooted in a temporary directory."""
-    root = tmp_path
-    base = "questions"
-    return LocalStorageService(root, base="questions")
+    return LocalStorageService()
 
+@pytest.fixture(scope="function")
+def clean_up_local(tmp_path,local_storage):
+    local_storage.hard_delete(tmp_path)
 
-@pytest.fixture(autouse=True)
-def clean_up_cloud(cloud_storage_service):
-    """Clean up the test bucket after each test."""
-    yield
-    cloud_storage_service.hard_delete()
-    logger.debug("Deleting Bucket - Cleaning Up")
 
 
 @pytest.fixture(scope="function")

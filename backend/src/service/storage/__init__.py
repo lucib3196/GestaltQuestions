@@ -1,3 +1,4 @@
-from .base import StorageService
-from .local_storage import LocalStorageService
-from .firebase_storage import FirebaseStorage
+from google.cloud.storage.blob import Blob
+from pathlib import Path
+
+TARGET = str | Path | Blob

@@ -4,15 +4,8 @@ from pathlib import Path
 from src.utils import normalize, normalize_newlines
 from io import BytesIO
 from src.core import logger
-
-
-@pytest.fixture
-def create_test_dir(active_storage_backend) -> Tuple[Path, str]:
-    """Create a temporary test directory inside the local storage."""
-    testdir = "TestFolder"
-    created_dir = active_storage_backend.create_storage_path(testdir)
-    print("[TEST] This is the created dir", created_dir)
-    return created_dir, testdir
+from app_test.shared.factories.storage_factory import create_storage_path_factory
+from app_test.shared.mock_data.storage import TARGETS, RENAME_TARGETS, MOCK_FILES
 
 
 @pytest.fixture
@@ -35,75 +28,13 @@ def save_multiple_files(active_storage_backend, create_test_dir):
     return dir
 
 
-# -------------------------------------------------------------------------
-# Initialization / Lifecycle
-# -------------------------------------------------------------------------
-def test_storage_initialization(active_storage_backend):
-    """Verify both storage backends initialize correctly."""
-    backend = active_storage_backend
-
-    assert backend.get_root_path() is not None
-    assert backend.get_base_path() is not None
-
-
-# -------------------------------------------------------------------------
-# base_path path operations
-# -------------------------------------------------------------------------
-def test_backend_properties(active_storage_backend, storage_mode, tmp_path):
-    backend = active_storage_backend
-    base = "questions"
-
-    if storage_mode == "local":
-        assert backend.get_root_path() == tmp_path.as_posix()
-        assert backend.get_base_path() == (tmp_path / base).as_posix()
-
-    if storage_mode == "cloud":
-        root = "test"
-        assert backend.get_root_path() == root
-        assert backend.get_base_path() == (Path(root) / base).as_posix()
-
-
-def test_get_relative_to_base(active_storage_backend):
-    backend = active_storage_backend
-    base = "questions"
-
-    correct_path = f"{base}/MyQuestion"
-    assert backend.get_relative_to_base(correct_path) == correct_path
-
-    path_to_check = f"MyQuestion"
-    assert backend.get_relative_to_base(path_to_check) == correct_path
-
-
-def test_no_duplication(active_storage_backend):
-    backend = active_storage_backend
-    base = "questions"
-
-    # Case: Passing the base itself should NOT get duplicated
-    assert backend.get_relative_to_base(base) == base
-
-    # Case: Passing a child path should remain unchanged
-    assert backend.get_relative_to_base("questions/abc") == "questions/abc"
-
-    # Case: Passing a plain identifier should get prefixed
-    assert backend.get_relative_to_base("abc") == "questions/abc"
-
-
-def test_get_storage_no_duplication(active_storage_backend, storage_mode, tmp_path):
-    backend = active_storage_backend
-    base = "questions"
-
-    if storage_mode == "local":
-        assert (
-            backend.get_storage_path(base, relative=False)
-            == (tmp_path / base).as_posix()
-        )
-
-    if storage_mode == "cloud":
-        root = "test"
-        assert (
-            backend.get_storage_path(base, relative=False)
-            == (Path(root) / base).as_posix()
-        )
+@pytest.fixture
+def create_directory(active_storage_backend) -> Tuple[Path, str]:
+    """Create a temporary test directory inside the local storage."""
+    testdir = "TestFolder"
+    created_dir = active_storage_backend.create_storage_path(testdir)
+    print("[TEST] This is the created dir", created_dir)
+    return created_dir, testdir
 
 
 # =========================================================================
@@ -111,67 +42,69 @@ def test_get_storage_no_duplication(active_storage_backend, storage_mode, tmp_pa
 # =========================================================================
 
 
+@pytest.mark.parametrize(
+    "target",
+    TARGETS,
+)
 def test_create_storage_path(
-    create_test_dir, active_storage_backend, tmp_path, storage_mode
+    create_storage_path_factory, storage_mode, target, active_storage_backend
 ):
-    base = "questions"
-    created, folder_name = create_test_dir
+    target_path = create_storage_path_factory(storage_mode, target)
+    assert active_storage_backend.does_storage_path_exist(target_path)
 
+
+@pytest.mark.parametrize(
+    "target",
+    TARGETS,
+)
+def test_does_storage_path_exist_fake(
+    active_storage_backend, target, storage_mode, tmp_path
+):
     if storage_mode == "local":
-        target_path = Path(tmp_path / base / folder_name).as_posix()
-        assert created == target_path
-    if storage_mode == "cloud":
-        root = "test"
-        target_path = f"{root}/{base}/{folder_name}"
-        assert created == target_path
+        target = tmp_path / target
+    assert not active_storage_backend.does_storage_path_exist(target)
 
 
-def test_does_storage_path_exist(
-    create_test_dir, active_storage_backend, tmp_path, storage_mode
+@pytest.mark.parametrize(
+    "target",
+    TARGETS,
+)
+def test_ensure_storage_path_exist(target, active_storage_backend):
+    # Ensure it does not exist
+    assert not active_storage_backend.does_storage_path_exist(target)
+    # Actually create
+    active_storage_backend.ensure_storage_path_exist(target)
+    # Assert created
+    assert active_storage_backend.does_storage_path_exist(target)
+
+
+@pytest.mark.parametrize("source,target", RENAME_TARGETS)
+def test_rename_storage(
+    source: str | Path,
+    target: str | Path,
+    create_storage_path_factory,
+    active_storage_backend,
+    storage_mode: str,
+    tmp_path,
 ):
-    backend = active_storage_backend
-    created, _ = create_test_dir
-    assert backend.does_storage_path_exist(created)
+    if storage_mode == "local":
+        target = Path(tmp_path) / target
+        source = Path(tmp_path) / source
+    # 1️ Create the ORIGINAL path
+    original_path = create_storage_path_factory(storage_mode, source)
+    # Ensure initial state
+    assert active_storage_backend.does_storage_path_exist(original_path)
+    assert not active_storage_backend.does_storage_path_exist(target)
 
+    # 2️ Perform rename
+    active_storage_backend.rename_storage(
+        old=original_path,
+        new=target,
+    )
 
-def test_get_storage_path(create_test_dir, active_storage_backend):
-    backend = active_storage_backend
-    """Validate that get_storage_path returns the correct directory path."""
-    created, folder_name = create_test_dir
-    assert backend.get_storage_path(folder_name, False) == created
-
-
-def test_ensure_storage_path_exist(active_storage_backend, create_test_dir):
-    backend = active_storage_backend
-    created, folder_name = create_test_dir
-    assert backend.ensure_storage_path(folder_name) == created
-
-
-def test_ensure_storage_path_nonexist(active_storage_backend, create_test_dir):
-    backend = active_storage_backend
-    folder_name = "MyNewQuestion"
-    created = backend.ensure_storage_path(folder_name)
-    print("This is the created", created)
-
-
-def test_storage_path_exist(active_storage_backend, create_test_dir):
-    backend = active_storage_backend
-    created, folder_name = create_test_dir
-    assert backend.does_storage_path_exist(created)
-
-
-def test_rename_storage(active_storage_backend, create_test_dir):
-    backend = active_storage_backend
-    folder_name = "MyRename"
-    created, folder = create_test_dir
-    old_name = created
-    new = backend.get_storage_path(folder_name, relative=False)
-
-    renamed_storage = backend.rename_storage(old_name, new)
-
-    # Assert that the old one does not exist
-    assert backend.does_storage_path_exist(old_name) is False
-    assert backend.does_storage_path_exist(renamed_storage) is True
+    # 3️ Validate final state
+    assert not active_storage_backend.does_storage_path_exist(original_path)
+    assert active_storage_backend.does_storage_path_exist(target)
 
 
 # =========================================================================
@@ -179,28 +112,21 @@ def test_rename_storage(active_storage_backend, create_test_dir):
 # =========================================================================
 
 
-@pytest.mark.parametrize(
-    "filename, content",
-    [
-        (
-            "text.txt",
-            "Hello World",
-        ),  # string
-        ("data.json", {"key": "value"}),  # dict
-        ("binary.bin", b"\x00\x01\x02"),  # bytes
-    ],
-)
+@pytest.mark.parametrize("filename,content", MOCK_FILES)
 def test_save_file(
     active_storage_backend,
-    create_test_dir,
+    create_storage_path_factory,
+    storage_mode,
     filename,
     content,
 ):
     """Ensure save_file correctly"""
-    target, _ = create_test_dir
-    f = active_storage_backend.save_file(target, content, filename, overwrite=True)
+    target_path = create_storage_path_factory(storage_mode, "test")
+    f = active_storage_backend.save_file(
+        target_path, content, filename=filename, overwrite=True
+    )
     f = Path(f)
-    assert f.name == filename
+    assert f.name == Path(filename).name
 
 
 @pytest.mark.parametrize(
