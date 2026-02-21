@@ -22,7 +22,6 @@ def save_multiple_files(active_storage_backend, create_test_dir):
         active_storage_backend.save_file(
             name,
             content,
-            filename,
         )
 
     return dir
@@ -112,7 +111,7 @@ def test_rename_storage(
 
 
 # =========================================================================
-# File operations: read, write, fetch
+# File operations: read, write,
 # =========================================================================
 
 
@@ -125,12 +124,11 @@ def test_save_file(
     content,
 ):
     """Ensure save_file correctly"""
-    target_path = create_storage_path_factory(storage_mode, "test")
-    f = active_storage_backend.save_file(
-        target_path, content, filename=filename, overwrite=True
-    )
-    f = Path(f)
-    assert f.name == Path(filename).name
+    base_path  = create_storage_path_factory(storage_mode, "test")
+    target = f"{base_path}/{filename}"
+    f = active_storage_backend.save_file(target, content, overwrite=True)
+    assert active_storage_backend.does_storage_path_exist(target)
+
 
 
 @pytest.mark.parametrize("filename,content", MOCK_FILES)
@@ -141,27 +139,11 @@ def test_read_file(
     filename,
     content,
 ):
-    target_path = create_storage_path_factory(storage_mode, filename)
-    active_storage_backend.save_file(
-        target_path, content, filename=filename, overwrite=True
-    )
-    raw_bytes = active_storage_backend.read_file(target_path, filename)
+    base_path  = create_storage_path_factory(storage_mode, "test")
+    target = f"{base_path}/{filename}"
+    active_storage_backend.save_file(target, content, overwrite=True)
+    raw_bytes = active_storage_backend.read_file(target)
     assert normalize_newlines(raw_bytes) == normalize_newlines(normalize(content))
-
-
-@pytest.mark.parametrize("filename,content", MOCK_FILES)
-def test_get_file_path(
-    active_storage_backend,
-    create_storage_path_factory,
-    storage_mode,
-    filename,
-    content,
-):
-    base_path = create_storage_path_factory(storage_mode, filename)
-    active_storage_backend.save_file(base_path, content, filename)
-    target_path = f"{base_path}/{filename}"
-    
-    assert active_storage_backend.get_file_path(base_path, filename) == target_path
 
 
 # =========================================================================
@@ -179,9 +161,7 @@ def test_list_file_paths(active_storage_backend):
 
     # Save all test files
     for filename, content in data:
-        active_storage_backend.save_file(
-            target=target, content=content, filename=filename
-        )
+        active_storage_backend.save_file(target=target, content=content)
     # Retrieve file paths
     retrieved_paths = active_storage_backend.list_file_paths(target)
     # Number of returned files should match what we saved

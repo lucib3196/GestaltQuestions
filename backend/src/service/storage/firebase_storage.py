@@ -61,23 +61,6 @@ class FirebaseStorage(StorageService):
 
         return str(renamed_blob.name)
 
-    def get_file_path(self, target: TARGET, filename: str | None = None) -> str:
-        if target is None or not self.does_storage_path_exist(target):
-            raise ValueError("Target path cannot be None or does not exist")
-
-        try:
-            target = self.ensure_storage_path_exist(target)
-        except Exception as e:
-            raise IOError(f"Failed to ensure storage path exists: {e}")
-
-        if target.endswith("/"):
-            if not filename:
-                raise ValueError("Filename must be provided when target is a directory")
-            file_path = f"{target}_{filename}"
-        else:
-            file_path = target
-        return file_path
-
     # =========================================================================
     # File operations: read, write, fetch
     # =========================================================================
@@ -85,14 +68,14 @@ class FirebaseStorage(StorageService):
         self,
         target: str | Path,
         content: str | dict | List | bytes | bytearray,
-        filename: str | None = None,
         overwrite: bool = True,
     ) -> str:
+        if isinstance(target, Path):
+            target = target.as_posix()
 
-        file_path = self.get_file_path(target, filename)
         try:
             # Create Firebase blob reference
-            blob = self.bucket.blob(file_path)
+            blob = self.bucket.blob(target)
 
             # Normalize content
             if isinstance(content, (dict, list)):
@@ -108,7 +91,7 @@ class FirebaseStorage(StorageService):
                 raise ValueError(f"Unsupported content type: {type(content)}")
 
             # Content type detection
-            content_type = FileService().get_content_type(file_path.split("/")[-1])
+            content_type = FileService().get_content_type(target.split("/")[-1])
 
             # Upload to Firebase
             blob.upload_from_string(
@@ -117,17 +100,16 @@ class FirebaseStorage(StorageService):
             )
 
             # Return file path or URI
-            return self.get_file_path(target, filename)
+            return target
 
         except Exception as e:
-            raise ValueError(f"Could not save file '{filename}': {e}") from e
+            raise ValueError(f"Could not save file: {e}") from e
 
     def read_file(
-        self, target: str | Path, filename: Optional[str] = None
+        self, target: str | Path
     ) -> bytes | None:
         try:
-            file = self.get_file_path(target, filename)
-            blob = self.bucket.get_blob(file)
+            blob = self.bucket.get_blob(target)
             if blob is None:
                 return None
             return blob.download_as_bytes()
@@ -136,10 +118,9 @@ class FirebaseStorage(StorageService):
             raise ValueError(f"Could not read contents from blob {e}")
 
     def download_file(
-        self, target: str | Path, filename: str | None = None
+        self, target: str | Path, 
     ) -> bytes | None:
-        return self.read_file(target, filename)
-
+        return self.read_file(target)
 
     # =========================================================================
     # Metadata operations
@@ -184,8 +165,7 @@ class FirebaseStorage(StorageService):
         # Recursive: include everything under this prefix
         return [blob.name for blob in blobs]
 
-    def does_file_exist(self, target: str | Path, filename: str | None = None):
-        return Path(self.get_file_path(target, filename)).exists()
+
 
     # =========================================================================
     # Mutating operations: copy, move, delete
@@ -213,7 +193,8 @@ class FirebaseStorage(StorageService):
         )
 
     def delete_file(self, target: str | Path, filename: str | None = None) -> None:
-        target = self.get_file_path(target, filename)
+        if isinstance(target,Path):
+            target = target.as_posix()
         blob = self.bucket.get_blob(target)
         if blob and blob.exists():
             blob.delete()

@@ -33,23 +33,20 @@ class StorageService:
 
     def rename_storage(self, old: str | Path, new: str | Path) -> str:
         raise NotImplementedError("rename_storage must be implemented by parent")
-    def get_file_path(
-        self, target: str | Path, filename: Optional[str] = None
-    ) -> str | Path:
-        """Return absolute path or backend URI to a file."""
-        raise NotImplementedError
+
+
 
     # =========================================================================
     # File operations: read, write, fetch
     # =========================================================================
     def read_file(
-        self, target: str | Path, filename: Optional[str] = None
+        self, target: str | Path,
     ) -> Optional[bytes]:
         """Return raw byte content of a file."""
         raise NotImplementedError
 
     def download_file(
-        self, target: str | Path, filename: Optional[str] = None
+        self, target: str | Path,
     ) -> bytes | None:
         """
         Explicit download operation—separate from read_file for clarity.
@@ -57,13 +54,10 @@ class StorageService:
         """
         raise NotImplementedError
 
-    
-
     def save_file(
         self,
         target: str | Path,
         content: str | dict | list | bytes | bytearray,
-        filename: Optional[str] = None,
         overwrite: bool = True,
     ) -> Path | str:
         raise NotImplementedError
@@ -99,8 +93,6 @@ class StorageService:
     def list_file_paths(self, target: str | Path, recursive: bool = False) -> List[str]:
         raise NotImplementedError
 
-    def does_file_exist(self, target: str | Path, filename: str | None = None) -> bool:
-        raise NotImplementedError
 
     def iterate(self, target: str | Path, recursive: bool = False):
         raise NotImplementedError

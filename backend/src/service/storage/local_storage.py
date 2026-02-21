@@ -94,7 +94,7 @@ class LocalStorageService(StorageService):
     # =========================================================================
 
     def read_file(
-        self, target: str | Path, filename: str | None = None
+        self, target: str | Path
     ) -> bytes | None:
         """
         Retrieve a file's contents by its identifier and filename.
@@ -106,7 +106,7 @@ class LocalStorageService(StorageService):
         Returns:
             bytes | None: File contents if found, otherwise None.
         """
-        target = Path(self.get_file_path(target, filename))
+        target = Path(target)
 
         if target.exists() and target.is_file():
             return target.read_bytes()
@@ -115,15 +115,7 @@ class LocalStorageService(StorageService):
     def download_file(
         self, target: str | Path, filename: str | None = None
     ) -> bytes | None:
-        return self.read_file(target, filename)
-
-    def get_file_path(self, target: str | Path, filename: str | None = None) -> str:
-        target = Path(target)
-        if filename:
-            target = target / filename
-            return target.as_posix()
-        else:
-            return target.as_posix()
+        return self.read_file(target)
 
     def get_file(
         self, target: str | Path, filename: str | None = None, recursive: bool = False
@@ -149,15 +141,13 @@ class LocalStorageService(StorageService):
         self,
         target: str | Path,
         content: Union[str, dict, list, bytes, bytearray],
-        filename: str | None = None,
         overwrite: bool = True,
     ) -> Path:
         """
-        Save a file to the given target directory.
+        Save a file to the given target path.
 
         Args:
-            target: Directory to save into. Can be absolute or relative.
-            filename: Target filename.
+            target: File path to save to. Can be absolute or relative.
             content: Content to write.
             overwrite: Whether to overwrite an existing file.
 
@@ -175,31 +165,16 @@ class LocalStorageService(StorageService):
             raise ValueError("Content cannot be None")
 
         try:
-            target = Path(self.ensure_storage_path_exist(target))
+            file_path = Path(target).resolve()
+            file_path.parent.mkdir(parents=True, exist_ok=True)
         except Exception as e:
             raise IOError(f"Failed to ensure storage path exists: {e}")
-
-        # Determine file path
-        if target.is_dir():
-            if not filename:
-                raise ValueError("Filename must be provided when target is a directory")
-            file_path = (target / filename).resolve()
-        elif target.is_file():
-            file_path = target
-        else:
-            raise ValueError(f"Target path is invalid or inaccessible: {target}")
 
         # Handle overwrite rules
         if file_path.exists() and not overwrite:
             raise ValueError(
                 f"File already exists and overwrite is disabled: {file_path}"
             )
-
-        # Ensure parent directory exists
-        try:
-            file_path.parent.mkdir(parents=True, exist_ok=True)
-        except Exception as e:
-            raise IOError(f"Failed to create parent directories: {e}")
 
         # Write depending on content type
         try:
@@ -251,8 +226,6 @@ class LocalStorageService(StorageService):
         else:
             return [f.as_posix() for f in target.iterdir()]
 
-    def does_file_exist(self, target: str | Path, filename: str | None = None) -> bool:
-        return super().does_file_exist(target, filename)
 
     def iterate(self, target: str | Path, recursive: bool = False):
         target_path = Path(target)
@@ -311,7 +284,7 @@ class LocalStorageService(StorageService):
             identifier: Unique identifier for the stored resource.
             filename: Name of the file to delete.
         """
-        target = Path(self.get_file_path(target, filename))
+        target = Path(target)
         logger.debug(f"[LOCAL STORAGE] Attempting to delete [target]: {target}")
         if target and target.exists():
             logger.debug(f"[LOCAL STORAGE] Deleting file {target}")
