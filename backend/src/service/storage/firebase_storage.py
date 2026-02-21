@@ -11,10 +11,6 @@ from src.core.firebase import initialize_firebase_app
 import os
 
 
-def is_emulator():
-    return "FIREBASE_STORAGE_EMULATOR_HOST" in os.environ
-
-
 class FirebaseStorage(StorageService):
     def __init__(self, bucket):
         logger.info("[Firebase]: Intializing firebase storage ")
@@ -49,7 +45,7 @@ class FirebaseStorage(StorageService):
         logger.info("Storage path exist")
         if isinstance(target, Blob):
             return str(target.name)
-        if isinstance(target,Path):
+        if isinstance(target, Path):
             return target.as_posix()
         return target
 
@@ -65,90 +61,9 @@ class FirebaseStorage(StorageService):
 
         return str(renamed_blob.name)
 
-    # =========================================================================
-    # File operations: read, write, fetch
-    # =========================================================================
-    def read_file(
-        self, target: str | Path, filename: Optional[str] = None
-    ) -> bytes | None:
-        try:
-            file = self.get_file_path(target, filename)
-            blob = self.bucket.get_blob(file)
-            if blob is None:
-                return None
-            return blob.download_as_bytes()
-
-        except Exception as e:
-            raise ValueError(f"Could not read contents from blob {e}")
-
-    def download_file(
-        self, target: str | Path, filename: str | None = None
-    ) -> bytes | None:
-        return self.read_file(target, filename)
-
-    def get_file_path(self, target: str | Path, filename: str | None = None) -> str:
-        if filename:
-            return (Path(target) / filename).as_posix()
-        return Path(target).as_posix()
-
-    def open_file_stream(self, target: str | Path, filename: str) -> IO[bytes]:
-        return super().open_file_stream(target, filename)
-
-    def upload_file(
-        self,
-        file_obj: IO[bytes] | bytes,
-        target: str | Path,
-        filename: str | None = None,
-        content_type: str = "application/octet-stream",
-    ) -> Blob:
-        """
-        Upload a file to Firebase Storage. Supports both raw bytes and file-like objects.
-        """
-        target = Path(target)
-        # Determine final file path
-        if filename:
-            file_path = target / filename
-        else:
-            if not target.is_file():
-                raise ValueError("A filename must be provided for non-file targets.")
-            filename = target.name
-            file_path = target
-        blob = self.bucket.blob(file_path.as_posix())
-
-        # --- Case 1: raw bytes passed directly
-        if isinstance(file_obj, (bytes, bytearray)):
-            blob.upload_from_string(
-                data=file_obj,
-                content_type=content_type,
-            )
-            return blob
-
-        # --- Case 2: file-like object (e.g., BytesIO, uploaded file)
-        try:
-            file_obj.seek(0)  # type: ignore
-        except Exception:
-            pass  # ignore if stream doesn't support seeking
-
-        blob.upload_from_file(
-            file_obj,
-            content_type=content_type,
-        )
-
-        return blob
-
-    def save_file(
-        self,
-        target: str | Path,
-        content: str | dict | List | bytes | bytearray,
-        filename: str | None = None,
-        overwrite: bool = True,
-    ) -> str:
-
-        # Validate inputs
-        if target is None:
-            raise ValueError("Target path cannot be None")
-        if content is None:
-            raise ValueError("Content cannot be None")
+    def get_file_path(self, target: TARGET, filename: str | None = None) -> str:
+        if target is None or not self.does_storage_path_exist(target):
+            raise ValueError("Target path cannot be None or does not exist")
 
         try:
             target = self.ensure_storage_path_exist(target)
@@ -158,10 +73,23 @@ class FirebaseStorage(StorageService):
         if target.endswith("/"):
             if not filename:
                 raise ValueError("Filename must be provided when target is a directory")
-            file_path = f"{target}/{filename}"
+            file_path = f"{target}_{filename}"
         else:
             file_path = target
+        return file_path
 
+    # =========================================================================
+    # File operations: read, write, fetch
+    # =========================================================================
+    def save_file(
+        self,
+        target: str | Path,
+        content: str | dict | List | bytes | bytearray,
+        filename: str | None = None,
+        overwrite: bool = True,
+    ) -> str:
+
+        file_path = self.get_file_path(target, filename)
         try:
             # Create Firebase blob reference
             blob = self.bucket.blob(file_path)
@@ -193,6 +121,25 @@ class FirebaseStorage(StorageService):
 
         except Exception as e:
             raise ValueError(f"Could not save file '{filename}': {e}") from e
+
+    def read_file(
+        self, target: str | Path, filename: Optional[str] = None
+    ) -> bytes | None:
+        try:
+            file = self.get_file_path(target, filename)
+            blob = self.bucket.get_blob(file)
+            if blob is None:
+                return None
+            return blob.download_as_bytes()
+
+        except Exception as e:
+            raise ValueError(f"Could not read contents from blob {e}")
+
+    def download_file(
+        self, target: str | Path, filename: str | None = None
+    ) -> bytes | None:
+        return self.read_file(target, filename)
+
 
     # =========================================================================
     # Metadata operations

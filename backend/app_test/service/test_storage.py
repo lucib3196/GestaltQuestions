@@ -69,7 +69,11 @@ def test_does_storage_path_exist_fake(
     "target",
     TARGETS,
 )
-def test_ensure_storage_path_exist(target, active_storage_backend):
+def test_ensure_storage_path_exist(
+    target, active_storage_backend, storage_mode, tmp_path
+):
+    if storage_mode == "local":
+        target = tmp_path / target
     # Ensure it does not exist
     assert not active_storage_backend.does_storage_path_exist(target)
     # Actually create
@@ -129,87 +133,35 @@ def test_save_file(
     assert f.name == Path(filename).name
 
 
-@pytest.mark.parametrize(
-    "filename, content",
-    [
-        ("text.txt", "Hello World"),  # string
-        ("data.json", {"key": "value"}),  # dict → json
-        ("binary.bin", b"\x00\x01\x02"),  # bytes → raw bytes
-    ],
-)
-def test_read_file(active_storage_backend, create_test_dir, filename, content):
-    target, _ = create_test_dir
-    # --- Write file ---
-    f = active_storage_backend.save_file(target, content, filename, overwrite=True)
-    logger.info(f"Saved file to {f}")
-    # --- Read file as raw bytes ---
-    raw_bytes = active_storage_backend.read_file(target, filename)
-
+@pytest.mark.parametrize("filename,content", MOCK_FILES)
+def test_read_file(
+    active_storage_backend,
+    create_storage_path_factory,
+    storage_mode,
+    filename,
+    content,
+):
+    target_path = create_storage_path_factory(storage_mode, filename)
+    active_storage_backend.save_file(
+        target_path, content, filename=filename, overwrite=True
+    )
+    raw_bytes = active_storage_backend.read_file(target_path, filename)
     assert normalize_newlines(raw_bytes) == normalize_newlines(normalize(content))
 
 
-# Same current functionality as read file
-@pytest.mark.parametrize(
-    "filename, content",
-    [
-        ("text.txt", "Hello World"),  # string
-        ("data.json", {"key": "value"}),  # dict → json
-        ("binary.bin", b"\x00\x01\x02"),  # bytes → raw bytes
-    ],
-)
-def test_download_file(active_storage_backend, create_test_dir, filename, content):
-    target, _ = create_test_dir
-    # --- Write file ---
-    active_storage_backend.save_file(target, content, filename, overwrite=True)
-    # --- Read file as raw bytes ---
-    raw_bytes = active_storage_backend.download_file(target, filename)
-    assert normalize_newlines(raw_bytes) == normalize_newlines(normalize(content))
-
-
-@pytest.mark.parametrize(
-    "filename, content",
-    [
-        ("text.txt", "Hello World"),  # string
-        ("data.json", {"key": "value"}),  # dict → json
-        ("binary.bin", b"\x00\x01\x02"),  # bytes → raw bytes
-    ],
-)
-def test_get_file_path(active_storage_backend, create_test_dir, filename, content):
-    target, _ = create_test_dir
-    active_storage_backend.save_file(target, content, filename)
-    target_path = Path(target) / filename
-    assert (
-        active_storage_backend.get_file_path(target, filename) == target_path.as_posix()
-    )
-
-
-@pytest.mark.parametrize(
-    "filename, file_content",
-    [
-        ("hello.txt", b"Hello World"),  # raw bytes
-        ("data.bin", b"\x00\x01\x02\x03"),  # binary content
-        ("from_io.txt", BytesIO(b"streamed data")),  # file-like object
-    ],
-)
-def test_upload_file(active_storage_backend, create_test_dir, filename, file_content):
-    target, _ = create_test_dir
-
-    if isinstance(file_content, BytesIO):
-        file_obj = file_content
-        expected_bytes = file_content.getvalue()
-    else:
-        file_obj = BytesIO(file_content)
-        expected_bytes = file_content
-
-    # Upload the file
-    upload = active_storage_backend.upload_file(
-        file_obj=file_obj,
-        target=target,
-        filename=filename,
-        content_type="application/octet-stream",
-    )
-    assert upload is not None
-    assert active_storage_backend.read_file(target, filename) == expected_bytes
+@pytest.mark.parametrize("filename,content", MOCK_FILES)
+def test_get_file_path(
+    active_storage_backend,
+    create_storage_path_factory,
+    storage_mode,
+    filename,
+    content,
+):
+    base_path = create_storage_path_factory(storage_mode, filename)
+    active_storage_backend.save_file(base_path, content, filename)
+    target_path = f"{base_path}/{filename}"
+    
+    assert active_storage_backend.get_file_path(base_path, filename) == target_path
 
 
 # =========================================================================

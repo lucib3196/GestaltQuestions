@@ -125,26 +125,6 @@ class LocalStorageService(StorageService):
         else:
             return target.as_posix()
 
-    def open_file_stream(self, target: str | Path, filename: str) -> IO[bytes]:
-        return super().open_file_stream(target, filename)
-
-    def upload_file(
-        self,
-        file_obj: IO[bytes],
-        target: str | Path,
-        filename: str | None = None,
-        content_type: str = "application/octet-stream",
-    ) -> Blob | Path:
-        self.get_file_path(target, filename)
-        if isinstance(file_obj, bytes):
-            return self.save_file(target, file_obj, filename)
-        else:
-            try:
-                file_obj.seek(0)
-            except Exception:
-                pass  # not all IO objects support seek
-        return self.save_file(target, file_obj.read(), filename)
-
     def get_file(
         self, target: str | Path, filename: str | None = None, recursive: bool = False
     ) -> str:
@@ -211,7 +191,9 @@ class LocalStorageService(StorageService):
 
         # Handle overwrite rules
         if file_path.exists() and not overwrite:
-            raise ValueError(f"File already exists and overwrite is disabled: {file_path}")
+            raise ValueError(
+                f"File already exists and overwrite is disabled: {file_path}"
+            )
 
         # Ensure parent directory exists
         try:
@@ -227,7 +209,7 @@ class LocalStorageService(StorageService):
                 file_path.write_bytes(content)
             else:
                 logger.debug("Saving text %s to path %s", content, file_path)
-                file_path.write_text(str(content),encoding="utf-8")
+                file_path.write_text(str(content), encoding="utf-8")
         except Exception as e:
             raise IOError(f"Failed to write file {file_path}: {e}")
 

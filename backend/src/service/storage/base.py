@@ -22,19 +22,23 @@ class StorageService:
         raise NotImplementedError(
             "does_storage_path_exist must be implemented by parent"
         )
-    def get_storage_path(self,target: TARGET)->str:
-        raise NotImplementedError(
-            "get_storage_path must be implemented by parent"
-        )
+
+    def get_storage_path(self, target: TARGET) -> str:
+        raise NotImplementedError("get_storage_path must be implemented by parent")
+
     def ensure_storage_path_exist(self, target: TARGET) -> str:
         raise NotImplementedError(
             "ensure_storage_path_exist must be implemented by parent"
         )
-        
+
     def rename_storage(self, old: str | Path, new: str | Path) -> str:
-        raise NotImplementedError(
-            "rename_storage must be implemented by parent"
-        )
+        raise NotImplementedError("rename_storage must be implemented by parent")
+    def get_file_path(
+        self, target: str | Path, filename: Optional[str] = None
+    ) -> str | Path:
+        """Return absolute path or backend URI to a file."""
+        raise NotImplementedError
+
     # =========================================================================
     # File operations: read, write, fetch
     # =========================================================================
@@ -53,24 +57,7 @@ class StorageService:
         """
         raise NotImplementedError
 
-    def get_file_path(
-        self, target: str | Path, filename: Optional[str] = None
-    ) -> str | Path:
-        """Return absolute path or backend URI to a file."""
-        raise NotImplementedError
-
-    def open_file_stream(self, target: str | Path, filename: str) -> IO[bytes]:
-        """Stream a file (useful for large files or cloud streaming)."""
-        raise NotImplementedError
-
-    def upload_file(
-        self,
-        file_obj: IO[bytes],
-        target: str | Path,
-        filename: Optional[str] = None,
-        content_type: str = "application/octet-stream",
-    ) -> Blob | Path:
-        raise NotImplementedError
+    
 
     def save_file(
         self,

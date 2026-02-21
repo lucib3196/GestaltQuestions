@@ -14,8 +14,10 @@ from src.types import UnsyncedQuestion, SyncMetrics, FolderCheckMetrics, Questio
 
 from src.model.question import Question
 
-from src.utils import to_serializable, safe_dir_name
-from src.service import StorageService, QuestionManager
+from src.utils import to_serializable
+from src.service.question_manager.question_manager import QuestionManager
+from src.service.storage.local_storage import StorageService
+
 
 
 class QuestionSync:

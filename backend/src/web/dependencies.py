@@ -10,12 +10,11 @@ from firebase_admin.auth import verify_id_token
 from src.core import SessionDep, logger
 from src.core.config import AppSettings, get_settings
 from src.data import QuestionDB
-from src.service import (
-    FirebaseStorage,
-    LocalStorageService,
-    QuestionManager,
-    StorageService,
-)
+from src.service.storage.firebase_storage import FirebaseStorage
+from src.service.storage.local_storage import LocalStorageService
+from src.service.question_manager.question_manager import QuestionManager
+from src.service.storage.local_storage import StorageService
+
 from src.types import STORAGE_TYPE
 
 
@@ -72,15 +71,10 @@ def get_storage_manager() -> StorageService:
         if not (settings.FIREBASE_CRED and settings.STORAGE_BUCKET):
             raise ValueError("Settings for Cloud Storage not Set")
         storage_service = FirebaseStorage(
-            root="/gestaltQuestions",
-            base="questions",
             bucket=settings.STORAGE_BUCKET,
         )
     else:
-        storage_service = LocalStorageService(
-            str(settings.PROJECT_ROOT),
-            "questions",
-        )
+        storage_service = LocalStorageService()
 
     logger.debug(f"Question manager set to {settings.STORAGE_SERVICE}")
     logger.debug("Initialized Question Manager Success")
