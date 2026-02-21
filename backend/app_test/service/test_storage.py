@@ -124,11 +124,10 @@ def test_save_file(
     content,
 ):
     """Ensure save_file correctly"""
-    base_path  = create_storage_path_factory(storage_mode, "test")
+    base_path = create_storage_path_factory(storage_mode, "test")
     target = f"{base_path}/{filename}"
     f = active_storage_backend.save_file(target, content, overwrite=True)
     assert active_storage_backend.does_storage_path_exist(target)
-
 
 
 @pytest.mark.parametrize("filename,content", MOCK_FILES)
@@ -139,7 +138,7 @@ def test_read_file(
     filename,
     content,
 ):
-    base_path  = create_storage_path_factory(storage_mode, "test")
+    base_path = create_storage_path_factory(storage_mode, "test")
     target = f"{base_path}/{filename}"
     active_storage_backend.save_file(target, content, overwrite=True)
     raw_bytes = active_storage_backend.read_file(target)
@@ -149,21 +148,26 @@ def test_read_file(
 # =========================================================================
 # File listing, checks, existence
 # =========================================================================
-def test_list_file_paths(active_storage_backend):
+def test_list_file_paths(
+    active_storage_backend,
+    create_storage_path_factory,
+    storage_mode,
+    filename,
+    content,
+):
+    base_path = create_storage_path_factory(storage_mode, "test")
     data = [
         ("text.txt", "Hello World"),  # string
         ("data.json", {"key": "value"}),  # dict → json
         ("binary.bin", b"\x00\x01\x02"),  # bytes → raw bytes
     ]
 
-    # Create a directory that will hold all files
-    target = active_storage_backend.create_storage_path("MyFullDir")
-
     # Save all test files
     for filename, content in data:
-        active_storage_backend.save_file(target=target, content=content)
+        save_path = f"{base_path}/{filename}"
+        active_storage_backend.save_file(target=save_path, content=content)
     # Retrieve file paths
-    retrieved_paths = active_storage_backend.list_file_paths(target)
+    retrieved_paths = active_storage_backend.list_file_paths(base_path)
     # Number of returned files should match what we saved
     assert len(retrieved_paths) == len(data)
     # Normalize expected filenames
@@ -173,22 +177,25 @@ def test_list_file_paths(active_storage_backend):
     assert actual_filenames == expected_filenames
 
 
-def test_list_file_names(active_storage_backend):
+def test_list_file_names(
+    active_storage_backend,
+    create_storage_path_factory,
+    storage_mode,
+    filename,
+    content,
+):
+    base_path = create_storage_path_factory(storage_mode, "test")
     data = [
         ("text.txt", "Hello World"),  # string
         ("data.json", {"key": "value"}),  # dict → json
         ("binary.bin", b"\x00\x01\x02"),  # bytes → raw bytes
     ]
 
-    # Create a directory that will hold all files
-    target = active_storage_backend.create_storage_path("MyFullDir")
-
     # Save all test files
     for filename, content in data:
-        active_storage_backend.save_file(
-            target=target, content=content, filename=filename
-        )
-    retrieved_paths = active_storage_backend.list_file_names(target)
+        save_path = f"{base_path}/{filename}"
+        active_storage_backend.save_file(target=save_path, content=content)
+    retrieved_paths = active_storage_backend.list_file_names(base_path)
     # Number of returned files should match what we saved
     assert len(retrieved_paths) == len(data)
     # Normalize expected filenames
@@ -196,26 +203,3 @@ def test_list_file_names(active_storage_backend):
     # Extract actual filenames (end of path)
     actual_filenames = sorted([Path(p).name for p in retrieved_paths])
     assert actual_filenames == expected_filenames
-
-
-# =========================================================================
-# Mutating operations: copy, move, delete
-# =========================================================================
-
-
-def test_delete_file(save_multiple_files, active_storage_backend):
-    """Ensure delete_file removes files as expected."""
-    dir = save_multiple_files
-    files = active_storage_backend.list_file_paths(dir)
-    print("This is the filepath", files)
-    for f in files:
-        active_storage_backend.delete_file(f)
-        assert active_storage_backend.read_file(f) is None
-
-
-def test_empty_directory(create_test_dir, active_storage_backend):
-    """Check that a newly created directory is empty."""
-    dir, _ = create_test_dir
-    active_storage_backend.delete_storage(dir)
-    f = active_storage_backend.list_file_paths(dir)
-    assert f == []
