@@ -1,320 +1,100 @@
-# --- Standard Library ---
-import json
 from pathlib import Path
-from typing import IO, List, Union
+from typing import List
 import shutil
-
-# --- Internal ---
-from .base import StorageService
-from src.core import logger
 from google.cloud.storage.blob import Blob
+from typing import Sequence
+import shutil
+from .base import Storage
 from . import TARGET
 
 
-class LocalStorageService(StorageService):
-    """
-    Local storage implementation of `StorageService`.
+class LocalStorage(Storage):
 
-    and download operations.
-    """
+    def _resolve(self, target: TARGET) -> Path:
+        return Path(self._to_storage_path(target)).resolve()
 
-    # -------------------------------------------------------------------------
-    # Initialization / Lifecycle
-    # -------------------------------------------------------------------------
+    def exists(self, target: str | Path | Blob) -> bool:
+        storage_path = self._to_storage_path(target)
+        return self._resolve(storage_path).exists()
 
-    def __init__(
+    def create_dir(self, target: str | Path | Blob) -> str | Path | Blob:
+        storage_path = self._to_storage_path(target)
+        path = self._resolve(storage_path)
+        if path.is_file():
+            raise ValueError("Cannot create directory. Received file")
+        path.mkdir(parents=True, exist_ok=True)
+        return path.as_posix()
+
+    def read(self, target: str | Path | Blob) -> bytes:
+        storage_path = self._to_storage_path(target)
+        path = self._resolve(storage_path)
+        return path.read_bytes()
+
+    def write(
         self,
-    ):
-        """
-        Initialize the local storage service with a base_path directory.
-
-        Args:
-            _root_path: Path or string specifying the _root_path storage directory.
-        """
-
-    def create_storage_path(self, target: TARGET) -> str:
-        """
-        Create a directory for the given identifier if it does not exist.
-
-        Args:
-            identifier: Unique identifier for the stored resource.
-
-        Returns:
-            Path: Path to the created directory.
-        """
-        if isinstance(target, Blob):
-            raise ValueError("Local storage cannot handle blobs")
-        storage = Path(target).resolve()
-        if storage.is_dir:
-            storage.mkdir(parents=True, exist_ok=True)
-        return storage.as_posix()
-
-    def ensure_storage_path_exist(self, target: TARGET) -> str:
-        if not self.does_storage_path_exist(target):
-            logger.debug("Storage Path does not exist creating one ")
-            return self.create_storage_path(target)
-        if not isinstance(target, (str, Path)):
-            raise ValueError("Local storage cannot handle blobs ")
-        return Path(target).as_posix()
-
-    def does_storage_path_exist(self, target: TARGET) -> bool:
-        """
-        Check if a directory exists for a given identifier.
-
-        Args:
-            identifier: Unique identifier for the stored resource.
-
-        Returns:
-            bool: True if the directory exists, False otherwise.
-        """
-        if not isinstance(target, (str, Path)):
-            raise ValueError("Local storage cannot handle blobs ")
-        return Path(target).exists()
-
-    def rename_storage(self, old: str | Path, new: str | Path) -> str:
-        old_path = Path(old)
-        new_path = Path(new)
-
-        logger.debug(f"[LocalStorage]: Renaming {old_path} -> {new_path}")
-
-        if not old_path.exists():
-            raise FileNotFoundError(f"Cannot rename. Source does not exist: {old_path}")
-
-        # Ensure destination parent exists
-        new_path.parent.mkdir(parents=True, exist_ok=True)
-
-        old_path.rename(new_path)
-
-        logger.debug("[LocalStorage]: Rename successful")
-
-        return new_path.as_posix()
-
-    # =========================================================================
-    # File operations: read, write, fetch
-    # =========================================================================
-
-    def read_file(
-        self, target: str | Path
-    ) -> bytes | None:
-        """
-        Retrieve a file's contents by its identifier and filename.
-
-        Args:
-            identifier: Unique identifier for the stored resource.
-            filename: Name of the file.
-
-        Returns:
-            bytes | None: File contents if found, otherwise None.
-        """
-        target = Path(target)
-
-        if target.exists() and target.is_file():
-            return target.read_bytes()
-        return None
-
-    def download_file(
-        self, target: str | Path, filename: str | None = None
-    ) -> bytes | None:
-        return self.read_file(target)
-
-    def get_file(
-        self, target: str | Path, filename: str | None = None, recursive: bool = False
-    ) -> str:
-        """
-        Build the absolute file path for a given identifier and filename.
-
-        Args:
-            identifier: Unique identifier for the stored resource.
-            filename: Name of the file.
-
-        Returns:
-            Path: Full path to the file.
-        """
-        if filename:
-            path = Path(target) / filename
-            return path.as_posix()
-
-        else:
-            return Path(target).as_posix()
-
-    def save_file(
-        self,
-        target: str | Path,
-        content: Union[str, dict, list, bytes, bytearray],
+        target: str | Path | Blob,
+        data: str | dict | List | bytes | bytearray,
+        *,
         overwrite: bool = True,
-    ) -> Path:
-        """
-        Save a file to the given target path.
+    ) -> str | Path | Blob:
+        storage_path = self._to_storage_path(target)
+        path = self._resolve(storage_path)
 
-        Args:
-            target: File path to save to. Can be absolute or relative.
-            content: Content to write.
-            overwrite: Whether to overwrite an existing file.
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(self._normalize_content(data))
+        return storage_path
 
-        Returns:
-            Path: The full path to the saved file.
+    def delete(self, target: str | Path | Blob) -> None:
+        storage_path = self._to_storage_path(target)
+        path = self._resolve(storage_path)
+        if path.is_file():
+            path.unlink()
+        elif path.is_dir():
+            shutil.rmtree(path)
 
-        Raises:
-            ValueError: If arguments are invalid or file exists without overwrite permission.
-            IOError: If file write operation fails.
-        """
-        # Validate inputs
-        if target is None:
-            raise ValueError("Target path cannot be None")
-        if content is None:
-            raise ValueError("Content cannot be None")
+    def list(
+        self, target: str | Path | Blob, *, recursive: bool = False
+    ) -> Sequence[str | Path | Blob]:
+        storage_path = self._to_storage_path(target)
+        base = self._resolve(storage_path)
 
-        try:
-            file_path = Path(target).resolve()
-            file_path.parent.mkdir(parents=True, exist_ok=True)
-        except Exception as e:
-            raise IOError(f"Failed to ensure storage path exists: {e}")
-
-        # Handle overwrite rules
-        if file_path.exists() and not overwrite:
-            raise ValueError(
-                f"File already exists and overwrite is disabled: {file_path}"
-            )
-
-        # Write depending on content type
-        try:
-            if isinstance(content, (dict, list)):
-                file_path.write_text(json.dumps(content, indent=2))
-            elif isinstance(content, (bytes, bytearray)):
-                file_path.write_bytes(content)
-            else:
-                logger.debug("Saving text %s to path %s", content, file_path)
-                file_path.write_text(str(content), encoding="utf-8")
-        except Exception as e:
-            raise IOError(f"Failed to write file {file_path}: {e}")
-
-        return file_path
-
-    # =========================================================================
-    # Metadata operations
-    # =========================================================================
-    def get_metadata(self, target: str | Path, filename: str | None = None) -> dict:
-        """
-        Return metadata for a file (size, checksum, timestamps, etc.).
-        Cloud providers typically return a rich metadata object.
-        """
-        raise NotImplementedError
-
-    def get_public_url(
-        self, target: str | Path, filename: str | None = None, expires_in: int = 3600
-    ) -> str:
-        return super().get_public_url(target, filename, expires_in)
-
-    # =========================================================================
-    # File listing, checks, existence
-    # =========================================================================
-
-    def list_file_names(self, target: str | Path) -> List[str]:
-        return [
-            Path(f).name
-            for f in self.list_file_paths(target, recursive=False)
-            if not f.endswith("/") and "." in Path(f).name
-        ]
-
-    def list_file_paths(self, target: str | Path, recursive: bool = False) -> List[str]:
-        target = Path(target)
-        if not target.exists():
-            logger.warning(f"Target path does not exist for {target}")
+        if not base.exists():
             return []
-        if recursive:
-            return [f.as_posix() for f in target.rglob("*")]
-        else:
-            return [f.as_posix() for f in target.iterdir()]
 
+        iterator = base.rglob("*") if recursive else base.glob("*")
+        results = []
+        for path in iterator:
+            if path.is_file():
+                results.append(self._to_storage_path(path))
+        return results
 
-    def iterate(self, target: str | Path, recursive: bool = False):
-        target_path = Path(target)
-        return target_path.rglob("*") if recursive else target_path.iterdir()
+    def move(
+        self, source: str | Path | Blob, destination: str | Path | Blob
+    ) -> str | Path | Blob:
+        src_path = self._resolve(self._to_storage_path(source))
+        dst_storage = self._to_storage_path(destination)
+        dst_path = self._resolve(dst_storage)
 
-    # =========================================================================
-    # Mutating operations: copy, move, delete
-    # =========================================================================
-    def copy_storage(self, old: str | Path, new: str | Path) -> str:
-        old = Path(old)
-        new = Path(new)
+        dst_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(src_path), str(dst_path))
+        return dst_storage
 
-        logger.debug(f"[LocalStorage]: Copying {old} -> {new}")
-        if not old.exists():
-            raise FileNotFoundError(f"Source path does not exist: {old}")
-        new.mkdir(parents=True, exist_ok=True)
-        for item in old.iterdir():
-            dest = new / item.name
-            logger.info(f"This is the dest {dest}")
-
-            if item.is_dir():
-                if not dest.exists():
-                    shutil.copytree(item, dest)
-            else:
-                shutil.copy2(item, dest)
-        logger.debug("[LocalStorage]: Content copy completed successfully")
-        return new.as_posix()
-
-    def copy_file(
+    def copy(
         self,
-        source_target: str | Path,
-        source_filename: str,
-        dest_target: str | Path,
-        dest_filename: str | None = None,
-    ) -> Path | Blob:
-        return super().copy_file(
-            source_target, source_filename, dest_target, dest_filename
-        )
+        source: str | Path | Blob,
+        destination: str | Path | Blob,
+    ) -> str:
 
-    def move_file(
-        self,
-        source_target: str | Path,
-        source_filename: str,
-        dest_target: str | Path,
-        dest_filename: str | None = None,
-    ) -> Path | Blob:
-        return super().move_file(
-            source_target, source_filename, dest_target, dest_filename
-        )
+        src_path = self._resolve(self._to_storage_path(source))
+        dst_storage = self._to_storage_path(destination)
+        dst_path = self._resolve(dst_storage)
 
-    def delete_file(self, target: str | Path, filename: str | None = None) -> None:
-        """
-        Delete a specific file within a resource directory.
-
-        Args:
-            identifier: Unique identifier for the stored resource.
-            filename: Name of the file to delete.
-        """
-        target = Path(target)
-        logger.debug(f"[LOCAL STORAGE] Attempting to delete [target]: {target}")
-        if target and target.exists():
-            logger.debug(f"[LOCAL STORAGE] Deleting file {target}")
-            target.unlink()
+        if src_path.is_dir():
+            # Copy directory recursively
+            shutil.copytree(src_path, dst_path, dirs_exist_ok=True)
         else:
-            logger.warning("File does not exist")
+            # Ensure parent exists
+            dst_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src_path, dst_path)
 
-    def delete_storage(self, target: str | Path) -> None:
-        """
-        Delete a storage directory and all its contents.
-
-        Args:
-            identifier: Unique identifier for the stored resource.
-        """
-        target = Path(target)
-        logger.debug(f"Target to delete {target}")
-        if target.exists():
-            for f in target.iterdir():
-                if f.is_file():
-                    f.unlink()
-            shutil.rmtree(target)
-
-    def hard_delete(self, target: TARGET | None) -> None:
-        if not target:
-            raise ValueError("Target must be passed")
-        if not isinstance(target, (str, Path)):
-            raise ValueError("Target of type Blob not allowed")
-        target = Path(target)
-        if target.exists():
-            for f in target.iterdir():
-                if f.is_file():
-                    f.unlink()
-            shutil.rmtree(target)
+        return str(dst_storage)

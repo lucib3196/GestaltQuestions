@@ -4,7 +4,6 @@ from typing import Dict, List, Optional, Tuple, Set
 from fastapi import HTTPException
 from starlette import status
 import base64
-from src.service.storage.base import StorageService
 import mimetypes
 from src.core import logger
 from src.data import QuestionDB
@@ -15,7 +14,7 @@ from src.types import (
     QuestionData,
 )
 from src.utils import safe_dir_name
-from . import StorageService
+from src.service.storage.base import Storage
 from src.types import STORAGE_TYPE, ID
 
 
@@ -25,7 +24,7 @@ class QuestionManager:
     def __init__(
         self,
         qdb: QuestionDB,
-        storage_manager: StorageService,
+        storage_manager: Storage,
         STORAGE_TYPE: STORAGE_TYPE,
         image_location="clientFiles",
         client_file_extensions: Set[str] = {

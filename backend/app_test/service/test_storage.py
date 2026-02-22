@@ -1,205 +1,213 @@
 import pytest
-from typing import Tuple
 from pathlib import Path
 from src.utils import normalize, normalize_newlines
-from io import BytesIO
-from src.core import logger
-from app_test.shared.factories.storage_factory import create_storage_path_factory
-from app_test.shared.mock_data.storage import TARGETS, RENAME_TARGETS, MOCK_FILES
-
-
-@pytest.fixture
-def save_multiple_files(active_storage_backend, create_test_dir):
-    """Save multiple test files (string, dict, bytes) under a temporary directory."""
-    dir, name = create_test_dir
-    files = [
-        ("text.txt", "Hello World"),  # string
-        ("data.json", {"key": "value"}),  # dict
-        ("binary.bin", b"\x00\x01\x02"),  # bytes
-    ]
-
-    for filename, content in files:
-        active_storage_backend.save_file(
-            name,
-            content,
-        )
-
-    return dir
-
-
-@pytest.fixture
-def create_directory(active_storage_backend) -> Tuple[Path, str]:
-    """Create a temporary test directory inside the local storage."""
-    testdir = "TestFolder"
-    created_dir = active_storage_backend.create_storage_path(testdir)
-    print("[TEST] This is the created dir", created_dir)
-    return created_dir, testdir
+from app_test.shared.mock_data.storage import (
+    TARGETS,
+    RENAME_TARGETS,
+    MOCK_FILES,
+    FOLDER_ITERATION_TARGETS,
+    FileContent,
+    NON_RECURSIVE_FOLDER_ITERATION_TARGETS,
+)
 
 
 # =========================================================================
 # Storage path operations
 # =========================================================================
+@pytest.mark.parametrize(
+    "target",
+    TARGETS,
+)
+def test_create(create_dir_factory, storage_mode, target, storage):
+    target_path = create_dir_factory(storage_mode, target)
+    print("This is the target path", target)
+    assert storage.exists(target_path)
 
 
 @pytest.mark.parametrize(
     "target",
     TARGETS,
 )
-def test_create_storage_path(
-    create_storage_path_factory, storage_mode, target, active_storage_backend
-):
-    target_path = create_storage_path_factory(storage_mode, target)
-    assert active_storage_backend.does_storage_path_exist(target_path)
-
-
-@pytest.mark.parametrize(
-    "target",
-    TARGETS,
-)
-def test_does_storage_path_exist_fake(
-    active_storage_backend, target, storage_mode, tmp_path
-):
+def test_exists_false(storage, target, storage_mode, tmp_path):
     if storage_mode == "local":
         target = tmp_path / target
-    assert not active_storage_backend.does_storage_path_exist(target)
-
-
-@pytest.mark.parametrize(
-    "target",
-    TARGETS,
-)
-def test_ensure_storage_path_exist(
-    target, active_storage_backend, storage_mode, tmp_path
-):
-    if storage_mode == "local":
-        target = tmp_path / target
-    # Ensure it does not exist
-    assert not active_storage_backend.does_storage_path_exist(target)
-    # Actually create
-    active_storage_backend.ensure_storage_path_exist(target)
-    # Assert created
-    assert active_storage_backend.does_storage_path_exist(target)
-
-
-@pytest.mark.parametrize("source,target", RENAME_TARGETS)
-def test_rename_storage(
-    source: str | Path,
-    target: str | Path,
-    create_storage_path_factory,
-    active_storage_backend,
-    storage_mode: str,
-    tmp_path,
-):
-    if storage_mode == "local":
-        target = Path(tmp_path) / target
-        source = Path(tmp_path) / source
-    # 1️ Create the ORIGINAL path
-    original_path = create_storage_path_factory(storage_mode, source)
-    # Ensure initial state
-    assert active_storage_backend.does_storage_path_exist(original_path)
-    assert not active_storage_backend.does_storage_path_exist(target)
-
-    # 2️ Perform rename
-    active_storage_backend.rename_storage(
-        old=original_path,
-        new=target,
-    )
-
-    # 3️ Validate final state
-    assert not active_storage_backend.does_storage_path_exist(original_path)
-    assert active_storage_backend.does_storage_path_exist(target)
+    assert not storage.exists(target)
 
 
 # =========================================================================
-# File operations: read, write,
+# File operations: read, write,delete
 # =========================================================================
-
-
 @pytest.mark.parametrize("filename,content", MOCK_FILES)
-def test_save_file(
-    active_storage_backend,
-    create_storage_path_factory,
+def test_write(
+    storage,
+    create_dir_factory,
     storage_mode,
     filename,
     content,
 ):
-    """Ensure save_file correctly"""
-    base_path = create_storage_path_factory(storage_mode, "test")
+    base_path = create_dir_factory(storage_mode, "test")
     target = f"{base_path}/{filename}"
-    f = active_storage_backend.save_file(target, content, overwrite=True)
-    assert active_storage_backend.does_storage_path_exist(target)
+    storage.write(target, content, overwrite=True)
+    # Ensure that the path exist
+    assert storage.exists(target)
 
 
 @pytest.mark.parametrize("filename,content", MOCK_FILES)
-def test_read_file(
-    active_storage_backend,
-    create_storage_path_factory,
+def test_read(
+    storage,
+    create_dir_factory,
     storage_mode,
     filename,
     content,
 ):
-    base_path = create_storage_path_factory(storage_mode, "test")
+    base_path = create_dir_factory(storage_mode, "test")
     target = f"{base_path}/{filename}"
-    active_storage_backend.save_file(target, content, overwrite=True)
-    raw_bytes = active_storage_backend.read_file(target)
+    storage.write(target, content, overwrite=True)
+    raw_bytes = storage.read(target)
+    # Ensures that the content is the same
     assert normalize_newlines(raw_bytes) == normalize_newlines(normalize(content))
 
 
-# =========================================================================
-# File listing, checks, existence
-# =========================================================================
-def test_list_file_paths(
-    active_storage_backend,
-    create_storage_path_factory,
+@pytest.mark.parametrize("filename,content", MOCK_FILES)
+def test_delete(
+    storage,
+    create_dir_factory,
     storage_mode,
     filename,
     content,
 ):
-    base_path = create_storage_path_factory(storage_mode, "test")
-    data = [
-        ("text.txt", "Hello World"),  # string
-        ("data.json", {"key": "value"}),  # dict → json
-        ("binary.bin", b"\x00\x01\x02"),  # bytes → raw bytes
-    ]
-
-    # Save all test files
-    for filename, content in data:
-        save_path = f"{base_path}/{filename}"
-        active_storage_backend.save_file(target=save_path, content=content)
-    # Retrieve file paths
-    retrieved_paths = active_storage_backend.list_file_paths(base_path)
-    # Number of returned files should match what we saved
-    assert len(retrieved_paths) == len(data)
-    # Normalize expected filenames
-    expected_filenames = sorted([name for name, _ in data])
-    # Extract actual filenames (end of path)
-    actual_filenames = sorted([Path(p).name for p in retrieved_paths])
-    assert actual_filenames == expected_filenames
+    base_path = create_dir_factory(storage_mode, "test")
+    target = f"{base_path}/{filename}"
+    storage.write(target, content, overwrite=True)
+    # Assert creation, then delete and assert does not exist
+    assert storage.exists(target)
+    storage.delete(target)
+    assert not storage.exists(target)
 
 
-def test_list_file_names(
-    active_storage_backend,
-    create_storage_path_factory,
-    storage_mode,
-    filename,
-    content,
+# =========================================================================
+# File Moving: Test moving and copying
+# =========================================================================
+
+
+@pytest.mark.parametrize("source,destination", RENAME_TARGETS)
+def test_rename_storage(
+    source: str | Path,
+    destination: str | Path,
+    storage,
+    storage_mode: str,
+    tmp_path,
 ):
-    base_path = create_storage_path_factory(storage_mode, "test")
-    data = [
-        ("text.txt", "Hello World"),  # string
-        ("data.json", {"key": "value"}),  # dict → json
-        ("binary.bin", b"\x00\x01\x02"),  # bytes → raw bytes
-    ]
+    # Normalize paths for local mode
+    if storage_mode == "local":
+        source = Path(tmp_path) / source
+        destination = Path(tmp_path) / destination
 
-    # Save all test files
-    for filename, content in data:
-        save_path = f"{base_path}/{filename}"
-        active_storage_backend.save_file(target=save_path, content=content)
-    retrieved_paths = active_storage_backend.list_file_names(base_path)
-    # Number of returned files should match what we saved
-    assert len(retrieved_paths) == len(data)
-    # Normalize expected filenames
-    expected_filenames = sorted([name for name, _ in data])
-    # Extract actual filenames (end of path)
-    actual_filenames = sorted([Path(p).name for p in retrieved_paths])
-    assert actual_filenames == expected_filenames
+    # 1️Create the SOURCE path (what we will rename)
+    source_path = storage.write(source, "")
+
+    # Ensure initial state
+    assert storage.exists(source_path)
+    assert not storage.exists(destination)
+
+    # 2️Perform rename (move)
+    storage.move(
+        source=source_path,
+        destination=destination,
+    )
+
+    # 3️Validate final state
+    assert not storage.exists(source_path)
+    assert storage.exists(destination)
+
+
+@pytest.mark.parametrize("source,destination", RENAME_TARGETS)
+def test_copy(
+    source: str,
+    destination: str,
+    create_dir_factory,
+    storage,
+    storage_mode: str,
+    tmp_path,
+):
+    # Normalize paths for local backend
+    if storage_mode == "local":
+        source = str(Path(tmp_path) / source)
+        destination = str(Path(tmp_path) / destination)
+
+    # 1️Create SOURCE path
+    source_path = storage.write(source, "")
+
+    # Ensure initial state
+    assert storage.exists(source_path)
+    assert not storage.exists(destination)
+
+    # 2️ Perform COPY
+    storage.copy(
+        source=source_path,
+        destination=destination,
+    )
+
+    # 3️Validate final state
+    assert storage.exists(source_path)  # source still exists
+    assert storage.exists(destination)  # destination now exists
+
+
+@pytest.mark.parametrize("folder,files", FOLDER_ITERATION_TARGETS)
+def test_folder_iteration_recursive(
+    folder: str,
+    files: list[tuple[str, FileContent]],
+    storage,
+    storage_mode: str,
+    tmp_path,
+):
+    # Normalize local paths
+    if storage_mode == "local":
+        folder = str(Path(tmp_path) / folder)
+        files = [(str(Path(tmp_path) / path), content) for path, content in files]
+
+    # 1️Batch create files
+    for path, content in files:
+        storage.write(path, content)
+
+    # 2️Fetch results
+    results = storage.list(folder, recursive=True)
+
+    # Normalize to set for comparison
+    expected_paths = {Path(path).as_posix() for path, _ in files}
+    result_paths = set(results)
+
+    # 3️ Validate
+    assert expected_paths == result_paths
+
+
+@pytest.mark.parametrize(
+    "folder,files,expected", NON_RECURSIVE_FOLDER_ITERATION_TARGETS
+)
+def test_folder_iteration_not_recursive(
+    folder: str,
+    files: list[tuple[str, FileContent]],
+    expected,
+    storage,
+    storage_mode: str,
+    tmp_path,
+):
+    # Normalize local paths
+    if storage_mode == "local":
+        folder = str(Path(tmp_path) / folder)
+        files = [(str(Path(tmp_path) / path), content) for path, content in files]
+        expected = [str(Path(tmp_path) / exp) for exp in expected]
+
+    # 1️Batch create files
+    for path, content in files:
+        storage.write(path, content)
+
+    # 2️Fetch results
+    results = storage.list(folder, recursive=False)
+
+    # Normalize to set for comparison
+    expected_paths = {Path(path).as_posix() for path in expected}
+    result_paths = set(results)
+
+    # 3️ Validate
+    assert expected_paths == result_paths

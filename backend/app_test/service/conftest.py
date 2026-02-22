@@ -1,9 +1,6 @@
 import pytest
 from app_test.shared.mock_data import (
     QUESTION_FULL,
-    QUESTIONS,
-    ADDITIONAL_METADATA,
-    QUESTIONS_FULL,
 )
 from typing import List
 from src.types import FileData
@@ -14,6 +11,7 @@ def question_payload():
     """Full question payload including topics, qtypes, and languages."""
     return QUESTION_FULL
 
+
 @pytest.fixture
 def question_file_payload() -> List[FileData]:
     files_data = [
@@ -23,5 +21,3 @@ def question_file_payload() -> List[FileData]:
         ("meta.json", {"content": "some content"}),
     ]
     return [FileData(filename=f[0], content=f[1]) for f in files_data]
-
-

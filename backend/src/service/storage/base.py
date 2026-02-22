@@ -1,135 +1,199 @@
 from pathlib import Path
-from typing import Optional, List, IO
+from typing import Optional, List, Sequence, Union
 from google.cloud.storage.blob import Blob
-from src.core import logger
+import json
+from abc import ABC, abstractmethod
 from . import TARGET
 
 
-class StorageService:
+class Storage(ABC):
     """
-    Abstract interface for storage backends (filesystem, cloud, hybrid).
+    Abstract interface for a storage backend.
 
-    Subclasses must implement all core operations for creating directories,
-    uploading, reading, listing, copying, moving, and deleting files associated
-    with a given storage target.
+    Implementations may target:
+        - Local filesystem
+        - Cloud object storage (GCS, S3, Azure)
+        - Hybrid or in-memory storage
+
+    The interface is intentionally backend-agnostic and avoids
+    filesystem-specific assumptions such as true directory creation.
     """
 
-    # Basic creation and getting
-    def create_storage_path(self, target: TARGET) -> str:
-        raise NotImplementedError("create_storage_path must be implemented")
+    # ---------------------------------------------------------
+    # Core file operations
+    # ---------------------------------------------------------
 
-    def does_storage_path_exist(self, target: TARGET) -> bool:
-        raise NotImplementedError(
-            "does_storage_path_exist must be implemented by parent"
-        )
-
-    def get_storage_path(self, target: TARGET) -> str:
-        raise NotImplementedError("get_storage_path must be implemented by parent")
-
-    def ensure_storage_path_exist(self, target: TARGET) -> str:
-        raise NotImplementedError(
-            "ensure_storage_path_exist must be implemented by parent"
-        )
-
-    def rename_storage(self, old: str | Path, new: str | Path) -> str:
-        raise NotImplementedError("rename_storage must be implemented by parent")
-
-
-
-    # =========================================================================
-    # File operations: read, write, fetch
-    # =========================================================================
-    def read_file(
-        self, target: str | Path,
-    ) -> Optional[bytes]:
-        """Return raw byte content of a file."""
-        raise NotImplementedError
-
-    def download_file(
-        self, target: str | Path,
-    ) -> bytes | None:
+    @abstractmethod
+    def exists(self, target: TARGET) -> bool:
         """
-        Explicit download operation—separate from read_file for clarity.
-        Useful for cloud backends that require a distinct GET operation.
-        """
-        raise NotImplementedError
+        Return True if the given target exists in storage.
 
-    def save_file(
+        Args:
+            target: A normalized storage path or key.
+
+        Returns:
+            bool indicating existence.
+        """
+        ...
+    @abstractmethod
+    def create_dir(self,target: TARGET)->TARGET:
+        """Create a new directory under the given path .
+
+        Args:
+            target (TARGET): A str, path, or blob
+
+        Raises:
+            ValueError: [description]
+            TypeError: [description]
+            ValueError: [description]
+
+        Returns:
+            TARGET: The name of the dir
+        """
+
+    @abstractmethod
+    def read(self, target: TARGET) -> bytes:
+        """
+        Read the contents of a stored object.
+
+        Args:
+            target: The storage path/key to read.
+
+        Returns:
+            Raw bytes of the stored object.
+
+        Raises:
+            FileNotFoundError if target does not exist.
+        """
+        ...
+
+    @abstractmethod
+    def write(
         self,
-        target: str | Path,
-        content: str | dict | list | bytes | bytearray,
+        target: TARGET,
+        data: str | dict | List | bytes | bytearray,
+        *,
         overwrite: bool = True,
-    ) -> Path | str:
-        raise NotImplementedError
-
-    # =========================================================================
-    # Metadata operations
-    # =========================================================================
-    def get_metadata(self, target: str | Path, filename: str | None = None) -> dict:
+    ) -> TARGET:
         """
-        Return metadata for a file (size, checksum, timestamps, etc.).
-        Cloud providers typically return a rich metadata object.
+        Write raw bytes to the given storage target.
+
+        Args:
+            target: The storage path/key to write to.
+            data: Raw bytes to store.
+            overwrite: Whether to overwrite existing content.
+
+        Returns:
+            The normalized storage target.
+
+        Raises:
+            FileExistsError if overwrite=False and target exists.
         """
-        raise NotImplementedError
+        ...
 
-    def get_public_url(
-        self,
-        target: str | Path,
-        filename: str | None = None,
-        expires_in: int = 3600,
-    ) -> str:
+    @abstractmethod
+    def delete(self, target: TARGET) -> None:
         """
-        Return a public or signed URL for downloading a file.
-        Required for cloud backends (S3/GCS).
+        Delete the specified storage target.
+
+        Args:
+            target: The storage path/key to delete.
+
+        Raises:
+            FileNotFoundError if target does not exist.
         """
-        raise NotImplementedError
+        ...
 
-    # =========================================================================
-    # File listing, checks, existence
-    # =========================================================================
-    def list_file_names(self, target: str | Path) -> List[str]:
-        raise NotImplementedError
+    # ---------------------------------------------------------
+    # Directory / prefix operations
+    # ---------------------------------------------------------
 
-    def list_file_paths(self, target: str | Path, recursive: bool = False) -> List[str]:
-        raise NotImplementedError
+    @abstractmethod
+    def list(self, target: TARGET, *, recursive: bool = False) -> Sequence[TARGET]:
+        """
+        List objects under a given prefix or directory.
 
+        Args:
+            target: Directory or prefix to list.
+            recursive: If True, include nested objects.
 
-    def iterate(self, target: str | Path, recursive: bool = False):
-        raise NotImplementedError
+        Returns:
+            Sequence of storage targets.
+        """
+        ...
 
-    # =========================================================================
-    # Mutating operations: copy, move, delete
-    # =========================================================================
-    def copy_file(
-        self,
-        source_target: str | Path,
-        source_filename: str,
-        dest_target: str | Path,
-        dest_filename: Optional[str] = None,
-    ) -> Path | Blob:
-        """Copy a file between storage locations."""
-        raise NotImplementedError
+    # ---------------------------------------------------------
+    # Object management operations
+    # ---------------------------------------------------------
 
-    def copy_storage(self, old: str | Path, new: str | Path) -> str:
-        """Copy the whole storage between storage locations."""
-        raise NotImplementedError
+    @abstractmethod
+    def copy(self, source: TARGET, destination: TARGET) -> TARGET:
+        """
+        Copy an object from source to destination.
 
-    def move_file(
-        self,
-        source_target: str | Path,
-        source_filename: str,
-        dest_target: str | Path,
-        dest_filename: Optional[str] = None,
-    ) -> Path | Blob:
-        """Move or rename a file."""
-        raise NotImplementedError
+        Args:
+            source: Existing storage target.
+            destination: New storage target.
 
-    def delete_file(self, target: str | Path, filename: str | None = None) -> None:
-        raise NotImplementedError
+        Returns:
+            The destination target.
+        """
+        ...
 
-    def delete_storage(self, target: str | Path) -> None:
-        raise NotImplementedError
+    @abstractmethod
+    def move(self, source: TARGET, destination: TARGET) -> TARGET:
+        """
+        Move (rename) an object from source to destination.
 
-    def hard_delete(self, target: TARGET | None) -> None:
-        """Destructive: remove all storage contents for this backend."""
-        raise NotImplementedError
+        Implementations for object storage may internally
+        perform copy + delete.
+
+        Args:
+            source: Existing storage target.
+            destination: New storage target.
+
+        Returns:
+            The destination target.
+        """
+        ...
+
+    def _to_storage_path(self, value: Union[str, Path, Blob]) -> str:
+        """
+        Normalize input into a StoragePath.
+
+        Accepts:
+            - str
+            - pathlib.Path
+            - StoragePath
+
+        Returns:
+            StoragePath (normalized).
+        """
+        if isinstance(value, str):
+            return Path(value).as_posix()
+        if isinstance(value, Path):
+            return value.as_posix()
+        if isinstance(value, Blob):
+            if not value.name:
+                raise ValueError(f"Cannot determine blob: {value}")
+            return Path(value.name).as_posix()
+
+        raise TypeError(f"Unsupported path type: {type(value)}")
+
+    def _normalize_content(
+        self, content: str | dict | List | bytes | bytearray
+    ) -> bytes:
+        # Normalize content
+        if isinstance(content, (dict, list)):
+            content_bytes = json.dumps(content, indent=2).encode("utf-8")
+
+        elif isinstance(content, str):
+            content_bytes = content.encode("utf-8")
+
+        elif isinstance(content, (bytes, bytearray)):
+            content_bytes = bytes(content)
+
+        else:
+            raise ValueError(f"Unsupported content type: {type(content)}")
+        return content_bytes
+

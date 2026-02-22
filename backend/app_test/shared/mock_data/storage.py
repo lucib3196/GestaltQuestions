@@ -20,6 +20,7 @@ RENAME_TARGETS = [
     # File inside nested folder
     ("data/user123/content/q1.pdf", "data/user123/content/q1_final.pdf"),
     # Root-level file
+    ("content/root.txt", "root_renamed.txt"),
     ("root.txt", "root_renamed.txt"),
     # Root-level folder
     ("archive/", "archive_old/"),
@@ -42,4 +43,75 @@ MOCK_FILES: list[tuple[str, FileContent]] = [
     ("pdf_like.bin", b"%PDF-1.4\n%\xe2\xe3\xcf\xd3"),  # binary resembling file header
     ("path/to/file.txt", "Nested path content"),  # nested path
     ("folder/emptyfile", b""),  # empty bytes
+]
+
+FOLDER_ITERATION_TARGETS: list[tuple[str, list[tuple[str, FileContent]]]] = [
+    (
+        "questions/",
+        [
+            ("questions/a.txt", "A"),
+            ("questions/b.json", {"x": 1}),
+            ("questions/c.bin", b"\x00\x01"),
+        ],
+    ),
+    (
+        "data/user123/content/",
+        [
+            ("data/user123/content/q1.json", {"id": 1}),
+            ("data/user123/content/q2.json", {"id": 2}),
+            ("data/user123/content/deep/file.txt", "nested"),
+        ],
+    ),
+    (
+        "archive/",
+        [
+            ("archive/root.txt", "root file"),
+            ("archive/sub/a.txt", "sub file"),
+            ("archive/sub/b.txt", "another file"),
+        ],
+    ),
+]
+
+NON_RECURSIVE_FOLDER_ITERATION_TARGETS: list[
+    tuple[str, list[tuple[str, FileContent]], list[str]]
+] = [
+    (
+        "questions/",
+        # Files to create
+        [
+            ("questions/a.txt", "A"),
+            ("questions/b.json", {"x": 1}),
+            ("questions/sub/c.txt", "nested"),
+            ("questions/sub/deeper/d.txt", "deep nested"),
+        ],
+        # Expected results (non-recursive)
+        [
+            "questions/a.txt",
+            "questions/b.json",
+        ],
+    ),
+    (
+        "data/user123/content/",
+        [
+            ("data/user123/content/q1.json", {"id": 1}),
+            ("data/user123/content/q2.json", {"id": 2}),
+            ("data/user123/content/deep/file.txt", "nested"),
+        ],
+        [
+            "data/user123/content/q1.json",
+            "data/user123/content/q2.json",
+        ],
+    ),
+    (
+        "archive/",
+        [
+            ("archive/root.txt", "root file"),
+            ("archive/sub/a.txt", "sub file"),
+            ("archive/sub/b.txt", "another file"),
+            ("archive/sub/deeper/c.txt", "deep file"),
+        ],
+        [
+            "archive/root.txt",
+        ],
+    ),
 ]
