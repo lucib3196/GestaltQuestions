@@ -18,6 +18,7 @@ from src.service.storage.base import Storage
 from src.types import FileData, ID, QuestionData
 from src.utils import safe_dir_name
 
+
 class QuestionManager:
     """Service that coordinates storage and database operations for questions."""
 
@@ -70,7 +71,6 @@ class QuestionManager:
             question_data.base_path,
             question,
         )
-
         self.storage.create_dir(question_path)
 
         await self.qdb.set_question_path(
@@ -88,7 +88,7 @@ class QuestionManager:
 
         return question
 
-    async def delete_question(self, qid: ID):
+    async def delete_question(self, qid: ID) -> None:
         question = await self.qdb.get_question(qid)
         if not question:
             raise ValueError(
@@ -170,7 +170,7 @@ class QuestionManager:
                 "client_files": uploaded_client,
                 "other_files": uploaded_other,
             }
-        uploaded_all = await self._batch_save_files(storage_path, files)
+        uploaded_all = self._batch_save_files(storage_path, files)
         return {
             "status": "ok",
             "files": uploaded_all,
@@ -200,8 +200,7 @@ class QuestionManager:
                 FileData(
                     filename=Path(filepath).name,
                     content=encoded,
-                    mime_type=mime_type
-                    or "application/octet-stream",
+                    mime_type=mime_type or "application/octet-stream",
                 )
             )
 
@@ -210,7 +209,7 @@ class QuestionManager:
     # ============================================================
     # Helpers
     # ============================================================
-    async def _batch_save_files(self, dest: str, files: List[FileData]):
+    def _batch_save_files(self, dest: str, files: List[FileData]):
         for f in files:
             target = f"{dest}/{f.filename}"
             self.storage.write(target, f.content)
@@ -220,9 +219,10 @@ class QuestionManager:
     # ============================================================
 
     def _question_dir(self, base_path: str, question: Question) -> str:
-        return (
-            f"{base_path}/{safe_dir_name(f'{question.title}_{str(question.id)[:8]}')}"
-        )
+        if base_path.endswith("/"):
+            return f"{base_path}{safe_dir_name(f'{question.title}_{str(question.id)[:8]}')}"
+        else:
+            return f"{base_path}/{safe_dir_name(f'{question.title}_{str(question.id)[:8]}')}"
 
     def _file_target(self, question_path: str, filename: str) -> str:
         return f"{question_path.rstrip('/')}/{filename}"
@@ -253,6 +253,7 @@ class QuestionManager:
             else:
                 other_files.append(f)
         return client_files, other_files
+
     def _norm_path(self, value: Union[str, Path, Blob]) -> str:
         """
         Normalize input into a StoragePath.

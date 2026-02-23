@@ -14,7 +14,7 @@ def make_question(question_db):
             "isAdaptive": False,
         }
 
-        data = QuestionData(**(defaults | overrides))
+        data = QuestionData.model_validate(defaults | overrides)
         return await question_db.create_question(data)
 
     return make

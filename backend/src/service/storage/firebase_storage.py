@@ -79,21 +79,33 @@ class FbStorage(Storage):
 
     def list(
         self, target: str | Path | Blob, *, recursive: bool = False
-    ) -> Sequence[str | Path | Blob]:
+    ) -> Sequence[str]:
+
         norm = self._to_blob_key(target)
         blobs = list(self.bucket.list_blobs(prefix=norm))
 
-        if not recursive:
-            # Only return immediate children (no nested directories)
-            result = []
-            for blob in blobs:
-                relative = blob.name[len(norm) :]  # strip prefix
-                if "/" not in relative:  # ensure not nested
-                    result.append(blob.name)
-            return result
+        results = []
+
+        for blob in blobs:
+            relative = blob.name[len(norm) :]
+
+            # Skip directory blob itself
+            if not relative:
+                continue
+
+            if recursive:
+                results.append(relative)
+            else:
+                if "/" not in relative:
+                    results.append(relative)
+
+        return results
 
         # Recursive: include everything under this prefix
-        return [blob.name for blob in blobs]
+        files = [blob.name[len(norm) :] for blob in blobs]
+        # Remove the prefix from being included
+        files.remove(norm)
+        return files
 
     def copy(
         self,

@@ -9,6 +9,7 @@ from src.data import (
     InstitutionDB,
     QuestionAttemptDB,
 )
+from app_test.shared.factories.user_factory import make_user
 
 @pytest.fixture
 def combined_payload():

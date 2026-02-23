@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import delete, select
-
+from pathlib import PurePosixPath
 from src.core import logger
 from sqlmodel import Session
 from src.data import generic as gdb
@@ -221,11 +221,9 @@ class QuestionDB:
         question = await self.get_question(id)
         if not question:
             raise ValueError("Question not found")
-        path_str = Path(path).as_posix()
+        path_str = PurePosixPath(path).as_posix() + "/"
         try:
             if STORAGE_TYPE == "cloud":
-                if not path_str.endswith("/"):
-                    path_str = f"{path_str}/"
                 question.blob_path = path_str
             elif STORAGE_TYPE == "local":
                 question.local_path = path_str
