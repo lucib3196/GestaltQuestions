@@ -224,6 +224,8 @@ class QuestionDB:
         path_str = Path(path).as_posix()
         try:
             if STORAGE_TYPE == "cloud":
+                if not path_str.endswith("/"):
+                    path_str = f"{path_str}/"
                 question.blob_path = path_str
             elif STORAGE_TYPE == "local":
                 question.local_path = path_str

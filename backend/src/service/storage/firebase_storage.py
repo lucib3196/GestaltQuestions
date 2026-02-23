@@ -5,13 +5,29 @@ from google.cloud.storage.blob import Blob
 from src.core.firebase import initialize_firebase_app
 from src.core.logging import logger
 from .base import Storage
+from src.types.storage import STORAGE_TYPE
+from typing import Literal
+from typing import cast
+from src.types.storage import STORAGE_TYPE
 
 
 class FbStorage(Storage):
-    def __init__(self, bucket):
+
+    def __init__(
+        self,
+        bucket,
+    ):
         logger.info("[Firebase]: Intializing firebase storage ")
         initialize_firebase_app()
         self.bucket = storage.bucket(bucket)
+        self.set_storage_type()
+
+    def set_storage_type(self) -> Literal["cloud"] | Literal["local"]:
+        self.mode = "cloud"
+        return "cloud"
+
+    def get_storage_type(self) -> Literal["cloud"] | Literal["local"]:
+        return cast(STORAGE_TYPE, self.mode)
 
     def exists(self, target: str | Path | Blob) -> bool:
         key = self._to_blob_key(target)
@@ -102,7 +118,7 @@ class FbStorage(Storage):
         # Overwrite safely
         dest_blob.upload_from_string(content)
 
-        return dest_key 
+        return dest_key
 
     def move(
         self, source: str | Path | Blob, destination: str | Path | Blob

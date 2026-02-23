@@ -30,71 +30,43 @@ def question_db(db_session) -> QuestionDB:
 # -----------------------------
 # Storage Fixtures
 # -----------------------------
-@pytest.fixture(scope="function")
-def cloud_storage():
-    """Provide a FirebaseStorage instance connected to the test bucket."""
+@pytest.fixture(
+    params=[
+        ("local", LocalStorage),
+        ("cloud", FbStorage),
+    ]
+)
+def storage(request):
+    name, StorageClass = request.param
 
-    return FbStorage(settings.STORAGE_BUCKET)
-
-
-@pytest.fixture(scope="function")
-def local_storage() -> LocalStorage:
-    """Provide a LocalStorageService rooted in a temporary directory."""
-    return LocalStorage()
-
-
-@pytest.fixture(scope="function",autouse=True)
-def clean_cloud(cloud_storage):
-    return cloud_storage._hard_delete()
-
-
-@pytest.fixture(params=["local", "cloud"])
-def storage_mode(request) -> Literal["local", "cloud"]:
-    """
-    Controls whether tests run against local or cloud-backed storage.
-    """
-    return request.param
+    if StorageClass is FbStorage:
+        instance = StorageClass(settings.STORAGE_BUCKET)
+    else:
+        instance = StorageClass()
+    
+    assert instance.get_storage_type() == name
+    return instance
 
 
-@pytest.fixture(scope="function")
-def storage(
-    storage_mode, cloud_storage, local_storage
-) -> Storage:
-    """
-    Selects the correct storage backend for a test run.
-    """
-    if storage_mode == "cloud":
-        return cloud_storage
-    if storage_mode == "local":
-        return local_storage
-    raise ValueError(f"Invalid storage type: {storage_mode}")
+@pytest.fixture(scope="function", autouse=True)
+def clean_cloud(storage):
+    if storage.get_storage_type()=="cloud":
+        storage._hard_delete()
+        
+
 
 # --------------------
 # Question Storage
 # ---------------------
 
-@pytest.fixture(scope="function")
-def question_manager(
-    storage_mode,
-    cloud_storage_service,
-    local_storage,
-    question_db,
-):
-    """
-    Provides a configured QuestionManager based on the active storage backend.
-    """
-    if storage_mode == "cloud":
-        storage = cloud_storage_service
-    elif storage_mode == "local":
-        storage = local_storage
-    else:
-        raise ValueError(f"Invalid storage type: {storage_mode}")
 
-    return QuestionManager(
+@pytest.fixture
+def question_manager(storage, question_db):
+    qm = QuestionManager(
         question_db,
         storage,
-        storage_mode,
     )
+    return qm
 
 
 # -----------------------------

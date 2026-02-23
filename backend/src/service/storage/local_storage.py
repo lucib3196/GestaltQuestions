@@ -6,9 +6,21 @@ from typing import Sequence
 import shutil
 from .base import Storage
 from . import TARGET
+from src.types.storage import STORAGE_TYPE
+from typing import Literal, cast
 
 
 class LocalStorage(Storage):
+
+    def __init__(self):
+        self.set_storage_type()
+
+    def set_storage_type(self) -> Literal["cloud"] | Literal["local"]:
+        self.mode = "local"
+        return "local"
+
+    def get_storage_type(self) -> Literal["cloud"] | Literal["local"]:
+        return cast(STORAGE_TYPE, self.mode)
 
     def _resolve(self, target: TARGET) -> Path:
         return Path(self._to_storage_path(target)).resolve()

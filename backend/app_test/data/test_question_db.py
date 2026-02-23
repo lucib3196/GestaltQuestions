@@ -2,7 +2,7 @@ import pytest
 from src.model.question import Question
 from src.types import QuestionData
 from src.core.logging import logger
-from app_test.shared.mock_data import QUESTION_FULL,QUESTIONS_FULL, ADDITIONAL_METADATA
+from app_test.shared.mock_data import QUESTIONS
 from app_test.shared.factories import make_question
 
 # Fixtures
@@ -11,9 +11,9 @@ from app_test.shared.factories import make_question
 @pytest.fixture
 @pytest.mark.asyncio
 async def create_question_with_relationship(make_question):
-    qcreated = await make_question(**QUESTION_FULL)
+    qcreated = await make_question(**QUESTIONS[0])
     assert qcreated
-    return qcreated, ADDITIONAL_METADATA
+    return qcreated
 
 
 # ----------------------
@@ -42,7 +42,7 @@ async def test_create_question_with_relationship_data(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("payload",QUESTIONS_FULL)
+@pytest.mark.parametrize("payload", QUESTIONS)
 async def test_get_question(question_db, payload):
     qcreated = await question_db.create_question(payload)
     assert qcreated == await question_db.get_question(qcreated.id)
@@ -155,7 +155,7 @@ async def test_filter_questions(
     make_question, question_db, update_data, expected_count, description
 ):
     """Test dynamic question filtering across key combinations."""
-    await make_question(**QUESTION_FULL)
+    await make_question(**QUESTIONS[0])
     results = await question_db.filter_questions(
         update_data,
     )

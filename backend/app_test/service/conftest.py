@@ -1,15 +1,10 @@
 import pytest
 from app_test.shared.mock_data import (
-    QUESTION_FULL,
+    QUESTIONS,
 )
 from typing import List
 from src.types import FileData
-
-
-@pytest.fixture
-def question_payload():
-    """Full question payload including topics, qtypes, and languages."""
-    return QUESTION_FULL
+from app_test.shared.factories.storage_factory import create_dir_factory
 
 
 @pytest.fixture

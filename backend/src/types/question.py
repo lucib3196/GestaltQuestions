@@ -8,7 +8,7 @@ class QuestionBase(BaseModel):
     title: Optional[str] = None
     ai_generated: Optional[bool] = None
     isAdaptive: Optional[bool] = None
-    question_path: str | None = None
+    base_path: str | None = None
     model_config = ConfigDict(extra="ignore")
 
 

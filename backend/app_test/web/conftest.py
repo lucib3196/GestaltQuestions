@@ -14,7 +14,7 @@ from app_test.shared.factories import (
     make_question_with_files,
     make_upload_files_to_question
 )
-from app_test.shared.mock_data import QUESTION_FULL,QUESTIONS_FULL
+from app_test.shared.mock_data import QUESTIONS
 
 from src.core import get_session
 from src.main import get_application
@@ -28,12 +28,12 @@ from src.web.dependencies import (
 
 @pytest.fixture
 def question_payload():
-    return QUESTION_FULL
+    return QUESTIONS
 
 
 @pytest.fixture
 def multiple_question_payloads():
-    return QUESTIONS_FULL
+    return QUESTIONS
 
 
 @asynccontextmanager
@@ -46,7 +46,7 @@ async def on_startup_test(app: FastAPI):
 def api_client(
     db_session,
     question_manager,
-    active_storage_backend,
+    storage,
     storage_mode,
 ):
     """
@@ -64,7 +64,7 @@ def api_client(
         yield question_manager
 
     async def override_get_storage():
-        yield active_storage_backend
+        yield storage
 
     async def override_storage_mode():
         yield storage_mode

@@ -3,15 +3,20 @@ QUESTIONS = [
         "title": "Addition",
         "ai_generated": True,
         "isAdaptive": False,
+        "base_path": "questions/",  # flat path
     },
     {
         "title": "Multiplication",
         "ai_generated": True,
         "isAdaptive": False,
+        "base_path": "questions/math/",  # nested folder
     },
-]
-
-MECH_QUESTIONS = [
+    {
+        "title": "Division",
+        "ai_generated": False,
+        "isAdaptive": False,
+        "base_path": "user123/questions/",  # user-scoped
+    },
     {
         "title": "Bernoulli Equation",
         "ai_generated": True,
@@ -19,6 +24,7 @@ MECH_QUESTIONS = [
         "topics": ["Fluid Dynamics", "Flow Analysis"],
         "languages": ["javascript"],
         "qtypes": ["multiple-choice"],
+        "question_path": "", # Empty string
     },
     {
         "title": "Thermodynamics First Law",
@@ -26,7 +32,8 @@ MECH_QUESTIONS = [
         "isAdaptive": False,
         "topics": ["Thermodynamics", "Energy Balance"],
         "languages": ["python", "javascript"],
-        "qtype": ["conceptual"],
+        "qtypes": ["conceptual"],
+        "base_path": "mech/thermo/first_law/",
     },
     {
         "title": "Statics Basics",
@@ -36,26 +43,27 @@ MECH_QUESTIONS = [
         "user_id": 1,
         "topics": ["Mechanics", "Statics"],
         "languages": ["python"],
-        "qtype": ["numeric"],
+        "qtypes": ["numeric"],
+        "base_path": "users/1/mechanics/statics/",
+    },
+    {
+        "title": "Heat Transfer Conduction",
+        "ai_generated": True,
+        "isAdaptive": False,
+        "topics": ["Heat Transfer"],
+        "languages": ["python"],
+        "qtypes": ["derivation"],
+        "base_path": "deep/nested/path/for/testing/",
     },
 ]
 
-ADDITIONAL_METADATA = {
-    "topics": ["math", "science", "engineering"],
-    "languages": ["python"],
-    "qtypes": ["numerical", "multiple-choice"],
-}
-
-QUESTION_FULL = {**QUESTIONS[0], **ADDITIONAL_METADATA}
-
-QUESTIONS_FULL = [{**q, **ADDITIONAL_METADATA} for q in QUESTIONS] + MECH_QUESTIONS
 
 QUESTION_GROUPS = [
     {"case": "single_question", "questions": [QUESTIONS[0]]},
     {"case": "multiple_questions", "questions": QUESTIONS},
     {
         "case": "multiple_questions_with_additional_meta",
-        "questions": [{**q, **ADDITIONAL_METADATA} for q in QUESTIONS],
+        "questions": QUESTIONS,
     },
 ]
 

@@ -10,10 +10,10 @@ from firebase_admin.auth import verify_id_token
 from src.core import SessionDep, logger
 from src.core.config import AppSettings, get_settings
 from src.data import QuestionDB
-from src.service.storage.firebase_storage import FirebaseStorage
-from src.service.storage.local_storage import LocalStorageService
+from src.service.storage.firebase_storage import FbStorage
+from src.service.storage.local_storage import LocalStorage
 from src.service.question_manager.question_manager import QuestionManager
-from src.service.storage.local_storage import StorageService
+from src.service.storage.local_storage import Storage
 
 from src.types import STORAGE_TYPE
 
@@ -65,16 +65,16 @@ QuestionDBDependency = Annotated[QuestionDB, Depends(get_question_database)]
 
 
 @lru_cache
-def get_storage_manager() -> StorageService:
+def get_storage_manager() -> Storage:
     settings = get_settings()
     if settings.STORAGE_SERVICE == "cloud":
         if not (settings.FIREBASE_CRED and settings.STORAGE_BUCKET):
             raise ValueError("Settings for Cloud Storage not Set")
-        storage_service = FirebaseStorage(
+        storage_service = FbStorage(
             bucket=settings.STORAGE_BUCKET,
         )
     else:
-        storage_service = LocalStorageService()
+        storage_service = LocalStorage()
 
     logger.debug(f"Question manager set to {settings.STORAGE_SERVICE}")
     logger.debug("Initialized Question Manager Success")
@@ -82,7 +82,7 @@ def get_storage_manager() -> StorageService:
     return storage_service
 
 
-StorageDependency = Annotated[StorageService, Depends(get_storage_manager)]
+StorageDependency = Annotated[Storage, Depends(get_storage_manager)]
 
 
 @lru_cache

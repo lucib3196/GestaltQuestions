@@ -16,14 +16,14 @@ from src.model.question import Question
 
 from src.utils import to_serializable
 from src.service.question_manager.question_manager import QuestionManager
-from src.service.storage.local_storage import StorageService
+from src.service.storage.local_storage import Storage
 
 
 
 class QuestionSync:
     def __init__(
         self,
-        storage: StorageService,
+        storage: Storage,
         qr: QuestionManager,
         flag: Sequence[str] = [
             "info2.json",

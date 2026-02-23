@@ -4,7 +4,7 @@ from google.cloud.storage.blob import Blob
 import json
 from abc import ABC, abstractmethod
 from . import TARGET
-
+from src.types.storage import STORAGE_TYPE
 
 class Storage(ABC):
     """
@@ -22,6 +22,31 @@ class Storage(ABC):
     # ---------------------------------------------------------
     # Core file operations
     # ---------------------------------------------------------
+
+    @abstractmethod
+    def set_storage_type(self)->STORAGE_TYPE:
+        """Set the storage type for the given target .
+
+        Raises:
+            ValueError: [description]
+            TypeError: [description]
+            ValueError: [description]
+
+        Returns:
+            STORAGE_TYPE: [description]
+        """
+    @abstractmethod
+    def get_storage_type(self)->STORAGE_TYPE:
+        """Get the storage type for the given target .
+
+        Raises:
+            ValueError: [description]
+            TypeError: [description]
+            ValueError: [description]
+
+        Returns:
+            STORAGE_TYPE: [description]
+        """
 
     @abstractmethod
     def exists(self, target: TARGET) -> bool:
