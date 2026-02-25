@@ -5,10 +5,9 @@ from google.cloud.storage.blob import Blob
 from src.core.firebase import initialize_firebase_app
 
 from .base import Storage
-from . import STORAGE_TYPE,logger
+from . import STORAGE_TYPE, logger
 from typing import Literal
 from typing import cast
-
 
 
 class FbStorage(Storage):
@@ -35,7 +34,7 @@ class FbStorage(Storage):
             return self._exists_dir(key)
         return self._exists_file(key)
 
-    def create_dir(self, target: str ) -> str :
+    def create_dir(self, target: str) -> str:
         key = self._to_blob_key(target).rstrip("/") + "/"
         blob: Blob = self.bucket.blob(key)
 
@@ -45,11 +44,11 @@ class FbStorage(Storage):
 
     def write(
         self,
-        target: str ,
+        target: str,
         data: str | dict | List | bytes | bytearray,
         *,
         overwrite: bool = True,
-    ) -> str :
+    ) -> str:
         key = self._to_blob_key(target).rstrip("/")
         blob: Blob = self.bucket.blob(key)
         # Data can either be string or bytes. Since we are passing in bytes this must
@@ -80,32 +79,31 @@ class FbStorage(Storage):
     def list(
         self, target: str | Path | Blob, *, recursive: bool = False
     ) -> Sequence[str]:
+        if recursive:
+            raise NotImplemented(
+                "[FB Storage] Failed to recursively get blobs. Not implemented yet"
+            )
 
         norm = self._to_blob_key(target)
+        logger.info(f"[FB Storage] Norm {norm}")
         blobs = list(self.bucket.list_blobs(prefix=norm))
 
         results = []
 
         for blob in blobs:
-            relative = blob.name[len(norm) :]
+            relative = blob.name
+            logger.info(f"[FBStorage] Listing files {relative}")
 
             # Skip directory blob itself
             if not relative:
                 continue
+            # Hack cloud storage will return the blob key as part of the iteration. 
+            if relative == norm:
+                continue
 
-            if recursive:
-                results.append(relative)
-            else:
-                if "/" not in relative:
-                    results.append(relative)
+            results.append(relative)
 
         return results
-
-        # Recursive: include everything under this prefix
-        files = [blob.name[len(norm) :] for blob in blobs]
-        # Remove the prefix from being included
-        files.remove(norm)
-        return files
 
     def copy(
         self,

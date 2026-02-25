@@ -1,16 +1,16 @@
 import json
-from src.model.question import Question
+from pathlib import Path, PurePosixPath
+from typing import Any, Dict
+
 import pytest
+
 from src.core import logger
+from src.model.question import Question
 from src.utils import safe_dir_name
-from pathlib import Path
-from app_test.shared.mock_data import QUESTIONS
-from copy import deepcopy
-from src.utils import safe_dir_name
-from app_test.shared.factories.question_manager_factory import MakeQuestionFactory
+
 from app_test import QuestionManager
-from typing import Dict, Any
-from pathlib import PurePosixPath
+from app_test.shared.factories.question_manager_factory import MakeQuestionFactory
+from app_test.shared.mock_data import QUESTIONS
 
 
 # Test question creation
