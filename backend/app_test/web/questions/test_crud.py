@@ -1,11 +1,12 @@
 from src.utils import validate_response_payload
 from src.model.question import Question
-from src.types import QuestionData
+from src.model.question import QuestionData
 from src.core import logger
 from uuid import uuid4
 import pytest
 from app_test.shared.mock_data import QUESTION_FIELDS
 from app_test.shared.mock_data import QUESTIONS
+import pprint
 
 
 @pytest.mark.parametrize("payload", [q for q in QUESTIONS])
@@ -14,7 +15,12 @@ def test_create_question(make_question_web, payload):
     resp = make_question_web(**payload)
     # Check the body
     body = resp.json()
-    assert resp.status_code == 200
+    # Helpful debug if status fails
+    assert resp.status_code == 200, (
+        f"\nStatus Code: {resp.status_code}"
+        f"\nPayload:\n{pprint.pformat(payload)}"
+        f"\nResponse Body:\n{pprint.pformat(body)}\n"
+    )
     qcreated = Question.model_validate(body)
     # Validate core keys
     assert qcreated

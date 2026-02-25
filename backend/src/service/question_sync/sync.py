@@ -10,14 +10,14 @@ from pydantic import ValidationError
 
 # --- Internal ---
 from src.core import logger, get_session
-from src.types import UnsyncedQuestion, SyncMetrics, FolderCheckMetrics, QuestionData
+from src.types import UnsyncedQuestion, SyncMetrics, FolderCheckMetrics
 
 from src.model.question import Question
 
 from src.utils import to_serializable
 from src.service.question_manager.question_manager import QuestionManager
 from src.service.storage.local_storage import Storage
-
+from src.data.question import QuestionData
 
 
 class QuestionSync:

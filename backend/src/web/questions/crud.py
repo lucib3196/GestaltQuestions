@@ -5,10 +5,12 @@ from pathlib import Path
 
 from src.core import logger
 from src.model.question import Question
-from src.types import QuestionData
+from src.model.question import QuestionData
 from src.web.dependencies import (
     QuestionDBDependency,
     QuestionManagerDependency,
+    StorageTypeDep,
+    LocalBaseDep,
 )
 from src.types import ID
 
@@ -24,7 +26,19 @@ router = APIRouter(
 async def create_question(
     qm: QuestionManagerDependency,
     question: QuestionData,
+    storage_type: StorageTypeDep,
+    base_path: LocalBaseDep,
 ) -> Question:
+
+    # Handle the storage path issuye
+    if storage_type == "local":
+        question.base_path = base_path
+    elif storage_type == "cloud":
+        if not question.base_path:
+            logger.warning(
+                "Cannot determine path to question. Base path is none. Setting default path to question"
+            )
+            question.base_path = "questions"
     try:
         assert question.title
         qcreated = await qm.create_question(question, files=None)
@@ -52,13 +66,12 @@ async def get_question(qid: ID, qm: QuestionManagerDependency) -> Question:
 
 
 @router.get("/{id}/all_data")
-async def get_question_all_data(id: ID, qm: QuestionManagerDependency) -> QuestionData:
+async def get_question_all_data(
+    id: ID, qm: QuestionManagerDependency, storage_type: StorageTypeDep
+) -> QuestionData:
     try:
         question_data = await qm.qdb.get_question_data(id)
-        path = await qm.get_question_path(id, relative=True)
-        if isinstance(path, Path):
-            path = path.as_posix()
-        question_data.question_path = path
+        question_data.question_path = await qm.qdb.get_question_path(id, storage_type)
         return question_data
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Failed to retrieve question {e}")
@@ -118,11 +131,10 @@ async def update_question(
     id: ID,
     update: QuestionData,
     qm: QuestionManagerDependency,
-    update_storage: bool = True,
 ) -> QuestionData:
 
     try:
-        return await qm.update_question(id, update, update_storage)
+        return await qm.qdb.update_question(id, update)
     except Exception as e:
         logger.exception(f"Error while updating question {id}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to update question {e}")

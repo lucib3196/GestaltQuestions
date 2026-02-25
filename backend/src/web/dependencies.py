@@ -34,6 +34,13 @@ def get_storage_type(
 StorageTypeDep = Annotated[STORAGE_TYPE, Depends(get_storage_type)]
 
 
+def get_local_base_path(settings: SettingDependency):
+    if settings == "local":
+        return "questions"
+
+
+LocalBaseDep = Annotated[str, Depends(get_local_base_path)]
+
 bearer_scheme = HTTPBearer(auto_error=False)
 
 

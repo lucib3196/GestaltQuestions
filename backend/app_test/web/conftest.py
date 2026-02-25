@@ -23,6 +23,7 @@ from src.web.dependencies import (
     get_question_manager,
     get_storage_manager,
     get_storage_type,
+    get_local_base_path
 )
 
 
@@ -47,6 +48,7 @@ def api_client(
     db_session,
     question_manager,
     storage,
+    tmp_path
 ):
     """
     Provides a FastAPI TestClient with dependency overrides for DB, storage,
@@ -67,11 +69,15 @@ def api_client(
 
     async def override_storage_mode():
         yield storage.get_storage_type()
+        
+    async def override_local_base_path():
+        yield (tmp_path/"test_questions").as_posix()
 
     app.dependency_overrides[get_session] = override_get_db
     app.dependency_overrides[get_question_manager] = override_get_question_manager
     app.dependency_overrides[get_storage_manager] = override_get_storage
     app.dependency_overrides[get_storage_type] = override_storage_mode
+    app.dependency_overrides[get_local_base_path] = override_local_base_path
 
     # --- Start test client ---
     with TestClient(app, raise_server_exceptions=True) as client:

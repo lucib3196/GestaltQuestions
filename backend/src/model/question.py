@@ -9,14 +9,55 @@ from sqlmodel import Field as SQLField, Relationship, SQLModel
 from sqlalchemy import text
 from .question_ownership import QuestionOwnership
 
+from typing import Optional, Sequence
+from uuid import UUID
+from pydantic import BaseModel, ConfigDict, Field
+
+# Base Models
 if TYPE_CHECKING:
     from .users import User
+
+
+# ---------------------------------
+# -----------BaseModels-----------
+# ---------------------------------
 
 
 class Status(Enum):
     ARCHIVED = "archived"
     DRAFT = "draft"
     PUBLISHED = "published"
+
+
+class QuestionBase(BaseModel):
+    id: str | UUID | None = None
+    title: Optional[str] = None
+    ai_generated: Optional[bool] = None
+    isAdaptive: Optional[bool] = None
+    base_path: str | None = None
+    question_path: str|None = None
+    model_config = ConfigDict(extra="ignore")
+
+
+class QRelationshipData(BaseModel):
+    topics: Sequence[str] = Field(default_factory=list)
+    qtypes: Sequence[str] = Field(default_factory=list)
+    languages: Sequence[str] = Field(default_factory=list)
+
+
+class QuestionData(QuestionBase, QRelationshipData):
+    pass
+
+
+class UpdateFile(BaseModel):
+    question_id: str | UUID
+    filename: str
+    new_content: str | dict
+
+
+# ---------------------------------
+# -----------Actual DatabaseModels-----------
+# ---------------------------------
 
 
 # Link tables for many to many

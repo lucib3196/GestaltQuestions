@@ -1,6 +1,6 @@
 import pytest
 from src.model.question import Question
-from src.types import QuestionData
+from src.model.question import QuestionData
 from src.core.logging import logger
 from app_test.shared.mock_data import QUESTIONS
 from app_test.shared.factories import make_question

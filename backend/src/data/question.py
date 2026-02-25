@@ -15,7 +15,7 @@ from src.model.question import (
     QuestionType,
     Topic,
 )
-from src.types import QuestionData
+from src.model.question import QuestionData
 from src.utils import convert_uuid
 
 from src.types import STORAGE_TYPE, ID

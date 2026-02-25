@@ -1,6 +1,5 @@
 from src.service.storage import STORAGE_TYPE
 from .general import ID
-from .question import QuestionData, QuestionBase
 from .sync import (
     UnsyncedQuestion,
     SyncMetrics,
