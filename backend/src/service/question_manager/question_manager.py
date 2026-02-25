@@ -17,6 +17,7 @@ from src.model.question import Question
 from src.service.storage.base import Storage
 from src.types import FileData, ID, QuestionData
 from src.utils import safe_dir_name
+from src.core import logger
 
 
 class QuestionManager:
@@ -60,33 +61,39 @@ class QuestionManager:
         files: Optional[List[FileData]] = None,
         handle_images: bool = True,
     ) -> Question:
+        try:
 
-        question_data = QuestionData.model_validate(question_data)
-        question = await self.qdb.create_question(question_data)
+            question_data = QuestionData.model_validate(question_data)
+            question = await self.qdb.create_question(question_data)
 
-        if not question_data.base_path:
-            raise ValueError("Base path missing")
+            if not question_data.base_path:
+                raise ValueError("Base path missing")
 
-        question_path = self._question_dir(
-            question_data.base_path,
-            question,
-        )
-        self.storage.create_dir(question_path)
-
-        await self.qdb.set_question_path(
-            question.id,
-            self.storage.get_storage_type(),
-            question_path,
-        )
-
-        if files:
-            await self.handle_question_files(
-                files,
-                question_path,
-                handle_images,
+            question_path = self._question_dir(
+                question_data.base_path,
+                question,
             )
 
-        return question
+            storage_path = self.storage.create_dir(question_path)
+            logger.info(f"[QM] Created storage path for question {storage_path} ")
+            assert self.storage.exists(storage_path)
+
+            await self.qdb.set_question_path(
+                question.id,
+                self.storage.get_storage_type(),
+                question_path,
+            )
+
+            if files:
+                await self.handle_question_files(
+                    files,
+                    question_path,
+                    handle_images,
+                )
+
+            return question
+        except Exception as e:
+            raise ValueError(f"[QM] Failed to create question {e}")
 
     async def delete_question(self, qid: ID) -> None:
         question = await self.qdb.get_question(qid)
@@ -101,8 +108,12 @@ class QuestionManager:
 
     async def handle_storage_update(self, qid: ID, destination: str) -> str:
         src = await self._resolve_question_path(qid)
-        self.storage.create_dir(src)
+        logger.info(f"[QM] Handling storage update This is the src {src}")
+        destination = self.storage.create_dir(destination)
         self.storage.move(src, destination)
+        logger.info(
+            f"[QM] Changing question storage from old: {src}->new:{destination}"
+        )
         await self.qdb.set_question_path(
             qid,
             self.storage.get_storage_type(),

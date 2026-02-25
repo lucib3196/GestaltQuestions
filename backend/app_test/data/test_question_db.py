@@ -95,7 +95,7 @@ async def test_question_update(question_db, question_payload):
     assert qcreated is not None
     assert isinstance(qcreated, Question)
 
-    update_data = QuestionData(title="new title", topics=["history", "math", "science"])
+    update_data = QuestionData(title="new title", topics=["history", "math", "science"]) # type: ignore
 
     qupdate = await question_db.update_question(
         qcreated.id,

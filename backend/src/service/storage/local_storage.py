@@ -5,9 +5,9 @@ from google.cloud.storage.blob import Blob
 from typing import Sequence
 import shutil
 from .base import Storage
-from . import TARGET
-from src.types.storage import STORAGE_TYPE
+from . import STORAGE_TYPE, logger
 from typing import Literal, cast
+
 
 class LocalStorage(Storage):
 
@@ -21,14 +21,14 @@ class LocalStorage(Storage):
     def get_storage_type(self) -> Literal["cloud"] | Literal["local"]:
         return cast(STORAGE_TYPE, self.mode)
 
-    def _resolve(self, target: TARGET) -> Path:
+    def _resolve(self, target: str) -> Path:
         return Path(self._to_storage_path(target)).resolve()
 
     def exists(self, target: str | Path | Blob) -> bool:
         storage_path = self._to_storage_path(target)
         return self._resolve(storage_path).exists()
 
-    def create_dir(self, target: str | Path | Blob) -> str | Path | Blob:
+    def create_dir(self, target: str) -> str:
         storage_path = self._to_storage_path(target)
         path = self._resolve(storage_path)
         if path.is_file():
@@ -43,11 +43,11 @@ class LocalStorage(Storage):
 
     def write(
         self,
-        target: str | Path | Blob,
+        target: str,
         data: str | dict | List | bytes | bytearray,
         *,
         overwrite: bool = True,
-    ) -> str | Path | Blob:
+    ) -> str:
         storage_path = self._to_storage_path(target)
         path = self._resolve(storage_path)
 
@@ -63,9 +63,7 @@ class LocalStorage(Storage):
         elif path.is_dir():
             shutil.rmtree(path)
 
-    def list(
-        self, target: str | Path | Blob, *, recursive: bool = False
-    ) -> Sequence[str | Path | Blob]:
+    def list(self, target: str, *, recursive: bool = False) -> Sequence[str]:
         storage_path = self._to_storage_path(target)
         base = self._resolve(storage_path)
 
@@ -79,33 +77,42 @@ class LocalStorage(Storage):
                 results.append(self._to_storage_path(path))
         return results
 
-    def move(
-        self, source: str | Path | Blob, destination: str | Path | Blob
-    ) -> str | Path | Blob:
+    def move(self, source: str, destination: str) -> str:
+        # Probably redundatn but ensure we have the path
         src_path = self._resolve(self._to_storage_path(source))
-        dst_storage = self._to_storage_path(destination)
-        dst_path = self._resolve(dst_storage)
+        new_dest = self.copy(source, destination)
 
-        dst_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(src_path), str(dst_path))
-        return dst_storage
+        self.delete(src_path)
+        return str(new_dest)
 
     def copy(
         self,
-        source: str | Path | Blob,
-        destination: str | Path | Blob,
+        source: str,
+        destination: str,
     ) -> str:
 
         src_path = self._resolve(self._to_storage_path(source))
         dst_storage = self._to_storage_path(destination)
+
+        if not src_path.exists():
+            raise FileExistsError(f"Source path does not exist {src_path}")
+
         dst_path = self._resolve(dst_storage)
+        logger.info(f"Copying data, {src_path}->{dst_path}")
 
         if src_path.is_dir():
+            logger.info("Received a directory")
             # Copy directory recursively
             shutil.copytree(src_path, dst_path, dirs_exist_ok=True)
-        else:
+        elif src_path.is_file():
+            logger.info("Received a file")
             # Ensure parent exists
             dst_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src_path, dst_path)
+
+        else:
+            raise ValueError(
+                f"Failed to move file received {src_path} cannot determine path"
+            )
 
         return str(dst_storage)

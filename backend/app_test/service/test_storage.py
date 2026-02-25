@@ -118,7 +118,7 @@ def test_move_files_all_children(
     storage.move(source_path, destination)
 
     # Old directory should not exist
-    
+
     print("This is the storage path", source_path)
     assert not storage.exists(str(source_path))
 
@@ -127,13 +127,14 @@ def test_move_files_all_children(
     print("This is the new filepath", new_file_path)
 
     assert storage.exists(str(new_file_path))
-    
+
     read_content = storage.read(str(new_file_path)).decode()
 
     if filename.endswith(".json"):
         assert json.loads(read_content) == content
     else:
         assert read_content == content
+
 
 @pytest.mark.parametrize("source,destination", RENAME_TARGETS)
 def test_copy(source, destination, storage, tmp_path):

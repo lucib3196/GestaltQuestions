@@ -1,10 +1,11 @@
 from pathlib import Path
-from typing import Optional, List, Sequence, Union
+from typing import List, Sequence, Union
 from google.cloud.storage.blob import Blob
 import json
 from abc import ABC, abstractmethod
-from . import TARGET
-from src.types.storage import STORAGE_TYPE
+from . import STORAGE_TYPE
+
+
 
 class Storage(ABC):
     """
@@ -49,7 +50,7 @@ class Storage(ABC):
         """
 
     @abstractmethod
-    def exists(self, target: TARGET) -> bool:
+    def exists(self, target:str) -> bool:
         """
         Return True if the given target exists in storage.
 
@@ -61,7 +62,7 @@ class Storage(ABC):
         """
         ...
     @abstractmethod
-    def create_dir(self,target: TARGET)->TARGET:
+    def create_dir(self,target: str)->str:
         """Create a new directory under the given path .
 
         Args:
@@ -77,7 +78,7 @@ class Storage(ABC):
         """
 
     @abstractmethod
-    def read(self, target: TARGET) -> bytes:
+    def read(self, target: str) -> bytes:
         """
         Read the contents of a stored object.
 
@@ -95,11 +96,11 @@ class Storage(ABC):
     @abstractmethod
     def write(
         self,
-        target: TARGET,
+        target:str,
         data: str | dict | List | bytes | bytearray,
         *,
         overwrite: bool = True,
-    ) -> TARGET:
+    ) -> str:
         """
         Write raw bytes to the given storage target.
 
@@ -117,7 +118,7 @@ class Storage(ABC):
         ...
 
     @abstractmethod
-    def delete(self, target: TARGET) -> None:
+    def delete(self, target: str) -> None:
         """
         Delete the specified storage target.
 
@@ -134,7 +135,7 @@ class Storage(ABC):
     # ---------------------------------------------------------
 
     @abstractmethod
-    def list(self, target: TARGET, *, recursive: bool = False) -> Sequence[TARGET]:
+    def list(self, target: str, *, recursive: bool = False) -> Sequence[str]:
         """
         List objects under a given prefix or directory.
 
@@ -152,7 +153,7 @@ class Storage(ABC):
     # ---------------------------------------------------------
 
     @abstractmethod
-    def copy(self, source: TARGET, destination: TARGET) -> TARGET:
+    def copy(self, source: str, destination: str) -> str:
         """
         Copy an object from source to destination.
 
@@ -166,7 +167,7 @@ class Storage(ABC):
         ...
 
     @abstractmethod
-    def move(self, source: TARGET, destination: TARGET) -> TARGET:
+    def move(self, source: str, destination: str) -> str:
         """
         Move (rename) an object from source to destination.
 

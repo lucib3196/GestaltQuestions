@@ -3,12 +3,12 @@ from typing import List, Sequence
 from firebase_admin import storage
 from google.cloud.storage.blob import Blob
 from src.core.firebase import initialize_firebase_app
-from src.core.logging import logger
+
 from .base import Storage
-from src.types.storage import STORAGE_TYPE
+from . import STORAGE_TYPE,logger
 from typing import Literal
 from typing import cast
-from src.types.storage import STORAGE_TYPE
+
 
 
 class FbStorage(Storage):
@@ -35,7 +35,7 @@ class FbStorage(Storage):
             return self._exists_dir(key)
         return self._exists_file(key)
 
-    def create_dir(self, target: str | Path | Blob) -> str | Path | Blob:
+    def create_dir(self, target: str ) -> str :
         key = self._to_blob_key(target).rstrip("/") + "/"
         blob: Blob = self.bucket.blob(key)
 
@@ -45,11 +45,11 @@ class FbStorage(Storage):
 
     def write(
         self,
-        target: str | Path | Blob,
+        target: str ,
         data: str | dict | List | bytes | bytearray,
         *,
         overwrite: bool = True,
-    ) -> str | Path | Blob:
+    ) -> str :
         key = self._to_blob_key(target).rstrip("/")
         blob: Blob = self.bucket.blob(key)
         # Data can either be string or bytes. Since we are passing in bytes this must
