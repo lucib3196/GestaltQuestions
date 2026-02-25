@@ -12,7 +12,7 @@ from app_test.shared.factories import (
     make_retrieve_question,
     make_retrieve_question_full,
     make_question_with_files,
-    make_upload_files_to_question
+    make_upload_files_to_question,
 )
 from app_test.shared.mock_data import QUESTIONS
 
@@ -47,7 +47,6 @@ def api_client(
     db_session,
     question_manager,
     storage,
-    storage_mode,
 ):
     """
     Provides a FastAPI TestClient with dependency overrides for DB, storage,
@@ -67,7 +66,7 @@ def api_client(
         yield storage
 
     async def override_storage_mode():
-        yield storage_mode
+        yield storage.get_storage_type()
 
     app.dependency_overrides[get_session] = override_get_db
     app.dependency_overrides[get_question_manager] = override_get_question_manager
