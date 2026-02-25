@@ -1,6 +1,6 @@
 import asyncio
 import json
-from typing import List, Optional
+from typing import List, Optional, Sequence
 from uuid import UUID
 
 from fastapi import APIRouter, Form, HTTPException, UploadFile
@@ -10,11 +10,15 @@ from starlette import status
 
 from src.core import logger
 from src.types import FileData
-from src.model.question import Question,QuestionData
+from src.model.question import Question, QuestionData
 from src.service import FileService, FileConverter
 from src.web.dependencies import (
     QuestionManagerDependency,
+    QuestionManagerDependency,
+    StorageTypeDep,
+    LocalBaseDep,
 )
+
 
 router = APIRouter(
     prefix="/questions/files",
@@ -28,6 +32,8 @@ CLIENT_FILE_DIR = "clientFiles"
 @router.post("/")
 async def create_question_file_upload(
     qr: QuestionManagerDependency,
+    storage_type: StorageTypeDep,
+    base_path: LocalBaseDep,
     files: List[UploadFile],
     question_data: Optional[str] = Form(None),
     auto_handle_images: bool = True,
@@ -53,6 +59,16 @@ async def create_question_file_upload(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to validate the question data {e}",
         )
+
+    # Handle the storage path issuye
+    if storage_type == "local":
+        qdata.base_path = base_path
+    elif storage_type == "cloud":
+        if not qdata.base_path:
+            logger.warning(
+                "Cannot determine path to question. Base path is none. Setting default path to question"
+            )
+            qdata.base_path = "questions"
 
     try:
         fm = FileConverter()
@@ -127,9 +143,9 @@ async def upload_files_to_question(
 async def get_question_file_names(
     qid: str | UUID,
     qr: QuestionManagerDependency,
-) -> List[str]:
+) -> List[str] | Sequence[str]:
     try:
-        return await qr.get_question_file_names(qid)
+        return await qr.retrieve_question_files(qid)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -151,9 +167,15 @@ async def get_filedata(
 @router.get("/{qid}/{filename}")
 async def read_question_file(
     qid: str | UUID, filename: str, qr: QuestionManagerDependency
-) -> str | None:
+) -> str:
     try:
-        return await qr.read_file(qid, filename)
+        content = await qr.read_question_file(qid, filename)
+        if isinstance(content, (bytes, bytearray)):
+            return content.decode()
+        elif isinstance(content, str):
+            return content
+        else:
+            raise TypeError(f"Cannot read content type of content is {type(content)}")
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -170,7 +192,8 @@ async def update_file(
     qr: QuestionManagerDependency,
 ) -> bool:
     try:
-        return await qr.update_file(qid, filename, new_content)
+        await qr.write_question_file(qid, filename, new_content)
+        return True
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

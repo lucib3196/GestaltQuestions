@@ -155,6 +155,20 @@ class QuestionManager:
     # Upload Handling
     # ============================================================
 
+    async def upload_files_to_question(
+        self,
+        qid: ID,
+        files: List[FileData],
+        auto_handle_images: bool = True,
+    ) -> Dict:
+        try:
+            question_path = await self._resolve_question_path(qid)
+            return await self.handle_question_files(
+                files, question_path, auto_handle_images
+            )
+        except Exception as e:
+            raise ValueError(f"Failed to upload files to question {e}")
+
     async def handle_question_files(
         self,
         files: List[FileData],
