@@ -132,25 +132,35 @@ class FbStorage(Storage):
 
         return dest_key
 
-    def move(
-        self, source: str | Path | Blob, destination: str | Path | Blob
-    ) -> str | Path | Blob:
+    def move(self, source: str | Path | Blob, destination: str | Path | Blob) -> str:
         try:
-            source_norm = self._to_blob_key(source)
-            dest_norm = self._to_blob_key(destination)
+            source_prefix = self._to_blob_key(source)
+            dest_prefix = self._to_blob_key(destination)
 
-            source_blob = self.bucket.get_blob(source_norm)
-            dest_blob = self.bucket.blob(dest_norm)
+            if not source_prefix.endswith("/"):
+                source_prefix += "/"
+            if not dest_prefix.endswith("/"):
+                dest_prefix += "/"
 
-            if source_blob is None or not source_blob.exists():
-                raise ValueError("Source blob does not exist")
-            # Get blob content
-            content = source_blob.download_as_bytes()
-            dest_blob.upload_from_string(content)
-            self.delete(source_blob)
-            return dest_blob
+            blobs = list(self.bucket.list_blobs(prefix=source_prefix))
+
+            if not blobs:
+                raise ValueError("Source path does not exist or is empty")
+
+            for blob in blobs:
+                # Compute new blob name
+                new_name = blob.name.replace(source_prefix, dest_prefix, 1)
+
+                # Use native GCS copy (faster, server-side)
+                new_blob = self.bucket.copy_blob(blob, self.bucket, new_name)
+
+                # Delete original
+                blob.delete()
+
+            return dest_prefix
+
         except Exception as e:
-            raise ValueError(f"Failed to move blobs {e}")
+            raise ValueError(f"Failed to move directory: {e}")
 
     def _hard_delete(self):
         blobs = self.bucket.list_blobs()

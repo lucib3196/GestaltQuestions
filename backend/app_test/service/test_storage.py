@@ -6,14 +6,17 @@ from app_test.shared.mock_data.storage import (
     RENAME_TARGETS,
     MOCK_FILES,
     FOLDER_ITERATION_TARGETS,
+    RENAME_DIR,
     FileContent,
     NON_RECURSIVE_FOLDER_ITERATION_TARGETS,
 )
+import json
 
 
 # =========================================================================
 # Storage path operations
 # =========================================================================
+
 
 @pytest.mark.parametrize("target", TARGETS)
 def test_create(create_dir_factory, target, storage):
@@ -31,6 +34,7 @@ def test_exists_false(storage, target, tmp_path):
 # =========================================================================
 # File operations: read, write, delete
 # =========================================================================
+
 
 @pytest.mark.parametrize("filename,content", MOCK_FILES)
 def test_write(storage, create_dir_factory, filename, content):
@@ -68,8 +72,9 @@ def test_delete(storage, create_dir_factory, filename, content):
 # File Moving: Test moving and copying
 # =========================================================================
 
+
 @pytest.mark.parametrize("source,destination", RENAME_TARGETS)
-def test_rename_storage(source, destination, storage, tmp_path):
+def test_move_storage(source, destination, storage, tmp_path):
     if storage.get_storage_type() == "local":
         source = Path(tmp_path) / source
         destination = Path(tmp_path) / destination
@@ -84,6 +89,51 @@ def test_rename_storage(source, destination, storage, tmp_path):
     assert not storage.exists(source_path)
     assert storage.exists(destination)
 
+
+@pytest.mark.parametrize("filename,content", MOCK_FILES[:2])
+@pytest.mark.parametrize("source,destination", RENAME_DIR[:2])
+def test_move_files_all_children(
+    source,
+    destination,
+    filename,
+    content,
+    storage,
+    tmp_path,
+):
+    # Normalize paths for local storage
+    if storage.get_storage_type() == "local":
+        source = Path(tmp_path) / source
+        destination = Path(tmp_path) / destination
+
+    # Create source directory
+    source_path = storage.create_dir(source)
+
+    # Create file inside source
+    original_file_path = (Path(source_path) / filename).as_posix()
+    storage.write(str(original_file_path), content)
+
+    assert storage.exists(str(original_file_path))
+
+    # Move directory
+    storage.move(source_path, destination)
+
+    # Old directory should not exist
+    
+    print("This is the storage path", source_path)
+    assert not storage.exists(str(source_path))
+
+    # File should now exist in destination
+    new_file_path = (Path(destination) / filename).as_posix()
+    print("This is the new filepath", new_file_path)
+
+    assert storage.exists(str(new_file_path))
+    
+    read_content = storage.read(str(new_file_path)).decode()
+
+    if filename.endswith(".json"):
+        assert json.loads(read_content) == content
+    else:
+        assert read_content == content
 
 @pytest.mark.parametrize("source,destination", RENAME_TARGETS)
 def test_copy(source, destination, storage, tmp_path):
@@ -105,6 +155,7 @@ def test_copy(source, destination, storage, tmp_path):
 # =========================================================================
 # Folder Iteration Tests
 # =========================================================================
+
 
 @pytest.mark.parametrize("folder,files", FOLDER_ITERATION_TARGETS)
 def test_folder_iteration_recursive(folder, files, storage, tmp_path):

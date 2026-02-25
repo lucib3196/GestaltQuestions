@@ -8,6 +8,14 @@ TARGETS = [
     "data/user1234/content/question1/",
 ]
 
+RENAME_DIR = (
+    ("questions/draft/", "questions/published/"),
+    ("questions/temp/", "questions/archive/"),
+    ("users/luciano/", "users/luciano_backup/"),
+    ("courses/me135/week1/", "courses/me135/week1_old/"),
+    ("storage/raw_uploads/", "storage/processed_uploads/"),
+)
+
 RENAME_TARGETS = [
     # Basic file rename
     ("questions/test1.txt", "questions/test1_renamed.txt"),

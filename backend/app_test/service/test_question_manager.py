@@ -239,9 +239,9 @@ async def test_read_question_file(
         content = await question_manager.read_question_file(q.id, f.filename)
 
         if f.filename.endswith(".json"):
-            assert content == f.content
+            assert content == f.content.decode()
         else:
-            assert content == f.content
+            assert content == f.content.decode()
 
 
 @pytest.mark.asyncio

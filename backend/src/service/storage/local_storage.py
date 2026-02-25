@@ -9,7 +9,6 @@ from . import TARGET
 from src.types.storage import STORAGE_TYPE
 from typing import Literal, cast
 
-
 class LocalStorage(Storage):
 
     def __init__(self):
