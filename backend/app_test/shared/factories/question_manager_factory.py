@@ -35,7 +35,7 @@ def make_question_qm(
                 d = QuestionData.model_validate(data)
 
             # Prepare storage path
-            storage_type = question_manager.storage.get_storage_type()
+            storage_type = question_manager.storage.get_storage_type
             base_path = d.base_path or ""
 
             if storage_type == "local":

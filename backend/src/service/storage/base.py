@@ -36,6 +36,9 @@ class Storage(ABC):
         Returns:
             STORAGE_TYPE: [description]
         """
+        
+    
+    @property
     @abstractmethod
     def get_storage_type(self)->STORAGE_TYPE:
         """Get the storage type for the given target .

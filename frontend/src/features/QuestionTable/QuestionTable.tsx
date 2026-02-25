@@ -26,9 +26,14 @@ export default function QuestionTable() {
     setSelectedQuestions,
     selectedQuestions,
     questions,
+
   } = useQuestionCollectionContext();
+
+  
   const { multiSelect, setResetKey, resetKey, columns, setColumns } =
     useQuestionTableContext();
+
+
 
   const paged = useMemo(
     () => questions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
@@ -62,7 +67,6 @@ export default function QuestionTable() {
   useEffect(() => {
     setColumns(QuestionTableColumns.filter((v) => v.default) ?? []);
   }, []);
-  console.log("These are the keys on mount", columns);
 
   return (
     <div className="w-full mt-10">

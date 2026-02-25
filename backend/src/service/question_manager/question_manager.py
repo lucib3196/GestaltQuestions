@@ -15,10 +15,11 @@ from google.cloud.storage.blob import Blob
 from src.data import QuestionDB
 from src.model.question import Question, QuestionData
 from src.service.storage.base import Storage
-from src.types import  ID
+from src.types import ID
 from src.utils import safe_dir_name
 from src.core import logger
 from src.model.files import FileData
+
 
 class QuestionManager:
     """Service that coordinates storage and database operations for questions."""
@@ -80,7 +81,7 @@ class QuestionManager:
 
             await self.qdb.set_question_path(
                 question.id,
-                self.storage.get_storage_type(),
+                self.storage.get_storage_type,
                 question_path,
             )
 
@@ -116,7 +117,7 @@ class QuestionManager:
         )
         await self.qdb.set_question_path(
             qid,
-            self.storage.get_storage_type(),
+            self.storage.get_storage_type,
             destination,
         )
         return destination
@@ -150,6 +151,14 @@ class QuestionManager:
     async def retrieve_question_files(self, qid: ID) -> Sequence[str]:
         question_path = await self._resolve_question_path(qid)
         return [str(p) for p in self.storage.list(question_path)]
+
+    async def retrieve_available_question(
+        self, offset: int = 0, limit: int = 100
+    ) -> Sequence[Question | QuestionData]:
+        all_questions = await self.qdb.get_all_questions(
+            offset, limit, method="default", storage_type=self.storage.get_storage_type
+        )
+        return all_questions
 
     # ============================================================
     # Upload Handling
@@ -253,7 +262,7 @@ class QuestionManager:
         return f"{question_path.rstrip('/')}/{filename}"
 
     async def _resolve_question_path(self, qid: ID) -> str:
-        path = await self.qdb.get_question_path(qid, self.storage.get_storage_type())
+        path = await self.qdb.get_question_path(qid, self.storage.get_storage_type)
 
         if not path:
             raise ValueError("Question path not found")

@@ -1,5 +1,4 @@
-from src.service.storage import STORAGE_TYPE
-from .general import ID
+from .general import ID,STORAGE_TYPE
 from .sync import (
     UnsyncedQuestion,
     SyncMetrics,

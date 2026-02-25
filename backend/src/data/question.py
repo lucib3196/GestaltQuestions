@@ -15,10 +15,12 @@ from src.model.question import (
     QuestionType,
     Topic,
 )
+from src.types.general import STORAGE_TYPE
+
 from src.model.question import QuestionData
 from src.utils import convert_uuid
 
-from src.types import STORAGE_TYPE, ID
+from src.types import ID
 
 
 class QuestionDB:
@@ -72,10 +74,15 @@ class QuestionDB:
         offset: int = 0,
         limit: int = 100,
         method: Literal["default", "full"] = "default",
+        storage_type: STORAGE_TYPE = "local",
     ) -> Sequence[Question | QuestionData]:
+
+        column = Question.local_path if storage_type == "local" else Question.blob_path
+
         all_questions = self.session.exec(
-            select(Question).offset(offset).limit(limit)
+            select(Question).where(column != None).offset(offset).limit(limit)
         ).all()
+
         try:
             if method == "default":
                 return all_questions
@@ -131,7 +138,9 @@ class QuestionDB:
             logger.exception("[DB] Failed to update question")
             raise
 
-    async def filter_questions(self, data: QuestionData) -> Sequence[QuestionData]:
+    async def filter_questions(
+        self, data: QuestionData, storage_type: STORAGE_TYPE = "local"
+    ) -> Sequence[QuestionData]:
         filters = []
         stmt = select(Question)
         # Exclude the relationship fields first form the other conditions
@@ -165,9 +174,14 @@ class QuestionDB:
 
             if conds:
                 filters.append(or_(*conds))
-
+        # add the filter where we filter based on storage type
+        column = Question.local_path if storage_type == "local" else Question.blob_path
+        filters.append(column != None)
         if filters:
             stmt = stmt.where(*filters)
+
+        
+
         stmt = stmt.distinct()
         results = self.session.exec(stmt).all()
         return await asyncio.gather(*[self.get_question_data(r.id) for r in results])

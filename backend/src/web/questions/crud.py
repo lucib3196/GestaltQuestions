@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
 from typing import Sequence
-from pathlib import Path
 
 from src.core import logger
 from src.model.question import Question
@@ -79,10 +78,10 @@ async def get_question_all_data(
 
 @router.get("/{offset:int}/{limit:int}")
 async def get_all_questions(
-    qdb: QuestionDBDependency, offset: int = 0, limit: int = 100
+    qm: QuestionManagerDependency, offset: int = 0, limit: int = 100
 ) -> Sequence[Question | QuestionData]:
     try:
-        return await qdb.get_all_questions(offset, limit)
+        return await qm.retrieve_available_question(offset, limit)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -107,11 +106,13 @@ async def get_all_questions_data(
 
 @router.post("/filter")
 async def filter_questions(
-    filter_data: QuestionData, qm: QuestionManagerDependency
+    filter_data: QuestionData,
+    qm: QuestionManagerDependency,
+    storage_type: StorageTypeDep,
 ) -> Sequence[QuestionData]:
     try:
         logger.debug("Retrieved filter %s", filter_data)
-        return await qm.qdb.filter_questions(filter_data)
+        return await qm.qdb.filter_questions(filter_data, storage_type)
     except HTTPException:
         raise
     except Exception as e:

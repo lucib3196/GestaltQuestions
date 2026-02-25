@@ -1,10 +1,9 @@
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal, Optional, Sequence, Union
+from typing import Literal, Sequence
 
-from pydantic import AnyHttpUrl, field_validator
-from pydantic_core.core_schema import ValidationInfo
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
 

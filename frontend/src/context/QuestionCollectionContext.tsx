@@ -2,25 +2,36 @@ import React, {
   createContext,
   useContext,
   useState,
-  type Dispatch,
   type ReactNode,
+  useCallback,
 } from "react";
+import { QuestionAPI } from "../services";
 import type { QuestionData } from "../types/questionTypes";
 
-type QuestionCollectionContext = {
-  selectedQuestionID: string | null;
-  setSelectedQuestionID: React.Dispatch<React.SetStateAction<string>>;
-  questionMeta: QuestionData | null;
-  setQuestionMeta: React.Dispatch<React.SetStateAction<QuestionData | null>>;
-  selectedQuestions: string[];
-  setSelectedQuestions: React.Dispatch<React.SetStateAction<string[]>>;
-  questions: QuestionData[];
-  setQuestions: Dispatch<React.SetStateAction<QuestionData[]>>;
+type RetrieveQuestionsArgs = {
+  questionFilter?: Record<string, unknown>;
+  showAllQuestions?: boolean;
 };
 
-export const QuestionContext = createContext<QuestionCollectionContext | null>(
-  null
-);
+type QuestionCollectionContext = {
+  questions: QuestionData[];
+  selectedQuestionID: string | null;
+  selectedQuestions: string[];
+  questionMeta: QuestionData | null;
+
+  setSelectedQuestionID: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedQuestions: React.Dispatch<React.SetStateAction<string[]>>;
+  setQuestionMeta: React.Dispatch<
+    React.SetStateAction<QuestionData | null>
+  >;
+
+  retrieveQuestions: (
+    args?: RetrieveQuestionsArgs
+  ) => Promise<void>;
+};
+
+export const QuestionContext =
+  createContext<QuestionCollectionContext | null>(null);
 
 export function QuestionCollectionProvider({
   children,
@@ -28,22 +39,53 @@ export function QuestionCollectionProvider({
   children: ReactNode;
 }) {
   const [questions, setQuestions] = useState<QuestionData[]>([]);
-  const [questionMeta, setQuestionMeta] = useState<QuestionData | null>(null);
+  const [questionMeta, setQuestionMeta] =
+    useState<QuestionData | null>(null);
 
-  const [selectedQuestionID, setSelectedQuestionID] = useState<string>("");
-  const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
+  const [selectedQuestionID, setSelectedQuestionID] =
+    useState<string>("");
+
+  const [selectedQuestions, setSelectedQuestions] =
+    useState<string[]>([]);
+
+  // Centralized fetch logic
+  const retrieveQuestions = useCallback(
+    async ({
+      questionFilter = {},
+      showAllQuestions = true,
+    }: RetrieveQuestionsArgs = {}) => {
+      try {
+        const filter = showAllQuestions
+          ? {}
+          : questionFilter;
+
+        const retrieved =
+          await QuestionAPI.filterQuestions(filter);
+
+        setQuestions(retrieved);
+      } catch (error) {
+        console.error(
+          "Failed to retrieve questions:",
+          error
+        );
+      }
+    },
+    []
+  );
+
+  
 
   return (
     <QuestionContext.Provider
       value={{
         questions,
-        setQuestions,
         selectedQuestionID,
-        setSelectedQuestionID,
-        questionMeta,
-        setQuestionMeta,
         selectedQuestions,
+        questionMeta,
+        setSelectedQuestionID,
         setSelectedQuestions,
+        setQuestionMeta,
+        retrieveQuestions,
       }}
     >
       {children}
@@ -56,7 +98,7 @@ export function useQuestionCollectionContext() {
 
   if (!context) {
     throw new Error(
-      "useQuestionCollectionContext must be used within a <QuestionProvider>"
+      "useQuestionCollectionContext must be used within a <QuestionCollectionProvider>"
     );
   }
 

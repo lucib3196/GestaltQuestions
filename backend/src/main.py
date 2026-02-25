@@ -7,8 +7,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRouter
-from fastapi.staticfiles import StaticFiles
-from pathlib import Path
 from src.core import logger
 from sqlmodel import Session
 
@@ -42,7 +40,7 @@ def add_routes(app: FastAPI, routes: list[APIRouter] = ALL_ROUTES):
 
 
 def get_application(test_mode: bool = False):
-    app = FastAPI(title=settings.PROJECT_NAME, lifespan=on_startup)
+    app = FastAPI(title=settings.PROJECT_NAME or "", lifespan=on_startup)
     add_routes(app)
 
     app.add_middleware(
