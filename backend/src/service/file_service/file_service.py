@@ -14,11 +14,19 @@ from starlette import status
 
 # --- Internal ---
 from src.core import logger
-from src.types import FileData, SuccessFileServiceResponse
-from src.utils import safe_dir_name
-from .config import *
 
-FILE = str | UploadFile | FileData
+from src.utils import safe_dir_name
+from . import (
+    MAX_FILE_SIZE_MB,
+    ALLOWED_EXTENSIONS,
+    ALLOWED_MIME_TYPES,
+    ALLOWED_IMAGE_EXTENSIONS,
+    CONTENT_TYPE_MAPPING,
+    logger,
+    FileData,
+    FILE,
+    SuccessFileServiceResponse,
+)
 
 
 class FileConverter:
@@ -33,7 +41,7 @@ class FileConverter:
         self.content_type_mapping = content_type_mapping
 
     async def convert_to_filedata(self, file: FILE) -> FileData:
- 
+
         if isinstance(file, FileData):
             return file
         if isinstance(file, UploadFile) or hasattr(file, "file"):
@@ -179,7 +187,7 @@ class FileService:
             return SuccessFileServiceResponse(
                 status=status.HTTP_200_OK,
                 detail="Saved files succesfully",
-                path=destination,
+                path=str(destination),
             )
         except Exception as e:
             raise HTTPException(

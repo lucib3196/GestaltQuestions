@@ -15,35 +15,45 @@ ROOT_PATH = Path(__file__).parents[2]
 
 
 class AppSettings(BaseSettings):
-    PROJECT_NAME: str
+    PROJECT_NAME: str | None = None
     MODE: Literal["testing", "dev", "production"] = "dev"
     STORAGE_SERVICE: Literal["local", "cloud"] = "local"
 
-    BACKEND_CORS_ORIGINS: Sequence[AnyHttpUrl | str] = ()
-    SECRET_KEY: str
+    BACKEND_CORS_ORIGINS: Sequence[str] | str = []
 
     WORKING_DIR: str | Path | None = None
 
     DATABASE_URI: str | None = None
     POSTGRES_URL: str | None = None
     SQLITE_DB_PATH: str | None = None
+
     # FIREBASE CONFIG
     FIREBASE_CRED: str | None = None
     STORAGE_BUCKET: str | None = None
-    # FIREBASE EMULATOR
     FIREBASE_AUTH_EMULATOR_HOST: str | None = None
     STORAGE_EMULATOR_HOST: str | None = None
 
     SANDBOX_URL: str | None = None
-    QUESTIONS_DIRNAME: str | Path
     PROJECT_ROOT: str | Path
 
-    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @field_validator("BACKEND_CORS_ORIGINS", mode="after")
     @classmethod
-    def assemble_cors_origins(cls, v: str | list[str]):
+    def assemble_cors_origins(cls, v: str | list[str] | None = None):
+        if v is None:
+            return []
+
         if isinstance(v, str):
-            return [i.strip() for i in v.split(",")]
-        return v
+            raw_cors = [i.strip() for i in v.split(",")]
+        else:
+            raw_cors = v
+
+        normalized = []
+        for r in raw_cors:
+            if not r.startswith(("http://", "https://")):
+                r = "http://" + r
+            normalized.append(r)
+
+        return normalized
 
     @field_validator("SQLITE_DB_PATH", mode="before")
     @classmethod
@@ -63,11 +73,6 @@ def get_settings() -> AppSettings:
     env_mode = os.getenv("MODE", "dev")
     if env_mode not in valid_modes:
         raise ValueError(f"Invalid MODE: {env_mode}. Must be one of {valid_modes}")
-    allowed_origins = os.getenv("ALLOWED_ORIGINS")
-    if allowed_origins:
-        allowed_origins = allowed_origins.split(",")
-    else:
-        allowed_origins = ["http://localhost:5173"]
 
     # Verify storage
     if env_mode == "dev":
@@ -80,18 +85,7 @@ def get_settings() -> AppSettings:
             raise ValueError("Env Mode set to dev. Storage emulator must be set")
 
     app_settings = AppSettings(
-        PROJECT_NAME="GestaltQuestions",
-        BACKEND_CORS_ORIGINS=[] + allowed_origins,
-        SECRET_KEY=os.getenv("SECRET_KEY", ""),
-        QUESTIONS_DIRNAME="questions",
         PROJECT_ROOT=ROOT_PATH,
-        FIREBASE_CRED=os.getenv("FIREBASE_CRED", "default_firebase_cred"),
-        STORAGE_BUCKET=os.getenv("STORAGE_BUCKET"),
-        SQLITE_DB_PATH=(ROOT_PATH / Path(os.getenv("SQLITE_DB_PATH", ":memory:")))
-        .resolve()
-        .as_posix(),
-        POSTGRES_URL=os.getenv("POSTGRES_URL"),
-        SANDBOX_URL=os.getenv("SANDBOX_URL", ""),
     )
     return app_settings
 

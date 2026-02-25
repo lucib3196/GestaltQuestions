@@ -1,6 +1,6 @@
 from functools import lru_cache
 from typing import Annotated
-
+from pathlib import Path
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette import status
@@ -34,12 +34,21 @@ def get_storage_type(
 StorageTypeDep = Annotated[STORAGE_TYPE, Depends(get_storage_type)]
 
 
-def get_local_base_path(settings: SettingDependency):
-    if settings == "local":
-        return "questions"
+def get_local_base_path(settings: SettingDependency) -> str | None:
+    try:
+        if settings.STORAGE_SERVICE == "local":
+            question_base_path = Path(settings.PROJECT_ROOT) / "questions"
+            if not question_base_path.exists():
+                question_base_path.mkdir(exist_ok=True)
+            logger.debug(
+                f"[Initialization] Storage Service is Local. Setting base path to {question_base_path}"
+            )
+            return question_base_path.as_posix()
+    except Exception as e:
+        raise ValueError(f"Failed to initialized the question base path {e}")
 
 
-LocalBaseDep = Annotated[str, Depends(get_local_base_path)]
+LocalBaseDep = Annotated[str | None, Depends(get_local_base_path)]
 
 bearer_scheme = HTTPBearer(auto_error=False)
 

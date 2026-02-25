@@ -56,22 +56,6 @@ def get_application(test_mode: bool = False):
         expose_headers=["Content-Disposition"],
     )
 
-    question_dir = Path(settings.PROJECT_ROOT) / settings.QUESTIONS_DIRNAME
-    if not question_dir:
-        raise ValueError("Cannot Find Local Path")
-
-    logger.info(f"Setting Question Dir to {question_dir}")
-
-    if not question_dir.exists():
-        question_dir.mkdir(parents=True, exist_ok=True)
-
-    app.mount(
-        f"/{question_dir.name}",  # -> "/questions"
-        StaticFiles(directory=question_dir, html=False),
-        name="questions",
-    )
-    logger.info("Serving static files from: %s", question_dir)
-
     return app
 
 

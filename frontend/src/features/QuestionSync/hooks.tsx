@@ -1,4 +1,4 @@
-import { QuestionSyncAPI } from "../../services/api/backend/questionSyncAPI";
+import { QuestionSyncAPI } from "../../services/questionSyncAPI";
 import { toast } from "react-toastify";
 import FormatMetrics from "./FormatMetrics";
 

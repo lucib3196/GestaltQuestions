@@ -43,16 +43,15 @@ def storage(request):
         instance = StorageClass(settings.STORAGE_BUCKET)
     else:
         instance = StorageClass()
-    
+
     assert instance.get_storage_type() == name
     return instance
 
 
 @pytest.fixture(scope="function", autouse=True)
 def clean_cloud(storage):
-    if storage.get_storage_type()=="cloud":
+    if storage.get_storage_type() == "cloud":
         storage._hard_delete()
-        
 
 
 # --------------------

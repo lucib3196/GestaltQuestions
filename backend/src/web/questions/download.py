@@ -5,8 +5,6 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 from starlette import status
 
-
-from src.types import Response
 from src.service import FileService
 from src.web.dependencies import (
     QuestionManagerDependency,

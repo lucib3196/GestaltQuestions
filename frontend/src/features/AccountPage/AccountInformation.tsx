@@ -5,7 +5,7 @@ import { InputTextForm } from "../../components/FormInputs/InputComponents";
 import { Button } from "../../components/Button";
 import AccountFieldContainer from "./AccountFieldContainer";
 import { updateEmail, updatePassword } from "firebase/auth";
-import { UserAPI } from "../../services/api/backend/userAPI";
+import { UserAPI } from "../../services";
 import type { UserUpdate } from "../../types/userTypes";
 import { toast } from "react-toastify";
 

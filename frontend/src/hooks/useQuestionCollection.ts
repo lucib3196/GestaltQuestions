@@ -1,7 +1,7 @@
 import type { QuestionData } from "../types/questionTypes";
 import { useQuestionCollectionContext } from "../context/QuestionCollectionContext";
 import { useCallback, useEffect } from "react";
-import { QuestionAPI } from "../services/api/backend/questionAPI";
+import { QuestionAPI } from "../services/questionAPI";
 
 type UseRetrievedQuestionsArgs = {
   questionFilter?: Partial<QuestionData>;

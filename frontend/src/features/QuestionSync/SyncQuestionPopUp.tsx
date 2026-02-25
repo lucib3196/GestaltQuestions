@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { PopUpHelpIcon } from "../../components/Base/PopUpHelper";
 import FormatMetrics from "./FormatMetrics";
 // Local utilities / API / types
-import { QuestionSyncAPI } from "../../services/api/backend/questionSyncAPI";
+import { QuestionSyncAPI } from "../../services/questionSyncAPI";
 
 
 export default function SyncQuestionsPopUp() {

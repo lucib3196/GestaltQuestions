@@ -158,15 +158,6 @@ export const CREATE_MODE_OPTIONS: {
       label: "Upload Question",
       ariaLabel: "Upload an existing question",
     },
-    {
-      value: "text-ai",
-      label: "AI (Text)",
-      ariaLabel: "Generate a question using text-based AI",
-    },
-    {
-      value: "image-ai",
-      label: "AI (Image)",
-      ariaLabel: "Generate a question from images using AI",
-    },
+    
   ];
 export { QUESTION_FILE_SPECS };

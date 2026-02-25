@@ -1,4 +1,4 @@
-import api from "../client";
+import api from "./client";
 import type { User } from "firebase/auth";
 import { getIdToken } from "firebase/auth";
 
@@ -8,7 +8,7 @@ import type {
   UserBase,
   UserRead,
   UserUpdate
-} from "../../../types/userTypes";
+} from "../types/userTypes";
 
 export class UserAPI {
   private static readonly base = "/users";
