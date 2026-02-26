@@ -88,7 +88,22 @@ jobs:
             }
           }
           EOF
+      - name: Write firebase rules
+        run: |
+          cat <<EOF > storage.rules
+          rules_version = '2';
 
+          // Craft rules based on data in your Firestore database
+          // allow write: if firestore.get(
+          //    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
+          service firebase.storage {
+            match /b/{bucket}/o {
+              match /{allPaths=**} {
+                allow read, write: if false;
+              }
+            }
+          }
+          EOF
       - name: Start firebase emulator
         run: firebase emulators:start --only auth,storage --project demo-test & sleep 10
 
