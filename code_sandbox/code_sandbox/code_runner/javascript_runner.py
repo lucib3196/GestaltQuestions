@@ -22,12 +22,24 @@ class JavaScriptRunner(CodeRunner):
         return content
 
     def prepare_runner(self, tmp_path_posix, payload: Dict[str, Any] = {}):
-        node_runner = f"""\
-        const mod = require("{tmp_path_posix}");
-        const input = {json.dumps(payload)};
-        const result = mod["{self.func_name}"](input);
-        console.log(JSON.stringify(result));
-        """
+
+        node_runner = """
+            const mod = require("%(path)s");
+            const payload = %(payload)s;
+
+            let result;
+            if (payload && Object.keys(payload).length > 0) {
+                result = mod["%(func)s"](payload);
+            } else {
+                result = mod["%(func)s"]();
+            }
+
+            console.log(JSON.stringify(result));
+            """ % {
+            "path": tmp_path_posix,
+            "payload": json.dumps(payload),
+            "func": self.func_name,
+        }
         return node_runner
 
     def run(self, code: str, payload: Dict[str, Any] = {}) -> ExecutionResult:

@@ -58,7 +58,7 @@ class RoleManager:
         }
         try:
             for r, des in roles.items():
-                if self.does_role_exist(r):
+                if await self.does_role_exist(r):
                     continue
                 await self.create_role(r, description=des)
         except Exception:

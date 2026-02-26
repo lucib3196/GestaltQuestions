@@ -139,7 +139,7 @@ export class QuestionAPI {
         formData.append("files", file);
       });
       const response = await api.post(
-        `${this.base}/${encodeURIComponent(questionId)}/upload_files`,
+        `${this.base}/files/${encodeURIComponent(questionId)}`,
         formData,
         {
           headers: {
@@ -147,6 +147,7 @@ export class QuestionAPI {
           },
         },
       );
+      console.log("Response", response.data);
       return response.data;
     } catch (error) {
       throw error;
@@ -189,7 +190,7 @@ export class QuestionAPI {
 
   static async downloadQuestion(questionId: string) {
     const response = await api.post(
-      `${this.base}/files/${encodeURIComponent(questionId)}/download`,
+      `${this.base}/download/${encodeURIComponent(questionId)}`,
       null,
       {
         responseType: "blob",
@@ -202,9 +203,9 @@ export class QuestionAPI {
   }
   static async downloadQuestionFile(questionId: string, filename: string) {
     const response = await api.post(
-      `${this.base}/files/${encodeURIComponent(
+      `${this.base}/download/${encodeURIComponent(
         questionId,
-      )}/${encodeURIComponent(filename)}/download`,
+      )}/${encodeURIComponent(filename)}`,
       null,
       {
         responseType: "blob",
@@ -222,7 +223,7 @@ export class QuestionAPI {
     const file = zipFile[0];
     const formData = new FormData();
     formData.append("file", file);
-    const response = await api.post(`${this.base}/upload_zip`, formData);
+    const response = await api.post(`/upload_zip`, formData);
     return response.data;
   }
 }
