@@ -13,8 +13,7 @@ import UploadZipQuestionModal from "./UploadZipQuestionModal";
 const MODE_COMPONENTS: Partial<Record<CreateMode, React.ReactNode>> = {
   blank: <CreateQuestionFromBlank />,
   upload: <UploadZipQuestionModal setShowModal={() => {}} />,
-  "text-ai": <TextGenerator />,
-  "image-ai": <ImageGenerator />,
+
 };
 
 export default function CreateQuestion() {
