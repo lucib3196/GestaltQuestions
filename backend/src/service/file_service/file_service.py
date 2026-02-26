@@ -231,9 +231,8 @@ class FileService:
         if not filename:
             raise ValueError(f"File {file} has no name")
         if not filename.endswith(".zip"):
-            raise ValueError(
-                f"Expected zip file extension received {filename.split(".")[-1]}"
-            )
+            ext = filename.split(".")[-1]
+            raise ValueError(f"Expected zip file extension, received '{ext}'")
         cleaned_name = safe_dir_name(filename.split(".zip")[0])
         save_path = (path / cleaned_name).as_posix()
         # Read the contents

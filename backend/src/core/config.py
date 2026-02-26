@@ -14,7 +14,7 @@ ROOT_PATH = Path(__file__).parents[2]
 
 
 class AppSettings(BaseSettings):
-    PROJECT_NAME: str | None = None
+    PROJECT_NAME: str | None = "Gestalt"
     MODE: Literal["testing", "dev", "production"] = "dev"
     STORAGE_SERVICE: Literal["local", "cloud"] = "local"
 

@@ -3,10 +3,10 @@ name = "src"
 version = "0.1.0"
 description = "Project focused on generating content for mechanical engineering students"
 authors = [
-    {name = "Luciano Bermudez",email = "lucianobmecheng69@gmail.com"}
+    {name = "Luciano Bermudez",email = "lberm007@ucr.edu"}
 ]
 readme = "README.md"
-requires-python =">=3.13,<3.15"
+requires-python =">=3.11,<4.0"
 
 dependencies = [
     "fastapi (>=0.118.0,<0.119.0)",
