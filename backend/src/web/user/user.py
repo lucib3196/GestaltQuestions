@@ -10,15 +10,9 @@ from starlette import status
 from src.core.firebase import initialize_firebase_app
 from src.core.logging import logger
 from src.model.users import (
-    User,
+    User,UserBase, UserRead, UserRoles, UserUpdate, ValidInstitutions
 )
-from src.types import (
-    UserBase,
-    UserRead,
-    UserRoles,
-    UserUpdate,
-    ValidInstitutions,
-)
+
 from src.web.dependencies import FireBaseToken
 from src.data.user import UserManagerDependeny
 

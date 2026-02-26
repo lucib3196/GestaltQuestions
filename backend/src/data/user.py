@@ -8,14 +8,9 @@ from sqlmodel import select
 from src.core import logger, SessionDep
 from src.model.institution import Institution, ValidInstitutions
 from src.model.question import Question
-from src.model.users import (
-    Role,
-    User,
-)
+from src.model.users import Role, User, UserBase, UserRoles, UserUpdate
 from src.utils import convert_uuid
-
-from src.types import ID, UserBase, UserRoles, UserUpdate
-
+from src.types import ID
 
 class UserDB:
     def __init__(self, session: SessionDep):

@@ -1,6 +1,5 @@
 import pytest
-from src.model.users import  Role
-from src.types import UserRoles
+from src.model.users import  Role,UserRoles
 from src.core import logger
 
 @pytest.mark.asyncio

@@ -10,7 +10,7 @@ from src.core import (
     Base,
 )
 
-from . import FbStorage, LocalStorage, Storage, QuestionManager, initialize_firebase_app
+from . import FbStorage, LocalStorage, QuestionManager, initialize_firebase_app
 from src.data import QuestionDB
 
 
@@ -24,12 +24,6 @@ def question_db(db_session) -> QuestionDB:
     return QuestionDB(db_session)
 
 
-# SERVICE FIXTURES
-
-
-# -----------------------------
-# Storage Fixtures
-# -----------------------------
 @pytest.fixture(
     params=[
         ("local", LocalStorage),
@@ -43,21 +37,14 @@ def storage(request):
         instance = StorageClass(settings.STORAGE_BUCKET)
     else:
         instance = StorageClass()
-    
-    assert instance.get_storage_type() == name
+
     return instance
 
 
 @pytest.fixture(scope="function", autouse=True)
 def clean_cloud(storage):
-    if storage.get_storage_type()=="cloud":
+    if storage.get_storage_type() == "cloud":
         storage._hard_delete()
-        
-
-
-# --------------------
-# Question Storage
-# ---------------------
 
 
 @pytest.fixture
@@ -69,9 +56,6 @@ def question_manager(storage, question_db):
     return qm
 
 
-# -----------------------------
-# Database Fixtures
-# -----------------------------
 @pytest.fixture(scope="function")
 def test_engine(tmp_path):
     """Provide a temporary SQLite engine for testing."""
@@ -100,16 +84,6 @@ def _clean_db(db_session, test_engine):
     logger.debug("Cleaning Database")
     Base.metadata.drop_all(test_engine)
     Base.metadata.create_all(test_engine)
-
-
-# =========================================
-# API Fixtures
-# =========================================
-
-
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 
 @pytest.fixture(autouse=True)

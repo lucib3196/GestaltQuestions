@@ -3,7 +3,7 @@ import type { User } from "firebase/auth";
 import { auth } from "../../config/firebaseClient";
 import { useState, useEffect } from "react";
 import { createContext, useContext } from "react";
-import { UserAPI } from "../services/api/backend/userAPI";
+import { UserAPI } from "../services/userAPI";
 import { type UserRead } from "../types/userTypes";
 
 

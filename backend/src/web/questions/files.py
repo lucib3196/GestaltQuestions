@@ -6,10 +6,10 @@ from uuid import UUID
 from fastapi import APIRouter, Form, HTTPException, UploadFile
 from pydantic import ValidationError
 from starlette import status
-
+from src.model.files import FileData
 
 from src.core import logger
-from src.types import FileData
+from src.model.files import FileData
 from src.model.question import Question, QuestionData
 from src.service import FileService, FileConverter
 from src.web.dependencies import (

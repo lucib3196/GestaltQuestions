@@ -1,10 +1,7 @@
 import pytest
 
 from src.core import logger
-from src.types import (
-    UserUpdate,
-)
-
+from src.model.users import UserUpdate
 
 @pytest.mark.asyncio
 async def test_user_create(make_user):

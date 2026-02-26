@@ -18,7 +18,7 @@ from app_test.shared.mock_data import QUESTIONS
 
 from src.core import get_session
 from src.main import get_application
-from src.types import FileData
+from src.model.files import FileData
 from src.web.dependencies import (
     get_question_manager,
     get_storage_manager,

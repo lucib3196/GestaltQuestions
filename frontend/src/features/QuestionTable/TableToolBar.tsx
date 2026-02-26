@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import clsx from "clsx";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -9,7 +9,6 @@ import DropDownAdvance from "../../components/DropDown/DropDownAdvance";
 import { ActionButton } from "../../components/Button";
 import { SearchBar } from "../../components/SearchBar";
 
-import { useRetrievedQuestions } from "../../hooks";
 import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
 import { useSyncedQuestions } from "../QuestionSync/hooks";
 
@@ -20,6 +19,7 @@ import type { ToolBarAction } from "./types";
 
 export default function TableToolBar() {
   const [searchTitle, setSearchTitle] = useState<string>("");
+  const { retrieveQuestions } = useQuestionCollectionContext();
   const {
     multiSelect,
     setMultiSelect,
@@ -36,14 +36,17 @@ export default function TableToolBar() {
     () => ({ title: debouncedSearchTerm }),
     [debouncedSearchTerm]
   );
+  useEffect(() => {
+    retrieveQuestions({
+      questionFilter: questionFilter,
+      showAllQuestions: false,
+    });
+  }, [debouncedSearchTerm, questionFilter, retrieveQuestions])
 
   const { handleQuestionDownloads, handleDeleteQuestions } =
     useQuestionToolBarActions();
 
-  useRetrievedQuestions({
-    questionFilter: questionFilter,
-    showAllQuestions: false,
-  });
+
 
   const handleAction = async (action: ToolBarAction) => {
     switch (action) {

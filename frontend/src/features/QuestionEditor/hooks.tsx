@@ -1,5 +1,5 @@
 import { useQuestionCollectionContext } from "./../../context/QuestionCollectionContext";
-import { QuestionAPI } from "./../../services/api/backend/questionAPI";
+import { QuestionAPI } from "../../services/questionAPI";
 import { useCodeEditorContext } from "./context";
 import { useCallback, useState, useEffect } from "react";
 import type { FileData } from "../../types/questionTypes";
@@ -22,6 +22,7 @@ export function useQuestionFiles() {
             return;
         }
         setLoading(true);
+        console.log("Key Pressed", refreshKey)
 
         try {
             const response = await QuestionAPI.getQuestionFiles(selectedQuestionID);

@@ -7,13 +7,12 @@ import { useCreateMode } from "./context";
 import { CreateQuestionFromBlank } from "./CreateQuestionFromBlank";
 import type { CreateMode } from "./types";
 import UploadZipQuestionModal from "./UploadZipQuestionModal";
-import { ImageGenerator, TextGenerator } from "../CodeGenerators";
 
-const MODE_COMPONENTS: Record<CreateMode, React.ReactNode> = {
+
+const MODE_COMPONENTS: Partial<Record<CreateMode, React.ReactNode>> = {
   blank: <CreateQuestionFromBlank />,
   upload: <UploadZipQuestionModal setShowModal={() => {}} />,
-  "text-ai": <TextGenerator />,
-  "image-ai": <ImageGenerator />,
+
 };
 
 export default function CreateQuestion() {

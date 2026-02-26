@@ -1,5 +1,6 @@
-from typing import List, Any
+from typing import List, Any, Optional
 from pydantic import BaseModel
+from pathlib import Path
 
 
 class FileData(BaseModel):
@@ -10,3 +11,9 @@ class FileData(BaseModel):
 
 class FilesData(BaseModel):
     files: List[FileData]
+
+
+class SuccessFileServiceResponse(BaseModel):
+    status: int
+    detail: Optional[str | Path] = None
+    path: str

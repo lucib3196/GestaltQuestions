@@ -3,7 +3,7 @@ import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import UploadFilesButton from "../UploadFile/UploadFileComponent";
 import { Button } from "../Button";
 import type { QuestionData } from "../../types/questionTypes";
-import { QuestionAPI } from "../../services/api/backend/questionAPI";
+import { QuestionAPI } from "../../services";
 
 function handleLanguages(languages: string[]) {
     return [

@@ -4,8 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
 from src.core import logger, SessionDep
-from src.model.users import Role
-from src.types import UserRoles
+from src.model.users import Role, UserRoles
 
 
 class RoleManager:
@@ -59,7 +58,7 @@ class RoleManager:
         }
         try:
             for r, des in roles.items():
-                if self.does_role_exist(r):
+                if await self.does_role_exist(r):
                     continue
                 await self.create_role(r, description=des)
         except Exception:
