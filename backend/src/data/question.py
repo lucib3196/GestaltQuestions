@@ -139,7 +139,7 @@ class QuestionDB:
             raise
 
     async def filter_questions(
-        self, data: QuestionData, storage_type: STORAGE_TYPE = "local"
+        self, data: QuestionData, 
     ) -> Sequence[QuestionData]:
         filters = []
         stmt = select(Question)
@@ -174,9 +174,7 @@ class QuestionDB:
 
             if conds:
                 filters.append(or_(*conds))
-        # add the filter where we filter based on storage type
-        column = Question.local_path if storage_type == "local" else Question.blob_path
-        filters.append(column != None)
+
         if filters:
             stmt = stmt.where(*filters)
 

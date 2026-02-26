@@ -8,8 +8,8 @@ from src.core import SessionDep, logger
 from src.utils import convert_uuid
 
 
-from src.model.institution import Institution
-from src.types import STORAGE_TYPE, ID, ValidInstitutions
+from src.model.institution import Institution, ValidInstitutions
+from src.types import STORAGE_TYPE, ID
 
 institutions: Dict[ValidInstitutions, str] = {
     ValidInstitutions.UCR: (
