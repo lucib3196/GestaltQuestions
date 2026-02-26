@@ -54,8 +54,29 @@ jobs:
           echo '${{ secrets.FIREBASE_JSON }}' > ${{vars.FIREBASE_JSON_PATH}}
           cd secrets
           ls -l
+
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
+      - name: Decode the firebase.json
+        run: |
+          echo '{
+            "emulators": {
+              "singleProjectMode": true,
+              "auth": {
+                "port": "9099"
+              },
+              "storage": {
+                "port": "9199"
+              },
+              "ui": {
+                "enabled": true,
+                "port": "4000"
+              }
+            },
+            "storage": {
+              "rules": "storage.rules"
+            }
+          }' > firebase.json
       - name: Start firebase emulator
         run: firebase emulators:start --only auth,firestore,storage --project demo-test & sleep 10
 
