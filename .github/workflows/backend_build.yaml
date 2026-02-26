@@ -1,4 +1,4 @@
-name: FastAPI CI DEV
+name: FastAPI CI
 
 # Only triggers if there is a backend change
 on:
@@ -24,11 +24,10 @@ jobs:
 
     env:
       MODE: "dev"
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}
-      TAVILY_API_KEY: ${{secrets.TAVILY_API_KEY}}
       STORAGE_BUCKET: ${{secrets.STORAGE_BUCKET}}
       FIREBASE_CRED: ${{vars.FIREBASE_JSON_PATH}}
+      FIREBASE_AUTH_EMULATOR_HOST: 127.0.0.1:9099
+      STORAGE_EMULATOR_HOST: http://localhost:9199
 
     steps:
       - uses: actions/checkout@v5
@@ -36,13 +35,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
-
-      # Install java for firebase
-      - name: Setup Java 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "21"
 
       # Install python dependencies
       - name: Install Poetry
@@ -55,7 +47,6 @@ jobs:
         working-directory: ./backend
 
       # Setup firebase and firebase emulator
-
       - name: Decode Firebase credentials
         working-directory: ./backend
         run: |
@@ -64,7 +55,7 @@ jobs:
           cd secrets
           ls -l
       - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+        run: nm install -g firebase-tools
       - name: Start firebase emulator
         run: firebase emulators:start --only auth,firestore,storage --project demo-test & sleep 10
 
