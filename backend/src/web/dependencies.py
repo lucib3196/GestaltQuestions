@@ -1,6 +1,6 @@
 from functools import lru_cache
 from typing import Annotated
-
+from pathlib import Path
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette import status
@@ -10,13 +10,11 @@ from firebase_admin.auth import verify_id_token
 from src.core import SessionDep, logger
 from src.core.config import AppSettings, get_settings
 from src.data import QuestionDB
-from src.service import (
-    FirebaseStorage,
-    LocalStorageService,
-    QuestionManager,
-    StorageService,
-)
-from src.types import STORAGE_TYPE
+from src.service.storage.firebase_storage import FbStorage
+from src.service.storage.local_storage import LocalStorage
+from src.service.question_manager.question_manager import QuestionManager
+from src.service.storage.local_storage import Storage
+from src.service.storage import STORAGE_TYPE
 
 
 def get_app_settings() -> AppSettings:
@@ -34,6 +32,22 @@ def get_storage_type(
 
 StorageTypeDep = Annotated[STORAGE_TYPE, Depends(get_storage_type)]
 
+
+def get_local_base_path(settings: SettingDependency) -> str | None:
+    try:
+        if settings.STORAGE_SERVICE == "local":
+            question_base_path = Path(settings.PROJECT_ROOT) / "questions"
+            if not question_base_path.exists():
+                question_base_path.mkdir(exist_ok=True)
+            logger.debug(
+                f"[Initialization] Storage Service is Local. Setting base path to {question_base_path}"
+            )
+            return question_base_path.as_posix()
+    except Exception as e:
+        raise ValueError(f"Failed to initialized the question base path {e}")
+
+
+LocalBaseDep = Annotated[str | None, Depends(get_local_base_path)]
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
@@ -66,21 +80,16 @@ QuestionDBDependency = Annotated[QuestionDB, Depends(get_question_database)]
 
 
 @lru_cache
-def get_storage_manager() -> StorageService:
+def get_storage_manager() -> Storage:
     settings = get_settings()
     if settings.STORAGE_SERVICE == "cloud":
         if not (settings.FIREBASE_CRED and settings.STORAGE_BUCKET):
             raise ValueError("Settings for Cloud Storage not Set")
-        storage_service = FirebaseStorage(
-            root="/gestaltQuestions",
-            base="questions",
+        storage_service = FbStorage(
             bucket=settings.STORAGE_BUCKET,
         )
     else:
-        storage_service = LocalStorageService(
-            str(settings.PROJECT_ROOT),
-            "questions",
-        )
+        storage_service = LocalStorage()
 
     logger.debug(f"Question manager set to {settings.STORAGE_SERVICE}")
     logger.debug("Initialized Question Manager Success")
@@ -88,7 +97,7 @@ def get_storage_manager() -> StorageService:
     return storage_service
 
 
-StorageDependency = Annotated[StorageService, Depends(get_storage_manager)]
+StorageDependency = Annotated[Storage, Depends(get_storage_manager)]
 
 
 @lru_cache

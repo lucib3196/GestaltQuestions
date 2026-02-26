@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Literal, Sequence, Annotated, Dict
-from src.types import QuizData
+from src.model.question_attempt import QuizData
 
 
 AllowedServer = Literal["server.js", "server.py"]

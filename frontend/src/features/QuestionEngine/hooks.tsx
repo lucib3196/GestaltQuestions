@@ -1,9 +1,9 @@
 import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
 import { useCallback, useEffect, useState, useMemo } from "react";
-import { QuestionAPI } from "../../services";
 import type { QuizData } from "./types";
 import { useQuestionEngineContext } from "./context";
 import applyPlaceHolders from "../../utils/flattenParams";
+import { QuestionAPI } from './../../services/questionAPI';
 
 import { useCodeEditorContext } from "../QuestionEditor";
 export function useCurrentQuestionMeta() {

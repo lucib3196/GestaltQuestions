@@ -29,16 +29,25 @@ from src.web.dependencies import (
 router = APIRouter(prefix="/run_server", tags=["code_running", "questions"])
 
 
-async def get_server_file(
+async def read_server_file(
     qid: ID, qm: QuestionManagerDependency, server_language: AllowedLanguages
-) -> Tuple[AllowedServer, bool]:
+) -> str:
+    # Check that we got a valid language for execution
     server_file = MappingServer.get(server_language)
-    question_files = await qm.get_question_file_names(qid)
     if not server_file:
         raise ValueError(
             f"[WEB Run Server]: {server_language} not allowed for execution"
         )
-    return server_file, server_file in question_files
+    # Ensure that the retrieved files contain the file of interest
+    question_files = await qm.retrieve_question_files(qid)
+    normalized = [Path(q).name for q in question_files]
+    logger.info(f"These are the normalized files {normalized}")
+    if server_file not in normalized:
+        raise ValueError(
+            f"[WEB Run Server] {server_file} not present for question. Only files are {normalized}"
+        )
+    content = await qm.read_question_file(qid, server_file)
+    return content.decode()
 
 
 async def _validate(res: Any, language: AllowedLanguages) -> ServerRunResponse:
@@ -91,23 +100,28 @@ async def run_server(
 ) -> ServerRunResponse:
 
     sandbox_url = app_settings.SANDBOX_URL
-    filename, exist = await get_server_file(qid, qm, server_language)
-    if not exist:
+    assert sandbox_url
+    logger.info(f"This is the sandbox url {sandbox_url}")
+    try:
+        server_content = await read_server_file(qid, qm, server_language)
+        assert server_content
+    except Exception as e:
         return ServerExecutionError(
             error_type="dependency",
             language=server_language,
             message=f"[WEB Server]: Failed to execute server. File {server_language} does not exist for question {qid}",
         )
+
     # Execute the file
     try:
-        server_path = await qm.get_question_file(qid, filename)
-        server_content = Path(server_path).read_text(encoding="utf-8")
+
         async with httpx.AsyncClient() as client:
             generate_endpoint = f"{sandbox_url}/code_runner/generate"
             payload = {
                 "language": server_language,
                 "code": server_content,
             }
+            logger.info(f"[RUNSERVER] This is the payload {payload}")
             res = await client.post(generate_endpoint, json=payload)
             res.raise_for_status()
 

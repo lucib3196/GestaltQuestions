@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import delete, select
-
+from pathlib import PurePosixPath
 from src.core import logger
 from sqlmodel import Session
 from src.data import generic as gdb
@@ -15,10 +15,12 @@ from src.model.question import (
     QuestionType,
     Topic,
 )
-from src.types import QuestionData
+from src.types.general import STORAGE_TYPE
+
+from src.model.question import QuestionData
 from src.utils import convert_uuid
 
-from src.types import STORAGE_TYPE, ID
+from src.types import ID
 
 
 class QuestionDB:
@@ -72,10 +74,15 @@ class QuestionDB:
         offset: int = 0,
         limit: int = 100,
         method: Literal["default", "full"] = "default",
+        storage_type: STORAGE_TYPE = "local",
     ) -> Sequence[Question | QuestionData]:
+
+        column = Question.local_path if storage_type == "local" else Question.blob_path
+
         all_questions = self.session.exec(
-            select(Question).offset(offset).limit(limit)
+            select(Question).where(column != None).offset(offset).limit(limit)
         ).all()
+
         try:
             if method == "default":
                 return all_questions
@@ -131,7 +138,9 @@ class QuestionDB:
             logger.exception("[DB] Failed to update question")
             raise
 
-    async def filter_questions(self, data: QuestionData) -> Sequence[QuestionData]:
+    async def filter_questions(
+        self, data: QuestionData, 
+    ) -> Sequence[QuestionData]:
         filters = []
         stmt = select(Question)
         # Exclude the relationship fields first form the other conditions
@@ -168,6 +177,9 @@ class QuestionDB:
 
         if filters:
             stmt = stmt.where(*filters)
+
+        
+
         stmt = stmt.distinct()
         results = self.session.exec(stmt).all()
         return await asyncio.gather(*[self.get_question_data(r.id) for r in results])
@@ -221,7 +233,7 @@ class QuestionDB:
         question = await self.get_question(id)
         if not question:
             raise ValueError("Question not found")
-        path_str = Path(path).as_posix()
+        path_str = PurePosixPath(path).as_posix() + "/"
         try:
             if STORAGE_TYPE == "cloud":
                 question.blob_path = path_str

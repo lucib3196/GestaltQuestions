@@ -7,8 +7,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRouter
-from fastapi.staticfiles import StaticFiles
-from pathlib import Path
 from src.core import logger
 from sqlmodel import Session
 
@@ -42,7 +40,7 @@ def add_routes(app: FastAPI, routes: list[APIRouter] = ALL_ROUTES):
 
 
 def get_application(test_mode: bool = False):
-    app = FastAPI(title=settings.PROJECT_NAME, lifespan=on_startup)
+    app = FastAPI(title=settings.PROJECT_NAME or "", lifespan=on_startup)
     add_routes(app)
 
     app.add_middleware(
@@ -55,22 +53,6 @@ def get_application(test_mode: bool = False):
         allow_headers=["*"],  # allow all headers (including Authorization)
         expose_headers=["Content-Disposition"],
     )
-
-    question_dir = Path(settings.PROJECT_ROOT) / settings.QUESTIONS_DIRNAME
-    if not question_dir:
-        raise ValueError("Cannot Find Local Path")
-
-    logger.info(f"Setting Question Dir to {question_dir}")
-
-    if not question_dir.exists():
-        question_dir.mkdir(parents=True, exist_ok=True)
-
-    app.mount(
-        f"/{question_dir.name}",  # -> "/questions"
-        StaticFiles(directory=question_dir, html=False),
-        name="questions",
-    )
-    logger.info("Serving static files from: %s", question_dir)
 
     return app
 

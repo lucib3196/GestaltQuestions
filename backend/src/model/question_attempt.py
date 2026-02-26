@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
-from pydantic import BaseModel
 from sqlalchemy import Column, DateTime, func
 from sqlmodel import SQLModel, Field as SQLField
 from sqlalchemy.types import JSON

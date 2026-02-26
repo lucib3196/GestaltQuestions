@@ -5,6 +5,7 @@ from fastapi.responses import Response
 from starlette import status
 from src.core import logger
 
+from src.service import FileService
 from src.web.dependencies import (
     QuestionManagerDependency,
 )

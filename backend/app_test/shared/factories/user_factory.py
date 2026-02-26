@@ -1,6 +1,5 @@
 import pytest
-from src.model.users import User
-from src.types import UserBase
+from src.model.users import User, UserBase
 from src.data import UserDB
 
 

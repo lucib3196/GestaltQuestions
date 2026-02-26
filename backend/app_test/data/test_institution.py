@@ -1,9 +1,7 @@
 import pytest
 from app_test.shared.factories import make_user
 from src.core import logger
-from src.types import (
-    ValidInstitutions,
-)
+from src.model.institution import ValidInstitutions
 
 
 @pytest.mark.asyncio

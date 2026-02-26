@@ -11,7 +11,7 @@ import { Button } from "../../components/Button";
 import { Section } from "../../components/Section";
 
 import { handleCommaSeperatedValues } from "../../utils";
-import { QuestionAPI } from "../../services";
+import { QuestionAPI } from "../../services/questionAPI";
 
 
 

@@ -9,6 +9,7 @@ FIREBASE_CRED.json
 backend/node_modules
 backend/questions
 code_sandbox/node_modules
+test_questions
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
