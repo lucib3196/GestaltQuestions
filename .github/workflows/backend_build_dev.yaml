@@ -3,15 +3,15 @@ name: FastAPI CI DEV
 # Only triggers if there is a backend change
 on:
   push:
-    paths: 
-      - 'backend/**'
-      - '.github/workflows/backend_build.yml'
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend_build.yml"
     branches: ["main", "dev"]
-    
+
   pull_request:
-    paths: 
-      - 'backend/**'
-      - '.github/workflows/backend_build.yml'
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend_build.yml"
     branches: ["dev", "main"]
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.13]
+        python-version: ["3.11", "3.12", "3.13"]
 
     env:
       MODE: "dev"
@@ -40,8 +40,8 @@ jobs:
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '21'
+          distribution: "temurin"
+          java-version: "21"
 
       # Install python dependencies
       - name: Install Poetry
@@ -54,7 +54,7 @@ jobs:
         working-directory: ./backend
 
       # Setup firebase and firebase emulator
-      
+
       - name: Decode Firebase credentials
         working-directory: ./backend
         run: |
@@ -69,5 +69,5 @@ jobs:
 
       - name: Run Test
         run: |
-          poetry run python -m pytest 
+          poetry run python -m pytest
         working-directory: ./backend
