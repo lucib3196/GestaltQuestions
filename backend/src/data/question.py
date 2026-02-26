@@ -18,7 +18,7 @@ from src.model.question import (
 from src.model.question import QuestionData
 from src.utils import convert_uuid
 
-from src.types import ID
+from src.types import ID,STORAGE_TYPE
 
 
 class QuestionDB:
