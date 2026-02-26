@@ -1,4 +1,4 @@
-name: FastAPI CI
+name: FastAPI CI DEV
 
 # Only triggers if there is a backend change
 on:
@@ -55,7 +55,7 @@ jobs:
           cd secrets
           ls -l
       - name: Install Firebase CLI
-        run: nm install -g firebase-tools
+        run: npm install -g firebase-tools
       - name: Start firebase emulator
         run: firebase emulators:start --only auth,firestore,storage --project demo-test & sleep 10
 
