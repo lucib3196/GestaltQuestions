@@ -112,7 +112,7 @@ async def filter_questions(
 ) -> Sequence[QuestionData]:
     try:
         logger.debug("Retrieved filter %s", filter_data)
-        return await qm.qdb.filter_questions(filter_data, storage_type)
+        return await qm.qdb.filter_questions(filter_data)
     except HTTPException:
         raise
     except Exception as e:

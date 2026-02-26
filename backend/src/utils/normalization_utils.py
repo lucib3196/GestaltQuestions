@@ -2,6 +2,7 @@ import json
 from datetime import date, datetime, time
 from typing import Any, List, Iterable
 from uuid import UUID
+from enum import Enum
 
 # --- Third-Party ---
 from pydantic import BaseModel
@@ -63,6 +64,8 @@ def to_serializable(obj: Any) -> Any:
         return obj.isoformat()
     if isinstance(obj, UUID):
         return str(obj)
+    if isinstance(obj, Enum):
+        return obj.value
 
     return obj
 
@@ -87,6 +90,7 @@ def normalize(content):
     if isinstance(content, (bytes, bytearray)):
         return content
     raise TypeError
+
 
 def normalize_newlines(b: bytes) -> bytes:
     return b.replace(b"\r\n", b"\n")

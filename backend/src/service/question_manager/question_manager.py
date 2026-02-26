@@ -164,9 +164,12 @@ class QuestionManager:
     ) -> Dict:
         try:
             question_path = await self._resolve_question_path(qid)
-            return await self.handle_question_files(
+            logger.info(f"This is the question path, {question_path}")
+            data = await self.handle_question_files(
                 files, question_path, auto_handle_images
             )
+            logger.info(f"Uploaded files okay {data}")
+            return data
         except Exception as e:
             raise ValueError(f"Failed to upload files to question {e}")
 
@@ -183,8 +186,10 @@ class QuestionManager:
         client_files, other_files = self._split_files(files)
 
         if auto_handle_images:
+            image_path = f"{storage_path}{self.client_path}"
+            logger.info("This is the image path %s", image_path)
             uploaded_client = self._batch_save_files(
-                f"{storage_path}/{self.client_path}",
+                image_path,
                 client_files,
             )
             uploaded_other = self._batch_save_files(
@@ -206,29 +211,38 @@ class QuestionManager:
         self,
         qid: ID,
     ) -> List[FileData]:
-
-        question_path = await self._resolve_question_path(qid)
-        filenames = self.storage.list(question_path)
+        try:
+            question_path = await self._resolve_question_path(qid)
+            filenames = self.storage.list(question_path)
+        except Exception as e:
+            raise ValueError(f"[QM] Failed to list files for question {qid}: {e}")
 
         results: List[FileData] = []
-
         for filepath in filenames:
-            filepath = self._norm_path(filepath)
-            mime_type, _ = mimetypes.guess_type(filepath)
-            content = self.storage.read(filepath)
+            try:
+                filepath = self._norm_path(filepath)
+                mime_type, _ = mimetypes.guess_type(filepath)
+                content = self.storage.read(filepath)
+                is_image = bool(mime_type and mime_type.startswith("image/"))
 
-            if isinstance(content, bytes):
-                encoded = base64.b64encode(content).decode("utf-8")
-            else:
-                encoded = content
+                if isinstance(content, bytes):
+                    encoded = (
+                        base64.b64encode(content).decode("utf-8")
+                        if is_image
+                        else content.decode("utf-8", errors="replace")
+                    )
+                else:
+                    encoded = content
 
-            results.append(
-                FileData(
-                    filename=Path(filepath).name,
-                    content=encoded,
-                    mime_type=mime_type or "application/octet-stream",
+                results.append(
+                    FileData(
+                        filename=Path(filepath).name,
+                        content=encoded,
+                        mime_type=mime_type or "application/octet-stream",
+                    )
                 )
-            )
+            except Exception as e:
+                logger.warning(f"[QM] Skipping unreadable file '{filepath}': {e}")
 
         return results
 
@@ -236,9 +250,13 @@ class QuestionManager:
     # Helpers
     # ============================================================
     def _batch_save_files(self, dest: str, files: List[FileData]):
+        targets = []
         for f in files:
-            target = f"{dest}/{f.filename}"
+            target = self._file_target(dest, f.filename)
+            logger.info("Saving files %s", target)
             self.storage.write(target, f.content)
+            targets.append(target)
+        return targets
 
     # ============================================================
     # Private

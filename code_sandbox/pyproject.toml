@@ -1,12 +1,12 @@
 [project]
-name = "code_sandbox"
+name = "src"
 packages = [
     { include = "code_sandbox", from = "src" }
 ]
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Luciano Bermudez",email = "lucianobmecheng69@gmail.com"}
+    {name = "Luciano Bermudez",email = ";berm007@ucr.edu"}
 ]
 readme = "README.md"
 requires-python = ">=3.13"

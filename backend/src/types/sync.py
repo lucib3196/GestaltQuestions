@@ -28,9 +28,7 @@ class SyncMetrics(BaseModel):
     failed: int
 
 
-class SyncResponse(BaseModel):
-    sync_metrics: SyncMetrics
-    sync_raw: Sequence[UnsyncedQuestion]
+
 
 
 class FolderCheckMetrics(BaseModel):

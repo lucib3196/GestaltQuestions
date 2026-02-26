@@ -11,7 +11,8 @@ export type QuestionCollectionView =
   | "published"
   | "archived"
   | "create"
-  | "ai";
+  | "ai"
+  | "component_playground"
 
 export const QuestionCollectionViewLabels: Record<
   QuestionCollectionView,
@@ -23,7 +24,8 @@ export const QuestionCollectionViewLabels: Record<
   published: "Published",
   archived: "Archived",
   create: "Create Question",
-  ai: "AI"
+  ai: "AI",
+  component_playground: "component_playground"
 };
 
 /* =======================

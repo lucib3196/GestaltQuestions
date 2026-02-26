@@ -85,7 +85,8 @@ export const TagAttributeMapping: {
     variant: attrs["variant"],
   }),
   "pl-figure": (attrs) => ({
-    src: attrs["file-name"],
+    src: attrs["src"],
+    filename: attrs["filename"],
     className: attrs["classname"] || attrs["class"],
     size: attrs["size"],
     variant: attrs["variant"],

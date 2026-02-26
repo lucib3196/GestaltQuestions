@@ -62,6 +62,17 @@ class Storage(ABC):
         """
         ...
     @abstractmethod
+    def is_dir(self, target:str)->bool:
+        """
+        Return True if the given target represents a directory/prefix.
+
+        Args:
+            target: A normalized storage path or key.
+
+        Returns:
+            bool indicating whether the target is a directory.
+        """
+    @abstractmethod
     def create_dir(self,target: str)->str:
         """Create a new directory under the given path .
 

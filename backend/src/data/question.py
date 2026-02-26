@@ -18,7 +18,7 @@ from src.model.question import (
 from src.model.question import QuestionData
 from src.utils import convert_uuid
 
-from src.types import ID,STORAGE_TYPE
+from src.types import ID, STORAGE_TYPE
 
 
 class QuestionDB:
@@ -72,13 +72,10 @@ class QuestionDB:
         offset: int = 0,
         limit: int = 100,
         method: Literal["default", "full"] = "default",
-        storage_type: STORAGE_TYPE = "local",
     ) -> Sequence[Question | QuestionData]:
 
-        column = Question.local_path if storage_type == "local" else Question.blob_path
-
         all_questions = self.session.exec(
-            select(Question).where(column != None).offset(offset).limit(limit)
+            select(Question).offset(offset).limit(limit)
         ).all()
 
         try:
@@ -137,7 +134,8 @@ class QuestionDB:
             raise
 
     async def filter_questions(
-        self, data: QuestionData, 
+        self,
+        data: QuestionData,
     ) -> Sequence[QuestionData]:
         filters = []
         stmt = select(Question)
@@ -175,8 +173,6 @@ class QuestionDB:
 
         if filters:
             stmt = stmt.where(*filters)
-
-        
 
         stmt = stmt.distinct()
         results = self.session.exec(stmt).all()
