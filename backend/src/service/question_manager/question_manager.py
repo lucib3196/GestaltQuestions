@@ -81,7 +81,7 @@ class QuestionManager:
 
             await self.qdb.set_question_path(
                 question.id,
-                self.storage.get_storage_type,
+                self.storage.get_storage_type(),
                 question_path,
             )
 
@@ -117,7 +117,7 @@ class QuestionManager:
         )
         await self.qdb.set_question_path(
             qid,
-            self.storage.get_storage_type,
+            self.storage.get_storage_type(),
             destination,
         )
         return destination
@@ -126,8 +126,13 @@ class QuestionManager:
     # File Reading / Writing
     # ============================================================
     async def read_question_file(self, qid: ID, filename: str):
-        path = await self._resolve_question_path(qid)
-        return self.storage.read(self._file_target(path, filename))
+        try:
+            path = await self._resolve_question_path(qid)
+            return self.storage.read(self._file_target(path, filename))
+        except Exception as e:
+            raise ValueError(
+                f"Failed to read question file {filename} for question {e}"
+            )
 
     async def write_question_file(self, qid: ID, filename: str, data):
         path = await self._resolve_question_path(qid)
@@ -156,7 +161,10 @@ class QuestionManager:
         self, offset: int = 0, limit: int = 100
     ) -> Sequence[Question | QuestionData]:
         all_questions = await self.qdb.get_all_questions(
-            offset, limit, method="default", storage_type=self.storage.get_storage_type
+            offset,
+            limit,
+            method="default",
+            storage_type=self.storage.get_storage_type(),
         )
         return all_questions
 
@@ -225,8 +233,8 @@ class QuestionManager:
             mime_type, _ = mimetypes.guess_type(filepath)
             content = self.storage.read(filepath)
 
-            if isinstance(content, bytes):
-                encoded = base64.b64encode(content).decode("utf-8")
+            if isinstance(content, (bytes | bytearray)):
+                encoded = content.decode("utf-8")
             else:
                 encoded = content
 
@@ -262,7 +270,7 @@ class QuestionManager:
         return f"{question_path.rstrip('/')}/{filename}"
 
     async def _resolve_question_path(self, qid: ID) -> str:
-        path = await self.qdb.get_question_path(qid, self.storage.get_storage_type)
+        path = await self.qdb.get_question_path(qid, self.storage.get_storage_type())
 
         if not path:
             raise ValueError("Question path not found")

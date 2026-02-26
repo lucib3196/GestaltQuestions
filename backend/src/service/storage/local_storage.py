@@ -15,11 +15,10 @@ class LocalStorage(Storage):
         self.set_storage_type()
 
     def set_storage_type(self) -> Literal["cloud"] | Literal["local"]:
-        self.mode = "local"
         return "local"
 
     def get_storage_type(self) -> Literal["cloud"] | Literal["local"]:
-        return cast(STORAGE_TYPE, self.mode)
+        return "local"
 
     def _resolve(self, target: str) -> Path:
         return Path(self._to_storage_path(target)).resolve()

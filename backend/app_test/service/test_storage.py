@@ -20,13 +20,13 @@ from src.core.logging import logger
 
 @pytest.mark.parametrize("target", TARGETS)
 def test_create(create_dir_factory, target, storage):
-    target_path = create_dir_factory(storage.get_storage_type, target)
+    target_path = create_dir_factory(storage.get_storage_type(), target)
     assert storage.exists(target_path)
 
 
 @pytest.mark.parametrize("target", TARGETS)
 def test_exists_false(storage, target, tmp_path):
-    if storage.get_storage_type == "local":
+    if storage.get_storage_type() == "local":
         target = tmp_path / target
     assert not storage.exists(target)
 
@@ -38,7 +38,7 @@ def test_exists_false(storage, target, tmp_path):
 
 @pytest.mark.parametrize("filename,content", MOCK_FILES)
 def test_write(storage, create_dir_factory, filename, content):
-    base_path = create_dir_factory(storage.get_storage_type, "test")
+    base_path = create_dir_factory(storage.get_storage_type(), "test")
     target = f"{base_path}/{filename}"
 
     storage.write(target, content, overwrite=True)
@@ -47,7 +47,7 @@ def test_write(storage, create_dir_factory, filename, content):
 
 @pytest.mark.parametrize("filename,content", MOCK_FILES)
 def test_read(storage, create_dir_factory, filename, content):
-    base_path = create_dir_factory(storage.get_storage_type, "test")
+    base_path = create_dir_factory(storage.get_storage_type(), "test")
     target = f"{base_path}/{filename}"
 
     storage.write(target, content, overwrite=True)
@@ -58,7 +58,7 @@ def test_read(storage, create_dir_factory, filename, content):
 
 @pytest.mark.parametrize("filename,content", MOCK_FILES)
 def test_delete(storage, create_dir_factory, filename, content):
-    base_path = create_dir_factory(storage.get_storage_type, "test")
+    base_path = create_dir_factory(storage.get_storage_type(), "test")
     target = f"{base_path}/{filename}"
 
     storage.write(target, content, overwrite=True)
@@ -75,10 +75,10 @@ def test_delete(storage, create_dir_factory, filename, content):
 
 @pytest.mark.parametrize("source,destination", RENAME_TARGETS)
 def test_move_storage(source, destination, storage, tmp_path):
-    if storage.get_storage_type == "local":
+    if storage.get_storage_type() == "local":
         source = Path(tmp_path) / source
         destination = Path(tmp_path) / destination
-    elif storage.get_storage_type =="cloud":
+    elif storage.get_storage_type() =="cloud":
         return 
 
     source_path = storage.write(source, "")
@@ -103,10 +103,10 @@ def test_move_files_all_children(
     tmp_path,
 ):
     # Normalize paths for local storage
-    if storage.get_storage_type == "local":
+    if storage.get_storage_type() == "local":
         source = Path(tmp_path) / source
         destination = Path(tmp_path) / destination
-    elif storage.get_storage_type == "cloud":
+    elif storage.get_storage_type() == "cloud":
         return 
 
     # Create source directory
@@ -142,7 +142,7 @@ def test_move_files_all_children(
 
 @pytest.mark.parametrize("source,destination", RENAME_TARGETS)
 def test_copy(source, destination, storage, tmp_path):
-    if storage.get_storage_type == "local":
+    if storage.get_storage_type() == "local":
         source = str(Path(tmp_path) / source)
         destination = str(Path(tmp_path) / destination)
 
@@ -164,7 +164,7 @@ def test_copy(source, destination, storage, tmp_path):
 
 # @pytest.mark.parametrize("folder,files", FOLDER_ITERATION_TARGETS)
 # def test_folder_iteration_recursive(folder, files, storage, tmp_path):
-#     if storage.get_storage_type == "local":
+#     if storage.get_storage_type() == "local":
 #         folder = str(Path(tmp_path) / folder)
 #         files = [(str(Path(tmp_path) / path), content) for path, content in files]
 
@@ -190,7 +190,7 @@ def test_copy(source, destination, storage, tmp_path):
 #     storage,
 #     tmp_path,
 # ):
-#     if storage.get_storage_type == "local":
+#     if storage.get_storage_type() == "local":
 #         folder = str(Path(tmp_path) / folder)
 #         files = [(str(Path(tmp_path) / path), content) for path, content in files]
 #         expected = [str(Path(tmp_path) / exp) for exp in expected]

@@ -113,7 +113,7 @@ export class QuestionAPI {
 
   static async getQuestionFiles(questionID: string): Promise<FileData[]> {
     const response = await api.get(
-      `/questions/filedata/${encodeURIComponent(questionID)}`,
+      `/questions/files/filedata/${encodeURIComponent(questionID)}`,
     );
     return response.data;
   }

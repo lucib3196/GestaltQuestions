@@ -22,11 +22,10 @@ class FbStorage(Storage):
         self.set_storage_type()
 
     def set_storage_type(self) -> Literal["cloud"] | Literal["local"]:
-        self.mode = "cloud"
         return "cloud"
 
     def get_storage_type(self) -> Literal["cloud"] | Literal["local"]:
-        return cast(STORAGE_TYPE, self.mode)
+        return "cloud"
 
     def exists(self, target: str | Path | Blob) -> bool:
         key = self._to_blob_key(target)
@@ -97,7 +96,7 @@ class FbStorage(Storage):
             # Skip directory blob itself
             if not relative:
                 continue
-            # Hack cloud storage will return the blob key as part of the iteration. 
+            # Hack cloud storage will return the blob key as part of the iteration.
             if relative == norm:
                 continue
 

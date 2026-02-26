@@ -38,7 +38,6 @@ class Storage(ABC):
         """
         
     
-    @property
     @abstractmethod
     def get_storage_type(self)->STORAGE_TYPE:
         """Get the storage type for the given target .

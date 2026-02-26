@@ -3,7 +3,7 @@ from app_test.shared.mock_data import (
     QUESTIONS,
 )
 from typing import List
-from src.types import FileData
+from src.model.files import FileData
 # Keep these imports for the factory
 from app_test.shared.factories.storage_factory import create_dir_factory
 from app_test.shared.factories.question_manager_factory import make_question_qm

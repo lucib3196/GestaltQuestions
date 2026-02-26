@@ -30,7 +30,7 @@ async def test_create_question_no_files(
     expected_path = (PurePosixPath(base_path or "") / dir_name).as_posix() + "/"
 
     # Check the actual path is expected
-    storage_type = question_manager.storage.get_storage_type
+    storage_type = question_manager.storage.get_storage_type()
 
     if storage_type == "cloud":
         actual_path = q.blob_path
@@ -85,7 +85,7 @@ async def test_create_question_with_files_expected_path_exists(
     dir_name = safe_dir_name(f"{q.title}_{str(q.id)[:8]}")
     expected_path = (PurePosixPath(base_path or "") / dir_name).as_posix() + "/"
 
-    storage_type = question_manager.storage.get_storage_type
+    storage_type = question_manager.storage.get_storage_type()
 
     if storage_type == "cloud":
         actual_path = q.blob_path
@@ -113,7 +113,7 @@ async def test_delete_question(
     q, _ = await make_question_qm(qdata)
 
     # Get storage location
-    storage_type = question_manager.storage.get_storage_type
+    storage_type = question_manager.storage.get_storage_type()
     if storage_type == "cloud":
         actual_path = q.blob_path
     else:
@@ -149,14 +149,14 @@ async def test_handle_storage_update(
     def get_path(question: Question) -> str:
         return (
             question.blob_path
-            if question_manager.storage.get_storage_type == "cloud"
+            if question_manager.storage.get_storage_type() == "cloud"
             else question.local_path
         )  # type: ignore
 
     old_path = get_path(q)
 
     # Storage for cloud test does not work
-    if question_manager.storage.get_storage_type == "cloud":
+    if question_manager.storage.get_storage_type() == "cloud":
         return
 
     destination = (tmp_path / destination).as_posix()
@@ -196,7 +196,7 @@ async def test_handle_storage_update_with_files(
     )
 
     storage = question_manager.storage
-    if storage.get_storage_type == "cloud":
+    if storage.get_storage_type() == "cloud":
         return
     destination = (tmp_path / destination).as_posix()
     # Act
@@ -205,7 +205,7 @@ async def test_handle_storage_update_with_files(
     def get_path(question: Question) -> str:
         return (
             question.blob_path
-            if storage.get_storage_type == "cloud"
+            if storage.get_storage_type() == "cloud"
             else question.local_path
         )  # type: ignore
 

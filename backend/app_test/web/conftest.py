@@ -68,7 +68,7 @@ def api_client(
         yield storage
 
     async def override_storage_mode():
-        yield storage.get_storage_type
+        yield storage.get_storage_type()
         
     async def override_local_base_path():
         yield (tmp_path/"test_questions").as_posix()
