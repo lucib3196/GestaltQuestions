@@ -3,6 +3,7 @@ import QuestionBuilder from "../QuestionBuilder/page";
 import AllQuestions from "../QuestionTable/page";
 import { QuestionWorkspace } from "../QuestionWorkspace";
 import { CreateQuestion } from "../CreateQuestion";
+import { ComponentPlayground } from "../QuestionPlayGround";
 
 export const Navigation: NavigationItem[] = [
     // {
@@ -46,6 +47,11 @@ export const Navigation: NavigationItem[] = [
                 displayName: "Create Question",
                 element: <CreateQuestion />,
                 path: "/question_builder/create",
+            },
+            {
+                displayName: "Component Playground",
+                element: <ComponentPlayground />,
+                path: "/question_builder/component_playground",
             },
         ],
     },

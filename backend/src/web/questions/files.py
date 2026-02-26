@@ -81,8 +81,6 @@ async def create_question_file_upload(
     try:
         qcreated = await qr.create_question(qdata, fdata, auto_handle_images)
         return qcreated
-    except HTTPException:
-        raise
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to create question {e} from uploaded files"

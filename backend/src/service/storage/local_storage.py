@@ -28,6 +28,9 @@ class LocalStorage(Storage):
         storage_path = self._to_storage_path(target)
         return self._resolve(storage_path).exists()
 
+    def is_dir(self, target: str) -> bool:
+        return Path(target).is_dir()
+
     def create_dir(self, target: str) -> str:
         storage_path = self._to_storage_path(target)
         path = self._resolve(storage_path)

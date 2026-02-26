@@ -114,7 +114,6 @@ async def run_server(
 
     # Execute the file
     try:
-
         async with httpx.AsyncClient() as client:
             generate_endpoint = f"{sandbox_url}/code_runner/generate"
             payload = {
@@ -128,7 +127,7 @@ async def run_server(
     except httpx.HTTPStatusError as e:
         message = (
             f"Sandbox execution failed for question '{qid}' "
-            f"language='{server_language}' file='{filename} error: {e.response.text}'"
+            f"language='{server_language}'  error: {e.response.text}'"
         )
         logger.error(message)
         return ServerExecutionError(

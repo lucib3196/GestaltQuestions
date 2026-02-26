@@ -3,7 +3,7 @@ from typing import List, Sequence
 from firebase_admin import storage
 from google.cloud.storage.blob import Blob
 from src.core.firebase import initialize_firebase_app
-
+from pathlib import PurePosixPath
 from .base import Storage
 from . import STORAGE_TYPE, logger
 from typing import Literal
@@ -33,6 +33,12 @@ class FbStorage(Storage):
         if key.endswith("/"):
             return self._exists_dir(key)
         return self._exists_file(key)
+
+    def is_dir(self, target: str) -> bool:
+        blob = self.bucket.blob(target)
+        if not blob.name:
+            raise ValueError("[FB Storage] Cannot determine blob")
+        return blob.name.endswith("/")
 
     def create_dir(self, target: str) -> str:
         key = self._to_blob_key(target).rstrip("/") + "/"
@@ -79,32 +85,26 @@ class FbStorage(Storage):
     def list(
         self, target: str | Path | Blob, *, recursive: bool = False
     ) -> Sequence[str]:
-        if recursive:
-            raise NotImplemented(
-                "[FB Storage] Failed to recursively get blobs. Not implemented yet"
-            )
 
         norm = self._to_blob_key(target)
         logger.info(f"[FB Storage] Norm {norm}")
         blobs = list(self.bucket.list_blobs(prefix=norm))
-
         results = []
+        for b in blobs:
+            name = b.name
+            if not recursive:
+                remainder = name[len(norm) :]
+                logger.info(f"This is the remained {remainder}")
 
-        for blob in blobs:
-            relative = blob.name
-            logger.info(f"[FBStorage] Listing files {relative}")
-
-            # Skip directory blob itself
-            if not relative:
-                continue
-            # Hack cloud storage will return the blob key as part of the iteration. 
-            if relative == norm:
-                continue
-
-            results.append(relative)
+                if "/" in remainder.strip("/"):
+                    continue
+                results.append(b.name)
+            elif recursive:
+                results.append(b.name)
 
         return results
 
+    # TODO I need a full implementation of this that works where i download all the blobs you can use the list blobs it can be a recursive download
     def copy(
         self,
         source: str | Path | Blob,
@@ -150,8 +150,10 @@ class FbStorage(Storage):
                 new_name = blob.name.replace(source_prefix, dest_prefix, 1)
 
                 # Use native GCS copy (faster, server-side)
-                new_blob = self.bucket.copy_blob(blob, self.bucket, new_name)
-
+                # new_blob = self.bucket.cop(blob, self.bucket, new_name)
+                new_blob = self.bucket.blob(new_name).upload_from_string(
+                    blob.download_as_bytes()
+                )
                 # Delete original
                 blob.delete()
 
@@ -193,7 +195,7 @@ class FbStorage(Storage):
             return True
         return any(self.bucket.list_blobs(prefix=key, max_results=1))
 
-    def _is_empty_dir(self, target: str | Path | Blob) -> bool:
+    def _is_empty_dir(self, target: str) -> bool:
         key = self._to_blob_key(target).rstrip("/") + "/"
         marker_blob = self.bucket.get_blob(key)
         if marker_blob is None:

@@ -5,10 +5,12 @@ import { SideBarItem } from "../../components/SideBar";
 import { type QuestionCollectionView } from "../QuestionBuilder";
 import type { ToolBarItem } from "../../types";
 import type { ToolBarOptions } from "./types";
+import { RxComponent2 } from "react-icons/rx";
 
 export const sidebarItems: SideBarItem<QuestionCollectionView>[] = [
   { key: "all", label: "All Questions", icon: BsCollection },
   { key: "current", label: "Current", icon: FaRegQuestionCircle },
+  {key: "component_playground", label:"Component Playground", icon:RxComponent2 }
   // { key: "drafts", label: "Drafts", icon: FaRegFileAlt },
   // { key: "published", label: "Published", icon: FaRegPaperPlane },
   // { key: "archived", label: "Archived", icon: FaBoxArchive },
