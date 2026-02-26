@@ -1,17 +1,17 @@
-name: FastAPI CI
+name: GestaltQuestions BACKEND DEV CI
 
 # Only triggers if there is a backend change
 on:
   push:
-    paths: 
-      - 'backend/**'
-      - '.github/workflows/backend_build.yml'
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend_build.yml"
     branches: ["main", "dev"]
-    
+
   pull_request:
-    paths: 
-      - 'backend/**'
-      - '.github/workflows/backend_build.yml'
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend_build.yml"
     branches: ["dev", "main"]
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.13]
+        python-version: [3.11, 3.12, 3.13]
 
     env:
       MODE: "dev"
@@ -46,6 +46,16 @@ jobs:
         run: poetry install
         working-directory: ./backend
 
+      # Install JAVA for the firebase
+      - name: Set up Java 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Verify Java installation
+        run: java -version
+
       # Setup firebase and firebase emulator
       - name: Decode Firebase credentials
         working-directory: ./backend
@@ -56,10 +66,35 @@ jobs:
           ls -l
       - name: Install Firebase CLI
         run: nm install -g firebase-tools
+      - name: Install dependencies
+        run: npm ci
+      - name: Create firebase.json
+        run: |
+          cat <<EOF > firebase.json
+          {
+            "emulators": {
+              "singleProjectMode": true,
+              "auth": {
+                "port": 9099
+              },
+              "storage": {
+                "port": 9199
+              },
+              "ui": {
+                "enabled": true,
+                "port": 4000
+              }
+            },
+            "storage": {
+              "rules": "storage.rules"
+            }
+          }
+          EOF
+
       - name: Start firebase emulator
-        run: firebase emulators:start --only auth,firestore,storage --project demo-test & sleep 10
+        run: firebase emulators:start --only auth,storage --project demo-test & sleep 10
 
       - name: Run Test
         run: |
-          poetry run python -m pytest 
+          poetry run python -m pytest
         working-directory: ./backend
