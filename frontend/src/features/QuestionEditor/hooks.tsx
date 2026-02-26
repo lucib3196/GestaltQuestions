@@ -22,6 +22,7 @@ export function useQuestionFiles() {
             return;
         }
         setLoading(true);
+        console.log("Key Pressed", refreshKey)
 
         try {
             const response = await QuestionAPI.getQuestionFiles(selectedQuestionID);

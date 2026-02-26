@@ -278,9 +278,8 @@ async def test_update_question_file(
             filename=f.filename,
             data=new_content,
         )
-
-        updated = await question_manager.read_question_file(q.id, f.filename)
-        assert updated.decode() == new_content
+        content = await question_manager.read_file(qcreated.id, f.filename)
+        assert content == new_content
 
 
 @pytest.mark.asyncio
