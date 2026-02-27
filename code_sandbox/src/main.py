@@ -4,7 +4,7 @@ import uvicorn
 from src.web.code_running import router
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.core import get_settings
+from src.core.settings import get_settings
 
 settings = get_settings()
 
