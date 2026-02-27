@@ -7,7 +7,7 @@ import {
     createUserWithEmailAndPassword,
     sendEmailVerification,
 } from "firebase/auth";
-import { auth } from "../../../config/firebaseClient";
+import { auth } from "../../config/firebaseClient";
 import type { ValidInstitutions } from "../../types/userTypes";
 
 export function SignUpForm() {

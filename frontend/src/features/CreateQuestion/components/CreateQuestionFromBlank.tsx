@@ -1,13 +1,13 @@
 
 
-import QuestionMeta from "./QuestionMetadataField";
-import QuestionFiles from "./QuestionFiles";
+import QuestionMeta from "../QuestionMetadataField";
+import QuestionFiles from "../QuestionFiles";
 
 import { useState } from "react";
-import { QuestionDirectoryPreview } from "./QuestionDirectoryPreview";
+import { QuestionDirectoryPreview } from "../QuestionDirectoryPreview";
 
-import { Button } from "../../components/Button";
-import { useQuestionCreation } from './hooks';
+import { Button } from "../../../components/Button";
+import { useQuestionCreation } from '../hooks';
 
 export function CreateQuestionFromBlank() {
   const [showPreview, setShowPreview] = useState(false);

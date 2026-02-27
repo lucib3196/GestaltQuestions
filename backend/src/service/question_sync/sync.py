@@ -2,7 +2,7 @@
 import asyncio
 import json
 from collections import defaultdict
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Literal, Sequence, Tuple, Optional, List
 
 from pydantic import ValidationError
@@ -66,19 +66,18 @@ class QuestionSyncNew(SyncBase):
             raise NotImplementedError("Recursive for syncing not yet resolved")
 
         try:
-            data = self.storage.list(target, recursive=False)
-            logger.debug(f"This is the data {data}")
+            data = self.storage.list(target, recursive=True)
             valid_questions: List[Tuple[str, str]] = []
             append_valid_question = valid_questions.append
             resolve_metadata = self._resolve_metadata
             is_dir = self.storage.is_dir
 
             for d in data:
-                logger.debug(f"This is the data {d}")
+                logger.info(f"This is the data {d}")
                 if not is_dir(d):
                     continue
                 meta = resolve_metadata(d)
-                logger.debug("Current meta %s",meta)
+                logger.debug("Current meta %s", meta)
                 if meta is not None:
                     append_valid_question(meta)
             logger.debug(f"These are the valid questions {valid_questions}")
@@ -375,21 +374,16 @@ class QuestionSyncNew(SyncBase):
         """
         try:
             # Only check the first level
-            logger.debug(f"[QSYNC] This is the target {target} ")
-            for d in self.storage.list(target, recursive=False):
-                if not self.storage.is_dir(d):
-                    continue
+            dirs = set()
+            for path in self.storage.list(target, recursive=True):
+                p = PurePosixPath(path)
+                dirs.add(str(p.parent) + "/")
+            for d in dirs:
                 for f in self.flags:
-                    target_meta = f"{d}/{f}"
-                    logger.debug(f"Looking for {target_meta}")
-                    try:
-                        if self.storage.exists(target_meta):
-                            return d, target_meta
-                    except Exception as e:
-                        logger.warning(
-                            f"[QSync] Failed checking metadata path {target_meta}: {e}"
-                        )
-            return None
+                    target_meta = str(PurePosixPath(d) / f)
+                    if self.storage.exists(target_meta):
+                        return d, target_meta
+
         except Exception as e:
             logger.error(f"[QSync] Failed to resolve metadata in {target}: {e}")
             return None

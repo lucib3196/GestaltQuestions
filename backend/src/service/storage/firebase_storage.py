@@ -87,20 +87,24 @@ class FbStorage(Storage):
         self, target: str | Path | Blob, *, recursive: bool = False
     ) -> Sequence[str]:
 
-        norm = self._to_blob_key(target)
-        blobs = list(self.bucket.list_blobs(prefix=norm))
-        logger.debug(f"Current blobs {blobs}")
-        results = []
-        for b in blobs:
-            name = b.name
-            if not recursive:
-                remainder = name[len(norm) :]
-                if "/" in remainder.strip("/"):
-                    continue
-                results.append(b.name)
-            elif recursive:
-                results.append(b.name)
+        norm = self._to_blob_key(target).rstrip("/") + "/"
+        logger.info(f"PREFIX USED: '{norm}'")
+        if recursive:
+            blobs = self.bucket.list_blobs(prefix=norm)
+            return [b.name for b in blobs]
 
+        # non-recursive
+        blobs = self.bucket.list_blobs(prefix=norm, delimiter="/")
+
+        results = []
+
+        # capture folders
+        for prefix in blobs.prefixes:
+            results.append(prefix)
+
+        # capture immediate files
+        for blob in blobs:
+            results.append(blob.name)
         return results
 
     def download(self, target) -> bytes:

@@ -1,15 +1,15 @@
-import UploadFiles from "../../components/UploadFile/UploadFileComponent";
-import { useQuestionToolBarActions } from "../QuestionTable/hooks";
+import { UploadFiles } from "../../../components/UploadFile";
+import { useUploadQuestion } from "../../../hooks";
 import { useState } from "react";
-import { Button } from "../../components/Button";
+import { Button } from "../../../components/Button";
 
-export default function UploadZipQuestionModal({
+export default function UploadQuestionZip({
     setShowModal,
 }: {
     setShowModal: (visible: boolean) => void;
 }) {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-    const { handleQuestionUpload } = useQuestionToolBarActions();
+    const { handleQuestionUpload } = useUploadQuestion();
 
     const onFileSelect = (files: File[]) => {
         setSelectedFiles(files);

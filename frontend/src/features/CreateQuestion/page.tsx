@@ -4,9 +4,9 @@ import { Section } from "../../components/Section";
 
 import ModeToggle from "./ModeToggle";
 import { useCreateMode } from "./context";
-import { CreateQuestionFromBlank } from "./CreateQuestionFromBlank";
+import { CreateQuestionFromBlank } from "./components/CreateQuestionFromBlank";
 import type { CreateMode } from "./types";
-import UploadZipQuestionModal from "./UploadZipQuestionModal";
+import UploadZipQuestionModal from "./components/UploadQuestionZip";
 
 
 const MODE_COMPONENTS: Partial<Record<CreateMode, React.ReactNode>> = {
