@@ -95,8 +95,6 @@ class FbStorage(Storage):
             name = b.name
             if not recursive:
                 remainder = name[len(norm) :]
-                logger.debug(f"This is the remained {remainder} {remainder.strip("/")}")
-
                 if "/" in remainder.strip("/"):
                     continue
                 results.append(b.name)
@@ -106,9 +104,9 @@ class FbStorage(Storage):
         return results
 
     def download(self, target) -> bytes:
+        raise NotImplemented("Download for firebase not implemented")
         key = self._to_blob_key(target)
         blob = self.bucket.blob(key)
-        self.bucket.d
         if not blob.exists():
             raise ValueError("[FB] Failed to download blob. Blob does not exist")
         return blob.download_as_bytes()
