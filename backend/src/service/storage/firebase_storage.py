@@ -35,6 +35,7 @@ class FbStorage(Storage):
         return self._exists_file(key)
 
     def is_dir(self, target: str) -> bool:
+        logger.debug(f"Receieved a target {target}")
         blob = self.bucket.blob(target)
         if not blob.name:
             raise ValueError("[FB Storage] Cannot determine blob")
@@ -87,14 +88,14 @@ class FbStorage(Storage):
     ) -> Sequence[str]:
 
         norm = self._to_blob_key(target)
-        logger.info(f"[FB Storage] Norm {norm}")
         blobs = list(self.bucket.list_blobs(prefix=norm))
+        logger.debug(f"Current blobs {blobs}")
         results = []
         for b in blobs:
             name = b.name
             if not recursive:
                 remainder = name[len(norm) :]
-                logger.info(f"This is the remained {remainder}")
+                logger.debug(f"This is the remained {remainder} {remainder.strip("/")}")
 
                 if "/" in remainder.strip("/"):
                     continue

@@ -39,6 +39,8 @@ async def upload_zip(file: UploadFile, storage: StorageDependency) -> UploadZipR
     await file.seek(0)
 
     # Write the content
+    # Ensure dir exist
+    storage.create_dir(base)
 
     for filename, content in extracted_files.items():
         target = f"{base}/{filename}"
