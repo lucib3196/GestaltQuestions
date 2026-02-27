@@ -66,7 +66,7 @@ class QuestionSyncNew(SyncBase):
             raise NotImplementedError("Recursive for syncing not yet resolved")
 
         try:
-            data = self.storage.list(target, recursive=recursive)
+            data = self.storage.list(target, recursive=False)
             valid_questions: List[Tuple[str, str]] = [
                 meta
                 for d in data
@@ -74,6 +74,7 @@ class QuestionSyncNew(SyncBase):
                 for meta in [self._resolve_metadata(d)]
                 if meta is not None
             ]
+            logger.info(f"These are the valid questions {valid_questions}")
 
             results = await asyncio.gather(
                 *[self.get_question_status(q, m) for q, m in valid_questions]
@@ -367,6 +368,7 @@ class QuestionSyncNew(SyncBase):
         """
         try:
             # Only check the first level
+            logger.info(f"[QSYNC] This is the target {target} ")
             for d in self.storage.list(target, recursive=False):
                 if not self.storage.is_dir(d):
                     continue

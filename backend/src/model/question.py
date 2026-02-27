@@ -34,7 +34,7 @@ class QuestionBase(BaseModel):
     ai_generated: Optional[bool] = None
     isAdaptive: Optional[bool] = None
     base_path: str | None = None
-    question_path: str|None = None
+    question_path: str | None = None
     model_config = ConfigDict(extra="ignore")
 
 
@@ -46,8 +46,6 @@ class QRelationshipData(BaseModel):
 
 class QuestionData(QuestionBase, QRelationshipData):
     pass
-
-
 
 
 class UpdateFile(BaseModel):

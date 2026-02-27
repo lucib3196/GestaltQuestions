@@ -2,11 +2,11 @@ import re
 from pathlib import Path
 
 
-
 _filename_safe_re = re.compile(r"[^A-Za-z0-9._-]+")
 
 
 def safe_dir_name(name: str | Path, max_length: int = 100) -> str:
+    """Return a sanitized, filesystem-safe directory name from the input."""
     if isinstance(name, Path):
         name = name.as_posix()
     name = Path(name).name
@@ -17,5 +17,3 @@ def safe_dir_name(name: str | Path, max_length: int = 100) -> str:
     if len(name) > max_length:
         name = name[:max_length]
     return name
-
-

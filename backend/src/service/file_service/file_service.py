@@ -15,7 +15,7 @@ from starlette import status
 # --- Internal ---
 from src.core import logger
 
-from src.utils import safe_dir_name
+from .utils import safe_dir_name
 from . import (
     MAX_FILE_SIZE_MB,
     ALLOWED_EXTENSIONS,

@@ -5,7 +5,7 @@ from pathlib import Path, PurePosixPath
 from fastapi import APIRouter, HTTPException, UploadFile
 
 from src.service.storage.base import Storage
-from src.utils import safe_dir_name
+from src.service.file_service.utils import safe_dir_name
 from src.web.dependencies import StorageDependency
 
 router = APIRouter()
