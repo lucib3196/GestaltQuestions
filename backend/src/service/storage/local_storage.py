@@ -57,6 +57,7 @@ class LocalStorage(Storage):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(self._normalize_content(data))
         return storage_path
+
     def download(self, target: str) -> bytes:
         raise NotImplemented("Cannot download question not implemented")
 

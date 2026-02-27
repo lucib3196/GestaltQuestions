@@ -32,7 +32,7 @@ async def upload_zip(file: UploadFile, storage: StorageDependency) -> UploadZipR
         raise ValueError("Zip file is empty")
 
     # Create the base path to store the content
-    base = f"{"questions"}/{safe_dir_name(f"{filename.removesuffix(".zip")}")}"
+    base = f"{"questions"}/{safe_dir_name(f'{filename.removesuffix(".zip")}')}"
     # Extract and reset file
 
     extracted_files = extract_zip_files(content)
