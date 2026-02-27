@@ -2,6 +2,11 @@ import os
 from fastapi import FastAPI
 import uvicorn
 from src.web.code_running import router
+from fastapi.middleware.cors import CORSMiddleware
+
+from src.core import get_settings
+
+settings = get_settings()
 
 
 def get_app():
@@ -11,6 +16,17 @@ def get_app():
 
 
 app = get_app()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        str(origin) for origin in settings.BACKEND_CORS_ORIGINS
+    ],  # allow specific frontend origins
+    allow_credentials=True,  # allow cookies, Authorization headers
+    allow_methods=["*"],  # allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # allow all headers (including Authorization)
+    expose_headers=["Content-Disposition"],
+)
 
 
 def main():
