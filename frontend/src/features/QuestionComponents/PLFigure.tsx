@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { questionAPIURL } from "../../config";
+import { questionAPIURL } from "../../config/apiConfig";
 import { useQuestionCollectionContext } from "../../context/QuestionCollectionContext";
 import { twMerge } from "tailwind-merge"
 export type ImageSize = "sm" | "md" | "lg";
