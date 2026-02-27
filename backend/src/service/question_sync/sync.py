@@ -2,7 +2,7 @@
 import asyncio
 import json
 from collections import defaultdict
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Literal, Sequence, Tuple, Optional, List
 
 from pydantic import ValidationError
@@ -66,14 +66,21 @@ class QuestionSyncNew(SyncBase):
             raise NotImplementedError("Recursive for syncing not yet resolved")
 
         try:
-            data = self.storage.list(target, recursive=recursive)
-            valid_questions: List[Tuple[str, str]] = [
-                meta
-                for d in data
-                if self.storage.is_dir(d)
-                for meta in [self._resolve_metadata(d)]
-                if meta is not None
-            ]
+            data = self.storage.list(target, recursive=True)
+            valid_questions: List[Tuple[str, str]] = []
+            append_valid_question = valid_questions.append
+            resolve_metadata = self._resolve_metadata
+            is_dir = self.storage.is_dir
+
+            for d in data:
+                logger.info(f"This is the data {d}")
+                if not is_dir(d):
+                    continue
+                meta = resolve_metadata(d)
+                logger.debug("Current meta %s", meta)
+                if meta is not None:
+                    append_valid_question(meta)
+            logger.debug(f"These are the valid questions {valid_questions}")
 
             results = await asyncio.gather(
                 *[self.get_question_status(q, m) for q, m in valid_questions]
@@ -88,7 +95,7 @@ class QuestionSyncNew(SyncBase):
     ) -> SyncResponse:
         """Sync every unsynced question under `target` and return aggregate metrics."""
         unsynced = await self.check_unsync(target, recursive=recursive)
-        logger.info(f" Found {len(unsynced)} unsynced questions to process.")
+        logger.debug(f" Found {len(unsynced)} unsynced questions to process.")
         synced_results = await asyncio.gather(
             *[self.sync_single(u, storage_type) for u in unsynced]
         )
@@ -248,7 +255,7 @@ class QuestionSyncNew(SyncBase):
 
             q = await self.qdb.get_question(qid)
             if q is None:
-                logger.info("Question is not in database")
+                logger.debug("Question is not in database")
                 detail = (
                     f"Metadata contains Question ID {qid}, but no corresponding record was found in the database. "
                     "Run the synchronization process to register this question."
@@ -367,20 +374,16 @@ class QuestionSyncNew(SyncBase):
         """
         try:
             # Only check the first level
-            for d in self.storage.list(target, recursive=False):
-                if not self.storage.is_dir(d):
-                    continue
+            dirs = set()
+            for path in self.storage.list(target, recursive=True):
+                p = PurePosixPath(path)
+                dirs.add(str(p.parent) + "/")
+            for d in dirs:
                 for f in self.flags:
-                    target_meta = f"{d}/{f}"
-                    logger.info(f"Looking for {target_meta}")
-                    try:
-                        if self.storage.exists(target_meta):
-                            return d, target_meta
-                    except Exception as e:
-                        logger.warning(
-                            f"[QSync] Failed checking metadata path {target_meta}: {e}"
-                        )
-            return None
+                    target_meta = str(PurePosixPath(d) / f)
+                    if self.storage.exists(target_meta):
+                        return d, target_meta
+
         except Exception as e:
             logger.error(f"[QSync] Failed to resolve metadata in {target}: {e}")
             return None

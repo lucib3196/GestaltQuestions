@@ -39,7 +39,7 @@ class LocalStorage(Storage):
         path.mkdir(parents=True, exist_ok=True)
         return path.as_posix()
 
-    def read(self, target: str | Path | Blob) -> bytes:
+    def read(self, target: str | Path | Blob) -> bytes | None:
         storage_path = self._to_storage_path(target)
         path = self._resolve(storage_path)
         return path.read_bytes()
@@ -57,6 +57,9 @@ class LocalStorage(Storage):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(self._normalize_content(data))
         return storage_path
+
+    def download(self, target: str) -> bytes:
+        raise NotImplemented("Cannot download question not implemented")
 
     def delete(self, target: str | Path | Blob) -> None:
         storage_path = self._to_storage_path(target)

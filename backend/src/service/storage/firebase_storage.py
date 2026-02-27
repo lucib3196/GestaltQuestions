@@ -35,6 +35,7 @@ class FbStorage(Storage):
         return self._exists_file(key)
 
     def is_dir(self, target: str) -> bool:
+        logger.debug(f"Receieved a target {target}")
         blob = self.bucket.blob(target)
         if not blob.name:
             raise ValueError("[FB Storage] Cannot determine blob")
@@ -64,12 +65,12 @@ class FbStorage(Storage):
         )
         return str(blob.name)
 
-    def read(self, target: str | Path | Blob) -> bytes:
+    def read(self, target: str) -> bytes | None:
         key = self._to_blob_key(target).rstrip("/")
         if self._exists_file(key):
             return self.bucket.blob(key).download_as_bytes()
         else:
-            raise ValueError("Cannot read blob. Blob is None")
+            logger.warn(f"Cannot read blob. {key} is not file")
 
     def delete(self, target: str | Path | Blob) -> None:
         key = self._to_blob_key(target)
@@ -86,23 +87,33 @@ class FbStorage(Storage):
         self, target: str | Path | Blob, *, recursive: bool = False
     ) -> Sequence[str]:
 
-        norm = self._to_blob_key(target)
-        logger.info(f"[FB Storage] Norm {norm}")
-        blobs = list(self.bucket.list_blobs(prefix=norm))
+        norm = self._to_blob_key(target).rstrip("/") + "/"
+        logger.info(f"PREFIX USED: '{norm}'")
+        if recursive:
+            blobs = self.bucket.list_blobs(prefix=norm)
+            return [b.name for b in blobs]
+
+        # non-recursive
+        blobs = self.bucket.list_blobs(prefix=norm, delimiter="/")
+
         results = []
-        for b in blobs:
-            name = b.name
-            if not recursive:
-                remainder = name[len(norm) :]
-                logger.info(f"This is the remained {remainder}")
 
-                if "/" in remainder.strip("/"):
-                    continue
-                results.append(b.name)
-            elif recursive:
-                results.append(b.name)
+        # capture folders
+        for prefix in blobs.prefixes:
+            results.append(prefix)
 
+        # capture immediate files
+        for blob in blobs:
+            results.append(blob.name)
         return results
+
+    def download(self, target) -> bytes:
+        raise NotImplemented("Download for firebase not implemented")
+        key = self._to_blob_key(target)
+        blob = self.bucket.blob(key)
+        if not blob.exists():
+            raise ValueError("[FB] Failed to download blob. Blob does not exist")
+        return blob.download_as_bytes()
 
     # TODO I need a full implementation of this that works where i download all the blobs you can use the list blobs it can be a recursive download
     def copy(

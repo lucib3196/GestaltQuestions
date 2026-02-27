@@ -6,8 +6,7 @@ import pytest
 
 from src.core import logger
 from src.model.question import Question
-from src.utils import safe_dir_name
-
+from src.service.file_service.utils import safe_dir_name
 from app_test import QuestionManager
 from app_test.shared.factories.question_manager_factory import MakeQuestionFactory
 from app_test.shared.mock_data import QUESTIONS
@@ -253,6 +252,8 @@ async def test_read_question_file(
 
     for f in question_file_payload:
         content = await question_manager.read_question_file(q.id, f.filename)
+        
+        assert content
 
         if f.filename.endswith(".json"):
             assert json.loads(content.decode()) == f.content
