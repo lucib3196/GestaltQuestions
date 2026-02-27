@@ -223,25 +223,6 @@ class FileService:
         buffer.seek(0)
         return buffer.getvalue()  # type: bytes
 
-    async def upload_zip_and_extract(self, file: UploadFile, path: str | Path):
-
-        filename = file.filename
-        path = Path(path)
-
-        if not filename:
-            raise ValueError(f"File {file} has no name")
-        if not filename.endswith(".zip"):
-            ext = filename.split(".")[-1]
-            raise ValueError(f"Expected zip file extension, received '{ext}'")
-        cleaned_name = safe_dir_name(filename.split(".zip")[0])
-        save_path = (path / cleaned_name).as_posix()
-        # Read the contents
-        contents = await file.read()
-        zip_bytes = io.BytesIO(contents)
-        with zipfile.ZipFile(zip_bytes, "r") as zip_ref:
-            zip_ref.extractall(save_path)
-
-        return {"detail": f"Extracted zip folder to {path}"}
 
     async def is_image(self, filename: str) -> bool:
         mime_type, _ = mimetypes.guess_type(filename)

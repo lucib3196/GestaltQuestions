@@ -39,7 +39,7 @@ class LocalStorage(Storage):
         path.mkdir(parents=True, exist_ok=True)
         return path.as_posix()
 
-    def read(self, target: str | Path | Blob) -> bytes:
+    def read(self, target: str | Path | Blob) -> bytes | None:
         storage_path = self._to_storage_path(target)
         path = self._resolve(storage_path)
         return path.read_bytes()

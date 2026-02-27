@@ -89,7 +89,7 @@ class Storage(ABC):
         """
 
     @abstractmethod
-    def read(self, target: str) -> bytes:
+    def read(self, target: str) -> bytes|None:
         """
         Read the contents of a stored object.
 
@@ -140,7 +140,21 @@ class Storage(ABC):
             FileNotFoundError if target does not exist.
         """
         ...
+    @abstractmethod
+    def download(self, target:str)->bytes:
+        """
+        Download and return the raw bytes for the specified storage target.
 
+        Args:
+            target: The storage path/key to download.
+
+        Returns:
+            Raw bytes of the downloaded object.
+
+        Raises:
+            FileNotFoundError if target does not exist.
+        """
+        ...
     # ---------------------------------------------------------
     # Directory / prefix operations
     # ---------------------------------------------------------
