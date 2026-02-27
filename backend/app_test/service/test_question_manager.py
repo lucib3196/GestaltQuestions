@@ -6,8 +6,7 @@ import pytest
 
 from src.core import logger
 from src.model.question import Question
-from src.utils import safe_dir_name
-
+from src.service.file_service.utils import safe_dir_name
 from app_test import QuestionManager
 from app_test.shared.factories.question_manager_factory import MakeQuestionFactory
 from app_test.shared.mock_data import QUESTIONS

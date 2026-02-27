@@ -81,7 +81,7 @@ async def get_all_questions(
     qm: QuestionManagerDependency, offset: int = 0, limit: int = 100
 ) -> Sequence[Question | QuestionData]:
     try:
-        return await qm.retrieve_available_question(offset, limit)
+        return await qm.qdb.get_all_questions(offset, limit)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
