@@ -18,6 +18,7 @@ from src.web.dependencies import (
     StorageTypeDep,
     LocalBaseDep,
 )
+from src.utils import to_serializable
 
 
 router = APIRouter(
@@ -80,6 +81,9 @@ async def create_question_file_upload(
     # Finally create the question
     try:
         qcreated = await qr.create_question(qdata, fdata, auto_handle_images)
+        await qr.write_question_file(
+            qcreated.id, "info.json", to_serializable(qcreated.model_dump())
+        )
         return qcreated
     except Exception as e:
         raise HTTPException(

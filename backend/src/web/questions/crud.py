@@ -12,6 +12,7 @@ from src.web.dependencies import (
     LocalBaseDep,
 )
 from src.types import ID
+from src.utils import to_serializable
 
 
 router = APIRouter(
@@ -41,6 +42,10 @@ async def create_question(
     try:
         assert question.title
         qcreated = await qm.create_question(question, files=None)
+        await qm.write_question_file(
+            qcreated.id, "info.json", to_serializable(qcreated.model_dump())
+        )
+
         return qcreated
     except Exception as e:
         raise HTTPException(
