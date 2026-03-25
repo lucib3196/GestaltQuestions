@@ -6,19 +6,18 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from starlette import status
 
+
 # --- Internal ---
 from src.core.firebase import initialize_firebase_app
 from src.core.logging import logger
-from src.model.users import (
-    User,UserBase, UserRead, UserRoles, UserUpdate, ValidInstitutions
-)
+from src.model.users import User, UserBase, UserRead, UserRoles, UserUpdate, UserCreate
+from src.model.institution import ValidInstitutions
 
 from src.web.dependencies import FireBaseToken
 from src.data.user import UserManagerDependeny
 
 
 router = APIRouter(prefix="/users", tags=["users"])
-initialize_firebase_app()
 
 
 class CreateUserFullPayload(BaseModel):
@@ -29,8 +28,7 @@ class CreateUserFullPayload(BaseModel):
 @router.post("/")
 async def create_user(
     user_manager: UserManagerDependeny,
-    fb_token: FireBaseToken,
-    data: UserBase,
+    data: UserCreate,
 ) -> User:
     """
     Create a new user in the system.
@@ -44,23 +42,9 @@ async def create_user(
     """
 
     # Check if the user already exist in the database
+    logger.debug("Received request")
     try:
-        fb_uid = fb_token["uid"]
-        existing_user = user_manager.get_user_by_fb(fb_uid)
-        if existing_user:
-            logger.info(f"[DB] User already exists: {existing_user.fb_id}")
-            return existing_user
-        # Other wise create a user
-        logger.info(
-            "Creating user with email='%s' and fb_id='%s'",
-            data.email,
-        )
-
-        data.fb_id = fb_uid
-        created_user = user_manager.create_user(data)
-
-        logger.info("User created successfully: uid='%s'", created_user.id)
-        return created_user
+        user = await user_manager.create_user(data)
     except HTTPException:
         raise
     except Exception as e:

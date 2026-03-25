@@ -7,7 +7,7 @@ from src.core import logger, SessionDep
 from src.model.users import Role, UserRoles
 
 
-class RoleManager:
+class RoleDB:
     def __init__(self, session: SessionDep):
         self.session = session
 
@@ -24,6 +24,16 @@ class RoleManager:
             logger.debug("[DB] Role created successfully")
             return r
 
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            logger.error(f"[DB] Failed to create role: {e}")
+            return None
+
+    async def get_role(self, role: UserRoles):
+        try:
+            return self.session.exec(
+                select(Role).where(Role.name == role.value)
+            ).first()
         except SQLAlchemyError as e:
             self.session.rollback()
             logger.error(f"[DB] Failed to create role: {e}")

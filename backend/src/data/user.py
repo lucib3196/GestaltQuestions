@@ -7,20 +7,25 @@ from sqlmodel import select
 
 from src.core import logger, SessionDep
 from src.model.institution import Institution, ValidInstitutions
-from src.model.question import Question
-from src.model.users import Role, User, UserBase, UserRoles, UserUpdate
+from src.model.users import (
+    Role,
+    User,
+    UserRoles,
+    UserUpdate,
+    UserCreate,
+)
 from src.utils import convert_uuid
 from src.types import ID
+
 
 class UserDB:
     def __init__(self, session: SessionDep):
         self.session = session
 
-    async def create_user(self, data: UserBase | dict) -> User:
-        data = await self.validate_data(data)
+    async def create_user(self, data: UserCreate | dict) -> User:
+        data = await self._validate_data(data)
         try:
             user = User(
-                fb_id=data.fb_id,
                 first_name=data.first_name,
                 last_name=data.last_name,
                 username=data.username,
@@ -59,16 +64,6 @@ class UserDB:
             error_message = f"[DB] Failed to get user: {e}"
             raise ValueError(error_message)
 
-    async def get_user_by_token(self, token: str) -> User | None:
-        try:
-            stmt = select(User).where(User.fb_id == token.strip())
-            user = self.session.exec(stmt).first()
-            return user
-        except Exception as e:
-            self.session.rollback()
-            error_message = f"[DB] Failed to get user: {e}"
-            raise ValueError(error_message)
-
     async def get_all_users(self, offset: int = 0, limit: int = 100) -> Sequence[User]:
         try:
             stmt = select(User).offset(offset).limit(limit)
@@ -93,15 +88,6 @@ class UserDB:
             error_message = f"[DB] Failed to delete user: {e}"
             logger.error(error_message)
             raise ValueError(error_message)
-
-    async def validate_data(self, data: UserBase | dict):
-        try:
-            if isinstance(data, dict):
-                data = UserBase.model_validate(data)
-            return data
-        except ValidationError as e:
-            logger.error("Validation error for user %s", e)
-            raise
 
     async def update_user(self, id: ID, data: UserUpdate):
         user = await self.get_user(id)
@@ -134,18 +120,6 @@ class UserDB:
         except Exception:
             raise
 
-    async def set_user_question(self, id: ID, question: Question) -> User:
-        user = await self.get_user(id)
-        if not user:
-            raise ValueError("[DB] Failed to get user")
-        try:
-            user.created_questions.append(question)
-            self.session.commit()
-            self.session.refresh(user)
-            return user
-        except Exception:
-            raise
-
     async def set_user_institution(
         self, id: ID, institution: Institution | ValidInstitutions
     ) -> User:
@@ -162,6 +136,15 @@ class UserDB:
             self.session.refresh(user)
             return user
         except Exception:
+            raise
+
+    async def _validate_data(self, data: UserCreate | dict):
+        try:
+            if isinstance(data, dict):
+                data = UserCreate.model_validate(data)
+            return data
+        except ValidationError as e:
+            logger.error("Validation error for user %s", e)
             raise
 
 
