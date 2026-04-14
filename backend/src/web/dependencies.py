@@ -14,7 +14,7 @@ from src.service.storage.firebase_storage import FbStorage
 from src.service.storage.local_storage import LocalStorage
 from src.service.question_manager.question_manager import QuestionManager
 from src.service.storage.local_storage import Storage
-
+from src.service.user.user_manager import UserManager
 from src.app_types.general import STORAGE_TYPE
 
 
@@ -44,7 +44,7 @@ LocalBaseDep = Annotated[str, Depends(get_local_base_path)]
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
-def get_firebase_user_from_token(
+def get_firebase_token(
     token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
 ) -> dict | None:
     try:
@@ -57,9 +57,30 @@ def get_firebase_user_from_token(
             detail=f"Not logged in or Invalid credentials {str(e)}",
             headers={"WWW-Authenticate": "Bearer"},
         )
+FireBaseToken = Annotated[dict, Depends(get_firebase_token)]
 
 
-FireBaseToken = Annotated[dict, Depends(get_firebase_user_from_token)]
+def get_current_user_id(
+    token: FireBaseToken,
+) -> str:
+    try:
+        user_id = token.get("user_id", None)
+        if user_id is None:
+            raise HTTPException(
+                detail="Failed to retrieve signed in user",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+        return user_id
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            detail=f"Failed to retrieve signed in user {e}",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+CurrentUser = Annotated[str, Depends(get_current_user_id)]
 
 
 def get_question_database(
@@ -102,3 +123,10 @@ def get_question_manager(
 
 
 QuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]
+
+
+def get_user_database(session: SessionDep) -> UserManager:
+    return UserManager(session)
+
+
+UserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]

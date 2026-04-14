@@ -148,8 +148,3 @@ class UserDB:
             raise
 
 
-def get_user_database(session: SessionDep) -> UserDB:
-    return UserDB(session)
-
-
-UserManagerDependeny = Annotated[UserDB, Depends(get_user_database)]

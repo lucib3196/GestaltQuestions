@@ -66,3 +66,8 @@ env.bak/
 venv.bak/
 
 **/.venv
+
+
+emulator-data/firebase-export-metadata.json
+emulator-data
+firebase-debug.log

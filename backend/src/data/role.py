@@ -36,7 +36,7 @@ class RoleDB:
             ).first()
         except SQLAlchemyError as e:
             self.session.rollback()
-            logger.error(f"[DB] Failed to create role: {e}")
+            logger.error(f"[DB] Failed to get role: {e}")
             return None
 
     async def get_role_data(

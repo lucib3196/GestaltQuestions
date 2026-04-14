@@ -11,9 +11,6 @@ if TYPE_CHECKING:
     from .question import Question
 
 
-VALID_ROLES = Literal["educator", "student", "admin", "developer"]
-
-
 class UserRoles(str, Enum):
     ADMIN = "admin"
     TEACHER = "teacher"
@@ -74,7 +71,9 @@ class User(SQLModel, table=True):
     institution_id: Optional[UUID] = Field(default=None, foreign_key="institution.id")
     institution: Optional["Institution"] = Relationship(back_populates="users")
 
-    developer_profile: Optional["DeveloperProfile"] = Relationship(back_populates="user")
+    developer_profile: Optional["DeveloperProfile"] = Relationship(
+        back_populates="user"
+    )
 
 
 class DeveloperProfile(SQLModel, table=True):

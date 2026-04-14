@@ -16,6 +16,7 @@ from src.web import ALL_ROUTES
 from src.core import get_settings, create_db_and_tables
 from src.service.user.user_manager import RoleDB
 from src.data.institution import InstitutionDB
+from src.core.firebase import initialize_firebase_app
 
 settings = get_settings()
 
@@ -23,17 +24,20 @@ settings = get_settings()
 ## Intializes the database
 @asynccontextmanager
 async def on_startup(app: FastAPI):
-    engine = create_db_and_tables()
-    # Ensures that the roles are present at startup
-    with Session(engine) as session:
-        await RoleDB(session).seed_roles()
-        logger.info("[Initialization] Roles Created/verified Successfully")
-        session.commit()
-        await InstitutionDB(session).seed_institution()
-
-        logger.info("[Initialization]: Institution Created/Verified Succesfully")
-    yield
-
+    try:
+        # Attempt to initialize firebase application
+        initialize_firebase_app()
+        engine = create_db_and_tables()
+        # Ensures that the roles are present at startup
+        with Session(engine) as session:
+            await RoleDB(session).seed_roles()
+            logger.info("[Initialization] Roles Created/verified Successfully")
+            session.commit()
+            await InstitutionDB(session).seed_institution()
+            logger.info("[Initialization]: Institution Created/Verified Succesfully")
+        yield
+    except Exception as e:
+        raise ValueError(f"Failed to initialize app {e}")
 
 def add_routes(app: FastAPI, routes: list[APIRouter] = ALL_ROUTES):
     for r in routes:

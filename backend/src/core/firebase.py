@@ -5,11 +5,6 @@ import firebase_admin
 from functools import lru_cache
 from src.core import get_settings
 
-import os
-
-print("AUTH EMULATOR:", os.environ.get("FIREBASE_AUTH_EMULATOR_HOST"))
-print("STORAGE EMULATOR:", os.environ.get("FIREBASE_STORAGE_EMULATOR_HOST"))
-
 
 app_settings = get_settings()
 

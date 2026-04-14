@@ -7,7 +7,7 @@ import httpx
 from fastapi import APIRouter
 
 from src.core import logger
-from src.data import UserManagerDependeny
+from src.web.dependencies import UserManagerDependeny
 from src.app_types.run_server import (
     AllowedLanguages,
     AllowedServer,

@@ -1476,6 +1476,22 @@
         "documentation": {}
     },
     {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Union",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
         "label": "Any",
         "importPath": "typing",
         "description": "typing",
@@ -1525,6 +1541,14 @@
     },
     {
         "label": "TypeVar",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Union",
         "importPath": "typing",
         "description": "typing",
         "isExtraImport": true,
@@ -1668,7 +1692,7 @@
         "documentation": {}
     },
     {
-        "label": "cast",
+        "label": "List",
         "importPath": "typing",
         "description": "typing",
         "isExtraImport": true,
@@ -2207,14 +2231,6 @@
     },
     {
         "label": "QuestionDB",
-        "importPath": "src.data",
-        "description": "src.data",
-        "isExtraImport": true,
-        "detail": "src.data",
-        "documentation": {}
-    },
-    {
-        "label": "UserManagerDependeny",
         "importPath": "src.data",
         "description": "src.data",
         "isExtraImport": true,
@@ -2934,6 +2950,14 @@
         "documentation": {}
     },
     {
+        "label": "Role",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
         "label": "User",
         "importPath": "src.model.users",
         "description": "src.model.users",
@@ -2942,7 +2966,7 @@
         "documentation": {}
     },
     {
-        "label": "UserBase",
+        "label": "UserCreate",
         "importPath": "src.model.users",
         "description": "src.model.users",
         "isExtraImport": true,
@@ -2959,22 +2983,6 @@
     },
     {
         "label": "UserRoles",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserUpdate",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserCreate",
         "importPath": "src.model.users",
         "description": "src.model.users",
         "isExtraImport": true,
@@ -3545,6 +3553,14 @@
         "documentation": {}
     },
     {
+        "label": "get_settings",
+        "importPath": "src.core.config",
+        "description": "src.core.config",
+        "isExtraImport": true,
+        "detail": "src.core.config",
+        "documentation": {}
+    },
+    {
         "label": "AppSettings",
         "importPath": "src.core.config",
         "description": "src.core.config",
@@ -4052,6 +4068,14 @@
         "documentation": {}
     },
     {
+        "label": "UserManagerDependeny",
+        "importPath": "src.web.dependencies",
+        "description": "src.web.dependencies",
+        "isExtraImport": true,
+        "detail": "src.web.dependencies",
+        "documentation": {}
+    },
+    {
         "label": "FireBaseToken",
         "importPath": "src.web.dependencies",
         "description": "src.web.dependencies",
@@ -4085,6 +4109,14 @@
     },
     {
         "label": "FireBaseToken",
+        "importPath": "src.web.dependencies",
+        "description": "src.web.dependencies",
+        "isExtraImport": true,
+        "detail": "src.web.dependencies",
+        "documentation": {}
+    },
+    {
+        "label": "UserManagerDependeny",
         "importPath": "src.web.dependencies",
         "description": "src.web.dependencies",
         "isExtraImport": true,
@@ -4975,6 +5007,14 @@
         "documentation": {}
     },
     {
+        "label": "auth",
+        "importPath": "firebase_admin",
+        "description": "firebase_admin",
+        "isExtraImport": true,
+        "detail": "firebase_admin",
+        "documentation": {}
+    },
+    {
         "label": "logging",
         "kind": 6,
         "isExtraImport": true,
@@ -5170,6 +5210,22 @@
     },
     {
         "label": "STORAGE_TYPE",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "ID",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "ID",
         "importPath": "src.app_types.general",
         "description": "src.app_types.general",
         "isExtraImport": true,
@@ -5574,7 +5630,7 @@
         "documentation": {}
     },
     {
-        "label": "UserManagerDependeny",
+        "label": "Role",
         "importPath": "src.data.user",
         "description": "src.data.user",
         "isExtraImport": true,
@@ -5759,6 +5815,15 @@
         "documentation": {}
     },
     {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
         "label": "HTTPAuthorizationCredentials",
         "importPath": "fastapi.security",
         "description": "fastapi.security",
@@ -5799,6 +5864,22 @@
         "documentation": {}
     },
     {
+        "label": "UserManager",
+        "importPath": "src.service.user.user_manager",
+        "description": "src.service.user.user_manager",
+        "isExtraImport": true,
+        "detail": "src.service.user.user_manager",
+        "documentation": {}
+    },
+    {
+        "label": "RoleDB",
+        "importPath": "src.service.user.user_manager",
+        "description": "src.service.user.user_manager",
+        "isExtraImport": true,
+        "detail": "src.service.user.user_manager",
+        "documentation": {}
+    },
+    {
         "label": "uvicorn",
         "kind": 6,
         "isExtraImport": true,
@@ -5829,14 +5910,6 @@
         "description": "src.web",
         "isExtraImport": true,
         "detail": "src.web",
-        "documentation": {}
-    },
-    {
-        "label": "RoleDB",
-        "importPath": "src.service.user.user_manager",
-        "description": "src.service.user.user_manager",
-        "isExtraImport": true,
-        "detail": "src.service.user.user_manager",
         "documentation": {}
     },
     {
@@ -7542,24 +7615,6 @@
         "documentation": {}
     },
     {
-        "label": "get_user_database",
-        "kind": 2,
-        "importPath": "backend.src.data.user",
-        "description": "backend.src.data.user",
-        "peekOfCode": "def get_user_database(session: SessionDep) -> UserDB:\n    return UserDB(session)\nUserManagerDependeny = Annotated[UserDB, Depends(get_user_database)]",
-        "detail": "backend.src.data.user",
-        "documentation": {}
-    },
-    {
-        "label": "UserManagerDependeny",
-        "kind": 5,
-        "importPath": "backend.src.data.user",
-        "description": "backend.src.data.user",
-        "peekOfCode": "UserManagerDependeny = Annotated[UserDB, Depends(get_user_database)]",
-        "detail": "backend.src.data.user",
-        "documentation": {}
-    },
-    {
         "label": "FileData",
         "kind": 6,
         "importPath": "backend.src.model.files",
@@ -7825,7 +7880,7 @@
         "kind": 6,
         "importPath": "backend.src.model.users",
         "description": "backend.src.model.users",
-        "peekOfCode": "class User(SQLModel, table=True):\n    id: UUID = Field(default_factory=uuid4, primary_key=True)\n    first_name: str\n    last_name: str\n    username: str | None = Field(default=None, unique=True)\n    email: str = Field(index=True)\n    roles: List[\"Role\"] = Relationship(back_populates=\"users\", link_model=UserRoleLink)\n    institution_id: Optional[UUID] = Field(default=None, foreign_key=\"institution.id\")\n    institution: Optional[\"Institution\"] = Relationship(back_populates=\"users\")\n    developer_profile: Optional[\"DeveloperProfile\"] = Relationship(back_populates=\"user\")",
+        "peekOfCode": "class User(SQLModel, table=True):\n    id: UUID = Field(default_factory=uuid4, primary_key=True)\n    first_name: str\n    last_name: str\n    username: str | None = Field(default=None, unique=True)\n    email: str = Field(index=True)\n    roles: List[\"Role\"] = Relationship(back_populates=\"users\", link_model=UserRoleLink)\n    institution_id: Optional[UUID] = Field(default=None, foreign_key=\"institution.id\")\n    institution: Optional[\"Institution\"] = Relationship(back_populates=\"users\")\n    developer_profile: Optional[\"DeveloperProfile\"] = Relationship(",
         "detail": "backend.src.model.users",
         "documentation": {}
     },
@@ -7835,15 +7890,6 @@
         "importPath": "backend.src.model.users",
         "description": "backend.src.model.users",
         "peekOfCode": "class DeveloperProfile(SQLModel, table=True):\n    __tablename__ = \"developer_profile\"  # type: ignore\n    id: UUID = Field(default_factory=uuid4, primary_key=True)\n    user_id: UUID = Field(foreign_key=\"user.id\", unique=True)\n    user: Optional[\"User\"] = Relationship(back_populates=\"developer_profile\")\n    storage_path: Optional[str] = None\n    created_questions: List[\"Question\"] = Relationship(back_populates=\"created_by\")",
-        "detail": "backend.src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "VALID_ROLES",
-        "kind": 5,
-        "importPath": "backend.src.model.users",
-        "description": "backend.src.model.users",
-        "peekOfCode": "VALID_ROLES = Literal[\"educator\", \"student\", \"admin\", \"developer\"]\nclass UserRoles(str, Enum):\n    ADMIN = \"admin\"\n    TEACHER = \"teacher\"\n    DEVELOPER = \"developer\"\n    STUDENT = \"student\"\nclass UserBase(BaseModel):\n    first_name: str | None = None\n    last_name: str | None = None\n    username: str | None = None",
         "detail": "backend.src.model.users",
         "documentation": {}
     },
@@ -8068,16 +8114,7 @@
         "kind": 6,
         "importPath": "backend.src.service.user.user_manager",
         "description": "backend.src.service.user.user_manager",
-        "peekOfCode": "class UserManager:\n    def __init__(self, session: Session):\n        \"\"\"Initialize user and role repositories for the provided session.\"\"\"\n        self.udb = UserDB(session)\n        self.rm = RoleDB(session)\n    async def create_user(self, data: UserCreate, role: UserRoles) -> User:\n        \"\"\"Create a user and optionally attach a role.\"\"\"\n        try:\n            user_orm = await self.udb.create_user(data)\n            username = user_orm.username",
-        "detail": "backend.src.service.user.user_manager",
-        "documentation": {}
-    },
-    {
-        "label": "ID",
-        "kind": 5,
-        "importPath": "backend.src.service.user.user_manager",
-        "description": "backend.src.service.user.user_manager",
-        "peekOfCode": "ID = UUID | str\nclass UserManager:\n    def __init__(self, session: Session):\n        \"\"\"Initialize user and role repositories for the provided session.\"\"\"\n        self.udb = UserDB(session)\n        self.rm = RoleDB(session)\n    async def create_user(self, data: UserCreate, role: UserRoles) -> User:\n        \"\"\"Create a user and optionally attach a role.\"\"\"\n        try:\n            user_orm = await self.udb.create_user(data)",
+        "peekOfCode": "class UserManager:\n    def __init__(self, session: Session):\n        \"\"\"Initialize user and role repositories for the provided session.\"\"\"\n        self.udb = UserDB(session)\n        self.rm = RoleDB(session)\n        self.session = session\n    async def create_user(self, data: UserCreate, role: UserRoles) -> User:\n        \"\"\"Create a user and optionally attach a role.\"\"\"\n        user_orm = None\n        try:",
         "detail": "backend.src.service.user.user_manager",
         "documentation": {}
     },
@@ -8140,7 +8177,7 @@
         "kind": 2,
         "importPath": "backend.src.utils.database_utils",
         "description": "backend.src.utils.database_utils",
-        "peekOfCode": "def convert_uuid(uuid: str | UUID | None) -> UUID:\n    try:\n        if isinstance(uuid, UUID):\n            return uuid\n        else:\n            return UUID(uuid)\n    except Exception as e:\n        raise ValueError(f\"Could not convert {type(uuid)} into UUID\")\ndef pick_related_label_col(target_cls):\n    \"\"\"",
+        "peekOfCode": "def convert_uuid(value: Union[str, UUID]) -> UUID:\n    if isinstance(value, UUID):\n        return value\n    if value is None:\n        raise ValueError(\"UUID value cannot be None\")\n    try:\n        return UUID(str(value).strip())  # 🔥 FIX HERE\n    except (ValueError, TypeError):\n        raise ValueError(f\"Invalid UUID: {value!r}\")\ndef pick_related_label_col(target_cls):",
         "detail": "backend.src.utils.database_utils",
         "documentation": {}
     },
@@ -8446,16 +8483,52 @@
         "kind": 6,
         "importPath": "backend.src.web.user.user",
         "description": "backend.src.web.user.user",
-        "peekOfCode": "class CreateUserFullPayload(BaseModel):\n    user: UserBase\n    institution: ValidInstitutions | None = None\n@router.post(\"/\")\nasync def create_user(\n    user_manager: UserManagerDependeny,\n    data: UserCreate,\n) -> User:\n    \"\"\"\n    Create a new user in the system.",
+        "peekOfCode": "class CreateUserFullPayload(BaseModel):\n    user: UserCreate\n    role: UserRoles = UserRoles.STUDENT\n    institution: ValidInstitutions | None = None\nclass UpdateUserRole(BaseModel):\n    role: UserRoles\nclass LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):\n    user: User",
         "detail": "backend.src.web.user.user",
         "documentation": {}
     },
     {
-        "label": "create_user_full",
+        "label": "UpdateUserRole",
+        "kind": 6,
+        "importPath": "backend.src.web.user.user",
+        "description": "backend.src.web.user.user",
+        "peekOfCode": "class UpdateUserRole(BaseModel):\n    role: UserRoles\nclass LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):\n    user: User\n    roles: List[Role] = []\n@router.post(\"/\")\nasync def create_user(\n    user_manager: UserManagerDependeny,",
+        "detail": "backend.src.web.user.user",
+        "documentation": {}
+    },
+    {
+        "label": "LoginRequest",
+        "kind": 6,
+        "importPath": "backend.src.web.user.user",
+        "description": "backend.src.web.user.user",
+        "peekOfCode": "class LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):\n    user: User\n    roles: List[Role] = []\n@router.post(\"/\")\nasync def create_user(\n    user_manager: UserManagerDependeny,\n    payload: CreateUserFullPayload,\n):",
+        "detail": "backend.src.web.user.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserRoleResponse",
+        "kind": 6,
+        "importPath": "backend.src.web.user.user",
+        "description": "backend.src.web.user.user",
+        "peekOfCode": "class UserRoleResponse(BaseModel):\n    user: User\n    roles: List[Role] = []\n@router.post(\"/\")\nasync def create_user(\n    user_manager: UserManagerDependeny,\n    payload: CreateUserFullPayload,\n):\n    try:\n        logger.debug(\"Attempting to create user\")",
+        "detail": "backend.src.web.user.user",
+        "documentation": {}
+    },
+    {
+        "label": "get_current_user",
         "kind": 2,
         "importPath": "backend.src.web.user.user",
         "description": "backend.src.web.user.user",
-        "peekOfCode": "def create_user_full(\n    user_manager: UserManagerDependeny,\n    fb_token: FireBaseToken,\n    payload: CreateUserFullPayload,\n    role: UserRoles = UserRoles.STUDENT,\n):\n    try:\n        fb_uid = fb_token[\"uid\"]\n        existing_user = user_manager.get_user_by_fb(fb_uid)\n        if existing_user:",
+        "peekOfCode": "def get_current_user(\n    token: FireBaseToken,\n) -> UserRead:\n    decoded = token\n    user_read = UserRead(email=decoded.get(\"email\", None))\n    return user_read\n@router.post(\"/login_test\")\ndef emulator_login(email: str, password: str):\n    \"\"\"Testing endpoint for login using password and email\n    Args:",
+        "detail": "backend.src.web.user.user",
+        "documentation": {}
+    },
+    {
+        "label": "emulator_login",
+        "kind": 2,
+        "importPath": "backend.src.web.user.user",
+        "description": "backend.src.web.user.user",
+        "peekOfCode": "def emulator_login(email: str, password: str):\n    \"\"\"Testing endpoint for login using password and email\n    Args:\n        email (str):\n        password (str):\n    Returns:\n        _type_: _description_\n    \"\"\"\n    settings = get_settings()\n    emulator_host = settings.FIREBASE_AUTH_EMULATOR_HOST or \"host.docker.internal:9099\"",
         "detail": "backend.src.web.user.user",
         "documentation": {}
     },
@@ -8464,7 +8537,7 @@
         "kind": 5,
         "importPath": "backend.src.web.user.user",
         "description": "backend.src.web.user.user",
-        "peekOfCode": "router = APIRouter(prefix=\"/users\", tags=[\"users\"])\nclass CreateUserFullPayload(BaseModel):\n    user: UserBase\n    institution: ValidInstitutions | None = None\n@router.post(\"/\")\nasync def create_user(\n    user_manager: UserManagerDependeny,\n    data: UserCreate,\n) -> User:\n    \"\"\"",
+        "peekOfCode": "router = APIRouter(prefix=\"/users\", tags=[\"users\"])\nclass CreateUserFullPayload(BaseModel):\n    user: UserCreate\n    role: UserRoles = UserRoles.STUDENT\n    institution: ValidInstitutions | None = None\nclass UpdateUserRole(BaseModel):\n    role: UserRoles\nclass LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):",
         "detail": "backend.src.web.user.user",
         "documentation": {}
     },
@@ -8491,16 +8564,25 @@
         "kind": 2,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "def get_local_base_path(settings: SettingDependency):\n    if settings == \"local\":\n        return \"questions\"\nLocalBaseDep = Annotated[str, Depends(get_local_base_path)]\nbearer_scheme = HTTPBearer(auto_error=False)\ndef get_firebase_user_from_token(\n    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],\n) -> dict | None:\n    try:\n        if not token:",
+        "peekOfCode": "def get_local_base_path(settings: SettingDependency):\n    if settings == \"local\":\n        return \"questions\"\nLocalBaseDep = Annotated[str, Depends(get_local_base_path)]\nbearer_scheme = HTTPBearer(auto_error=False)\ndef get_firebase_token(\n    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],\n) -> dict | None:\n    try:\n        if not token:",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
     {
-        "label": "get_firebase_user_from_token",
+        "label": "get_firebase_token",
         "kind": 2,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "def get_firebase_user_from_token(\n    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],\n) -> dict | None:\n    try:\n        if not token:\n            raise ValueError(\"No Token\")\n        return verify_id_token(token.credentials)\n    except Exception as e:\n        raise HTTPException(\n            status_code=status.HTTP_401_UNAUTHORIZED,",
+        "peekOfCode": "def get_firebase_token(\n    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],\n) -> dict | None:\n    try:\n        if not token:\n            raise ValueError(\"No Token\")\n        return verify_id_token(token.credentials)\n    except Exception as e:\n        raise HTTPException(\n            status_code=status.HTTP_401_UNAUTHORIZED,",
+        "detail": "backend.src.web.dependencies",
+        "documentation": {}
+    },
+    {
+        "label": "get_current_user_id",
+        "kind": 2,
+        "importPath": "backend.src.web.dependencies",
+        "description": "backend.src.web.dependencies",
+        "peekOfCode": "def get_current_user_id(\n    token: FireBaseToken,\n) -> str:\n    try:\n        user_id = token.get(\"user_id\", None)\n        if user_id is None:\n            raise HTTPException(\n                detail=\"Failed to retrieve signed in user\",\n                status_code=status.HTTP_400_BAD_REQUEST,\n            )",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
@@ -8527,7 +8609,16 @@
         "kind": 2,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "def get_question_manager(\n    qdb: QuestionDBDependency,\n    storage: StorageDependency,\n    storage_type: StorageTypeDep,\n):\n    return QuestionManager(qdb, storage, storage_type)\nQuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]",
+        "peekOfCode": "def get_question_manager(\n    qdb: QuestionDBDependency,\n    storage: StorageDependency,\n    storage_type: StorageTypeDep,\n):\n    return QuestionManager(qdb, storage, storage_type)\nQuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]\ndef get_user_database(session: SessionDep) -> UserManager:\n    return UserManager(session)\nUserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]",
+        "detail": "backend.src.web.dependencies",
+        "documentation": {}
+    },
+    {
+        "label": "get_user_database",
+        "kind": 2,
+        "importPath": "backend.src.web.dependencies",
+        "description": "backend.src.web.dependencies",
+        "peekOfCode": "def get_user_database(session: SessionDep) -> UserManager:\n    return UserManager(session)\nUserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
@@ -8545,7 +8636,7 @@
         "kind": 5,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "StorageTypeDep = Annotated[STORAGE_TYPE, Depends(get_storage_type)]\ndef get_local_base_path(settings: SettingDependency):\n    if settings == \"local\":\n        return \"questions\"\nLocalBaseDep = Annotated[str, Depends(get_local_base_path)]\nbearer_scheme = HTTPBearer(auto_error=False)\ndef get_firebase_user_from_token(\n    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],\n) -> dict | None:\n    try:",
+        "peekOfCode": "StorageTypeDep = Annotated[STORAGE_TYPE, Depends(get_storage_type)]\ndef get_local_base_path(settings: SettingDependency):\n    if settings == \"local\":\n        return \"questions\"\nLocalBaseDep = Annotated[str, Depends(get_local_base_path)]\nbearer_scheme = HTTPBearer(auto_error=False)\ndef get_firebase_token(\n    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],\n) -> dict | None:\n    try:",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
@@ -8554,7 +8645,7 @@
         "kind": 5,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "LocalBaseDep = Annotated[str, Depends(get_local_base_path)]\nbearer_scheme = HTTPBearer(auto_error=False)\ndef get_firebase_user_from_token(\n    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],\n) -> dict | None:\n    try:\n        if not token:\n            raise ValueError(\"No Token\")\n        return verify_id_token(token.credentials)\n    except Exception as e:",
+        "peekOfCode": "LocalBaseDep = Annotated[str, Depends(get_local_base_path)]\nbearer_scheme = HTTPBearer(auto_error=False)\ndef get_firebase_token(\n    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],\n) -> dict | None:\n    try:\n        if not token:\n            raise ValueError(\"No Token\")\n        return verify_id_token(token.credentials)\n    except Exception as e:",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
@@ -8563,7 +8654,7 @@
         "kind": 5,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "bearer_scheme = HTTPBearer(auto_error=False)\ndef get_firebase_user_from_token(\n    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],\n) -> dict | None:\n    try:\n        if not token:\n            raise ValueError(\"No Token\")\n        return verify_id_token(token.credentials)\n    except Exception as e:\n        raise HTTPException(",
+        "peekOfCode": "bearer_scheme = HTTPBearer(auto_error=False)\ndef get_firebase_token(\n    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],\n) -> dict | None:\n    try:\n        if not token:\n            raise ValueError(\"No Token\")\n        return verify_id_token(token.credentials)\n    except Exception as e:\n        raise HTTPException(",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
@@ -8572,7 +8663,16 @@
         "kind": 5,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "FireBaseToken = Annotated[dict, Depends(get_firebase_user_from_token)]\ndef get_question_database(\n    session: SessionDep,\n) -> QuestionDB:\n    return QuestionDB(session)\nQuestionDBDependency = Annotated[QuestionDB, Depends(get_question_database)]\n@lru_cache\ndef get_storage_manager() -> Storage:\n    settings = get_settings()\n    if settings.STORAGE_SERVICE == \"cloud\":",
+        "peekOfCode": "FireBaseToken = Annotated[dict, Depends(get_firebase_token)]\ndef get_current_user_id(\n    token: FireBaseToken,\n) -> str:\n    try:\n        user_id = token.get(\"user_id\", None)\n        if user_id is None:\n            raise HTTPException(\n                detail=\"Failed to retrieve signed in user\",\n                status_code=status.HTTP_400_BAD_REQUEST,",
+        "detail": "backend.src.web.dependencies",
+        "documentation": {}
+    },
+    {
+        "label": "CurrentUser",
+        "kind": 5,
+        "importPath": "backend.src.web.dependencies",
+        "description": "backend.src.web.dependencies",
+        "peekOfCode": "CurrentUser = Annotated[str, Depends(get_current_user_id)]\ndef get_question_database(\n    session: SessionDep,\n) -> QuestionDB:\n    return QuestionDB(session)\nQuestionDBDependency = Annotated[QuestionDB, Depends(get_question_database)]\n@lru_cache\ndef get_storage_manager() -> Storage:\n    settings = get_settings()\n    if settings.STORAGE_SERVICE == \"cloud\":",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
@@ -8590,7 +8690,7 @@
         "kind": 5,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "StorageDependency = Annotated[Storage, Depends(get_storage_manager)]\n@lru_cache\ndef get_question_manager(\n    qdb: QuestionDBDependency,\n    storage: StorageDependency,\n    storage_type: StorageTypeDep,\n):\n    return QuestionManager(qdb, storage, storage_type)\nQuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]",
+        "peekOfCode": "StorageDependency = Annotated[Storage, Depends(get_storage_manager)]\n@lru_cache\ndef get_question_manager(\n    qdb: QuestionDBDependency,\n    storage: StorageDependency,\n    storage_type: StorageTypeDep,\n):\n    return QuestionManager(qdb, storage, storage_type)\nQuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]\ndef get_user_database(session: SessionDep) -> UserManager:",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
@@ -8599,7 +8699,16 @@
         "kind": 5,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "QuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]",
+        "peekOfCode": "QuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]\ndef get_user_database(session: SessionDep) -> UserManager:\n    return UserManager(session)\nUserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]",
+        "detail": "backend.src.web.dependencies",
+        "documentation": {}
+    },
+    {
+        "label": "UserManagerDependeny",
+        "kind": 5,
+        "importPath": "backend.src.web.dependencies",
+        "description": "backend.src.web.dependencies",
+        "peekOfCode": "UserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
@@ -8635,7 +8744,7 @@
         "kind": 5,
         "importPath": "backend.src.main",
         "description": "backend.src.main",
-        "peekOfCode": "settings = get_settings()\n## Intializes the database\n@asynccontextmanager\nasync def on_startup(app: FastAPI):\n    engine = create_db_and_tables()\n    # Ensures that the roles are present at startup\n    with Session(engine) as session:\n        await RoleDB(session).seed_roles()\n        logger.info(\"[Initialization] Roles Created/verified Successfully\")\n        session.commit()",
+        "peekOfCode": "settings = get_settings()\n## Intializes the database\n@asynccontextmanager\nasync def on_startup(app: FastAPI):\n    try:\n        # Attempt to initialize firebase application\n        initialize_firebase_app()\n        engine = create_db_and_tables()\n        # Ensures that the roles are present at startup\n        with Session(engine) as session:",
         "detail": "backend.src.main",
         "documentation": {}
     },
