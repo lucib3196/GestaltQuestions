@@ -15,7 +15,7 @@ from src.model.users import (
     UserCreate,
 )
 from src.utils import convert_uuid
-from src.types import ID
+from src.app_types.general import ID
 
 
 class UserDB:

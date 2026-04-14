@@ -15,7 +15,7 @@ from google.cloud.storage.blob import Blob
 from src.data import QuestionDB
 from src.model.question import Question, QuestionData
 from src.service.storage.base import Storage
-from src.types import ID
+from src.app_types.general import ID
 from src.model.files import FileData
 from src.service.file_service.utils import safe_dir_name
 from src.core import logger

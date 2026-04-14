@@ -804,6 +804,62 @@
         "documentation": {}
     },
     {
+        "label": "Literal",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Sequence",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Annotated",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Sequence",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Literal",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Literal",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
         "label": "Sequence",
         "importPath": "typing",
         "description": "typing",
@@ -1420,62 +1476,6 @@
         "documentation": {}
     },
     {
-        "label": "Literal",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Literal",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Sequence",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Annotated",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Dict",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Sequence",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Literal",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
         "label": "Any",
         "importPath": "typing",
         "description": "typing",
@@ -2021,6 +2021,14 @@
         "documentation": {}
     },
     {
+        "label": "Question",
+        "importPath": "src.model.question",
+        "description": "src.model.question",
+        "isExtraImport": true,
+        "detail": "src.model.question",
+        "documentation": {}
+    },
+    {
         "label": "Language",
         "importPath": "src.model.question",
         "description": "src.model.question",
@@ -2101,14 +2109,6 @@
         "documentation": {}
     },
     {
-        "label": "Question",
-        "importPath": "src.model.question",
-        "description": "src.model.question",
-        "isExtraImport": true,
-        "detail": "src.model.question",
-        "documentation": {}
-    },
-    {
         "label": "QuestionData",
         "importPath": "src.model.question",
         "description": "src.model.question",
@@ -2130,6 +2130,15 @@
         "description": "src.model.question",
         "isExtraImport": true,
         "detail": "src.model.question",
+        "documentation": {}
+    },
+    {
+        "label": "src.data",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "src.data",
+        "description": "src.data",
+        "detail": "src.data",
         "documentation": {}
     },
     {
@@ -2214,22 +2223,6 @@
     },
     {
         "label": "QuestionDB",
-        "importPath": "src.data",
-        "description": "src.data",
-        "isExtraImport": true,
-        "detail": "src.data",
-        "documentation": {}
-    },
-    {
-        "label": "RoleManager",
-        "importPath": "src.data",
-        "description": "src.data",
-        "isExtraImport": true,
-        "detail": "src.data",
-        "documentation": {}
-    },
-    {
-        "label": "InstitutionDB",
         "importPath": "src.data",
         "description": "src.data",
         "isExtraImport": true,
@@ -3318,14 +3311,6 @@
         "documentation": {}
     },
     {
-        "label": "QuestionAttempt",
-        "importPath": "src.model.question_attempt",
-        "description": "src.model.question_attempt",
-        "isExtraImport": true,
-        "detail": "src.model.question_attempt",
-        "documentation": {}
-    },
-    {
         "label": "QuizData",
         "importPath": "src.model.question_attempt",
         "description": "src.model.question_attempt",
@@ -3334,31 +3319,15 @@
         "documentation": {}
     },
     {
-        "label": "UUID",
-        "importPath": "uuid",
-        "description": "uuid",
+        "label": "QuestionAttempt",
+        "importPath": "src.model.question_attempt",
+        "description": "src.model.question_attempt",
         "isExtraImport": true,
-        "detail": "uuid",
+        "detail": "src.model.question_attempt",
         "documentation": {}
     },
     {
         "label": "UUID",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
-        "label": "uuid4",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
-        "label": "uuid4",
         "importPath": "uuid",
         "description": "uuid",
         "isExtraImport": true,
@@ -3375,14 +3344,6 @@
     },
     {
         "label": "uuid4",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
-        "label": "UUID",
         "importPath": "uuid",
         "description": "uuid",
         "isExtraImport": true,
@@ -3430,6 +3391,22 @@
         "documentation": {}
     },
     {
+        "label": "uuid4",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
         "label": "UUID",
         "importPath": "uuid",
         "description": "uuid",
@@ -3447,6 +3424,22 @@
     },
     {
         "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "UUID",
+        "importPath": "uuid",
+        "description": "uuid",
+        "isExtraImport": true,
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "uuid4",
         "importPath": "uuid",
         "description": "uuid",
         "isExtraImport": true,
@@ -3529,166 +3522,6 @@
     },
     {
         "label": "FileData",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "STORAGE_TYPE",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "ID",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "ID",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "STORAGE_TYPE",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "STORAGE_TYPE",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "ID",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "ID",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "ID",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "STORAGE_TYPE",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "ID",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "AllowedLanguages",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "AllowedServer",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "ID",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "MappingServer",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "QuizData",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "SandboxResponse",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "ServerExecutionError",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "ServerRunResponse",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "ServerRunSuccess",
-        "importPath": "src.types",
-        "description": "src.types",
-        "isExtraImport": true,
-        "detail": "src.types",
-        "documentation": {}
-    },
-    {
-        "label": "STORAGE_TYPE",
         "importPath": "src.types",
         "description": "src.types",
         "isExtraImport": true,
@@ -4797,35 +4630,27 @@
         "documentation": {}
     },
     {
-        "label": "lru_cache",
-        "importPath": "functools",
-        "description": "functools",
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
         "isExtraImport": true,
-        "detail": "functools",
+        "detail": "pydantic",
         "documentation": {}
     },
     {
-        "label": "lru_cache",
-        "importPath": "functools",
-        "description": "functools",
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
         "isExtraImport": true,
-        "detail": "functools",
+        "detail": "pydantic",
         "documentation": {}
     },
     {
-        "label": "lru_cache",
-        "importPath": "functools",
-        "description": "functools",
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
         "isExtraImport": true,
-        "detail": "functools",
-        "documentation": {}
-    },
-    {
-        "label": "lru_cache",
-        "importPath": "functools",
-        "description": "functools",
-        "isExtraImport": true,
-        "detail": "functools",
+        "detail": "pydantic",
         "documentation": {}
     },
     {
@@ -4973,30 +4798,6 @@
         "documentation": {}
     },
     {
-        "label": "Field",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
         "label": "BaseModel",
         "importPath": "pydantic",
         "description": "pydantic",
@@ -5074,6 +4875,38 @@
         "description": "pydantic",
         "isExtraImport": true,
         "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "lru_cache",
+        "importPath": "functools",
+        "description": "functools",
+        "isExtraImport": true,
+        "detail": "functools",
+        "documentation": {}
+    },
+    {
+        "label": "lru_cache",
+        "importPath": "functools",
+        "description": "functools",
+        "isExtraImport": true,
+        "detail": "functools",
+        "documentation": {}
+    },
+    {
+        "label": "lru_cache",
+        "importPath": "functools",
+        "description": "functools",
+        "isExtraImport": true,
+        "detail": "functools",
+        "documentation": {}
+    },
+    {
+        "label": "lru_cache",
+        "importPath": "functools",
+        "description": "functools",
+        "isExtraImport": true,
+        "detail": "functools",
         "documentation": {}
     },
     {
@@ -5269,6 +5102,102 @@
         "description": "sqlalchemy.orm.properties",
         "isExtraImport": true,
         "detail": "sqlalchemy.orm.properties",
+        "documentation": {}
+    },
+    {
+        "label": "STORAGE_TYPE",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "ID",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "STORAGE_TYPE",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "ID",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "STORAGE_TYPE",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "ID",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "ID",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "ID",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "STORAGE_TYPE",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "ID",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "ID",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "STORAGE_TYPE",
+        "importPath": "src.app_types.general",
+        "description": "src.app_types.general",
+        "isExtraImport": true,
+        "detail": "src.app_types.general",
         "documentation": {}
     },
     {
@@ -5766,6 +5695,70 @@
         "documentation": {}
     },
     {
+        "label": "AllowedLanguages",
+        "importPath": "src.app_types.run_server",
+        "description": "src.app_types.run_server",
+        "isExtraImport": true,
+        "detail": "src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "AllowedServer",
+        "importPath": "src.app_types.run_server",
+        "description": "src.app_types.run_server",
+        "isExtraImport": true,
+        "detail": "src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "MappingServer",
+        "importPath": "src.app_types.run_server",
+        "description": "src.app_types.run_server",
+        "isExtraImport": true,
+        "detail": "src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "QuizData",
+        "importPath": "src.app_types.run_server",
+        "description": "src.app_types.run_server",
+        "isExtraImport": true,
+        "detail": "src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "SandboxResponse",
+        "importPath": "src.app_types.run_server",
+        "description": "src.app_types.run_server",
+        "isExtraImport": true,
+        "detail": "src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "ServerExecutionError",
+        "importPath": "src.app_types.run_server",
+        "description": "src.app_types.run_server",
+        "isExtraImport": true,
+        "detail": "src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "ServerRunResponse",
+        "importPath": "src.app_types.run_server",
+        "description": "src.app_types.run_server",
+        "isExtraImport": true,
+        "detail": "src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "ServerRunSuccess",
+        "importPath": "src.app_types.run_server",
+        "description": "src.app_types.run_server",
+        "isExtraImport": true,
+        "detail": "src.app_types.run_server",
+        "documentation": {}
+    },
+    {
         "label": "HTTPAuthorizationCredentials",
         "importPath": "fastapi.security",
         "description": "fastapi.security",
@@ -5836,6 +5829,22 @@
         "description": "src.web",
         "isExtraImport": true,
         "detail": "src.web",
+        "documentation": {}
+    },
+    {
+        "label": "RoleDB",
+        "importPath": "src.service.user.user_manager",
+        "description": "src.service.user.user_manager",
+        "isExtraImport": true,
+        "detail": "src.service.user.user_manager",
+        "documentation": {}
+    },
+    {
+        "label": "InstitutionDB",
+        "importPath": "src.data.institution",
+        "description": "src.data.institution",
+        "isExtraImport": true,
+        "detail": "src.data.institution",
         "documentation": {}
     },
     {
@@ -7137,11 +7146,137 @@
         "documentation": {}
     },
     {
+        "label": "ID",
+        "kind": 5,
+        "importPath": "backend.src.app_types.general",
+        "description": "backend.src.app_types.general",
+        "peekOfCode": "ID = str | UUID | None\nAllowedLanguages = Literal[\"javascript\", \"python\"]\nSTORAGE_TYPE = Literal[\"cloud\", \"local\"]",
+        "detail": "backend.src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "AllowedLanguages",
+        "kind": 5,
+        "importPath": "backend.src.app_types.general",
+        "description": "backend.src.app_types.general",
+        "peekOfCode": "AllowedLanguages = Literal[\"javascript\", \"python\"]\nSTORAGE_TYPE = Literal[\"cloud\", \"local\"]",
+        "detail": "backend.src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "STORAGE_TYPE",
+        "kind": 5,
+        "importPath": "backend.src.app_types.general",
+        "description": "backend.src.app_types.general",
+        "peekOfCode": "STORAGE_TYPE = Literal[\"cloud\", \"local\"]",
+        "detail": "backend.src.app_types.general",
+        "documentation": {}
+    },
+    {
+        "label": "SandboxResponse",
+        "kind": 6,
+        "importPath": "backend.src.app_types.run_server",
+        "description": "backend.src.app_types.run_server",
+        "peekOfCode": "class SandboxResponse(BaseModel):\n    output: str | dict  # final returned value\n    logs: Sequence[str] = []\nclass ServerRunSuccess(BaseModel):\n    status: Literal[\"success\"] = \"success\"\n    data: QuizData\nclass ServerExecutionError(BaseModel):\n    status: Literal[\"execution_error\"] = \"execution_error\"\n    error_type: Literal[\"runtime\", \"syntax\", \"dependency\", \"timeout\", \"validation\"]\n    message: str",
+        "detail": "backend.src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "ServerRunSuccess",
+        "kind": 6,
+        "importPath": "backend.src.app_types.run_server",
+        "description": "backend.src.app_types.run_server",
+        "peekOfCode": "class ServerRunSuccess(BaseModel):\n    status: Literal[\"success\"] = \"success\"\n    data: QuizData\nclass ServerExecutionError(BaseModel):\n    status: Literal[\"execution_error\"] = \"execution_error\"\n    error_type: Literal[\"runtime\", \"syntax\", \"dependency\", \"timeout\", \"validation\"]\n    message: str\n    language: AllowedLanguages\n    # Optional might add these\n    file: str | None = None",
+        "detail": "backend.src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "ServerExecutionError",
+        "kind": 6,
+        "importPath": "backend.src.app_types.run_server",
+        "description": "backend.src.app_types.run_server",
+        "peekOfCode": "class ServerExecutionError(BaseModel):\n    status: Literal[\"execution_error\"] = \"execution_error\"\n    error_type: Literal[\"runtime\", \"syntax\", \"dependency\", \"timeout\", \"validation\"]\n    message: str\n    language: AllowedLanguages\n    # Optional might add these\n    file: str | None = None\nServerRunResponse = Annotated[\n    ServerRunSuccess | ServerExecutionError,\n    Field(discriminator=\"status\"),",
+        "detail": "backend.src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "AllowedServer",
+        "kind": 5,
+        "importPath": "backend.src.app_types.run_server",
+        "description": "backend.src.app_types.run_server",
+        "peekOfCode": "AllowedServer = Literal[\"server.js\", \"server.py\"]\nAllowedLanguages = Literal[\"python\", \"javascript\"]\nMappingServer: Dict[AllowedLanguages, AllowedServer] = {\n    \"python\": \"server.py\",\n    \"javascript\": \"server.js\",\n}\nclass SandboxResponse(BaseModel):\n    output: str | dict  # final returned value\n    logs: Sequence[str] = []\nclass ServerRunSuccess(BaseModel):",
+        "detail": "backend.src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "AllowedLanguages",
+        "kind": 5,
+        "importPath": "backend.src.app_types.run_server",
+        "description": "backend.src.app_types.run_server",
+        "peekOfCode": "AllowedLanguages = Literal[\"python\", \"javascript\"]\nMappingServer: Dict[AllowedLanguages, AllowedServer] = {\n    \"python\": \"server.py\",\n    \"javascript\": \"server.js\",\n}\nclass SandboxResponse(BaseModel):\n    output: str | dict  # final returned value\n    logs: Sequence[str] = []\nclass ServerRunSuccess(BaseModel):\n    status: Literal[\"success\"] = \"success\"",
+        "detail": "backend.src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "ServerRunResponse",
+        "kind": 5,
+        "importPath": "backend.src.app_types.run_server",
+        "description": "backend.src.app_types.run_server",
+        "peekOfCode": "ServerRunResponse = Annotated[\n    ServerRunSuccess | ServerExecutionError,\n    Field(discriminator=\"status\"),\n]",
+        "detail": "backend.src.app_types.run_server",
+        "documentation": {}
+    },
+    {
+        "label": "UnsyncedQuestion",
+        "kind": 6,
+        "importPath": "backend.src.app_types.sync",
+        "description": "backend.src.app_types.sync",
+        "peekOfCode": "class UnsyncedQuestion(BaseModel):\n    question_name: str\n    question_path: str\n    detail: str\n    status: SyncStatus\n    metadata: str | None\nclass SyncMetrics(BaseModel):\n    total_found: int\n    synced: int\n    failed: int",
+        "detail": "backend.src.app_types.sync",
+        "documentation": {}
+    },
+    {
+        "label": "SyncMetrics",
+        "kind": 6,
+        "importPath": "backend.src.app_types.sync",
+        "description": "backend.src.app_types.sync",
+        "peekOfCode": "class SyncMetrics(BaseModel):\n    total_found: int\n    synced: int\n    failed: int\nclass FolderCheckMetrics(BaseModel):\n    total_checked: int\n    deleted_from_db: int\n    still_valid: int\n    bug: int | None = None\nclass FolderCheckResponse(BaseModel):",
+        "detail": "backend.src.app_types.sync",
+        "documentation": {}
+    },
+    {
+        "label": "FolderCheckMetrics",
+        "kind": 6,
+        "importPath": "backend.src.app_types.sync",
+        "description": "backend.src.app_types.sync",
+        "peekOfCode": "class FolderCheckMetrics(BaseModel):\n    total_checked: int\n    deleted_from_db: int\n    still_valid: int\n    bug: int | None = None\nclass FolderCheckResponse(BaseModel):\n    metrics: FolderCheckMetrics\n    remaining_questions: Sequence[Question]",
+        "detail": "backend.src.app_types.sync",
+        "documentation": {}
+    },
+    {
+        "label": "FolderCheckResponse",
+        "kind": 6,
+        "importPath": "backend.src.app_types.sync",
+        "description": "backend.src.app_types.sync",
+        "peekOfCode": "class FolderCheckResponse(BaseModel):\n    metrics: FolderCheckMetrics\n    remaining_questions: Sequence[Question]",
+        "detail": "backend.src.app_types.sync",
+        "documentation": {}
+    },
+    {
+        "label": "SyncStatus",
+        "kind": 5,
+        "importPath": "backend.src.app_types.sync",
+        "description": "backend.src.app_types.sync",
+        "peekOfCode": "SyncStatus = Literal[\n    \"missing_metadata\",  # metadata.json not found\n    \"invalid_metadata_json\",  # JSON decode error\n    \"missing_id\",  # ID field not found in metadata\n    \"not_in_database\",  # Metadata ID not found in DB\n    \"invalid question schema\",  # Question model is invalide\n    \"failed to create question\",\n    \"success\",  # Sync Status was successful\n]\nclass UnsyncedQuestion(BaseModel):",
+        "detail": "backend.src.app_types.sync",
+        "documentation": {}
+    },
+    {
         "label": "AppSettings",
         "kind": 6,
         "importPath": "backend.src.core.config",
         "description": "backend.src.core.config",
-        "peekOfCode": "class AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    MODE: Literal[\"testing\", \"dev\", \"production\"] = \"dev\"\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"local\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []\n    WORKING_DIR: str | Path | None = None\n    DATABASE_URI: str | None = None\n    POSTGRES_URL: str | None = None\n    SQLITE_DB_PATH: str | None = None\n    # FIREBASE CONFIG",
+        "peekOfCode": "class AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    MODE: Literal[\"testing\", \"dev\", \"production\"] = \"dev\"\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"cloud\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []\n    WORKING_DIR: str | Path | None = None\n    DATABASE_URI: str | None = None\n    POSTGRES_URL: str | None = None\n    SQLITE_DB_PATH: str | None = None\n    # FIREBASE CONFIG",
         "detail": "backend.src.core.config",
         "documentation": {}
     },
@@ -7159,7 +7294,7 @@
         "kind": 5,
         "importPath": "backend.src.core.config",
         "description": "backend.src.core.config",
-        "peekOfCode": "ROOT_PATH = Path(__file__).parents[2]\nclass AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    MODE: Literal[\"testing\", \"dev\", \"production\"] = \"dev\"\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"local\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []\n    WORKING_DIR: str | Path | None = None\n    DATABASE_URI: str | None = None\n    POSTGRES_URL: str | None = None\n    SQLITE_DB_PATH: str | None = None",
+        "peekOfCode": "ROOT_PATH = Path(__file__).parents[2]\nclass AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    MODE: Literal[\"testing\", \"dev\", \"production\"] = \"dev\"\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"cloud\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []\n    WORKING_DIR: str | Path | None = None\n    DATABASE_URI: str | None = None\n    POSTGRES_URL: str | None = None\n    SQLITE_DB_PATH: str | None = None",
         "detail": "backend.src.core.config",
         "documentation": {}
     },
@@ -7546,7 +7681,7 @@
         "kind": 6,
         "importPath": "backend.src.model.question",
         "description": "backend.src.model.question",
-        "peekOfCode": "class Question(SQLModel, table=True):\n    id: UUID | None = SQLField(default_factory=uuid4, primary_key=True, index=True)\n    title: Optional[str] = SQLField(default=None, index=True)\n    # General Flags\n    isAdaptive: bool = SQLField(default=False)\n    ai_generated: bool = SQLField(default=False)\n    # Storage where the question is saved\n    local_path: Optional[str] = None\n    blob_path: Optional[str] = None\n    # Status of the question whheter it is published, archived etc",
+        "peekOfCode": "class Question(SQLModel, table=True):\n    id: UUID | None = SQLField(default_factory=uuid4, primary_key=True, index=True)\n    title: Optional[str] = SQLField(default=None, index=True)\n    isAdaptive: bool = SQLField(default=False)\n    ai_generated: bool = SQLField(default=False)\n    local_path: Optional[str] = None\n    blob_path: Optional[str] = None\n    status: Status = SQLField(\n        default=Status.DRAFT.name,\n        sa_column_kwargs={\"server_default\": Status.DRAFT.name.upper()},",
         "detail": "backend.src.model.question",
         "documentation": {}
     },
@@ -7573,7 +7708,7 @@
         "kind": 6,
         "importPath": "backend.src.model.question",
         "description": "backend.src.model.question",
-        "peekOfCode": "class QuestionType(SQLModel, table=True):\n    __tablename__ = \"question_type\"  # type: ignore\n    id: UUID = SQLField(default_factory=uuid4, primary_key=True)\n    name: str = SQLField(index=True, unique=True)\n    questions: List[Question] = Relationship(\n        back_populates=\"qtypes\",\n        link_model=QuestionQTypeLink,\n    )",
+        "peekOfCode": "class QuestionType(SQLModel, table=True):\n    __tablename__ = \"question_type\"  # type: ignore\n    id: UUID = SQLField(default_factory=uuid4, primary_key=True)\n    name: str = SQLField(index=True, unique=True)\n    questions: List[Question] = Relationship(\n        back_populates=\"qTypes\",\n        link_model=QuestionQTypeLink,\n    )",
         "detail": "backend.src.model.question",
         "documentation": {}
     },
@@ -7600,7 +7735,7 @@
         "kind": 6,
         "importPath": "backend.src.model.question_ownership",
         "description": "backend.src.model.question_ownership",
-        "peekOfCode": "class QuestionStatus(str, Enum):\n    PUBLIC = \"public\"\n    PRIVATE = \"private\"\nclass QuestionOwnership(SQLModel, table=True):\n    __tablename__ = \"question_ownership_link\"  # type: ignore\n    question_id: UUID | None = SQLField(\n        default=None, foreign_key=\"question.id\", primary_key=True\n    )\n    user_id: UUID | None = SQLField(\n        default=None, foreign_key=\"user.id\", primary_key=True",
+        "peekOfCode": "class QuestionStatus(str, Enum):\n    PUBLIC = \"public\"\n    PRIVATE = \"private\"\nclass QuestionOwnership(SQLModel, table=True):\n    __tablename__ = \"question_ownership_link\"  # type: ignore\n    question_id: UUID | None = SQLField(\n        default=None, foreign_key=\"question.id\", primary_key=True\n    )\n    user_id: UUID | None = SQLField(\n        default=None, foreign_key=\"developer_profile.user_id\", primary_key=True",
         "detail": "backend.src.model.question_ownership",
         "documentation": {}
     },
@@ -7609,7 +7744,7 @@
         "kind": 6,
         "importPath": "backend.src.model.question_ownership",
         "description": "backend.src.model.question_ownership",
-        "peekOfCode": "class QuestionOwnership(SQLModel, table=True):\n    __tablename__ = \"question_ownership_link\"  # type: ignore\n    question_id: UUID | None = SQLField(\n        default=None, foreign_key=\"question.id\", primary_key=True\n    )\n    user_id: UUID | None = SQLField(\n        default=None, foreign_key=\"user.id\", primary_key=True\n    )\n    status: QuestionStatus = SQLField(default=QuestionStatus.PRIVATE)\n    # Handle what others can do with the question",
+        "peekOfCode": "class QuestionOwnership(SQLModel, table=True):\n    __tablename__ = \"question_ownership_link\"  # type: ignore\n    question_id: UUID | None = SQLField(\n        default=None, foreign_key=\"question.id\", primary_key=True\n    )\n    user_id: UUID | None = SQLField(\n        default=None, foreign_key=\"developer_profile.user_id\", primary_key=True\n    )\n    status: QuestionStatus = SQLField(default=QuestionStatus.PRIVATE)\n    # Handle what others can do with the question",
         "detail": "backend.src.model.question_ownership",
         "documentation": {}
     },
@@ -7690,7 +7825,7 @@
         "kind": 6,
         "importPath": "backend.src.model.users",
         "description": "backend.src.model.users",
-        "peekOfCode": "class User(SQLModel, table=True):\n    id: UUID = Field(default_factory=uuid4, primary_key=True)\n    first_name: str\n    last_name: str\n    username: str | None = Field(unique=True)\n    email: str = Field(index=True)\n    # Define the relationship\n    roles: list[\"Role\"] = Relationship(back_populates=\"users\", link_model=UserRoleLink)\n    institution_id: Optional[UUID] = Field(default=None, foreign_key=\"institution.id\")\n    institution: Optional[\"Institution\"] = Relationship(back_populates=\"users\")",
+        "peekOfCode": "class User(SQLModel, table=True):\n    id: UUID = Field(default_factory=uuid4, primary_key=True)\n    first_name: str\n    last_name: str\n    username: str | None = Field(default=None, unique=True)\n    email: str = Field(index=True)\n    roles: List[\"Role\"] = Relationship(back_populates=\"users\", link_model=UserRoleLink)\n    institution_id: Optional[UUID] = Field(default=None, foreign_key=\"institution.id\")\n    institution: Optional[\"Institution\"] = Relationship(back_populates=\"users\")\n    developer_profile: Optional[\"DeveloperProfile\"] = Relationship(back_populates=\"user\")",
         "detail": "backend.src.model.users",
         "documentation": {}
     },
@@ -7699,7 +7834,7 @@
         "kind": 6,
         "importPath": "backend.src.model.users",
         "description": "backend.src.model.users",
-        "peekOfCode": "class DeveloperProfile(SQLModel, table=True):\n    __tablename__ = \"developer_profile\"  # type: ignore\n    id: UUID = Field(default_factory=uuid4, primary_key=True)\n    user_id: UUID = Field(foreign_key=\"user.id\", unique=True)\n    user: Optional[\"User\"] = Relationship()\n    storage_path: Optional[str] = None\n    focus: List[str] = Field(default_factory=list)",
+        "peekOfCode": "class DeveloperProfile(SQLModel, table=True):\n    __tablename__ = \"developer_profile\"  # type: ignore\n    id: UUID = Field(default_factory=uuid4, primary_key=True)\n    user_id: UUID = Field(foreign_key=\"user.id\", unique=True)\n    user: Optional[\"User\"] = Relationship(back_populates=\"developer_profile\")\n    storage_path: Optional[str] = None\n    created_questions: List[\"Question\"] = Relationship(back_populates=\"created_by\")",
         "detail": "backend.src.model.users",
         "documentation": {}
     },
@@ -7944,132 +8079,6 @@
         "description": "backend.src.service.user.user_manager",
         "peekOfCode": "ID = UUID | str\nclass UserManager:\n    def __init__(self, session: Session):\n        \"\"\"Initialize user and role repositories for the provided session.\"\"\"\n        self.udb = UserDB(session)\n        self.rm = RoleDB(session)\n    async def create_user(self, data: UserCreate, role: UserRoles) -> User:\n        \"\"\"Create a user and optionally attach a role.\"\"\"\n        try:\n            user_orm = await self.udb.create_user(data)",
         "detail": "backend.src.service.user.user_manager",
-        "documentation": {}
-    },
-    {
-        "label": "ID",
-        "kind": 5,
-        "importPath": "backend.src.types.general",
-        "description": "backend.src.types.general",
-        "peekOfCode": "ID = str | UUID | None\nAllowedLanguages = Literal[\"javascript\", \"python\"]\nSTORAGE_TYPE = Literal[\"cloud\", \"local\"]",
-        "detail": "backend.src.types.general",
-        "documentation": {}
-    },
-    {
-        "label": "AllowedLanguages",
-        "kind": 5,
-        "importPath": "backend.src.types.general",
-        "description": "backend.src.types.general",
-        "peekOfCode": "AllowedLanguages = Literal[\"javascript\", \"python\"]\nSTORAGE_TYPE = Literal[\"cloud\", \"local\"]",
-        "detail": "backend.src.types.general",
-        "documentation": {}
-    },
-    {
-        "label": "STORAGE_TYPE",
-        "kind": 5,
-        "importPath": "backend.src.types.general",
-        "description": "backend.src.types.general",
-        "peekOfCode": "STORAGE_TYPE = Literal[\"cloud\", \"local\"]",
-        "detail": "backend.src.types.general",
-        "documentation": {}
-    },
-    {
-        "label": "SandboxResponse",
-        "kind": 6,
-        "importPath": "backend.src.types.run_server",
-        "description": "backend.src.types.run_server",
-        "peekOfCode": "class SandboxResponse(BaseModel):\n    output: str | dict  # final returned value\n    logs: Sequence[str] = []\nclass ServerRunSuccess(BaseModel):\n    status: Literal[\"success\"] = \"success\"\n    data: QuizData\nclass ServerExecutionError(BaseModel):\n    status: Literal[\"execution_error\"] = \"execution_error\"\n    error_type: Literal[\"runtime\", \"syntax\", \"dependency\", \"timeout\", \"validation\"]\n    message: str",
-        "detail": "backend.src.types.run_server",
-        "documentation": {}
-    },
-    {
-        "label": "ServerRunSuccess",
-        "kind": 6,
-        "importPath": "backend.src.types.run_server",
-        "description": "backend.src.types.run_server",
-        "peekOfCode": "class ServerRunSuccess(BaseModel):\n    status: Literal[\"success\"] = \"success\"\n    data: QuizData\nclass ServerExecutionError(BaseModel):\n    status: Literal[\"execution_error\"] = \"execution_error\"\n    error_type: Literal[\"runtime\", \"syntax\", \"dependency\", \"timeout\", \"validation\"]\n    message: str\n    language: AllowedLanguages\n    # Optional might add these\n    file: str | None = None",
-        "detail": "backend.src.types.run_server",
-        "documentation": {}
-    },
-    {
-        "label": "ServerExecutionError",
-        "kind": 6,
-        "importPath": "backend.src.types.run_server",
-        "description": "backend.src.types.run_server",
-        "peekOfCode": "class ServerExecutionError(BaseModel):\n    status: Literal[\"execution_error\"] = \"execution_error\"\n    error_type: Literal[\"runtime\", \"syntax\", \"dependency\", \"timeout\", \"validation\"]\n    message: str\n    language: AllowedLanguages\n    # Optional might add these\n    file: str | None = None\nServerRunResponse = Annotated[\n    ServerRunSuccess | ServerExecutionError,\n    Field(discriminator=\"status\"),",
-        "detail": "backend.src.types.run_server",
-        "documentation": {}
-    },
-    {
-        "label": "AllowedServer",
-        "kind": 5,
-        "importPath": "backend.src.types.run_server",
-        "description": "backend.src.types.run_server",
-        "peekOfCode": "AllowedServer = Literal[\"server.js\", \"server.py\"]\nAllowedLanguages = Literal[\"python\", \"javascript\"]\nMappingServer: Dict[AllowedLanguages, AllowedServer] = {\n    \"python\": \"server.py\",\n    \"javascript\": \"server.js\",\n}\nclass SandboxResponse(BaseModel):\n    output: str | dict  # final returned value\n    logs: Sequence[str] = []\nclass ServerRunSuccess(BaseModel):",
-        "detail": "backend.src.types.run_server",
-        "documentation": {}
-    },
-    {
-        "label": "AllowedLanguages",
-        "kind": 5,
-        "importPath": "backend.src.types.run_server",
-        "description": "backend.src.types.run_server",
-        "peekOfCode": "AllowedLanguages = Literal[\"python\", \"javascript\"]\nMappingServer: Dict[AllowedLanguages, AllowedServer] = {\n    \"python\": \"server.py\",\n    \"javascript\": \"server.js\",\n}\nclass SandboxResponse(BaseModel):\n    output: str | dict  # final returned value\n    logs: Sequence[str] = []\nclass ServerRunSuccess(BaseModel):\n    status: Literal[\"success\"] = \"success\"",
-        "detail": "backend.src.types.run_server",
-        "documentation": {}
-    },
-    {
-        "label": "ServerRunResponse",
-        "kind": 5,
-        "importPath": "backend.src.types.run_server",
-        "description": "backend.src.types.run_server",
-        "peekOfCode": "ServerRunResponse = Annotated[\n    ServerRunSuccess | ServerExecutionError,\n    Field(discriminator=\"status\"),\n]",
-        "detail": "backend.src.types.run_server",
-        "documentation": {}
-    },
-    {
-        "label": "UnsyncedQuestion",
-        "kind": 6,
-        "importPath": "backend.src.types.sync",
-        "description": "backend.src.types.sync",
-        "peekOfCode": "class UnsyncedQuestion(BaseModel):\n    question_name: str\n    question_path: str\n    detail: str\n    status: SyncStatus\n    metadata: str | None\nclass SyncMetrics(BaseModel):\n    total_found: int\n    synced: int\n    failed: int",
-        "detail": "backend.src.types.sync",
-        "documentation": {}
-    },
-    {
-        "label": "SyncMetrics",
-        "kind": 6,
-        "importPath": "backend.src.types.sync",
-        "description": "backend.src.types.sync",
-        "peekOfCode": "class SyncMetrics(BaseModel):\n    total_found: int\n    synced: int\n    failed: int\nclass FolderCheckMetrics(BaseModel):\n    total_checked: int\n    deleted_from_db: int\n    still_valid: int\n    bug: int | None = None\nclass FolderCheckResponse(BaseModel):",
-        "detail": "backend.src.types.sync",
-        "documentation": {}
-    },
-    {
-        "label": "FolderCheckMetrics",
-        "kind": 6,
-        "importPath": "backend.src.types.sync",
-        "description": "backend.src.types.sync",
-        "peekOfCode": "class FolderCheckMetrics(BaseModel):\n    total_checked: int\n    deleted_from_db: int\n    still_valid: int\n    bug: int | None = None\nclass FolderCheckResponse(BaseModel):\n    metrics: FolderCheckMetrics\n    remaining_questions: Sequence[Question]",
-        "detail": "backend.src.types.sync",
-        "documentation": {}
-    },
-    {
-        "label": "FolderCheckResponse",
-        "kind": 6,
-        "importPath": "backend.src.types.sync",
-        "description": "backend.src.types.sync",
-        "peekOfCode": "class FolderCheckResponse(BaseModel):\n    metrics: FolderCheckMetrics\n    remaining_questions: Sequence[Question]",
-        "detail": "backend.src.types.sync",
-        "documentation": {}
-    },
-    {
-        "label": "SyncStatus",
-        "kind": 5,
-        "importPath": "backend.src.types.sync",
-        "description": "backend.src.types.sync",
-        "peekOfCode": "SyncStatus = Literal[\n    \"missing_metadata\",  # metadata.json not found\n    \"invalid_metadata_json\",  # JSON decode error\n    \"missing_id\",  # ID field not found in metadata\n    \"not_in_database\",  # Metadata ID not found in DB\n    \"invalid question schema\",  # Question model is invalide\n    \"failed to create question\",\n    \"success\",  # Sync Status was successful\n]\nclass UnsyncedQuestion(BaseModel):",
-        "detail": "backend.src.types.sync",
         "documentation": {}
     },
     {
@@ -8626,7 +8635,7 @@
         "kind": 5,
         "importPath": "backend.src.main",
         "description": "backend.src.main",
-        "peekOfCode": "settings = get_settings()\n## Intializes the database\n@asynccontextmanager\nasync def on_startup(app: FastAPI):\n    engine = create_db_and_tables()\n    # Ensures that the roles are present at startup\n    with Session(engine) as session:\n        await RoleManager(session).seed_roles()\n        logger.info(\"[Initialization] Roles Created/verified Successfully\")\n        session.commit()",
+        "peekOfCode": "settings = get_settings()\n## Intializes the database\n@asynccontextmanager\nasync def on_startup(app: FastAPI):\n    engine = create_db_and_tables()\n    # Ensures that the roles are present at startup\n    with Session(engine) as session:\n        await RoleDB(session).seed_roles()\n        logger.info(\"[Initialization] Roles Created/verified Successfully\")\n        session.commit()",
         "detail": "backend.src.main",
         "documentation": {}
     },

@@ -1,0 +1,13 @@
+
+
+services:
+  gestalt_backend_server:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ./backend/.env.dev
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend:/app        # mount project allows for reloading

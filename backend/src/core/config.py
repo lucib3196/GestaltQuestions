@@ -16,7 +16,7 @@ ROOT_PATH = Path(__file__).parents[2]
 class AppSettings(BaseSettings):
     PROJECT_NAME: str | None = "Gestalt"
     MODE: Literal["testing", "dev", "production"] = "dev"
-    STORAGE_SERVICE: Literal["local", "cloud"] = "local"
+    STORAGE_SERVICE: Literal["local", "cloud"] = "cloud"
 
     BACKEND_CORS_ORIGINS: Sequence[str] | str = []
 

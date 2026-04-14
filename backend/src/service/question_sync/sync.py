@@ -22,7 +22,7 @@ from src.service.question_sync.models import (
     SyncResponse,
 )
 from src.service.storage.local_storage import Storage
-from src.types import STORAGE_TYPE
+from src.app_types.general import STORAGE_TYPE
 from src.utils import to_serializable
 
 

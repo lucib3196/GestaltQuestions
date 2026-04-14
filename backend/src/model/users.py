@@ -8,6 +8,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .institution import Institution
+    from .question import Question
 
 
 VALID_ROLES = Literal["educator", "student", "admin", "developer"]
@@ -65,22 +66,24 @@ class User(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     first_name: str
     last_name: str
-    username: str | None = Field(unique=True)
+    username: str | None = Field(default=None, unique=True)
     email: str = Field(index=True)
 
-    # Define the relationship
-    roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
+    roles: List["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
+
     institution_id: Optional[UUID] = Field(default=None, foreign_key="institution.id")
     institution: Optional["Institution"] = Relationship(back_populates="users")
+
+    developer_profile: Optional["DeveloperProfile"] = Relationship(back_populates="user")
 
 
 class DeveloperProfile(SQLModel, table=True):
     __tablename__ = "developer_profile"  # type: ignore
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-
     user_id: UUID = Field(foreign_key="user.id", unique=True)
 
-    user: Optional["User"] = Relationship()
+    user: Optional["User"] = Relationship(back_populates="developer_profile")
     storage_path: Optional[str] = None
-    focus: List[str] = Field(default_factory=list)
+
+    created_questions: List["Question"] = Relationship(back_populates="created_by")

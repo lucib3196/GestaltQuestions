@@ -15,7 +15,7 @@ from src.service.storage.local_storage import LocalStorage
 from src.service.question_manager.question_manager import QuestionManager
 from src.service.storage.local_storage import Storage
 
-from src.types import STORAGE_TYPE
+from src.app_types.general import STORAGE_TYPE
 
 
 def get_app_settings() -> AppSettings:

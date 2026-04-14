@@ -11,7 +11,7 @@ from src.web.dependencies import (
     StorageTypeDep,
     LocalBaseDep,
 )
-from src.types import ID
+from src.app_types.general import ID
 from src.utils import to_serializable
 
 

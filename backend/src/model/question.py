@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 # Base Models
 if TYPE_CHECKING:
     from .users import User
+    from .users import DeveloperProfile
 
 
 # ---------------------------------
@@ -94,36 +95,33 @@ class Question(SQLModel, table=True):
     id: UUID | None = SQLField(default_factory=uuid4, primary_key=True, index=True)
     title: Optional[str] = SQLField(default=None, index=True)
 
-    # General Flags
     isAdaptive: bool = SQLField(default=False)
     ai_generated: bool = SQLField(default=False)
 
-    # Storage where the question is saved
     local_path: Optional[str] = None
     blob_path: Optional[str] = None
 
-    # Status of the question whheter it is published, archived etc
     status: Status = SQLField(
         default=Status.DRAFT.name,
         sa_column_kwargs={"server_default": Status.DRAFT.name.upper()},
     )
 
-    # Relationships
+    created_by_id: Optional[UUID] = SQLField(
+        default=None, foreign_key="developer_profile.id"
+    )
 
-    # General relationship for metadata
     topics: List["Topic"] = Relationship(
         back_populates="questions", link_model=QuestionTopicLink
     )
-    qtypes: List["QuestionType"] = Relationship(
+    qTypes: List["QuestionType"] = Relationship(
         back_populates="questions", link_model=QuestionQTypeLink
     )
     languages: List["Language"] = Relationship(
         back_populates="questions", link_model=QuestionLanguageLink
     )
 
-    # handle ownership
-    created_by: Optional["User"] = Relationship(
-        back_populates="created_questions", link_model=QuestionOwnership
+    created_by: Optional["DeveloperProfile"] = Relationship(
+        back_populates="created_questions"
     )
 
 
@@ -157,6 +155,6 @@ class QuestionType(SQLModel, table=True):
     name: str = SQLField(index=True, unique=True)
 
     questions: List[Question] = Relationship(
-        back_populates="qtypes",
+        back_populates="qTypes",
         link_model=QuestionQTypeLink,
     )

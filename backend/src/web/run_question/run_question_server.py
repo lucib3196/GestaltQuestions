@@ -8,10 +8,9 @@ from fastapi import APIRouter
 
 from src.core import logger
 from src.data import UserManagerDependeny
-from src.types import (
+from src.app_types.run_server import (
     AllowedLanguages,
     AllowedServer,
-    ID,
     MappingServer,
     QuizData,
     SandboxResponse,
@@ -19,6 +18,7 @@ from src.types import (
     ServerRunResponse,
     ServerRunSuccess,
 )
+from src.app_types.general import ID
 from src.web.dependencies import (
     FireBaseToken,
     QuestionManagerDependency,
