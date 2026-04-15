@@ -5,7 +5,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
 from src.core import logger, SessionDep
-from src.model.institution import Institution, ValidInstitutions
 from src.model.users import (
     User,
     UserUpdate,
@@ -73,7 +72,7 @@ class UserDB:
     async def delete_user(self, id: ID) -> bool:
         user = await self.get_user(id)
         if not user:
-            logger.warn(f"DB User not found cannot delete")
+            logger.warning(f"DB User not found cannot delete")
             return False
         try:
             self.session.delete(user)

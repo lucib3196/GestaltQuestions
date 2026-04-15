@@ -2157,27 +2157,59 @@
         "documentation": {}
     },
     {
+        "label": "UserDB",
+        "importPath": "src.data.user",
+        "description": "src.data.user",
+        "isExtraImport": true,
+        "detail": "src.data.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserDB",
+        "importPath": "src.data.user",
+        "description": "src.data.user",
+        "isExtraImport": true,
+        "detail": "src.data.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserDB",
+        "importPath": "src.data.user",
+        "description": "src.data.user",
+        "isExtraImport": true,
+        "detail": "src.data.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserDB",
+        "importPath": "src.data.user",
+        "description": "src.data.user",
+        "isExtraImport": true,
+        "detail": "src.data.user",
+        "documentation": {}
+    },
+    {
+        "label": "RoleDB",
+        "importPath": "src.data.role",
+        "description": "src.data.role",
+        "isExtraImport": true,
+        "detail": "src.data.role",
+        "documentation": {}
+    },
+    {
+        "label": "RoleDB",
+        "importPath": "src.data.role",
+        "description": "src.data.role",
+        "isExtraImport": true,
+        "detail": "src.data.role",
+        "documentation": {}
+    },
+    {
         "label": "src.data",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "src.data",
         "description": "src.data",
-        "detail": "src.data",
-        "documentation": {}
-    },
-    {
-        "label": "UserDB",
-        "importPath": "src.data",
-        "description": "src.data",
-        "isExtraImport": true,
-        "detail": "src.data",
-        "documentation": {}
-    },
-    {
-        "label": "RoleManager",
-        "importPath": "src.data",
-        "description": "src.data",
-        "isExtraImport": true,
         "detail": "src.data",
         "documentation": {}
     },
@@ -2191,14 +2223,6 @@
     },
     {
         "label": "QuestionAttemptDB",
-        "importPath": "src.data",
-        "description": "src.data",
-        "isExtraImport": true,
-        "detail": "src.data",
-        "documentation": {}
-    },
-    {
-        "label": "UserDB",
         "importPath": "src.data",
         "description": "src.data",
         "isExtraImport": true,
@@ -2347,14 +2371,6 @@
         "description": "app_test.shared.factories",
         "isExtraImport": true,
         "detail": "app_test.shared.factories",
-        "documentation": {}
-    },
-    {
-        "label": "logger",
-        "importPath": "src.core",
-        "description": "src.core",
-        "isExtraImport": true,
-        "detail": "src.core",
         "documentation": {}
     },
     {
@@ -2726,22 +2742,6 @@
         "documentation": {}
     },
     {
-        "label": "Institution",
-        "importPath": "src.model.institution",
-        "description": "src.model.institution",
-        "isExtraImport": true,
-        "detail": "src.model.institution",
-        "documentation": {}
-    },
-    {
-        "label": "ValidInstitutions",
-        "importPath": "src.model.institution",
-        "description": "src.model.institution",
-        "isExtraImport": true,
-        "detail": "src.model.institution",
-        "documentation": {}
-    },
-    {
         "label": "ValidInstitutions",
         "importPath": "src.model.institution",
         "description": "src.model.institution",
@@ -2806,6 +2806,14 @@
         "documentation": {}
     },
     {
+        "label": "logger",
+        "importPath": "src.core.logging",
+        "description": "src.core.logging",
+        "isExtraImport": true,
+        "detail": "src.core.logging",
+        "documentation": {}
+    },
+    {
         "label": "Role",
         "importPath": "src.model.users",
         "description": "src.model.users",
@@ -2822,31 +2830,47 @@
         "documentation": {}
     },
     {
+        "label": "User",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
         "label": "UserUpdate",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserBase",
         "importPath": "src.model.users",
         "description": "src.model.users",
         "isExtraImport": true,
@@ -5742,22 +5766,6 @@
         "documentation": {}
     },
     {
-        "label": "RoleDB",
-        "importPath": "src.data.role",
-        "description": "src.data.role",
-        "isExtraImport": true,
-        "detail": "src.data.role",
-        "documentation": {}
-    },
-    {
-        "label": "UserDB",
-        "importPath": "src.data.user",
-        "description": "src.data.user",
-        "isExtraImport": true,
-        "detail": "src.data.user",
-        "documentation": {}
-    },
-    {
         "label": "Response",
         "importPath": "fastapi.responses",
         "description": "fastapi.responses",
@@ -6295,7 +6303,7 @@
         "kind": 2,
         "importPath": "backend.app_test.data.conftest",
         "description": "backend.app_test.data.conftest",
-        "peekOfCode": "def combined_payload():\n    return [QuestionData(**q) for q in QUESTIONS]\n@pytest.fixture\ndef role_manager(db_session) -> RoleManager:\n    return RoleManager(db_session)\n@pytest.fixture\ndef user_db(db_session) -> UserDB:\n    return UserDB(db_session)\n@pytest.fixture\ndef institution_db(db_session) -> InstitutionDB:",
+        "peekOfCode": "def combined_payload():\n    return [QuestionData(**q) for q in QUESTIONS]\n@pytest.fixture\ndef role_manager(db_session) -> RoleDB:\n    return RoleDB(db_session)\n@pytest.fixture\ndef institution_db(db_session) -> InstitutionDB:\n    return InstitutionDB(db_session)\n@pytest.fixture\ndef qa_attempt_db(db_session) -> QuestionAttemptDB:",
         "detail": "backend.app_test.data.conftest",
         "documentation": {}
     },
@@ -6304,16 +6312,7 @@
         "kind": 2,
         "importPath": "backend.app_test.data.conftest",
         "description": "backend.app_test.data.conftest",
-        "peekOfCode": "def role_manager(db_session) -> RoleManager:\n    return RoleManager(db_session)\n@pytest.fixture\ndef user_db(db_session) -> UserDB:\n    return UserDB(db_session)\n@pytest.fixture\ndef institution_db(db_session) -> InstitutionDB:\n    return InstitutionDB(db_session)\n@pytest.fixture\ndef qa_attempt_db(db_session) -> QuestionAttemptDB:",
-        "detail": "backend.app_test.data.conftest",
-        "documentation": {}
-    },
-    {
-        "label": "user_db",
-        "kind": 2,
-        "importPath": "backend.app_test.data.conftest",
-        "description": "backend.app_test.data.conftest",
-        "peekOfCode": "def user_db(db_session) -> UserDB:\n    return UserDB(db_session)\n@pytest.fixture\ndef institution_db(db_session) -> InstitutionDB:\n    return InstitutionDB(db_session)\n@pytest.fixture\ndef qa_attempt_db(db_session) -> QuestionAttemptDB:\n    return QuestionAttemptDB(db_session)\n@pytest.fixture\ndef question_payload():",
+        "peekOfCode": "def role_manager(db_session) -> RoleDB:\n    return RoleDB(db_session)\n@pytest.fixture\ndef institution_db(db_session) -> InstitutionDB:\n    return InstitutionDB(db_session)\n@pytest.fixture\ndef qa_attempt_db(db_session) -> QuestionAttemptDB:\n    return QuestionAttemptDB(db_session)\n@pytest.fixture\ndef question_payload():",
         "detail": "backend.app_test.data.conftest",
         "documentation": {}
     },
@@ -6543,15 +6542,6 @@
         "documentation": {}
     },
     {
-        "label": "make_user",
-        "kind": 2,
-        "importPath": "backend.app_test.shared.factories.user_factory",
-        "description": "backend.app_test.shared.factories.user_factory",
-        "peekOfCode": "def make_user(user_db: UserDB):\n    async def _make_user(**overrides) -> User:\n        defaults = {\n            \"first_name\": \"Luciano\",\n            \"last_name\": \"Bermudez\",\n            \"username\": \"luci123\",\n            \"email\": \"luci123@gmail.com\",\n            \"fb_id\": \"1234\",\n        }\n        data = UserBase(**(defaults | overrides))  # type: ignore",
-        "detail": "backend.app_test.shared.factories.user_factory",
-        "documentation": {}
-    },
-    {
         "label": "invalid_question_payloads",
         "kind": 2,
         "importPath": "backend.app_test.shared.fixtures.fixture_crud",
@@ -6765,6 +6755,24 @@
         "description": "backend.app_test.shared.test_assets.uploads.generate",
         "peekOfCode": "def generate() -> Dict[str, Any]:\n    a = 1\n    b = 2\n    sum_val = a + b\n    print(\"This is the value of a\", a)\n    print(\"This is the value of b\", b)\n    print(\"This is a structure\", {\"params\": {\"a\": a, \"b\": b}})\n    return {\n        \"params\": {\"a\": a, \"b\": b},\n        \"correct_answers\": {\"sum\": sum_val},",
         "detail": "backend.app_test.shared.test_assets.uploads.generate",
+        "documentation": {}
+    },
+    {
+        "label": "user_db",
+        "kind": 2,
+        "importPath": "backend.app_test.unit.test_user",
+        "description": "backend.app_test.unit.test_user",
+        "peekOfCode": "def user_db(db_session) -> UserDB:\n    return UserDB(db_session)\n@pytest.fixture\ndef make_user(user_db: UserDB):\n    async def _make_user(**overrides) -> User:\n        defaults = {\n            \"first_name\": \"Luciano\",\n            \"last_name\": \"Bermudez\",\n            \"username\": \"luci123\",\n            \"email\": \"luci123@gmail.com\",",
+        "detail": "backend.app_test.unit.test_user",
+        "documentation": {}
+    },
+    {
+        "label": "make_user",
+        "kind": 2,
+        "importPath": "backend.app_test.unit.test_user",
+        "description": "backend.app_test.unit.test_user",
+        "peekOfCode": "def make_user(user_db: UserDB):\n    async def _make_user(**overrides) -> User:\n        defaults = {\n            \"first_name\": \"Luciano\",\n            \"last_name\": \"Bermudez\",\n            \"username\": \"luci123\",\n            \"email\": \"luci123@gmail.com\",\n            \"username\": None,\n            \"password\": \"1234\",\n        }",
+        "detail": "backend.app_test.unit.test_user",
         "documentation": {}
     },
     {
@@ -7519,7 +7527,7 @@
         "kind": 2,
         "importPath": "backend.src.core.firebase",
         "description": "backend.src.core.firebase",
-        "peekOfCode": "def initialize_firebase_app():\n    try:\n        cred = credentials.Certificate(app_settings.FIREBASE_CRED)\n        bucket_name = app_settings.STORAGE_BUCKET\n        if not bucket_name:\n            raise ValueError(\"No Bucket Specified must be set in Environment\")\n        firebase_admin.initialize_app(cred, {\"storageBucket\": bucket_name})\n    except Exception as e:\n        raise ValueError(f\"Could not initialize creditionals error {str(e)}\")\nif __name__ == \"__main__\":",
+        "peekOfCode": "def initialize_firebase_app():\n    try:\n        cred = credentials.Certificate(app_settings.FIREBASE_CRED)\n        return firebase_admin.initialize_app(\n            cred, {\"storageBucket\": app_settings.STORAGE_BUCKET}\n        )\n    except Exception as e:\n        raise ValueError(f\"Could not initialize credentials error {str(e)}\")\nif __name__ == \"__main__\":\n    print(\"🔥 Firebase Mode:\")",
         "detail": "backend.src.core.firebase",
         "documentation": {}
     },
@@ -7528,7 +7536,7 @@
         "kind": 5,
         "importPath": "backend.src.core.firebase",
         "description": "backend.src.core.firebase",
-        "peekOfCode": "app_settings = get_settings()\n@lru_cache\ndef initialize_firebase_app():\n    try:\n        cred = credentials.Certificate(app_settings.FIREBASE_CRED)\n        bucket_name = app_settings.STORAGE_BUCKET\n        if not bucket_name:\n            raise ValueError(\"No Bucket Specified must be set in Environment\")\n        firebase_admin.initialize_app(cred, {\"storageBucket\": bucket_name})\n    except Exception as e:",
+        "peekOfCode": "app_settings = get_settings()\nif app_settings.FIREBASE_AUTH_EMULATOR_HOST:\n    os.environ[\"FIREBASE_AUTH_EMULATOR_HOST\"] = app_settings.FIREBASE_AUTH_EMULATOR_HOST\nif app_settings.STORAGE_EMULATOR_HOST:\n    os.environ[\"STORAGE_EMULATOR_HOST\"] = app_settings.STORAGE_EMULATOR_HOST\n@lru_cache\ndef initialize_firebase_app():\n    try:\n        cred = credentials.Certificate(app_settings.FIREBASE_CRED)\n        return firebase_admin.initialize_app(",
         "detail": "backend.src.core.firebase",
         "documentation": {}
     },
@@ -7915,7 +7923,7 @@
         "kind": 6,
         "importPath": "backend.src.model.users",
         "description": "backend.src.model.users",
-        "peekOfCode": "class UserBase(BaseModel):\n    first_name: str | None = None\n    last_name: str | None = None\n    username: str | None = None\n# Base Model for reading users\nclass UserCreate(BaseModel):\n    first_name: str\n    last_name: str\n    password: str\n    username: str",
+        "peekOfCode": "class UserBase(BaseModel):\n    first_name: str | None = None\n    last_name: str | None = None\n    username: str | None = None\n# Base Model for reading users\nclass UserCreate(BaseModel):\n    first_name: str\n    last_name: str\n    password: str\n    username: str | None = None",
         "detail": "backend.src.model.users",
         "documentation": {}
     },
@@ -7924,7 +7932,7 @@
         "kind": 6,
         "importPath": "backend.src.model.users",
         "description": "backend.src.model.users",
-        "peekOfCode": "class UserCreate(BaseModel):\n    first_name: str\n    last_name: str\n    password: str\n    username: str\n    email: str\nclass UserUpdate(UserBase):\n    email: str | None = None\nclass UserRead(UserUpdate):\n    pass",
+        "peekOfCode": "class UserCreate(BaseModel):\n    first_name: str\n    last_name: str\n    password: str\n    username: str | None = None\n    email: str\nclass UserUpdate(UserBase):\n    email: str | None = None\nclass UserRead(UserUpdate):\n    pass",
         "detail": "backend.src.model.users",
         "documentation": {}
     },

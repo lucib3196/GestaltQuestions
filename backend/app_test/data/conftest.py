@@ -3,13 +3,14 @@ from app_test.shared.mock_data import (
     QUESTIONS,
 )
 from src.model.question import QuestionData
+from src.data.user import UserDB
+from src.data.role import RoleDB
 from src.data import (
-    UserDB,
-    RoleManager,
     InstitutionDB,
     QuestionAttemptDB,
 )
 from app_test.shared.factories.user_factory import make_user
+
 
 @pytest.fixture
 def combined_payload():
@@ -17,13 +18,11 @@ def combined_payload():
 
 
 @pytest.fixture
-def role_manager(db_session) -> RoleManager:
-    return RoleManager(db_session)
+def role_manager(db_session) -> RoleDB:
+    return RoleDB(db_session)
 
 
-@pytest.fixture
-def user_db(db_session) -> UserDB:
-    return UserDB(db_session)
+
 
 
 @pytest.fixture

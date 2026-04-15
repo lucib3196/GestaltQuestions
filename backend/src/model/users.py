@@ -29,7 +29,7 @@ class UserCreate(BaseModel):
     first_name: str
     last_name: str
     password: str
-    username: str
+    username: str | None = None
     email: str
 
 

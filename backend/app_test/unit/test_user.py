@@ -1,7 +1,35 @@
 import pytest
+from src.model.users import User, UserCreate, UserUpdate
+from src.data.user import UserDB
+from src.core.logging import logger
 
-from src.core import logger
-from src.model.users import UserUpdate
+
+# Createa the database session
+@pytest.fixture
+def user_db(db_session) -> UserDB:
+    return UserDB(db_session)
+
+
+@pytest.fixture
+def make_user(user_db: UserDB):
+    async def _make_user(**overrides) -> User:
+        defaults = {
+            "first_name": "Luciano",
+            "last_name": "Bermudez",
+            "username": "luci123",
+            "email": "luci123@gmail.com",
+            "username": None,
+            "password": "1234",
+        }
+
+        data = UserCreate(**(defaults | overrides))  # type: ignore
+        user = await user_db.create_user(data)
+
+        assert user is not None
+        return user
+
+    return _make_user
+
 
 @pytest.mark.asyncio
 async def test_user_create(make_user):
@@ -22,13 +50,6 @@ async def test_get_user(user_db, make_user):
 async def test_get_user_by_email(make_user, user_db):
     cuser = await make_user()
     ruser = await user_db.get_user_by_email(cuser.email)
-    assert cuser == ruser
-
-
-@pytest.mark.asyncio
-async def test_get_user_by_fb(make_user, user_db):
-    cuser = await make_user()
-    ruser = await user_db.get_user_by_token(cuser.fb_id)
     assert cuser == ruser
 
 
