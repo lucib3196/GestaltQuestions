@@ -12,6 +12,7 @@ from src.model.institution import ValidInstitutions
 from src.app_types.general import ID
 from src.model.users import Role, User, UserCreate, UserRead, UserRoles
 from src.web.dependencies import FireBaseToken, UserManagerDependeny
+from src.model.institution import Institution
 
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -27,6 +28,10 @@ class UpdateUserRole(BaseModel):
     role: UserRoles
 
 
+class UpdateUserInstitution(BaseModel):
+    institution: ValidInstitutions
+
+
 class LoginRequest(BaseModel):
     id_token: str
 
@@ -34,6 +39,11 @@ class LoginRequest(BaseModel):
 class UserRoleResponse(BaseModel):
     user: User
     roles: List[Role] = []
+
+
+class UserInstResponse(BaseModel):
+    user: User
+    inst: Institution | None
 
 
 @router.post("/")
@@ -44,7 +54,7 @@ async def create_user(
     try:
         logger.debug("Attempting to create user")
         created_user = await user_manager.create_user(
-            data=payload.user, role=payload.role
+            data=payload.user, role=payload.role, institution=payload.institution
         )
         return created_user
     except HTTPException:
@@ -158,7 +168,7 @@ async def delete_user_by_id(user_manager: UserManagerDependeny, id: ID):
 @router.get("/{id}/roles")
 async def get_user_roles_by_id(
     user_manager: UserManagerDependeny, id: ID
-) -> List[Role]:
+) -> UserRoleResponse:
     """
     Retrieve all roles for a user by internal ID.
 
@@ -171,7 +181,8 @@ async def get_user_roles_by_id(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"User '{id}' not found",
             )
-        return await user_manager.get_user_role(id)
+        roles = await user_manager.get_user_role(id)
+        return UserRoleResponse(user=user, roles=roles)
     except HTTPException:
         raise
     except Exception as e:
@@ -206,11 +217,79 @@ async def add_user_role(
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+            detail=f"Invalid role update for user '{id}': {e}",
         )
     except Exception as e:
         logger.exception("Failed to add role '%s' to user id='%s'", payload.role, id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to add role for user '{id}': {e}",
+        )
+
+
+@router.get("/{id}/institution")
+async def get_institution_by_id(
+    user_manager: UserManagerDependeny, id: ID
+) -> UserInstResponse:
+    """
+    Retrieve the institution for a user by internal ID.
+
+    This endpoint is intended for backend/admin flows.
+    """
+    try:
+        user = await user_manager.get_user(id)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User '{id}' not found",
+            )
+        inst = await user_manager.get_user_inst(id)
+        return UserInstResponse(user=user, inst=inst)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Failed to retrieve institution for user id='%s'", id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve institution for user '{id}': {e}",
+        )
+
+
+@router.post("/{id}/institution")
+async def add_user_inst(
+    user_manager: UserManagerDependeny, id: ID, payload: UpdateUserInstitution
+) -> UserInstResponse:
+    """
+    Set a user's institution by internal ID and return the updated institution.
+
+    This endpoint is intended for backend/admin flows.
+    """
+    try:
+        user_record = await user_manager.get_user(id)
+        if user_record is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User '{id}' not found",
+            )
+        user = await user_manager.set_user_institution(
+            institution=payload.institution, user=id
+        )
+        inst = await user_manager.get_user_inst(id)
+        return UserInstResponse(user=user, inst=inst)
+    except HTTPException:
+        raise
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid institution update for user '{id}': {e}",
+        )
+    except Exception as e:
+        logger.exception(
+            "Failed to set institution '%s' for user id='%s'",
+            payload.institution,
+            id,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to set institution for user '{id}': {e}",
         )

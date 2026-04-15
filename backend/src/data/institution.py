@@ -91,8 +91,3 @@ class InstitutionDB:
                 await self.create_institution(institution, desc)
 
 
-def get_institution_database(session: SessionDep) -> InstitutionDB:
-    return InstitutionDB(session)
-
-
-InstitutionDependency = Annotated[InstitutionDB, Depends(get_institution_database)]

@@ -347,14 +347,6 @@
         "documentation": {}
     },
     {
-        "label": "Path",
-        "importPath": "pathlib",
-        "description": "pathlib",
-        "isExtraImport": true,
-        "detail": "pathlib",
-        "documentation": {}
-    },
-    {
         "label": "sys",
         "kind": 6,
         "isExtraImport": true,
@@ -1045,14 +1037,6 @@
     },
     {
         "label": "Optional",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Annotated",
         "importPath": "typing",
         "description": "typing",
         "isExtraImport": true,
@@ -2726,7 +2710,31 @@
         "documentation": {}
     },
     {
+        "label": "Institution",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
         "label": "ValidInstitutions",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
+        "label": "ValidInstitutions",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
+        "label": "Institution",
         "importPath": "src.model.institution",
         "description": "src.model.institution",
         "isExtraImport": true,
@@ -2878,23 +2886,7 @@
         "documentation": {}
     },
     {
-        "label": "Role",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
         "label": "User",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserRoles",
         "importPath": "src.model.users",
         "description": "src.model.users",
         "isExtraImport": true,
@@ -2918,6 +2910,14 @@
         "documentation": {}
     },
     {
+        "label": "Role",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
         "label": "User",
         "importPath": "src.model.users",
         "description": "src.model.users",
@@ -2935,14 +2935,6 @@
     },
     {
         "label": "UserRoles",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "DeveloperProfile",
         "importPath": "src.model.users",
         "description": "src.model.users",
         "isExtraImport": true,
@@ -3495,14 +3487,6 @@
         "documentation": {}
     },
     {
-        "label": "UUID",
-        "importPath": "uuid",
-        "description": "uuid",
-        "isExtraImport": true,
-        "detail": "uuid",
-        "documentation": {}
-    },
-    {
         "label": "mimetypes",
         "kind": 6,
         "isExtraImport": true,
@@ -3629,14 +3613,6 @@
     },
     {
         "label": "FastAPI",
-        "importPath": "fastapi",
-        "description": "fastapi",
-        "isExtraImport": true,
-        "detail": "fastapi",
-        "documentation": {}
-    },
-    {
-        "label": "Depends",
         "importPath": "fastapi",
         "description": "fastapi",
         "isExtraImport": true,
@@ -5462,14 +5438,6 @@
         "documentation": {}
     },
     {
-        "label": "Storage",
-        "importPath": "src.service.storage.base",
-        "description": "src.service.storage.base",
-        "isExtraImport": true,
-        "detail": "src.service.storage.base",
-        "documentation": {}
-    },
-    {
         "label": "defaultdict",
         "importPath": "collections",
         "description": "collections",
@@ -5622,19 +5590,27 @@
         "documentation": {}
     },
     {
-        "label": "UserDB",
-        "importPath": "src.data.user",
-        "description": "src.data.user",
+        "label": "InstitutionDB",
+        "importPath": "src.data.institution",
+        "description": "src.data.institution",
         "isExtraImport": true,
-        "detail": "src.data.user",
+        "detail": "src.data.institution",
         "documentation": {}
     },
     {
-        "label": "Role",
-        "importPath": "src.data.user",
-        "description": "src.data.user",
+        "label": "InstitutionDB",
+        "importPath": "src.data.institution",
+        "description": "src.data.institution",
         "isExtraImport": true,
-        "detail": "src.data.user",
+        "detail": "src.data.institution",
+        "documentation": {}
+    },
+    {
+        "label": "InstitutionDB",
+        "importPath": "src.data.institution",
+        "description": "src.data.institution",
+        "isExtraImport": true,
+        "detail": "src.data.institution",
         "documentation": {}
     },
     {
@@ -5643,6 +5619,14 @@
         "description": "src.data.role",
         "isExtraImport": true,
         "detail": "src.data.role",
+        "documentation": {}
+    },
+    {
+        "label": "UserDB",
+        "importPath": "src.data.user",
+        "description": "src.data.user",
+        "isExtraImport": true,
+        "detail": "src.data.user",
         "documentation": {}
     },
     {
@@ -5910,14 +5894,6 @@
         "description": "src.web",
         "isExtraImport": true,
         "detail": "src.web",
-        "documentation": {}
-    },
-    {
-        "label": "InstitutionDB",
-        "importPath": "src.data.institution",
-        "description": "src.data.institution",
-        "isExtraImport": true,
-        "detail": "src.data.institution",
         "documentation": {}
     },
     {
@@ -7561,24 +7537,6 @@
         "documentation": {}
     },
     {
-        "label": "get_institution_database",
-        "kind": 2,
-        "importPath": "backend.src.data.institution",
-        "description": "backend.src.data.institution",
-        "peekOfCode": "def get_institution_database(session: SessionDep) -> InstitutionDB:\n    return InstitutionDB(session)\nInstitutionDependency = Annotated[InstitutionDB, Depends(get_institution_database)]",
-        "detail": "backend.src.data.institution",
-        "documentation": {}
-    },
-    {
-        "label": "InstitutionDependency",
-        "kind": 5,
-        "importPath": "backend.src.data.institution",
-        "description": "backend.src.data.institution",
-        "peekOfCode": "InstitutionDependency = Annotated[InstitutionDB, Depends(get_institution_database)]",
-        "detail": "backend.src.data.institution",
-        "documentation": {}
-    },
-    {
         "label": "QuestionDB",
         "kind": 6,
         "importPath": "backend.src.data.question",
@@ -8114,7 +8072,7 @@
         "kind": 6,
         "importPath": "backend.src.service.user.user_manager",
         "description": "backend.src.service.user.user_manager",
-        "peekOfCode": "class UserManager:\n    def __init__(self, session: Session):\n        \"\"\"Initialize user and role repositories for the provided session.\"\"\"\n        self.udb = UserDB(session)\n        self.rm = RoleDB(session)\n        self.session = session\n    async def create_user(self, data: UserCreate, role: UserRoles) -> User:\n        \"\"\"Create a user and optionally attach a role.\"\"\"\n        user_orm = None\n        try:",
+        "peekOfCode": "class UserManager:\n    def __init__(self, session: Session):\n        \"\"\"Initialize user and role repositories for the provided session.\"\"\"\n        self.udb = UserDB(session)\n        self.rm = RoleDB(session)\n        self.ins = InstitutionDB(session)\n        self.session = session\n    async def create_user(\n        self,\n        data: UserCreate,",
         "detail": "backend.src.service.user.user_manager",
         "documentation": {}
     },
@@ -8483,7 +8441,7 @@
         "kind": 6,
         "importPath": "backend.src.web.user.user",
         "description": "backend.src.web.user.user",
-        "peekOfCode": "class CreateUserFullPayload(BaseModel):\n    user: UserCreate\n    role: UserRoles = UserRoles.STUDENT\n    institution: ValidInstitutions | None = None\nclass UpdateUserRole(BaseModel):\n    role: UserRoles\nclass LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):\n    user: User",
+        "peekOfCode": "class CreateUserFullPayload(BaseModel):\n    user: UserCreate\n    role: UserRoles = UserRoles.STUDENT\n    institution: ValidInstitutions | None = None\nclass UpdateUserRole(BaseModel):\n    role: UserRoles\nclass UpdateUserInstitution(BaseModel):\n    institution: ValidInstitutions\nclass LoginRequest(BaseModel):\n    id_token: str",
         "detail": "backend.src.web.user.user",
         "documentation": {}
     },
@@ -8492,7 +8450,16 @@
         "kind": 6,
         "importPath": "backend.src.web.user.user",
         "description": "backend.src.web.user.user",
-        "peekOfCode": "class UpdateUserRole(BaseModel):\n    role: UserRoles\nclass LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):\n    user: User\n    roles: List[Role] = []\n@router.post(\"/\")\nasync def create_user(\n    user_manager: UserManagerDependeny,",
+        "peekOfCode": "class UpdateUserRole(BaseModel):\n    role: UserRoles\nclass UpdateUserInstitution(BaseModel):\n    institution: ValidInstitutions\nclass LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):\n    user: User\n    roles: List[Role] = []\nclass UserInstResponse(BaseModel):",
+        "detail": "backend.src.web.user.user",
+        "documentation": {}
+    },
+    {
+        "label": "UpdateUserInstitution",
+        "kind": 6,
+        "importPath": "backend.src.web.user.user",
+        "description": "backend.src.web.user.user",
+        "peekOfCode": "class UpdateUserInstitution(BaseModel):\n    institution: ValidInstitutions\nclass LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):\n    user: User\n    roles: List[Role] = []\nclass UserInstResponse(BaseModel):\n    user: User\n    inst: Institution | None",
         "detail": "backend.src.web.user.user",
         "documentation": {}
     },
@@ -8501,7 +8468,7 @@
         "kind": 6,
         "importPath": "backend.src.web.user.user",
         "description": "backend.src.web.user.user",
-        "peekOfCode": "class LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):\n    user: User\n    roles: List[Role] = []\n@router.post(\"/\")\nasync def create_user(\n    user_manager: UserManagerDependeny,\n    payload: CreateUserFullPayload,\n):",
+        "peekOfCode": "class LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):\n    user: User\n    roles: List[Role] = []\nclass UserInstResponse(BaseModel):\n    user: User\n    inst: Institution | None\n@router.post(\"/\")\nasync def create_user(",
         "detail": "backend.src.web.user.user",
         "documentation": {}
     },
@@ -8510,7 +8477,16 @@
         "kind": 6,
         "importPath": "backend.src.web.user.user",
         "description": "backend.src.web.user.user",
-        "peekOfCode": "class UserRoleResponse(BaseModel):\n    user: User\n    roles: List[Role] = []\n@router.post(\"/\")\nasync def create_user(\n    user_manager: UserManagerDependeny,\n    payload: CreateUserFullPayload,\n):\n    try:\n        logger.debug(\"Attempting to create user\")",
+        "peekOfCode": "class UserRoleResponse(BaseModel):\n    user: User\n    roles: List[Role] = []\nclass UserInstResponse(BaseModel):\n    user: User\n    inst: Institution | None\n@router.post(\"/\")\nasync def create_user(\n    user_manager: UserManagerDependeny,\n    payload: CreateUserFullPayload,",
+        "detail": "backend.src.web.user.user",
+        "documentation": {}
+    },
+    {
+        "label": "UserInstResponse",
+        "kind": 6,
+        "importPath": "backend.src.web.user.user",
+        "description": "backend.src.web.user.user",
+        "peekOfCode": "class UserInstResponse(BaseModel):\n    user: User\n    inst: Institution | None\n@router.post(\"/\")\nasync def create_user(\n    user_manager: UserManagerDependeny,\n    payload: CreateUserFullPayload,\n):\n    try:\n        logger.debug(\"Attempting to create user\")",
         "detail": "backend.src.web.user.user",
         "documentation": {}
     },
@@ -8537,7 +8513,7 @@
         "kind": 5,
         "importPath": "backend.src.web.user.user",
         "description": "backend.src.web.user.user",
-        "peekOfCode": "router = APIRouter(prefix=\"/users\", tags=[\"users\"])\nclass CreateUserFullPayload(BaseModel):\n    user: UserCreate\n    role: UserRoles = UserRoles.STUDENT\n    institution: ValidInstitutions | None = None\nclass UpdateUserRole(BaseModel):\n    role: UserRoles\nclass LoginRequest(BaseModel):\n    id_token: str\nclass UserRoleResponse(BaseModel):",
+        "peekOfCode": "router = APIRouter(prefix=\"/users\", tags=[\"users\"])\nclass CreateUserFullPayload(BaseModel):\n    user: UserCreate\n    role: UserRoles = UserRoles.STUDENT\n    institution: ValidInstitutions | None = None\nclass UpdateUserRole(BaseModel):\n    role: UserRoles\nclass UpdateUserInstitution(BaseModel):\n    institution: ValidInstitutions\nclass LoginRequest(BaseModel):",
         "detail": "backend.src.web.user.user",
         "documentation": {}
     },
@@ -8618,7 +8594,16 @@
         "kind": 2,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "def get_user_database(session: SessionDep) -> UserManager:\n    return UserManager(session)\nUserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]",
+        "peekOfCode": "def get_user_database(session: SessionDep) -> UserManager:\n    return UserManager(session)\nUserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]\ndef get_institution_database(session: SessionDep) -> InstitutionDB:\n    return InstitutionDB(session)\nInstitutionDependency = Annotated[InstitutionDB, Depends(get_institution_database)]",
+        "detail": "backend.src.web.dependencies",
+        "documentation": {}
+    },
+    {
+        "label": "get_institution_database",
+        "kind": 2,
+        "importPath": "backend.src.web.dependencies",
+        "description": "backend.src.web.dependencies",
+        "peekOfCode": "def get_institution_database(session: SessionDep) -> InstitutionDB:\n    return InstitutionDB(session)\nInstitutionDependency = Annotated[InstitutionDB, Depends(get_institution_database)]",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
@@ -8699,7 +8684,7 @@
         "kind": 5,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "QuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]\ndef get_user_database(session: SessionDep) -> UserManager:\n    return UserManager(session)\nUserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]",
+        "peekOfCode": "QuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]\ndef get_user_database(session: SessionDep) -> UserManager:\n    return UserManager(session)\nUserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]\ndef get_institution_database(session: SessionDep) -> InstitutionDB:\n    return InstitutionDB(session)\nInstitutionDependency = Annotated[InstitutionDB, Depends(get_institution_database)]",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },
@@ -8708,7 +8693,16 @@
         "kind": 5,
         "importPath": "backend.src.web.dependencies",
         "description": "backend.src.web.dependencies",
-        "peekOfCode": "UserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]",
+        "peekOfCode": "UserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]\ndef get_institution_database(session: SessionDep) -> InstitutionDB:\n    return InstitutionDB(session)\nInstitutionDependency = Annotated[InstitutionDB, Depends(get_institution_database)]",
+        "detail": "backend.src.web.dependencies",
+        "documentation": {}
+    },
+    {
+        "label": "InstitutionDependency",
+        "kind": 5,
+        "importPath": "backend.src.web.dependencies",
+        "description": "backend.src.web.dependencies",
+        "peekOfCode": "InstitutionDependency = Annotated[InstitutionDB, Depends(get_institution_database)]",
         "detail": "backend.src.web.dependencies",
         "documentation": {}
     },

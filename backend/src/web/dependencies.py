@@ -1,6 +1,5 @@
 from functools import lru_cache
 from typing import Annotated
-from pathlib import Path
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette import status
@@ -16,6 +15,7 @@ from src.service.question_manager.question_manager import QuestionManager
 from src.service.storage.local_storage import Storage
 from src.service.user.user_manager import UserManager
 from src.app_types.general import STORAGE_TYPE
+from src.data.institution import InstitutionDB
 
 
 def get_app_settings() -> AppSettings:
@@ -57,6 +57,8 @@ def get_firebase_token(
             detail=f"Not logged in or Invalid credentials {str(e)}",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
 FireBaseToken = Annotated[dict, Depends(get_firebase_token)]
 
 
@@ -130,3 +132,10 @@ def get_user_database(session: SessionDep) -> UserManager:
 
 
 UserManagerDependeny = Annotated[UserManager, Depends(get_user_database)]
+
+
+def get_institution_database(session: SessionDep) -> InstitutionDB:
+    return InstitutionDB(session)
+
+
+InstitutionDependency = Annotated[InstitutionDB, Depends(get_institution_database)]
