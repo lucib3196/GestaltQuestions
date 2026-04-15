@@ -4,41 +4,7 @@ from src.model.users import User, UserCreate, UserUpdate
 from src.data.user import UserDB
 from src.core.logging import logger
 from typing import Dict
-
-USERS = [
-    {
-        "first_name": "Alice",
-        "last_name": "Smith",
-        "username": "alice",
-        "email": "alice@test.com",
-    },
-    {
-        "first_name": "Bob",
-        "last_name": "Jones",
-        "username": "bob",
-        "email": "bob@test.com",
-    },
-]
-
-INVALID_USERS = [
-    {
-        "last_name": "Smith",
-        "username": "alice",
-        "email": "alice_test.com",
-    },
-    {
-        "first_name": "Alice",
-        "last_name": "Smith",
-        "username": "alice",
-        "email": "not-an-email",
-    },
-]
-
-
-# Createa the database session
-@pytest.fixture
-def user_db(db_session) -> UserDB:
-    return UserDB(db_session)
+from app_test.unit.shared import USERS, INVALID_USERS
 
 
 @pytest.fixture

@@ -7,9 +7,6 @@ from src.model.users import Role, UserRoles
 TEST_ROLES = [UserRoles.ADMIN, UserRoles.STUDENT, UserRoles.DEVELOPER]
 
 
-@pytest.fixture
-def role_manager(db_session) -> RoleDB:
-    return RoleDB(db_session)
 
 
 @pytest.mark.asyncio

@@ -11,12 +11,13 @@ from src.model.institution import Institution, ValidInstitutions
 from src.model.users import Role, User, UserCreate, UserRoles
 from . import ID, logger
 
+
 class UserManager:
-    def __init__(self, session: Session):
+    def __init__(self, udb: UserDB, rm: RoleDB, inst: InstitutionDB, session: Session):
         """Initialize user and role repositories for the provided session."""
-        self.udb = UserDB(session)
-        self.rm = RoleDB(session)
-        self.ins = InstitutionDB(session)
+        self.udb = udb
+        self.rm = rm
+        self.ins = inst
         self.session = session
 
     async def create_user(
