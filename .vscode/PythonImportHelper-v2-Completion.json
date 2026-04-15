@@ -596,6 +596,14 @@
         "documentation": {}
     },
     {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
         "label": "Sequence",
         "importPath": "typing",
         "description": "typing",
@@ -2205,6 +2213,14 @@
         "documentation": {}
     },
     {
+        "label": "RoleDB",
+        "importPath": "src.data.role",
+        "description": "src.data.role",
+        "isExtraImport": true,
+        "detail": "src.data.role",
+        "documentation": {}
+    },
+    {
         "label": "src.data",
         "kind": 6,
         "isExtraImport": true,
@@ -2275,14 +2291,6 @@
         "description": "app_test.shared.factories.user_factory",
         "isExtraImport": true,
         "detail": "app_test.shared.factories.user_factory",
-        "documentation": {}
-    },
-    {
-        "label": "make_user",
-        "importPath": "app_test.shared.factories",
-        "description": "app_test.shared.factories",
-        "isExtraImport": true,
-        "detail": "app_test.shared.factories",
         "documentation": {}
     },
     {
@@ -2371,22 +2379,6 @@
         "description": "app_test.shared.factories",
         "isExtraImport": true,
         "detail": "app_test.shared.factories",
-        "documentation": {}
-    },
-    {
-        "label": "logger",
-        "importPath": "src.core",
-        "description": "src.core",
-        "isExtraImport": true,
-        "detail": "src.core",
-        "documentation": {}
-    },
-    {
-        "label": "logger",
-        "importPath": "src.core",
-        "description": "src.core",
-        "isExtraImport": true,
-        "detail": "src.core",
         "documentation": {}
     },
     {
@@ -2694,70 +2686,6 @@
         "documentation": {}
     },
     {
-        "label": "ValidInstitutions",
-        "importPath": "src.model.institution",
-        "description": "src.model.institution",
-        "isExtraImport": true,
-        "detail": "src.model.institution",
-        "documentation": {}
-    },
-    {
-        "label": "Institution",
-        "importPath": "src.model.institution",
-        "description": "src.model.institution",
-        "isExtraImport": true,
-        "detail": "src.model.institution",
-        "documentation": {}
-    },
-    {
-        "label": "Institution",
-        "importPath": "src.model.institution",
-        "description": "src.model.institution",
-        "isExtraImport": true,
-        "detail": "src.model.institution",
-        "documentation": {}
-    },
-    {
-        "label": "ValidInstitutions",
-        "importPath": "src.model.institution",
-        "description": "src.model.institution",
-        "isExtraImport": true,
-        "detail": "src.model.institution",
-        "documentation": {}
-    },
-    {
-        "label": "Institution",
-        "importPath": "src.model.institution",
-        "description": "src.model.institution",
-        "isExtraImport": true,
-        "detail": "src.model.institution",
-        "documentation": {}
-    },
-    {
-        "label": "ValidInstitutions",
-        "importPath": "src.model.institution",
-        "description": "src.model.institution",
-        "isExtraImport": true,
-        "detail": "src.model.institution",
-        "documentation": {}
-    },
-    {
-        "label": "ValidInstitutions",
-        "importPath": "src.model.institution",
-        "description": "src.model.institution",
-        "isExtraImport": true,
-        "detail": "src.model.institution",
-        "documentation": {}
-    },
-    {
-        "label": "Institution",
-        "importPath": "src.model.institution",
-        "description": "src.model.institution",
-        "isExtraImport": true,
-        "detail": "src.model.institution",
-        "documentation": {}
-    },
-    {
         "label": "SCENARIOS",
         "importPath": "app_test.shared.mock_data.question_submission",
         "description": "app_test.shared.mock_data.question_submission",
@@ -2811,222 +2739,6 @@
         "description": "src.core.logging",
         "isExtraImport": true,
         "detail": "src.core.logging",
-        "documentation": {}
-    },
-    {
-        "label": "Role",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserRoles",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserCreate",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserCreate",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserUpdate",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserRoleLink",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "Role",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "Role",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserRoles",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserUpdate",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserCreate",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "DeveloperProfile",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserRoles",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "Role",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserCreate",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserRoles",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "Role",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "User",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserCreate",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserRead",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
-        "documentation": {}
-    },
-    {
-        "label": "UserRoles",
-        "importPath": "src.model.users",
-        "description": "src.model.users",
-        "isExtraImport": true,
-        "detail": "src.model.users",
         "documentation": {}
     },
     {
@@ -3375,6 +3087,222 @@
         "documentation": {}
     },
     {
+        "label": "User",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "Role",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserRoles",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserUpdate",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserRoleLink",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "Role",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "Role",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserRoles",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserUpdate",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "DeveloperProfile",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserRoles",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "Role",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserRoles",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "Role",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "User",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserCreate",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserRead",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserRoles",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
         "label": "UUID",
         "importPath": "uuid",
         "description": "uuid",
@@ -3615,6 +3543,390 @@
         "importPath": "itertools",
         "description": "itertools",
         "detail": "itertools",
+        "documentation": {}
+    },
+    {
+        "label": "ValidInstitutions",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
+        "label": "Institution",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
+        "label": "Institution",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
+        "label": "ValidInstitutions",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
+        "label": "Institution",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
+        "label": "ValidInstitutions",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
+        "label": "ValidInstitutions",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
+        "label": "Institution",
+        "importPath": "src.model.institution",
+        "description": "src.model.institution",
+        "isExtraImport": true,
+        "detail": "src.model.institution",
+        "documentation": {}
+    },
+    {
+        "label": "InstitutionDB",
+        "importPath": "src.data.institution",
+        "description": "src.data.institution",
+        "isExtraImport": true,
+        "detail": "src.data.institution",
+        "documentation": {}
+    },
+    {
+        "label": "InstitutionDB",
+        "importPath": "src.data.institution",
+        "description": "src.data.institution",
+        "isExtraImport": true,
+        "detail": "src.data.institution",
+        "documentation": {}
+    },
+    {
+        "label": "InstitutionDB",
+        "importPath": "src.data.institution",
+        "description": "src.data.institution",
+        "isExtraImport": true,
+        "detail": "src.data.institution",
+        "documentation": {}
+    },
+    {
+        "label": "InstitutionDB",
+        "importPath": "src.data.institution",
+        "description": "src.data.institution",
+        "isExtraImport": true,
+        "detail": "src.data.institution",
+        "documentation": {}
+    },
+    {
+        "label": "ValidationError",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "field_validator",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "AliasChoices",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "model_validator",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "ValidationError",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "ValidationError",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "ConfigDict",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "ConfigDict",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "EmailStr",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "ConfigDict",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "ValidationError",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "ValidationError",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "field_validator",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "BaseModel",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "ConfigDict",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "ValidationError",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
         "documentation": {}
     },
     {
@@ -4702,278 +5014,6 @@
         "documentation": {}
     },
     {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "Field",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "field_validator",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "Field",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "AliasChoices",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "model_validator",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "ValidationError",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "ValidationError",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "ConfigDict",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "Field",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "ConfigDict",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "Field",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "Field",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "ConfigDict",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "Field",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "ValidationError",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "ValidationError",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "field_validator",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "BaseModel",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "Field",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "ConfigDict",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "ValidationError",
-        "importPath": "pydantic",
-        "description": "pydantic",
-        "isExtraImport": true,
-        "detail": "pydantic",
-        "documentation": {}
-    },
-    {
         "label": "lru_cache",
         "importPath": "functools",
         "description": "functools",
@@ -5742,30 +5782,6 @@
         "documentation": {}
     },
     {
-        "label": "InstitutionDB",
-        "importPath": "src.data.institution",
-        "description": "src.data.institution",
-        "isExtraImport": true,
-        "detail": "src.data.institution",
-        "documentation": {}
-    },
-    {
-        "label": "InstitutionDB",
-        "importPath": "src.data.institution",
-        "description": "src.data.institution",
-        "isExtraImport": true,
-        "detail": "src.data.institution",
-        "documentation": {}
-    },
-    {
-        "label": "InstitutionDB",
-        "importPath": "src.data.institution",
-        "description": "src.data.institution",
-        "isExtraImport": true,
-        "detail": "src.data.institution",
-        "documentation": {}
-    },
-    {
         "label": "Response",
         "importPath": "fastapi.responses",
         "description": "fastapi.responses",
@@ -6303,25 +6319,7 @@
         "kind": 2,
         "importPath": "backend.app_test.data.conftest",
         "description": "backend.app_test.data.conftest",
-        "peekOfCode": "def combined_payload():\n    return [QuestionData(**q) for q in QUESTIONS]\n@pytest.fixture\ndef role_manager(db_session) -> RoleDB:\n    return RoleDB(db_session)\n@pytest.fixture\ndef institution_db(db_session) -> InstitutionDB:\n    return InstitutionDB(db_session)\n@pytest.fixture\ndef qa_attempt_db(db_session) -> QuestionAttemptDB:",
-        "detail": "backend.app_test.data.conftest",
-        "documentation": {}
-    },
-    {
-        "label": "role_manager",
-        "kind": 2,
-        "importPath": "backend.app_test.data.conftest",
-        "description": "backend.app_test.data.conftest",
-        "peekOfCode": "def role_manager(db_session) -> RoleDB:\n    return RoleDB(db_session)\n@pytest.fixture\ndef institution_db(db_session) -> InstitutionDB:\n    return InstitutionDB(db_session)\n@pytest.fixture\ndef qa_attempt_db(db_session) -> QuestionAttemptDB:\n    return QuestionAttemptDB(db_session)\n@pytest.fixture\ndef question_payload():",
-        "detail": "backend.app_test.data.conftest",
-        "documentation": {}
-    },
-    {
-        "label": "institution_db",
-        "kind": 2,
-        "importPath": "backend.app_test.data.conftest",
-        "description": "backend.app_test.data.conftest",
-        "peekOfCode": "def institution_db(db_session) -> InstitutionDB:\n    return InstitutionDB(db_session)\n@pytest.fixture\ndef qa_attempt_db(db_session) -> QuestionAttemptDB:\n    return QuestionAttemptDB(db_session)\n@pytest.fixture\ndef question_payload():\n    \"\"\"Full question payload including topics, qtypes, and languages.\"\"\"\n    return QUESTIONS[0]",
+        "peekOfCode": "def combined_payload():\n    return [QuestionData(**q) for q in QUESTIONS]\n@pytest.fixture\ndef qa_attempt_db(db_session) -> QuestionAttemptDB:\n    return QuestionAttemptDB(db_session)\n@pytest.fixture\ndef question_payload():",
         "detail": "backend.app_test.data.conftest",
         "documentation": {}
     },
@@ -6726,7 +6724,7 @@
         "kind": 5,
         "importPath": "backend.app_test.shared.mock_data.users",
         "description": "backend.app_test.shared.mock_data.users",
-        "peekOfCode": "USERS = [\n    {\n        \"first_name\": \"Alice\",\n        \"last_name\": \"Smith\",\n        \"username\": \"alice\",\n        \"email\": \"alice@test.com\",\n        \"fb_id\": \"1234\",\n    },\n    {\n        \"first_name\": \"Bob\",",
+        "peekOfCode": "USERS = [\n    {\n        \"first_name\": \"Alice\",\n        \"last_name\": \"Smith\",\n        \"username\": \"alice\",\n        \"email\": \"alice@test.com\",\n    },\n    {\n        \"first_name\": \"Bob\",\n        \"last_name\": \"Jones\",",
         "detail": "backend.app_test.shared.mock_data.users",
         "documentation": {}
     },
@@ -6758,11 +6756,38 @@
         "documentation": {}
     },
     {
+        "label": "institution_db",
+        "kind": 2,
+        "importPath": "backend.app_test.unit.test_institution",
+        "description": "backend.app_test.unit.test_institution",
+        "peekOfCode": "def institution_db(db_session) -> InstitutionDB:\n    return InstitutionDB(db_session)\n@pytest.mark.parametrize(\n    \"institution\",\n    [ValidInstitutions.CPP, ValidInstitutions.NORCO, ValidInstitutions.UCR],\n)\n@pytest.mark.asyncio\nasync def test_create_institution(institution_db, institution):\n    inst = await institution_db.create_institution(institution)\n    assert inst.id is not None",
+        "detail": "backend.app_test.unit.test_institution",
+        "documentation": {}
+    },
+    {
+        "label": "role_manager",
+        "kind": 2,
+        "importPath": "backend.app_test.unit.test_role",
+        "description": "backend.app_test.unit.test_role",
+        "peekOfCode": "def role_manager(db_session) -> RoleDB:\n    return RoleDB(db_session)\n@pytest.mark.asyncio\n@pytest.mark.parametrize(\"role\", TEST_ROLES)\nasync def test_create_role(role_manager, role):\n    created = await role_manager.create_role(role)\n    assert created is not None\n    assert isinstance(created, Role)\n    assert created.name == role.value\n@pytest.mark.asyncio",
+        "detail": "backend.app_test.unit.test_role",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_ROLES",
+        "kind": 5,
+        "importPath": "backend.app_test.unit.test_role",
+        "description": "backend.app_test.unit.test_role",
+        "peekOfCode": "TEST_ROLES = [UserRoles.ADMIN, UserRoles.STUDENT, UserRoles.DEVELOPER]\n@pytest.fixture\ndef role_manager(db_session) -> RoleDB:\n    return RoleDB(db_session)\n@pytest.mark.asyncio\n@pytest.mark.parametrize(\"role\", TEST_ROLES)\nasync def test_create_role(role_manager, role):\n    created = await role_manager.create_role(role)\n    assert created is not None\n    assert isinstance(created, Role)",
+        "detail": "backend.app_test.unit.test_role",
+        "documentation": {}
+    },
+    {
         "label": "user_db",
         "kind": 2,
         "importPath": "backend.app_test.unit.test_user",
         "description": "backend.app_test.unit.test_user",
-        "peekOfCode": "def user_db(db_session) -> UserDB:\n    return UserDB(db_session)\n@pytest.fixture\ndef make_user(user_db: UserDB):\n    async def _make_user(**overrides) -> User:\n        defaults = {\n            \"first_name\": \"Luciano\",\n            \"last_name\": \"Bermudez\",\n            \"username\": \"luci123\",\n            \"email\": \"luci123@gmail.com\",",
+        "peekOfCode": "def user_db(db_session) -> UserDB:\n    return UserDB(db_session)\n@pytest.fixture\ndef make_user(user_db: UserDB):\n    async def _make_user(**overrides) -> User:\n        defaults = {\n            \"first_name\": \"Luciano\",\n            \"last_name\": \"Bermudez\",\n            \"username\": \"luci123\",\n            \"email\": \"luci123@email.com\",",
         "detail": "backend.app_test.unit.test_user",
         "documentation": {}
     },
@@ -6771,7 +6796,25 @@
         "kind": 2,
         "importPath": "backend.app_test.unit.test_user",
         "description": "backend.app_test.unit.test_user",
-        "peekOfCode": "def make_user(user_db: UserDB):\n    async def _make_user(**overrides) -> User:\n        defaults = {\n            \"first_name\": \"Luciano\",\n            \"last_name\": \"Bermudez\",\n            \"username\": \"luci123\",\n            \"email\": \"luci123@gmail.com\",\n            \"username\": None,\n            \"password\": \"1234\",\n        }",
+        "peekOfCode": "def make_user(user_db: UserDB):\n    async def _make_user(**overrides) -> User:\n        defaults = {\n            \"first_name\": \"Luciano\",\n            \"last_name\": \"Bermudez\",\n            \"username\": \"luci123\",\n            \"email\": \"luci123@email.com\",\n            \"username\": None,\n            \"password\": \"1234\",\n        }",
+        "detail": "backend.app_test.unit.test_user",
+        "documentation": {}
+    },
+    {
+        "label": "USERS",
+        "kind": 5,
+        "importPath": "backend.app_test.unit.test_user",
+        "description": "backend.app_test.unit.test_user",
+        "peekOfCode": "USERS = [\n    {\n        \"first_name\": \"Alice\",\n        \"last_name\": \"Smith\",\n        \"username\": \"alice\",\n        \"email\": \"alice@test.com\",\n    },\n    {\n        \"first_name\": \"Bob\",\n        \"last_name\": \"Jones\",",
+        "detail": "backend.app_test.unit.test_user",
+        "documentation": {}
+    },
+    {
+        "label": "INVALID_USERS",
+        "kind": 5,
+        "importPath": "backend.app_test.unit.test_user",
+        "description": "backend.app_test.unit.test_user",
+        "peekOfCode": "INVALID_USERS = [\n    {\n        \"last_name\": \"Smith\",\n        \"username\": \"alice\",\n        \"email\": \"alice_test.com\",\n    },\n    {\n        \"first_name\": \"Alice\",\n        \"last_name\": \"Smith\",\n        \"username\": \"alice\",",
         "detail": "backend.app_test.unit.test_user",
         "documentation": {}
     },
@@ -7932,7 +7975,7 @@
         "kind": 6,
         "importPath": "backend.src.model.users",
         "description": "backend.src.model.users",
-        "peekOfCode": "class UserCreate(BaseModel):\n    first_name: str\n    last_name: str\n    password: str\n    username: str | None = None\n    email: str\nclass UserUpdate(UserBase):\n    email: str | None = None\nclass UserRead(UserUpdate):\n    pass",
+        "peekOfCode": "class UserCreate(BaseModel):\n    first_name: str\n    last_name: str\n    password: str\n    username: str | None = None\n    email: EmailStr\nclass UserUpdate(UserBase):\n    email: str | None = None\nclass UserRead(UserUpdate):\n    pass",
         "detail": "backend.src.model.users",
         "documentation": {}
     },

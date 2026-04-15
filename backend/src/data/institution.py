@@ -11,23 +11,6 @@ from src.utils import convert_uuid
 from src.model.institution import Institution, ValidInstitutions
 from src.app_types.general import STORAGE_TYPE, ID
 
-institutions: Dict[ValidInstitutions, str] = {
-    ValidInstitutions.UCR: (
-        "University of California, Riverside. A public research university "
-        "focused on undergraduate and graduate education, research, and innovation."
-    ),
-    ValidInstitutions.CPP: (
-        "California State Polytechnic University, Pomona. A hands-on, "
-        "learn-by-doing institution with a strong emphasis on engineering, "
-        "applied sciences, and professional practice."
-    ),
-    ValidInstitutions.NORCO: (
-        "Norco College. A community college offering associate degrees, "
-        "certificates, and transfer pathways, with a focus on accessible, "
-        "career-oriented, and foundational education."
-    ),
-}
-
 
 class InstitutionDB:
     def __init__(self, session: SessionDep):
@@ -86,8 +69,25 @@ class InstitutionDB:
             raise
 
     async def seed_institution(self):
+        institutions: Dict[ValidInstitutions, str] = {
+            ValidInstitutions.UCR: (
+                "University of California, Riverside. A public research university "
+                "focused on undergraduate and graduate education, research, and innovation."
+            ),
+            ValidInstitutions.CPP: (
+                "California State Polytechnic University, Pomona. A hands-on, "
+                "learn-by-doing institution with a strong emphasis on engineering, "
+                "applied sciences, and professional practice."
+            ),
+            ValidInstitutions.NORCO: (
+                "Norco College. A community college offering associate degrees, "
+                "certificates, and transfer pathways, with a focus on accessible, "
+                "career-oriented, and foundational education."
+            ),
+        }
         for institution, desc in institutions.items():
             if not await self.get_institution(institution):
                 await self.create_institution(institution, desc)
 
-
+    async def get_all_institutions(self):
+        return self.session.exec(select(Institution)).all()

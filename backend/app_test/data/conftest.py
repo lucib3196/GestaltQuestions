@@ -17,17 +17,13 @@ def combined_payload():
     return [QuestionData(**q) for q in QUESTIONS]
 
 
-@pytest.fixture
-def role_manager(db_session) -> RoleDB:
-    return RoleDB(db_session)
 
 
 
 
 
-@pytest.fixture
-def institution_db(db_session) -> InstitutionDB:
-    return InstitutionDB(db_session)
+
+
 
 
 @pytest.fixture

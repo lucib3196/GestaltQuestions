@@ -1,8 +1,7 @@
 from enum import Enum
 from typing import TYPE_CHECKING, List, Optional, Literal
 from uuid import UUID, uuid4
-
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -30,7 +29,7 @@ class UserCreate(BaseModel):
     last_name: str
     password: str
     username: str | None = None
-    email: str
+    email: EmailStr
 
 
 class UserUpdate(UserBase):
