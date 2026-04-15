@@ -3,13 +3,10 @@ from app_test.shared.mock_data import (
     QUESTIONS,
 )
 from src.model.question import QuestionData
-from src.data.user import UserDB
-from src.data.role import RoleDB
 from src.data import (
-    InstitutionDB,
     QuestionAttemptDB,
 )
-from app_test.shared.factories.user_factory import make_user
+
 
 
 @pytest.fixture

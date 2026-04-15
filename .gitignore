@@ -72,3 +72,4 @@ emulator-data/firebase-export-metadata.json
 emulator-data
 firebase-debug.log
 firebase-export**
+.vscode
