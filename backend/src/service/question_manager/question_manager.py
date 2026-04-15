@@ -58,7 +58,7 @@ class QuestionManager:
     # Question Lifecycle
     async def create_question(
         self,
-        question_data: QuestionData | dict,
+        question_data: QuestionData,
         files: Optional[List[FileData]] = None,
         handle_images: bool = True,
     ) -> Question:

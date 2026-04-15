@@ -10,7 +10,7 @@ from sqlmodel import SQLModel
 from datetime import datetime
 
 
-def convert_uuid(value: Union[str, UUID]) -> UUID:
+def convert_uuid(value: Union[str, UUID,None]) -> UUID:
     if isinstance(value, UUID):
         return value
 

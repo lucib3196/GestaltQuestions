@@ -860,6 +860,14 @@
         "documentation": {}
     },
     {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
         "label": "Annotated",
         "importPath": "typing",
         "description": "typing",
@@ -1453,6 +1461,14 @@
     },
     {
         "label": "cast",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
         "importPath": "typing",
         "description": "typing",
         "isExtraImport": true,
@@ -2790,14 +2806,6 @@
         "documentation": {}
     },
     {
-        "label": "logger",
-        "importPath": "src.core.logging",
-        "description": "src.core.logging",
-        "isExtraImport": true,
-        "detail": "src.core.logging",
-        "documentation": {}
-    },
-    {
         "label": "Role",
         "importPath": "src.model.users",
         "description": "src.model.users",
@@ -2903,6 +2911,22 @@
     },
     {
         "label": "UserCreate",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "DeveloperProfile",
+        "importPath": "src.model.users",
+        "description": "src.model.users",
+        "isExtraImport": true,
+        "detail": "src.model.users",
+        "documentation": {}
+    },
+    {
+        "label": "UserRoles",
         "importPath": "src.model.users",
         "description": "src.model.users",
         "isExtraImport": true,
@@ -4341,6 +4365,22 @@
         "documentation": {}
     },
     {
+        "label": "select",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
+        "label": "Session",
+        "importPath": "sqlmodel",
+        "description": "sqlmodel",
+        "isExtraImport": true,
+        "detail": "sqlmodel",
+        "documentation": {}
+    },
+    {
         "label": "SQLModel",
         "importPath": "sqlmodel",
         "description": "sqlmodel",
@@ -4663,6 +4703,30 @@
     },
     {
         "label": "field_validator",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "AliasChoices",
+        "importPath": "pydantic",
+        "description": "pydantic",
+        "isExtraImport": true,
+        "detail": "pydantic",
+        "documentation": {}
+    },
+    {
+        "label": "model_validator",
         "importPath": "pydantic",
         "description": "pydantic",
         "isExtraImport": true,
@@ -5438,6 +5502,14 @@
         "documentation": {}
     },
     {
+        "label": "Storage",
+        "importPath": "src.service.storage.base",
+        "description": "src.service.storage.base",
+        "isExtraImport": true,
+        "detail": "src.service.storage.base",
+        "documentation": {}
+    },
+    {
         "label": "defaultdict",
         "importPath": "collections",
         "description": "collections",
@@ -5587,6 +5659,62 @@
         "description": "src.core.firebase",
         "isExtraImport": true,
         "detail": "src.core.firebase",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "QuestionManager",
+        "importPath": "src.service.question_manager.question_manager",
+        "description": "src.service.question_manager.question_manager",
+        "isExtraImport": true,
+        "detail": "src.service.question_manager.question_manager",
+        "documentation": {}
+    },
+    {
+        "label": "QuestionManager",
+        "importPath": "src.service.question_manager.question_manager",
+        "description": "src.service.question_manager.question_manager",
+        "isExtraImport": true,
+        "detail": "src.service.question_manager.question_manager",
+        "documentation": {}
+    },
+    {
+        "label": "UserManager",
+        "importPath": "src.service.user.user_manager",
+        "description": "src.service.user.user_manager",
+        "isExtraImport": true,
+        "detail": "src.service.user.user_manager",
+        "documentation": {}
+    },
+    {
+        "label": "UserManager",
+        "importPath": "src.service.user.user_manager",
+        "description": "src.service.user.user_manager",
+        "isExtraImport": true,
+        "detail": "src.service.user.user_manager",
+        "documentation": {}
+    },
+    {
+        "label": "RoleDB",
+        "importPath": "src.service.user.user_manager",
+        "description": "src.service.user.user_manager",
+        "isExtraImport": true,
+        "detail": "src.service.user.user_manager",
+        "documentation": {}
+    },
+    {
+        "label": "convert_uuid",
+        "importPath": "src.utils.database_utils",
+        "description": "src.utils.database_utils",
+        "isExtraImport": true,
+        "detail": "src.utils.database_utils",
         "documentation": {}
     },
     {
@@ -5837,30 +5965,6 @@
         "description": "src.service.storage.firebase_storage",
         "isExtraImport": true,
         "detail": "src.service.storage.firebase_storage",
-        "documentation": {}
-    },
-    {
-        "label": "QuestionManager",
-        "importPath": "src.service.question_manager.question_manager",
-        "description": "src.service.question_manager.question_manager",
-        "isExtraImport": true,
-        "detail": "src.service.question_manager.question_manager",
-        "documentation": {}
-    },
-    {
-        "label": "UserManager",
-        "importPath": "src.service.user.user_manager",
-        "description": "src.service.user.user_manager",
-        "isExtraImport": true,
-        "detail": "src.service.user.user_manager",
-        "documentation": {}
-    },
-    {
-        "label": "RoleDB",
-        "importPath": "src.service.user.user_manager",
-        "description": "src.service.user.user_manager",
-        "isExtraImport": true,
-        "detail": "src.service.user.user_manager",
         "documentation": {}
     },
     {
@@ -7325,7 +7429,7 @@
         "kind": 6,
         "importPath": "backend.src.core.config",
         "description": "backend.src.core.config",
-        "peekOfCode": "class AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    MODE: Literal[\"testing\", \"dev\", \"production\"] = \"dev\"\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"cloud\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []\n    WORKING_DIR: str | Path | None = None\n    DATABASE_URI: str | None = None\n    POSTGRES_URL: str | None = None\n    SQLITE_DB_PATH: str | None = None\n    # FIREBASE CONFIG",
+        "peekOfCode": "class AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    ENV: VALID_ENV = Field(default=\"dev\", validation_alias=AliasChoices(\"MODE\", \"mode\"))\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"cloud\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []\n    WORKING_DIR: str | Path | None = None\n    DATABASE_URI: str | None = None\n    POSTGRES_URL: str | None = None\n    SQLITE_DB_PATH: str | None = None\n    # FIREBASE CONFIG",
         "detail": "backend.src.core.config",
         "documentation": {}
     },
@@ -7334,7 +7438,7 @@
         "kind": 2,
         "importPath": "backend.src.core.config",
         "description": "backend.src.core.config",
-        "peekOfCode": "def get_settings() -> AppSettings:\n    valid_modes = (\"testing\", \"dev\", \"production\")\n    env_mode = os.getenv(\"MODE\", \"dev\")\n    if env_mode not in valid_modes:\n        raise ValueError(f\"Invalid MODE: {env_mode}. Must be one of {valid_modes}\")\n    # Verify storage\n    if env_mode == \"dev\":\n        auth_emulator = os.getenv(\"FIREBASE_AUTH_EMULATOR_HOST\", None)\n        storage_emulator = os.getenv(\"STORAGE_EMULATOR_HOST\", None)\n        if auth_emulator is None:",
+        "peekOfCode": "def get_settings() -> AppSettings:\n    if ENV not in MODES:\n        raise ValueError(f\"Invalid MODE: {ENV}. Must be one of {MODES}\")\n    app_settings = AppSettings(\n        PROJECT_ROOT=ROOT_PATH,\n    )\n    return app_settings\nif __name__ == \"__main__\":\n    print(get_settings())",
         "detail": "backend.src.core.config",
         "documentation": {}
     },
@@ -7343,7 +7447,34 @@
         "kind": 5,
         "importPath": "backend.src.core.config",
         "description": "backend.src.core.config",
-        "peekOfCode": "ROOT_PATH = Path(__file__).parents[2]\nclass AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    MODE: Literal[\"testing\", \"dev\", \"production\"] = \"dev\"\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"cloud\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []\n    WORKING_DIR: str | Path | None = None\n    DATABASE_URI: str | None = None\n    POSTGRES_URL: str | None = None\n    SQLITE_DB_PATH: str | None = None",
+        "peekOfCode": "ROOT_PATH = Path(__file__).parents[2]\nENV = os.getenv(\"ENV\", \"dev\")\nVALID_ENV = Literal[\"testing\", \"dev\", \"production\"]\nMODES: List[VALID_ENV] = [\"dev\", \"production\", \"testing\"]\nENV_FILE = f\".env.{ENV}\" if ENV != \"production\" else \".env\"\nclass AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    ENV: VALID_ENV = Field(default=\"dev\", validation_alias=AliasChoices(\"MODE\", \"mode\"))\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"cloud\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []",
+        "detail": "backend.src.core.config",
+        "documentation": {}
+    },
+    {
+        "label": "ENV",
+        "kind": 5,
+        "importPath": "backend.src.core.config",
+        "description": "backend.src.core.config",
+        "peekOfCode": "ENV = os.getenv(\"ENV\", \"dev\")\nVALID_ENV = Literal[\"testing\", \"dev\", \"production\"]\nMODES: List[VALID_ENV] = [\"dev\", \"production\", \"testing\"]\nENV_FILE = f\".env.{ENV}\" if ENV != \"production\" else \".env\"\nclass AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    ENV: VALID_ENV = Field(default=\"dev\", validation_alias=AliasChoices(\"MODE\", \"mode\"))\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"cloud\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []\n    WORKING_DIR: str | Path | None = None",
+        "detail": "backend.src.core.config",
+        "documentation": {}
+    },
+    {
+        "label": "VALID_ENV",
+        "kind": 5,
+        "importPath": "backend.src.core.config",
+        "description": "backend.src.core.config",
+        "peekOfCode": "VALID_ENV = Literal[\"testing\", \"dev\", \"production\"]\nMODES: List[VALID_ENV] = [\"dev\", \"production\", \"testing\"]\nENV_FILE = f\".env.{ENV}\" if ENV != \"production\" else \".env\"\nclass AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    ENV: VALID_ENV = Field(default=\"dev\", validation_alias=AliasChoices(\"MODE\", \"mode\"))\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"cloud\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []\n    WORKING_DIR: str | Path | None = None\n    DATABASE_URI: str | None = None",
+        "detail": "backend.src.core.config",
+        "documentation": {}
+    },
+    {
+        "label": "ENV_FILE",
+        "kind": 5,
+        "importPath": "backend.src.core.config",
+        "description": "backend.src.core.config",
+        "peekOfCode": "ENV_FILE = f\".env.{ENV}\" if ENV != \"production\" else \".env\"\nclass AppSettings(BaseSettings):\n    PROJECT_NAME: str | None = \"Gestalt\"\n    ENV: VALID_ENV = Field(default=\"dev\", validation_alias=AliasChoices(\"MODE\", \"mode\"))\n    STORAGE_SERVICE: Literal[\"local\", \"cloud\"] = \"cloud\"\n    BACKEND_CORS_ORIGINS: Sequence[str] | str = []\n    WORKING_DIR: str | Path | None = None\n    DATABASE_URI: str | None = None\n    POSTGRES_URL: str | None = None\n    SQLITE_DB_PATH: str | None = None",
         "detail": "backend.src.core.config",
         "documentation": {}
     },
@@ -7370,7 +7501,7 @@
         "kind": 5,
         "importPath": "backend.src.core.database_config",
         "description": "backend.src.core.database_config",
-        "peekOfCode": "app_settings = get_settings()\n# Define choosing the settings\nif app_settings.MODE == \"testing\":\n    DATABASE_URL = \"sqlite:///:memory:\"\nelif app_settings.MODE == \"production\":\n    DATABASE_URL = app_settings.POSTGRES_URL\n    if not DATABASE_URL:\n        raise RuntimeError(\"POSTGRES_URL must be set in production mode\")\nelif app_settings.MODE == \"dev\":\n    DATABASE_URL = f\"sqlite:///{app_settings.SQLITE_DB_PATH}\"",
+        "peekOfCode": "app_settings = get_settings()\n# Define choosing the settings\nif app_settings.ENV == \"testing\":\n    DATABASE_URL = \"sqlite:///:memory:\"\nelif app_settings.ENV == \"production\":\n    DATABASE_URL = app_settings.POSTGRES_URL\n    if not DATABASE_URL:\n        raise RuntimeError(\"POSTGRES_URL must be set in production mode\")\nelif app_settings.ENV == \"dev\":\n    DATABASE_URL = f\"sqlite:///{app_settings.SQLITE_DB_PATH}\"",
         "detail": "backend.src.core.database_config",
         "documentation": {}
     },
@@ -7388,7 +7519,7 @@
         "kind": 2,
         "importPath": "backend.src.core.firebase",
         "description": "backend.src.core.firebase",
-        "peekOfCode": "def initialize_firebase_app():\n    if not app_settings.FIREBASE_CRED:\n        raise ValueError(\"Firebase Credentials Not Found\")\n    try:\n        if app_settings.MODE == \"production\":\n            cred = json.loads(app_settings.FIREBASE_CRED)\n        else:\n            cred = (\n                Path(app_settings.PROJECT_ROOT) / app_settings.FIREBASE_CRED\n            ).resolve()",
+        "peekOfCode": "def initialize_firebase_app():\n    try:\n        cred = credentials.Certificate(app_settings.FIREBASE_CRED)\n        bucket_name = app_settings.STORAGE_BUCKET\n        if not bucket_name:\n            raise ValueError(\"No Bucket Specified must be set in Environment\")\n        firebase_admin.initialize_app(cred, {\"storageBucket\": bucket_name})\n    except Exception as e:\n        raise ValueError(f\"Could not initialize creditionals error {str(e)}\")\nif __name__ == \"__main__\":",
         "detail": "backend.src.core.firebase",
         "documentation": {}
     },
@@ -7397,7 +7528,7 @@
         "kind": 5,
         "importPath": "backend.src.core.firebase",
         "description": "backend.src.core.firebase",
-        "peekOfCode": "app_settings = get_settings()\n@lru_cache\ndef initialize_firebase_app():\n    if not app_settings.FIREBASE_CRED:\n        raise ValueError(\"Firebase Credentials Not Found\")\n    try:\n        if app_settings.MODE == \"production\":\n            cred = json.loads(app_settings.FIREBASE_CRED)\n        else:\n            cred = (",
+        "peekOfCode": "app_settings = get_settings()\n@lru_cache\ndef initialize_firebase_app():\n    try:\n        cred = credentials.Certificate(app_settings.FIREBASE_CRED)\n        bucket_name = app_settings.STORAGE_BUCKET\n        if not bucket_name:\n            raise ValueError(\"No Bucket Specified must be set in Environment\")\n        firebase_admin.initialize_app(cred, {\"storageBucket\": bucket_name})\n    except Exception as e:",
         "detail": "backend.src.core.firebase",
         "documentation": {}
     },
@@ -8068,6 +8199,42 @@
         "documentation": {}
     },
     {
+        "label": "DeveloperAccessDenied",
+        "kind": 6,
+        "importPath": "backend.src.service.user.developer",
+        "description": "backend.src.service.user.developer",
+        "peekOfCode": "class DeveloperAccessDenied(PermissionError):\n    \"\"\"Raised when a user tries to perform a developer-only action.\"\"\"\n@dataclass\nclass AccessDecision:\n    allowed: bool\n    reason: str\nclass DeveloperAccessService:\n    \"\"\"\n    Service that gates developer actions and manages developer profile data.\n    \"\"\"",
+        "detail": "backend.src.service.user.developer",
+        "documentation": {}
+    },
+    {
+        "label": "AccessDecision",
+        "kind": 6,
+        "importPath": "backend.src.service.user.developer",
+        "description": "backend.src.service.user.developer",
+        "peekOfCode": "class AccessDecision:\n    allowed: bool\n    reason: str\nclass DeveloperAccessService:\n    \"\"\"\n    Service that gates developer actions and manages developer profile data.\n    \"\"\"\n    def __init__(\n        self,\n        user_manager: UserManager,",
+        "detail": "backend.src.service.user.developer",
+        "documentation": {}
+    },
+    {
+        "label": "DeveloperAccessService",
+        "kind": 6,
+        "importPath": "backend.src.service.user.developer",
+        "description": "backend.src.service.user.developer",
+        "peekOfCode": "class DeveloperAccessService:\n    \"\"\"\n    Service that gates developer actions and manages developer profile data.\n    \"\"\"\n    def __init__(\n        self,\n        user_manager: UserManager,\n        storage: Storage,\n        session: Session,\n        question_manager: Optional[QuestionManager] = None,",
+        "detail": "backend.src.service.user.developer",
+        "documentation": {}
+    },
+    {
+        "label": "Developer",
+        "kind": 5,
+        "importPath": "backend.src.service.user.developer",
+        "description": "backend.src.service.user.developer",
+        "peekOfCode": "Developer = DeveloperAccessService",
+        "detail": "backend.src.service.user.developer",
+        "documentation": {}
+    },
+    {
         "label": "UserManager",
         "kind": 6,
         "importPath": "backend.src.service.user.user_manager",
@@ -8135,7 +8302,7 @@
         "kind": 2,
         "importPath": "backend.src.utils.database_utils",
         "description": "backend.src.utils.database_utils",
-        "peekOfCode": "def convert_uuid(value: Union[str, UUID]) -> UUID:\n    if isinstance(value, UUID):\n        return value\n    if value is None:\n        raise ValueError(\"UUID value cannot be None\")\n    try:\n        return UUID(str(value).strip())  # 🔥 FIX HERE\n    except (ValueError, TypeError):\n        raise ValueError(f\"Invalid UUID: {value!r}\")\ndef pick_related_label_col(target_cls):",
+        "peekOfCode": "def convert_uuid(value: Union[str, UUID,None]) -> UUID:\n    if isinstance(value, UUID):\n        return value\n    if value is None:\n        raise ValueError(\"UUID value cannot be None\")\n    try:\n        return UUID(str(value).strip())  # 🔥 FIX HERE\n    except (ValueError, TypeError):\n        raise ValueError(f\"Invalid UUID: {value!r}\")\ndef pick_related_label_col(target_cls):",
         "detail": "backend.src.utils.database_utils",
         "documentation": {}
     },

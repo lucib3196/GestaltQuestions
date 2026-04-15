@@ -1,21 +1,28 @@
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal, Sequence
+from typing import Literal, Sequence, List
 
-from pydantic import field_validator
+from pydantic import field_validator, Field, AliasChoices, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
+import json
+
 
 load_dotenv()
 
-# Points to the root directory adjust as needed
+# General Settings
+## ROOT Path points to root of the backend
 ROOT_PATH = Path(__file__).parents[2]
+ENV = os.getenv("ENV", "dev")
+VALID_ENV = Literal["testing", "dev", "production"]
+MODES: List[VALID_ENV] = ["dev", "production", "testing"]
+ENV_FILE = f".env.{ENV}" if ENV != "production" else ".env"
 
 
 class AppSettings(BaseSettings):
     PROJECT_NAME: str | None = "Gestalt"
-    MODE: Literal["testing", "dev", "production"] = "dev"
+    ENV: VALID_ENV = Field(default="dev", validation_alias=AliasChoices("MODE", "mode"))
     STORAGE_SERVICE: Literal["local", "cloud"] = "cloud"
 
     BACKEND_CORS_ORIGINS: Sequence[str] | str = []
@@ -54,45 +61,53 @@ class AppSettings(BaseSettings):
 
         return normalized
 
+    @model_validator(mode="after")
+    def validate_emulators(self):
+        if self.ENV == "production":
+            return self
+
+        if not (self.FIREBASE_AUTH_EMULATOR_HOST or self.STORAGE_EMULATOR_HOST):
+            raise ValueError(f"Missing emulator config for ENV={self.ENV}")
+
+        return self
+
+    model_config = SettingsConfigDict(
+        env_file=ENV_FILE,
+        extra="ignore",
+    )
+
     @field_validator("SQLITE_DB_PATH", mode="before")
     @classmethod
     def assemble_db_connection(cls, v: str | None):
         return v or ":memory:"
 
-    model_config = SettingsConfigDict(
-        env_file=ROOT_PATH / ".env",
-        env_nested_delimiter="__",
-        extra="ignore",
-    )
+    @model_validator(mode="after")
+    def format_credentials(self):
+        try:
+            if self.FIREBASE_CRED is None:
+                raise ValueError("Firebase Credentials must be set")
+
+            if self.ENV == "production":
+                self.FIREBASE_CRED = json.loads(self.FIREBASE_CRED)
+                return self
+
+            cred_path = (Path(self.PROJECT_ROOT) / self.FIREBASE_CRED).resolve()
+
+            if not cred_path.exists():
+                raise ValueError(f"Credential file not found: {cred_path}")
+
+            self.FIREBASE_CRED = json.loads(cred_path.read_text())
+
+            return self
+
+        except Exception as e:
+            raise ValueError(f"Failed to load firebase credentials: {e}")
 
 
 @lru_cache
 def get_settings() -> AppSettings:
-    valid_modes = ("testing", "dev", "production")
-    env_mode = os.getenv("MODE", "dev")
-    if env_mode not in valid_modes:
-        raise ValueError(f"Invalid MODE: {env_mode}. Must be one of {valid_modes}")
-
-    # Verify storage
-    if env_mode == "dev":
-        auth_emulator = os.getenv("FIREBASE_AUTH_EMULATOR_HOST", None)
-        storage_emulator = os.getenv("STORAGE_EMULATOR_HOST", None)
-
-        if auth_emulator is None:
-            raise ValueError("Env Mode set to dev. Auth emulator must be set")
-        if storage_emulator is None:
-            raise ValueError("Env Mode set to dev. Storage emulator must be set")
-
-    # Verify storage
-    if env_mode == "dev":
-        auth_emulator = os.getenv("FIREBASE_AUTH_EMULATOR_HOST", None)
-        storage_emulator = os.getenv("STORAGE_EMULATOR_HOST", None)
-
-        if auth_emulator is None:
-            raise ValueError("Env Mode set to dev. Auth emulator must be set")
-        if storage_emulator is None:
-            raise ValueError("Env Mode set to dev. Storage emulator must be set")
-
+    if ENV not in MODES:
+        raise ValueError(f"Invalid MODE: {ENV}. Must be one of {MODES}")
     app_settings = AppSettings(
         PROJECT_ROOT=ROOT_PATH,
     )
