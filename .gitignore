@@ -74,3 +74,5 @@ firebase-debug.log
 firebase-export**
 .vscode
 .github
+
+backend/src/service/sandbox_execution/test_question

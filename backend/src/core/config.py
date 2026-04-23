@@ -81,6 +81,7 @@ class AppSettings(BaseSettings):
     def assemble_db_connection(cls, v: str | None):
         return v or ":memory:"
 
+
     @model_validator(mode="after")
     def format_credentials(self):
         try:

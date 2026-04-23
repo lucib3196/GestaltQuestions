@@ -6,7 +6,7 @@ packages = [
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Luciano Bermudez",email = ";berm007@ucr.edu"}
+    {name = "Luciano Bermudez",email = ";lberm007@ucr.edu"}
 ]
 readme = "README.md"
 requires-python = ">=3.11,<4.0"
