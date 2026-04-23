@@ -1,86 +1,66 @@
-# Stdlib
-import importlib.util
-import io
-import json
-import tempfile
-from contextlib import redirect_stdout
+import os
 from pathlib import Path
-from typing import Any
-from .error_handling import ExecutionError
+from textwrap import dedent
 
-# Internal
 from src.services.code_runner.base import CodeRunner
-from src.services.code_runner.models import ExecutionResult
+from src.services.code_runner.models import Language, RuntimeExecutionConfig
 
 
 class PythonScriptRunner(CodeRunner):
-    def __init__(self, func_name: str = "generate", suffix: str = ".py"):
-        self.func_name = func_name
-        self.suffix = suffix
+    """Runs Python code from a runtime execution configuration."""
 
-    def import_module_from_path(
-        self,
-        path: str | Path,
-    ) -> Any:
-        """
-        Dynamically imports a Python module from a given file path.
+    def __init__(
+        self, runtime_config: RuntimeExecutionConfig, language: Language = "python"
+    ):
+        """Initialize Python runner with validated runtime config."""
+        super().__init__(runtime_config, language)
 
-        Args:
-            path (str): Path to the Python module.
-            module_name (str): Name to assign to the imported module.
+    def _command_prefix(self) -> list[str]:
+        """Return Python command used to execute inline script."""
+        return ["python3", "-c"]
 
-        Returns:
-            module: The imported module object.
+    def _initialize_env(self) -> None:
+        """Build environment variables used by the Python subprocess."""
+        self._env = os.environ.copy()
 
-        Raises:
-            ImportError: If the module cannot be imported.
-        """
-        spec = importlib.util.spec_from_file_location(self.func_name, path)
-        if spec is None or spec.loader is None:
-            raise ExecutionError(f"Could not load spec from path: {path}")
-        module = importlib.util.module_from_spec(spec)
-        try:
-            spec.loader.exec_module(module)
-        except Exception as e:
-            raise ExecutionError(f"Error executing module '{path}': {e}")
-        return module
+    def _build_runner_script(self, entry_point_path: str | Path) -> str:
+        """Build inline bootstrap script that imports and calls configured function."""
+        if isinstance(entry_point_path, Path):
+            entry_point_path = entry_point_path.as_posix()
 
-    def run(self, code: str) -> ExecutionResult:
-        try:
-            with tempfile.NamedTemporaryFile(
-                mode="w",
-                delete=False,
-                suffix=self.suffix,
-                errors="replace",
-                encoding="utf-8",
-            ) as tmp:
-                tmp.write(code)
-                tmp_path = tmp.name
-            tmp_path_posix = Path(tmp_path).as_posix()
-        except UnicodeError as e:
-            raise ExecutionError(
-                f"Could not execute code received a Unicode failure during execution: Error {e} "
-            )
-        module = self.import_module_from_path(tmp_path_posix)
-        generate = getattr(module, self.func_name, None)
-        if not callable(generate):
-            raise ExecutionError(
-                "Function 'generate' not found or not callable in the Python module."
-            )
-        # Get the print statements
+        bootstrap = dedent(
+            f"""\
+            import importlib.util
+            import json
+            from pathlib import Path
 
-        try:
-            f = io.StringIO()
-            with redirect_stdout(f):
-                result = generate()
-            captured = f.getvalue().splitlines()
-        except Exception as e:
-            raise ExecutionError(f"Error executing python {self.func_name} : {e}")
-        return ExecutionResult(output=json.dumps(result), logs=captured)
+            entry = Path({entry_point_path!r}).resolve()
+            func_name = {self.runtime_config.func_name!r}
+
+            spec = importlib.util.spec_from_file_location("entry_module", entry)
+            if spec is None or spec.loader is None:
+                raise RuntimeError(f"Could not load module spec from {{entry}}")
+
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+
+            fn = getattr(mod, func_name, None)
+            if not callable(fn):
+                raise RuntimeError(f"Function '{{func_name}}' not found or not callable")
+
+            result = fn()
+            print(json.dumps(result))
+            """
+        )
+        return bootstrap
 
 
 if __name__ == "__main__":
-    path = Path(r"app_test/test_code/generate.py").resolve()
-    content = path.read_text()
-    runner = PythonScriptRunner()
-    runner.run(content)
+    path = Path(r"../app_test/assets/generate.py").resolve()
+    config = RuntimeExecutionConfig(
+        entry="server.py",
+        language="python",
+        files={"server.py": path.read_text(encoding="utf-8")},
+    )
+    result = PythonScriptRunner(config, language="python").execute()
+    print(result)
