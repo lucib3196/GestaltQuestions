@@ -23,7 +23,9 @@ class CodeRunner(ABC):
     @abstractmethod
     def _build_runner_script(self, entry_point_path: str | Path) -> str:
         """Return the inline script executed by the subprocess."""
-        raise NotImplementedError("_build_runner_script must be implemented by subclass")
+        raise NotImplementedError(
+            "_build_runner_script must be implemented by subclass"
+        )
 
     @abstractmethod
     def _command_prefix(self) -> list[str]:
@@ -66,7 +68,9 @@ class CodeRunner(ABC):
                     f"'{self.runtime_config.entry}'. stderr: {e.stderr}"
                 )
             except subprocess.TimeoutExpired:
-                raise ExecutionError(f"{self.language} execution timed out after 5 seconds.")
+                raise ExecutionError(
+                    f"{self.language} execution timed out after 5 seconds."
+                )
             except Exception as e:
                 raise ExecutionError(
                     f"Unexpected failure while running {self.language} subprocess: {e}"
@@ -79,7 +83,9 @@ class CodeRunner(ABC):
         raw_results = self.execute()
 
         if raw_results.returncode != 0:
-            raise ExecutionError(f"{self.language} execution crashed:\n{raw_results.stderr}")
+            raise ExecutionError(
+                f"{self.language} execution crashed:\n{raw_results.stderr}"
+            )
 
         stdout = raw_results.stdout.strip()
         stderr = raw_results.stderr.strip()
