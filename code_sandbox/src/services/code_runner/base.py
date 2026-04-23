@@ -17,6 +17,7 @@ class CodeRunner(ABC):
     def execute(self) -> CompletedProcess:
         """Executes the code using a subprocess, returns the raw result"""
         raise NotImplementedError("execute must be implemented by subclass")
+
     @abstractmethod
     def run(
         self,

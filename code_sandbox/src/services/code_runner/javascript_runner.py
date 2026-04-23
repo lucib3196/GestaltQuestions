@@ -76,7 +76,7 @@ class JavaScriptRunner(CodeRunner):
                     text=True,
                     timeout=5,
                     check=True,
-                    env=self._env
+                    env=self._env,
                 )
             except subprocess.CalledProcessError as e:
                 raise ExecutionError(
