@@ -40,11 +40,15 @@ class QuestionDB:
             session: Active SQLModel session used for database operations.
         """
         self.session = session
-        self.metadata_rel = ["topics", "languages", "qtypes"]
+        self.metadata_rel = ["topics", "languages", "qTypes"]
         self.excluded_fields = self.metadata_rel
 
     async def create_question(
-        self, question: QuestionData | dict, *, created_by: UUID | None = None
+        self,
+        question: QuestionData | dict,
+        *,
+        created_by: UUID | None = None,
+        storage_type: STORAGE_TYPE | None = None,
     ) -> Question:
         """
         Create a question record and attach its relationships.
@@ -57,7 +61,17 @@ class QuestionDB:
             The created Question ORM instance.
         """
         question = self.validate_data(question)
-        logger.info("This is the question %s", question)
+        if created_by and not question.question_path:
+            raise QuestionValidationError(
+                "question_path is required when created_by is provided."
+            )
+        if question.question_path:
+            question.question_path = PurePosixPath(question.question_path).as_posix()
+        if created_by and not storage_type:
+            raise QuestionValidationError(
+                "storage_type is required when created_by is provided."
+            )
+        logger.debug("This is the question %s", question)
         question_orm = Question(
             **question.model_dump(exclude=set(self.excluded_fields)),
             created_by_id=created_by,
@@ -70,6 +84,12 @@ class QuestionDB:
         try:
             self.session.commit()
             self.session.refresh(question_orm)
+            if created_by and question.question_path and storage_type:
+                question_orm = await self.set_question_path(
+                    question_orm.id,
+                    storage_type,
+                    question.question_path,
+                )
             return question_orm
         except SQLAlchemyError as e:
             self.session.rollback()
@@ -264,9 +284,7 @@ class QuestionDB:
             raise QuestionDeleteError(f"Failed to delete all questions: {e}") from e
 
     # Setter and Getters
-    async def get_question_path(
-        self, id: ID, storage_type: STORAGE_TYPE
-    ) -> str | None:
+    async def get_question_path(self, id: ID, storage_type: STORAGE_TYPE) -> str | None:
         """
         Retrieve the stored path for a question in the requested storage backend.
 
@@ -348,13 +366,13 @@ class QuestionDB:
         # Extract relationship meta
         topic_names = data.topics
         language_names = data.languages
-        qtype_names = data.qtypes
+        qtype_names = data.qTypes
 
         question.topics = await gdb.get_or_create_many(self.session, Topic, topic_names)
         question.languages = await gdb.get_or_create_many(
             self.session, Language, language_names
         )
-        question.qtypes = await gdb.get_or_create_many(
+        question.qTypes = await gdb.get_or_create_many(
             self.session, QuestionType, qtype_names
         )
         return question
@@ -372,7 +390,7 @@ class QuestionDB:
         # Get the topics,languages and qtypes
         topics = await gdb.get_relationship_data(q, "topics", mode="list")
         languages = await gdb.get_relationship_data(q, "languages", mode="list")
-        qtypes = await gdb.get_relationship_data(q, "qtypes", mode="list")
+        qtypes = await gdb.get_relationship_data(q, "qTypes", mode="list")
         relationship_data = {"topics": topics, "languages": languages, "qtypes": qtypes}
         return relationship_data
 

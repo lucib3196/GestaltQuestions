@@ -10,6 +10,7 @@ from typing import (
     Tuple,
     Union,
 )
+from uuid import UUID, uuid4
 
 from google.cloud.storage.blob import Blob
 from src.data import QuestionDB
@@ -61,16 +62,35 @@ class QuestionManager:
         question_data: QuestionData,
         files: Optional[List[FileData]] = None,
         handle_images: bool = True,
+        *,
+        created_by: UUID | None = None,
+        storage_path: str | None = None,
     ) -> Question:
         try:
 
             question_data = QuestionData.model_validate(question_data)
-            question = await self.qdb.create_question(question_data)
+            if storage_path and not question_data.base_path:
+                question_data.base_path = storage_path
 
             if not question_data.base_path:
                 raise ValueError("Base path missing")
 
-            question_path = self._question_dir(
+            if created_by and not question_data.question_path:
+                if not question_data.id:
+                    question_data.id = uuid4()
+                question_stub = Question(id=question_data.id, title=question_data.title)
+                question_data.question_path = self._question_dir(
+                    question_data.base_path,
+                    question_stub,
+                )
+
+            question = await self.qdb.create_question(
+                question_data,
+                created_by=created_by,
+                storage_type=self.storage.get_storage_type(),
+            )
+
+            question_path = question_data.question_path or self._question_dir(
                 question_data.base_path,
                 question,
             )
@@ -79,11 +99,12 @@ class QuestionManager:
             logger.info(f"[QM] Created storage path for question {storage_path} ")
             assert self.storage.exists(storage_path)
 
-            await self.qdb.set_question_path(
-                question.id,
-                self.storage.get_storage_type(),
-                question_path,
-            )
+            if not created_by:
+                await self.qdb.set_question_path(
+                    question.id,
+                    self.storage.get_storage_type(),
+                    question_path,
+                )
 
             if files:
                 await self.handle_question_files(

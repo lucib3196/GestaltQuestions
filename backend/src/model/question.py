@@ -6,7 +6,6 @@ from enum import Enum
 # Third-party libraries
 from pydantic import BaseModel, ConfigDict, Field
 from sqlmodel import Field as SQLField, Relationship, SQLModel
-from .question_ownership import QuestionOwnership
 
 from typing import Optional, Sequence
 from uuid import UUID
@@ -41,7 +40,7 @@ class QuestionBase(BaseModel):
 
 class QRelationshipData(BaseModel):
     topics: Sequence[str] = Field(default_factory=list)
-    qtypes: Sequence[str] = Field(default_factory=list)
+    qTypes: Sequence[str] = Field(default_factory=list)
     languages: Sequence[str] = Field(default_factory=list)
 
 
