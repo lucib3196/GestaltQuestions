@@ -3,6 +3,7 @@ from firebase_admin import credentials
 import firebase_admin
 from functools import lru_cache
 from src.core import get_settings
+from src.core import logger
 
 import os
 
@@ -16,6 +17,10 @@ if app_settings.STORAGE_EMULATOR_HOST:
 @lru_cache
 def initialize_firebase_app():
     try:
+        try:
+            return firebase_admin.get_app()
+        except ValueError:
+            pass
 
         cred = credentials.Certificate(app_settings.FIREBASE_CRED)
 
@@ -24,7 +29,12 @@ def initialize_firebase_app():
         )
 
     except Exception as e:
-        raise ValueError(f"Could not initialize credentials error {str(e)}")
+        logger.exception(
+            "Firebase initialization failed. bucket=%s emulator=%s",
+            app_settings.STORAGE_BUCKET,
+            os.getenv("STORAGE_EMULATOR_HOST"),
+        )
+        raise ValueError(f"Could not initialize credentials: {e}") from e
 
 
 if __name__ == "__main__":

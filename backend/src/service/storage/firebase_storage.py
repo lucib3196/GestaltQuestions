@@ -17,7 +17,6 @@ class FbStorage(Storage):
         bucket,
     ):
         logger.info("[Firebase]: Intializing firebase storage ")
-        initialize_firebase_app()
         self.bucket = storage.bucket(bucket)
         self.set_storage_type()
 
@@ -86,25 +85,30 @@ class FbStorage(Storage):
     def list(
         self, target: str | Path | Blob, *, recursive: bool = False
     ) -> Sequence[str]:
-
-        norm = self._to_blob_key(target).rstrip("/") + "/"
-        logger.info(f"PREFIX USED: '{norm}'")
+        key = self._to_blob_key(target).strip("/")
+        prefix = f"{key}/" if key else ""
+        if not self.exists(prefix):
+            raise ValueError("Prefix does not exists")
+        logger.info("PREFIX USED: '%s'", prefix)
         if recursive:
-            blobs = self.bucket.list_blobs(prefix=norm)
-            return [b.name for b in blobs]
+            blobs = list(self.bucket.list_blobs(prefix=prefix))
+            results = [
+                blob.name
+                for blob in blobs
+                if blob.name != prefix and not blob.name.endswith("/")
+            ]
+            logger.info("Recursive results: %s", results)
+            return results
 
         # non-recursive
-        blobs = self.bucket.list_blobs(prefix=norm, delimiter="/")
-
-        results = []
-
-        # capture folders
-        for prefix in blobs.prefixes:
-            results.append(prefix)
-
-        # capture immediate files
-        for blob in blobs:
-            results.append(blob.name)
+        iterator = self.bucket.list_blobs(prefix=prefix, delimiter="/")
+        files = [
+            blob.name
+            for blob in iterator
+            if blob.name != prefix and not blob.name.endswith("/")
+        ]
+        results = [*sorted(iterator.prefixes), *files]
+        logger.info("Non-recursive results: %s", results)
         return results
 
     def download(self, target) -> bytes:
@@ -191,7 +195,7 @@ class FbStorage(Storage):
             key = value.name
         else:
             key = str(value)
-        return key.replace("\\", "/")
+        return key.replace("\\", "/").lstrip("/")
 
     def _exists_file(self, target: str | Path | Blob) -> bool:
         key = self._to_blob_key(target).rstrip("/")
