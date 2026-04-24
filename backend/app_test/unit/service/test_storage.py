@@ -1,9 +1,53 @@
+import os
 from pathlib import Path
 
+import firebase_admin
 import pytest
 
+from app_test import FbStorage, LocalStorage, initialize_firebase_app
 from app_test.unit.shared import MOCK_FILES, RENAME_TARGETS, TARGETS
+from src.core import get_settings
 from src.utils import normalize, normalize_newlines
+
+
+settings = get_settings()
+
+
+@pytest.fixture(scope="session")
+def firebase_app_for_tests():
+    assert os.environ.get(
+        "FIREBASE_AUTH_EMULATOR_HOST"
+    ), "Missing FIREBASE_AUTH_EMULATOR_HOST"
+    assert os.environ.get("STORAGE_EMULATOR_HOST"), "Missing STORAGE_EMULATOR_HOST"
+
+    app = initialize_firebase_app()
+    yield app
+
+    try:
+        firebase_admin.delete_app(app)
+    except Exception:
+        pass
+    initialize_firebase_app.cache_clear()
+
+
+@pytest.fixture(
+    params=[
+        ("local", LocalStorage),
+        ("cloud", FbStorage),
+    ]
+)
+def storage(request, firebase_app_for_tests):
+    _, StorageClass = request.param
+
+    if StorageClass is FbStorage:
+        return StorageClass(settings.STORAGE_BUCKET)
+    return StorageClass()
+
+
+@pytest.fixture(autouse=True)
+def clean_cloud(storage):
+    if storage.get_storage_type() == "cloud":
+        storage._hard_delete()
 
 
 def _path_for_storage(storage, tmp_path, relative_path: str) -> str:

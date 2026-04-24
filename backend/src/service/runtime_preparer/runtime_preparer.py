@@ -6,6 +6,12 @@ from pydantic import ValidationError
 from src.core.logging import logger
 
 from .models import Language, RuntimeExecutionConfig, RuntimePackageConfig
+from .exceptions import (
+    InvalidFilePayloadError,
+    ConfigurationError,
+    InvalidEntryError,
+    RuntimeResolutionError,
+)
 
 CONFIG_KEY = "config.json"
 
@@ -68,15 +74,18 @@ class RuntimePreparer:
         """Resolve the target language from the request or package defaults."""
         available_languages = list(package_config.runtimes.keys())
 
+        # Handle cases when a specific language is specified, there is a configuration file
+        # But the runtime configuration does not have the language
         if requested_language is not None:
             if requested_language not in package_config.runtimes:
-                raise ValueError(
+                raise ConfigurationError(
                     f"Requested runtime '{requested_language}' is not configured. "
                     f"Available runtimes: {available_languages}"
                 )
             logger.debug("Using explicitly requested runtime: %s", requested_language)
             return requested_language
 
+        # If there is a default language in the configuration
         if package_config.default_language is not None:
             logger.debug(
                 "No runtime requested. Using package default: %s",
@@ -89,7 +98,7 @@ class RuntimePreparer:
             logger.debug("Only one runtime is available. Using: %s", resolved_language)
             return resolved_language
 
-        raise ValueError(
+        raise RuntimeResolutionError(
             "Runtime language is ambiguous. Pass a language explicitly when "
             "multiple runtimes are available."
         )
@@ -102,7 +111,7 @@ class RuntimePreparer:
     ) -> RuntimeExecutionConfig:
         """Build a runtime config from conventional entry files when config is absent."""
         if language is None:
-            raise ValueError(
+            raise RuntimeResolutionError(
                 "No config.json was provided, so a runtime language must be specified."
             )
 
@@ -114,7 +123,7 @@ class RuntimePreparer:
             entry = "server.py"
 
         if entry not in files:
-            raise ValueError(
+            raise InvalidFilePayloadError(
                 f"Expected entry file '{entry}' for runtime '{language}', "
                 f"but it was not found. Available files: {list(files.keys())}"
             )
@@ -153,7 +162,9 @@ class RuntimePreparer:
     def _validate_files(self, files: Dict[str, str]) -> None:
         """Validate the uploaded file payload before resolving a runtime."""
         if not files:
-            raise ValueError("File payload is empty. At least one file is required.")
+            raise InvalidFilePayloadError(
+                "File payload is empty. At least one file is required."
+            )
 
         invalid_names: list[str] = []
         invalid_contents: list[str] = []
@@ -173,13 +184,13 @@ class RuntimePreparer:
                 invalid_contents.append(filename)
 
         if invalid_names:
-            raise ValueError(
+            raise InvalidFilePayloadError(
                 "One or more file paths are invalid. File names must be relative, "
                 f"non-empty paths without '..'. Invalid entries: {invalid_names}"
             )
 
         if invalid_contents:
-            raise ValueError(
+            raise InvalidFilePayloadError(
                 "One or more files have invalid content types. "
                 f"Expected string content for files: {invalid_contents}"
             )
@@ -189,19 +200,20 @@ class RuntimePreparer:
     def _validate_entry(self, entry: str, files: Dict[str, str]) -> None:
         """Validate that the selected entry file exists and has usable content."""
         if entry not in files:
-            raise ValueError(
+
+            raise InvalidEntryError(
                 f"Configured entry file '{entry}' was not found in the payload. "
                 f"Available files: {list(files.keys())}"
             )
 
         content = files[entry]
         if not isinstance(content, str):
-            raise ValueError(
+            raise InvalidEntryError(
                 f"Entry file '{entry}' has invalid content. Expected a string."
             )
-
-        if not content.strip():
-            raise ValueError(f"Entry file '{entry}' is empty.")
+        # Ignore the entry file can be empty it should not throw an error.
+        # if not content.strip():
+        #     raise ValueError(f"Entry file '{entry}' is empty.")
 
         logger.debug("Validated entry file successfully. entry=%s", entry)
 
@@ -214,12 +226,14 @@ class RuntimePreparer:
                 json.loads(raw_config) if isinstance(raw_config, str) else raw_config
             )
         except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse '{CONFIG_KEY}' as JSON: {e.msg}") from e
-
+            raise ConfigurationError(
+                f"Failed to parse '{CONFIG_KEY}' as JSON: {e.msg}"
+            ) from e
         try:
             package_config = RuntimePackageConfig.model_validate(parsed)
+
         except ValidationError as e:
-            raise ValueError(
+            raise ConfigurationError(
                 f"'{CONFIG_KEY}' is not a valid runtime package config: {e}"
             ) from e
 
