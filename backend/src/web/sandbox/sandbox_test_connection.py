@@ -8,7 +8,7 @@ from src.service.runtime_preparer.models import Language
 from src.service.runtime_preparer.runtime_preparer import RuntimePreparer
 from src.web.dependencies import SettingDependency, StorageDependency
 
-router = APIRouter(prefix="/sandbox", tags=["sandbox"])
+router = APIRouter(prefix="/sandbox", tags=["sandbox", "dev"])
 
 
 @router.post("/")
