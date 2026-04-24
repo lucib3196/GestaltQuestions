@@ -1,15 +1,16 @@
-import asyncio
 import pytest
-from src.data.question_filter import filter_questions
+from typing import Any, Literal
 from src.data.question_exceptions import QuestionValidationError
 from src.model.question import Question, QuestionData
 from src.data.question import QuestionDB
-from typing import Dict, Any
 from uuid import uuid4
+
+PayloadMap = dict[str, dict[str, Any]]
+StorageType = Literal["local", "cloud"]
 
 
 @pytest.fixture
-def question_payloads() -> dict[str, dict]:
+def question_payloads() -> PayloadMap:
     return {
         "basic": {
             "title": "Addition",
@@ -81,7 +82,7 @@ def bad_question_payloads() -> dict[str, dict[str, Any]]:
 
 
 @pytest.fixture
-def combined_payload(question_payloads) -> list[QuestionData]:
+def combined_payload(question_payloads: PayloadMap) -> list[QuestionData]:
     return [
         QuestionData(**question_payloads["basic"]),
         QuestionData(**question_payloads["nested"]),
@@ -94,7 +95,11 @@ def combined_payload(question_payloads) -> list[QuestionData]:
     "payload_key",
     ["basic", "nested", "scoped"],
 )
-async def test_create_question(question_db, question_payloads, payload_key):
+async def test_create_question(
+    question_db: QuestionDB,
+    question_payloads: PayloadMap,
+    payload_key: str,
+) -> None:
     payload = question_payloads[payload_key]
 
     created = await question_db.create_question(payload)
@@ -107,7 +112,10 @@ async def test_create_question(question_db, question_payloads, payload_key):
 
 
 @pytest.mark.asyncio
-async def test_create_question_with_relationships(question_db, question_payloads):
+async def test_create_question_with_relationships(
+    question_db: QuestionDB,
+    question_payloads: PayloadMap,
+) -> None:
     payload = question_payloads["with_relationships"]
 
     created = await question_db.create_question(payload)
@@ -124,7 +132,11 @@ async def test_create_question_with_relationships(question_db, question_payloads
     "payload_key",
     ["basic", "with_relationships"],
 )
-async def test_get_question(question_db, question_payloads, payload_key):
+async def test_get_question(
+    question_db: QuestionDB,
+    question_payloads: PayloadMap,
+    payload_key: str,
+) -> None:
     payload = question_payloads[payload_key]
 
     created = await question_db.create_question(payload)
@@ -134,7 +146,10 @@ async def test_get_question(question_db, question_payloads, payload_key):
 
 
 @pytest.mark.asyncio
-async def test_get_all_questions(question_db, combined_payload):
+async def test_get_all_questions(
+    question_db: QuestionDB,
+    combined_payload: list[QuestionData],
+) -> None:
     for payload in combined_payload:
         created = await question_db.create_question(payload)
         assert created is not None
@@ -147,7 +162,10 @@ async def test_get_all_questions(question_db, combined_payload):
 
 
 @pytest.mark.asyncio
-async def test_delete_all_questions(question_db, combined_payload):
+async def test_delete_all_questions(
+    question_db: QuestionDB,
+    combined_payload: list[QuestionData],
+) -> None:
     for payload in combined_payload:
         created = await question_db.create_question(payload)
         assert created is not None
@@ -164,7 +182,11 @@ async def test_delete_all_questions(question_db, combined_payload):
     "payload_key",
     ["basic", "with_relationships"],
 )
-async def test_delete_question(question_db, question_payloads, payload_key):
+async def test_delete_question(
+    question_db: QuestionDB,
+    question_payloads: PayloadMap,
+    payload_key: str,
+) -> None:
     payload = question_payloads[payload_key]
 
     created = await question_db.create_question(payload)
@@ -176,8 +198,9 @@ async def test_delete_question(question_db, question_payloads, payload_key):
 
 @pytest.mark.asyncio
 async def test_update_question_updates_scalar_and_relationship_fields(
-    question_db: QuestionDB, question_payloads
-):
+    question_db: QuestionDB,
+    question_payloads: PayloadMap,
+) -> None:
     created = await question_db.create_question(question_payloads["basic"])
 
     update_data = QuestionData(
@@ -206,8 +229,12 @@ async def test_update_question_updates_scalar_and_relationship_fields(
     ["basic", "with_relationships"],
 )
 async def test_set_question_path(
-    question_db, question_payloads, storage_type, expected_attr, payload_key
-):
+    question_db: QuestionDB,
+    question_payloads: PayloadMap,
+    storage_type: StorageType,
+    expected_attr: str,
+    payload_key: str,
+) -> None:
     payload = question_payloads[payload_key]
 
     created = await question_db.create_question(payload)
@@ -229,11 +256,11 @@ async def test_set_question_path(
 )
 async def test_create_question_with_user_sets_question_path(
     question_db: QuestionDB,
-    question_payloads: Dict[str, Any],
-    storage_type: str,
+    question_payloads: PayloadMap,
+    storage_type: StorageType,
     expected_attr: str,
     unexpected_attr: str,
-):
+) -> None:
     payload = question_payloads["creator_owned"]
     user = uuid4()
 
@@ -260,9 +287,9 @@ async def test_create_question_with_user_sets_question_path(
 )
 async def test_create_question_with_bad_payload_raises_validation_error(
     question_db: QuestionDB,
-    bad_question_payloads: Dict[str, Dict[str, Any]],
+    bad_question_payloads: PayloadMap,
     payload_key: str,
-):
+) -> None:
     payload = bad_question_payloads[payload_key]
 
     with pytest.raises(
@@ -275,8 +302,8 @@ async def test_create_question_with_bad_payload_raises_validation_error(
 @pytest.mark.asyncio
 async def test_create_question_with_bad_uuid_raises_value_error(
     question_db: QuestionDB,
-    bad_question_payloads: Dict[str, Dict[str, Any]],
-):
+    bad_question_payloads: PayloadMap,
+) -> None:
     payload = bad_question_payloads["invalid_uuid"]
 
     with pytest.raises(ValueError, match="Invalid UUID"):
@@ -285,8 +312,9 @@ async def test_create_question_with_bad_uuid_raises_value_error(
 
 @pytest.mark.asyncio
 async def test_create_question_with_user_requires_question_path(
-    question_db: QuestionDB, question_payloads: Dict[str, Any]
-):
+    question_db: QuestionDB,
+    question_payloads: PayloadMap,
+) -> None:
     payload = dict(question_payloads["basic"])
     user = uuid4()
 
@@ -303,8 +331,9 @@ async def test_create_question_with_user_requires_question_path(
 
 @pytest.mark.asyncio
 async def test_create_question_with_user_requires_storage_type(
-    question_db: QuestionDB, question_payloads: Dict[str, Any]
-):
+    question_db: QuestionDB,
+    question_payloads: PayloadMap,
+) -> None:
     payload = question_payloads["creator_owned"]
     user = uuid4()
 
@@ -319,9 +348,9 @@ async def test_create_question_with_user_requires_storage_type(
 @pytest.mark.parametrize("storage_type", ["local", "cloud"])
 async def test_get_questions_by_user_returns_all_questions_for_creator(
     question_db: QuestionDB,
-    question_payloads: Dict[str, Any],
-    storage_type: str,
-):
+    question_payloads: PayloadMap,
+    storage_type: StorageType,
+) -> None:
     user = uuid4()
     other_user = uuid4()
 
@@ -329,17 +358,17 @@ async def test_get_questions_by_user_returns_all_questions_for_creator(
         await question_db.create_question(
             {**question_payloads["creator_owned"], "question_path": "developers/user123/q1"},
             created_by=user,
-            storage_type=storage_type, # type: ignore
+            storage_type=storage_type,
         ),
         await question_db.create_question(
             {**question_payloads["creator_owned"], "question_path": "developers/user123/q2"},
             created_by=user,
-            storage_type=storage_type, # type: ignore
+            storage_type=storage_type,
         ),
         await question_db.create_question(
             {**question_payloads["creator_owned"], "question_path": "developers/user123/q3"},
             created_by=user,
-            storage_type=storage_type, # type: ignore
+            storage_type=storage_type,
         ),
     ]
     other_question = await question_db.create_question(
@@ -348,7 +377,7 @@ async def test_get_questions_by_user_returns_all_questions_for_creator(
             "question_path": "developers/other-user/q4",
         },
         created_by=other_user,
-        storage_type=storage_type, # type: ignore
+        storage_type=storage_type,
     )
 
     q_retrieved = await question_db.get_questions_by_creator(user)
