@@ -1,4 +1,5 @@
 import pytest
+from src.data.question_filter import filter_questions
 from src.model.question import Question
 from src.model.question import QuestionData
 from src.core.logging import logger
@@ -136,7 +137,8 @@ async def test_filter_questions(
 ):
     """Test dynamic question filtering across key combinations."""
     await make_question(**QUESTIONS[0])
-    results = await question_db.filter_questions(
+    results = await filter_questions(
+        question_db.session,
         update_data,
     )
 

@@ -38,7 +38,6 @@ async def get_or_create_many(
                 func.lower(getattr(model, lookup_field)) == name.lower()
             )
             obj = session.exec(stmt).one_or_none()
-            logger.info(f"This is the object {object}")
             if not obj:
                 obj = model(**{lookup_field: name})
                 session.add(obj)
