@@ -18,5 +18,6 @@ from src.model.question import (
     QuestionData,
     QuestionType,
     Topic,
+    QuestionUpdate
 )
 from src.utils import convert_uuid

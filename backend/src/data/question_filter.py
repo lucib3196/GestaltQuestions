@@ -1,26 +1,19 @@
-import asyncio
-from typing import Sequence
-
-from sqlalchemy import or_
-from sqlmodel import Session, select
-
+from . import *
 from src.data import generic as gdb
-from src.model.question import Language, Question, QuestionData, QuestionType, Topic
-from src.utils import convert_uuid
+from src.model.question import Question, QuestionData, QuestionType, Topic
+
 
 METADATA_REL = ["topics", "languages", "qtypes"]
 RELATIONSHIP_MAP = {
     "topics": (Topic, "name"),
-    "languages": (Language, "name"),
     "qtypes": (QuestionType, "name"),
 }
 
 
 async def get_question_relationship_data(question: Question) -> dict[str, list[str]]:
     topics = await gdb.get_relationship_data(question, "topics", mode="list")
-    languages = await gdb.get_relationship_data(question, "languages", mode="list")
     qtypes = await gdb.get_relationship_data(question, "qtypes", mode="list")
-    return {"topics": topics, "languages": languages, "qtypes": qtypes}
+    return {"topics": topics, "qtypes": qtypes}  # type: ignore
 
 
 async def get_question_data(session: Session, qid) -> QuestionData:
@@ -31,7 +24,7 @@ async def get_question_data(session: Session, qid) -> QuestionData:
 
     question_data = question.model_dump(exclude=set(METADATA_REL))
     relationship_data = await get_question_relationship_data(question)
-    return QuestionData(**question_data, **relationship_data)
+    return QuestionData(**question_data, **relationship_data)  # type: ignore
 
 
 async def filter_questions(
@@ -46,7 +39,9 @@ async def filter_questions(
             continue
 
         if isinstance(values, list):
-            filters.append(or_(*[gdb.filter_conditional(Question, key, v) for v in values]))
+            filters.append(
+                or_(*[gdb.filter_conditional(Question, key, v) for v in values])
+            )
         else:
             filters.append(gdb.filter_conditional(Question, key, values))
 
@@ -56,7 +51,9 @@ async def filter_questions(
             continue
 
         rel_model, lookup_name = RELATIONSHIP_MAP[key]
-        rel_conds = [gdb.filter_conditional(rel_model, lookup_name, value) for value in values]
+        rel_conds = [
+            gdb.filter_conditional(rel_model, lookup_name, value) for value in values
+        ]
         filters.append(or_(*rel_conds))
 
     if filters:
@@ -64,4 +61,6 @@ async def filter_questions(
 
     stmt = stmt.distinct()
     results = session.exec(stmt).all()
-    return await asyncio.gather(*[get_question_data(session, result.id) for result in results])
+    return await asyncio.gather(
+        *[get_question_data(session, result.id) for result in results]
+    )

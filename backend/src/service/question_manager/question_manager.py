@@ -1,313 +1,234 @@
 from . import *
+from .question_storage_service import QuestionStorageService
 
 
 class QuestionManager:
-    """Service that coordinates storage and database operations for questions."""
+    """Coordinate question database records with their backing storage files."""
 
-    # ============================================================
-    # Constructor
-    # ============================================================
-    def __init__(
-        self,
-        qdb: QuestionDB,
-        storage: Storage,
-        image_location="clientFiles",
-        client_file_extensions: Set[str] = {
-            ".png",
-            ".jpg",
-            ".jpeg",
-            ".pdf",
-        },
-    ):
-        """_summary_
-
-        Args:
-            qdb (QuestionManager): Manages database interactions for creating and committing the question.
-            storage (Storage):  Handles file system or cloud storage initialization for the question.
-            STORAGE_TYPE (StorageType): Wether we are working with the cloud or local storage
-        """
+    def __init__(self, storage: Storage, qdb: QuestionDB):
+        """Create a manager backed by a storage implementation and question DB."""
         self.qdb = qdb
-        self.storage = storage
-        self.client_path = image_location
-        self.client_ext = client_file_extensions
+        self.storage = QuestionStorageService(storage)
 
-    # ============================================================
-    # Question Lifecycle
-    # ============================================================
-
-    # Question Lifecycle
     async def create_question(
-        self,
-        question_data: QuestionData,
-        files: Optional[List[FileData]] = None,
-        handle_images: bool = True,
-        *,
-        created_by: UUID | None = None,
-        storage_path: str | None = None,
+        self, qdata: QuestionData, files: Optional[List[FileData]] = None
     ) -> Question:
+        """Create a question record and optionally save its initial files.
+
+        If file storage fails after the database record is created, the manager
+        rolls back the newly created question and any files saved in this call.
+        """
+        question: Question | None = None
+        saved_files: list[str] = []
+
         try:
-
-            # Create the question first
-
-            question_data.question_path = self._question_dir(
-                question_data.base_path,
-                question_stub,
-            )
-
-            question = await self.qdb.create_question(
-                question_data,
-                created_by=created_by,
-                storage_type=self.storage.get_storage_type(),
-            )
-
-            question_path = question_data.question_path or self._question_dir(
-                question_data.base_path,
-                question,
-            )
-
-            storage_path = self.storage.create_dir(question_path)
-            logger.info(f"[QM] Created storage path for question {storage_path} ")
-            assert self.storage.exists(storage_path)
-
-            if not created_by:
-                await self.qdb.set_question_path(
-                    question.id,
-                    self.storage.get_storage_type(),
-                    question_path,
-                )
-
+            qdata = self._validate_question_data(qdata)
+            question = await self.qdb.create_question(qdata)
+            if not question.storage_path:
+                raise StoragePathNotFoundError(str(question.id))
             if files:
-                await self.handle_question_files(
-                    files,
-                    question_path,
-                    handle_images,
+                saved_files = self._save_files(
+                    question.storage_path, files, question.id
                 )
-
             return question
+        except QuestionManagerException:
+            if question is not None:
+                await self._rollback_created_question(question, saved_files)
+            raise
         except Exception as e:
-            raise ValueError(f"[QM] Failed to create question {e}")
+            if question is not None:
+                await self._rollback_created_question(question, saved_files)
+            raise QuestionCreationError("database or storage error", str(e))
 
-    async def delete_question(self, qid: ID) -> None:
+    async def update_question_meta(
+        self, id: ID, update: QuestionUpdate
+    ) -> QuestionData:
+        """Update database-backed question metadata and relationship fields."""
+        try:
+            return await self.qdb.update_question(id, update)
+        except QuestionManagerException:
+            raise
+        except Exception as e:
+            raise QuestionUpdateError(question_id=str(id), reason=str(e))
+
+    async def delete_question(self, qid: ID) -> bool:
+        """Delete a question record and its storage directory.
+
+        Storage files are snapshotted first so they can be restored if the
+        storage delete succeeds but the database delete fails.
+        """
+        storage_path = ""
+        storage_snapshot: list[tuple[str, bytes]] = []
+
+        try:
+            storage_path = await self.get_storage_path(qid)
+            storage_snapshot = self._snapshot_storage_dir(storage_path)
+            self.storage.delete_dir(storage_path)
+            await self.qdb.delete_question(qid)
+            return True
+        except QuestionManagerException:
+            raise
+        except Exception as e:
+            if storage_path and storage_snapshot:
+                self._restore_storage_files(storage_path, storage_snapshot)
+            raise QuestionDeletionError(
+                question_id=str(qid),
+                reason="database or storage error",
+                details=str(e),
+            )
+
+    async def get_question_files(self, qid: ID) -> Sequence[str]:
+        """Return storage paths for files attached to a question."""
+        try:
+            storage_path = await self.get_storage_path(qid)
+            return self.storage.list_files(storage_path)
+        except QuestionManagerException:
+            raise
+        except Exception as e:
+            raise FileListError(str(qid), str(e))
+
+    async def read_file(self, qid: ID, filename: str) -> bytes | None:
+        """Read one file from a question's storage directory."""
+        try:
+            storage_path = await self.get_storage_path(qid)
+            return self.storage.read_file(storage_path, filename=filename)
+        except QuestionManagerException:
+            raise
+        except Exception as e:
+            raise FileOperationError("read", filename, str(e))
+
+    async def write_file(self, qid: ID, filename: str, data: Any):
+        """Write or replace one file in a question's storage directory."""
+        try:
+            storage_path = await self.get_storage_path(qid)
+            return self.storage.write_file(storage_path, data, filename=filename)
+        except QuestionManagerException:
+            raise
+        except Exception as e:
+            raise FileOperationError("write", filename, str(e))
+
+    async def delete_file(self, qid: ID, filename: str):
+        """Delete one file from a question's storage directory."""
+        try:
+            storage_path = await self.get_storage_path(qid)
+            return self.storage.delete_file(storage_path, filename=filename)
+        except QuestionManagerException:
+            raise
+        except Exception as e:
+            raise FileOperationError("delete", filename, str(e))
+
+    async def get_question_filedata(self, qid: ID) -> List[FileData]:
+        """Return every question file as FileData objects."""
+        try:
+            storage_path = await self.get_storage_path(qid)
+            return self.storage.get_all_filedata(storage_path)
+        except QuestionManagerException:
+            raise
+        except Exception as e:
+            raise FileOperationError("read", str(qid), str(e))
+
+    async def upload_files(self, qid: ID, files: List[FileData]):
+        """Save additional files to an existing question.
+
+        If one file fails after earlier files were saved, the files saved during
+        this call are removed before the error is raised.
+        """
+        saved_files: list[str] = []
+        try:
+            storage_path = await self.get_storage_path(qid)
+            saved_files = self._save_files(storage_path, files, qid)
+            return saved_files
+        except QuestionManagerException:
+            self._rollback_saved_files(saved_files)
+            raise
+        except Exception as e:
+            self._rollback_saved_files(saved_files)
+            raise FileOperationError("upload", str(qid), str(e))
+
+    async def get_storage_path(self, qid: ID) -> str:
+        """Resolve the persisted storage path for a question."""
         question = await self.qdb.get_question(qid)
         if not question:
-            raise ValueError(
-                "[QuestionManager] Question could not be retrieved. Quesiton is None"
+            raise QuestionNotFoundError(str(qid))
+        if not question.storage_path:
+            raise QuestionDeletionError(
+                question_id=str(qid),
+                reason="Cannot determine storage path for question cannot delete",
             )
-        # Delete the entire storage
-        src = await self._resolve_question_path(qid)
-        self.storage.delete(src)
-        await self.qdb.delete_question(qid)
+        return question.storage_path
 
-    async def handle_storage_update(self, qid: ID, destination: str) -> str:
-        src = await self._resolve_question_path(qid)
-        logger.info(f"[QM] Handling storage update This is the src {src}")
-        destination = self.storage.create_dir(destination)
-        self.storage.move(src, destination)
-        logger.info(
-            f"[QM] Changing question storage from old: {src}->new:{destination}"
-        )
-        await self.qdb.set_question_path(
-            qid,
-            self.storage.get_storage_type(),
-            destination,
-        )
-        return destination
-
-    # ============================================================
-    # File Reading / Writing
-    # ============================================================
-    async def read_question_file(self, qid: ID, filename: str):
-        path = await self._resolve_question_path(qid)
-        return self.storage.read(self._file_target(path, filename))
-
-    async def write_question_file(self, qid: ID, filename: str, data):
-        path = await self._resolve_question_path(qid)
-        return self.storage.write(
-            self._file_target(path, filename),
-            data,
-        )
-
-    async def delete_file(self, qid: ID, filename: str) -> bool:
-        """
-        Delete a given file from storage.
-        """
-        path = await self._resolve_question_path(qid)
-        self.storage.delete(self._file_target(path, filename))
-        return True
-
-    # ============================================================
-    # Retrieval
-    # ============================================================
-
-    async def retrieve_question_files(self, qid: ID) -> Sequence[str]:
-        question_path = await self._resolve_question_path(qid)
-        return [str(p) for p in self.storage.list(question_path)]
-
-    # ============================================================
-    # Upload Handling
-    # ============================================================
-
-    async def upload_files_to_question(
-        self,
-        qid: ID,
-        files: List[FileData],
-        auto_handle_images: bool = True,
-    ) -> Dict:
+    def _validate_question_data(self, question_data: QuestionData) -> QuestionData:
+        """Validate the required fields needed to create a question."""
         try:
-            question_path = await self._resolve_question_path(qid)
-            logger.info(f"This is the question path, {question_path}")
-            data = await self.handle_question_files(
-                files, question_path, auto_handle_images
-            )
-            logger.info(f"Uploaded files okay {data}")
-            return data
+            if not question_data.title:
+                raise MissingQuestionDataError("title")
+            if not question_data.storage_path:
+                raise MissingQuestionDataError("storage_path")
+            return question_data
+        except QuestionManagerException:
+            raise
         except Exception as e:
-            raise ValueError(f"Failed to upload files to question {e}")
+            raise InvalidQuestionDataError("question_data", str(e))
 
-    async def handle_question_files(
-        self,
-        files: List[FileData],
-        storage_path: str,
-        auto_handle_images: bool = True,
-    ) -> Dict:
-        """
-        Save a set of uploaded files.
-        """
-
-        client_files, other_files = self._split_files(files)
-
-        if auto_handle_images:
-            image_path = f"{storage_path}{self.client_path}"
-            logger.info("This is the image path %s", image_path)
-            uploaded_client = self._batch_save_files(
-                image_path,
-                client_files,
-            )
-            uploaded_other = self._batch_save_files(
-                storage_path,
-                other_files,
-            )
-            return {
-                "status": "ok",
-                "client_files": uploaded_client,
-                "other_files": uploaded_other,
-            }
-        uploaded_all = self._batch_save_files(storage_path, files)
-        return {
-            "status": "ok",
-            "files": uploaded_all,
-        }
-
-    async def get_question_filedata(
-        self,
-        qid: ID,
-    ) -> List[FileData]:
-        try:
-            question_path = await self._resolve_question_path(qid)
-            filenames = self.storage.list(question_path)
-        except Exception as e:
-            raise ValueError(f"[QM] Failed to list files for question {qid}: {e}")
-
-        results: List[FileData] = []
-        for filepath in filenames:
+    def _save_files(
+        self, storage_path: str, files: List[FileData], question_id: ID
+    ) -> list[str]:
+        """Save files one at a time and roll back partial saves on failure."""
+        saved_files: list[str] = []
+        for file in files:
             try:
-                filepath = self._norm_path(filepath)
-                mime_type, _ = mimetypes.guess_type(filepath)
-                content = self.storage.read(filepath)
-                is_image = bool(mime_type and mime_type.startswith("image/"))
-
-                if isinstance(content, bytes):
-                    encoded = (
-                        base64.b64encode(content).decode("utf-8")
-                        if is_image
-                        else content.decode("utf-8", errors="replace")
-                    )
-                else:
-                    encoded = content
-
-                results.append(
-                    FileData(
-                        filename=Path(filepath).name,
-                        content=encoded,
-                        mime_type=mime_type or "application/octet-stream",
-                    )
+                saved_path = self.storage.write_file(
+                    storage_path,
+                    data=file.content,
+                    filename=file.filename,
                 )
+                saved_files.append(saved_path)
             except Exception as e:
-                logger.warning(f"[QM] Skipping unreadable file '{filepath}': {e}")
+                self._rollback_saved_files(saved_files)
+                raise FileSaveError(file.filename, str(question_id), str(e))
+        return saved_files
 
-        return results
+    async def _rollback_created_question(
+        self, question: Question, saved_files: list[str]
+    ) -> None:
+        """Best-effort cleanup for a question created during a failed operation."""
+        self._rollback_saved_files(saved_files)
+        if not question.id:
+            return
+        try:
+            await self.qdb.delete_question(question.id)
+        except Exception:
+            logger.exception(
+                "Failed to roll back created question %s after create failure",
+                question.id,
+            )
 
-    # ============================================================
-    # Helpers
-    # ============================================================
-    def _batch_save_files(self, dest: str, files: List[FileData]):
-        targets = []
-        for f in files:
-            target = self._file_target(dest, f.filename)
-            logger.info("Saving files %s", target)
-            self.storage.write(target, f.content)
-            targets.append(target)
-        return targets
+    def _rollback_saved_files(self, saved_files: list[str]) -> None:
+        """Best-effort delete for files saved during a failed operation."""
+        for saved_file in reversed(saved_files):
+            try:
+                self.storage.delete_file(saved_file)
+            except Exception:
+                logger.exception("Failed to roll back saved file %s", saved_file)
 
-    # ============================================================
-    # Private
-    # ============================================================
+    def _snapshot_storage_dir(self, storage_path: str) -> list[tuple[str, bytes]]:
+        """Read all files under a storage directory for later restoration."""
+        snapshot: list[tuple[str, bytes]] = []
+        for file_path in self.storage.list_files(storage_path, recursive=True):
+            content = self.storage.read_file(file_path)
+            if content is not None:
+                snapshot.append((file_path, content))
+        return snapshot
 
-    def _question_dir(self, base_path: str, question: Question) -> str:
-        if base_path.endswith("/"):
-            return f"{base_path}{safe_dir_name(f'{question.title}_{str(question.id)[:8]}')}"
-        else:
-            return f"{base_path}/{safe_dir_name(f'{question.title}_{str(question.id)[:8]}')}"
-
-    def _file_target(self, question_path: str, filename: str) -> str:
-        return f"{question_path.rstrip('/')}/{filename}"
-
-    async def _resolve_question_path(self, qid: ID) -> str:
-        path = await self.qdb.get_question_path(qid, self.storage.get_storage_type())
-
-        if not path:
-            raise ValueError("Question path not found")
-
-        if not self.storage.exists(path):
-            raise ValueError("Question storage path does not exist")
-
-        return path
-
-    def _split_files(
-        self, files: List[FileData]
-    ) -> Tuple[List[FileData], List[FileData]]:
-        client_files = []
-        other_files = []
-        for f in files:
-            if not f.filename:
-                raise ValueError("[QuestionManager] File must have a filename")
-
-            ext = Path(f.filename).suffix.lower()
-            if ext in self.client_ext:
-                client_files.append(f)
-            else:
-                other_files.append(f)
-        return client_files, other_files
-
-    def _norm_path(self, value: Union[str, Path, Blob]) -> str:
-        """
-        Normalize input into a StoragePath.
-
-        Accepts:
-            - str
-            - pathlib.Path
-            - StoragePath
-
-        Returns:
-            StoragePath (normalized).
-        """
-        if isinstance(value, str):
-            return Path(value).as_posix()
-        if isinstance(value, Path):
-            return value.as_posix()
-        if isinstance(value, Blob):
-            if not value.name:
-                raise ValueError(f"Cannot determine blob: {value}")
-            return Path(value.name).as_posix()
-
-        raise TypeError(f"Unsupported path type: {type(value)}")
+    def _restore_storage_files(
+        self, storage_path: str, snapshot: list[tuple[str, bytes]]
+    ) -> None:
+        """Best-effort restore of files captured by a storage snapshot."""
+        for file_path, content in snapshot:
+            try:
+                self.storage.write_file(file_path, content)
+            except Exception:
+                logger.exception(
+                    "Failed to restore storage file %s after delete rollback",
+                    file_path,
+                )

@@ -1,13 +1,4 @@
-from pathlib import Path
-from typing import List, Sequence
-from firebase_admin import storage
-from google.cloud.storage.blob import Blob
-from src.core.firebase import initialize_firebase_app
-from pathlib import PurePosixPath
-from .base import Storage
-from . import STORAGE_TYPE, logger
-from typing import Literal
-from typing import cast
+from . import *
 
 
 class FbStorage(Storage):
@@ -62,6 +53,7 @@ class FbStorage(Storage):
         blob.upload_from_string(
             self._normalize_content(data), content_type="application/octet-stream"
         )
+  
         return str(blob.name)
 
     def read(self, target: str) -> bytes | None:

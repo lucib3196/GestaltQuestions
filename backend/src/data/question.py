@@ -1,3 +1,4 @@
+from src.model.question import QuestionUpdate
 from . import *
 from src.data import generic as gdb
 from src.data.exceptions.question_exceptions import (
@@ -162,7 +163,7 @@ class QuestionDB:
     async def update_question(
         self,
         qid: ID,
-        update: QuestionData | dict,
+        update: QuestionData | QuestionUpdate | dict,
     ) -> QuestionData:
         """
         Update a question and its relationship metadata.
@@ -321,7 +322,9 @@ class QuestionDB:
         relationship_data = {"topics": topics, "qtypes": qtypes}
         return relationship_data
 
-    def validate_data(self, question: QuestionData | dict) -> QuestionData:
+    def validate_data(
+        self, question: QuestionData | QuestionUpdate | dict
+    ) -> QuestionData:
         """
         Validate and normalize raw question input.
 

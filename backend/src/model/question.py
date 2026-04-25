@@ -41,6 +41,12 @@ class QRelationshipData(BaseModel):
     qTypes: Sequence[str] = Field(default_factory=list)
 
 
+class QuestionUpdate(QRelationshipData):
+    title: Optional[str] = None
+    ai_generated: Optional[bool] = None
+    isAdaptive: Optional[bool] = None
+
+
 class QuestionData(QuestionBase, QRelationshipData):
     pass
 
