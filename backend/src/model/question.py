@@ -13,7 +13,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # Base Models
 if TYPE_CHECKING:
-    from .users import User
     from .users import DeveloperProfile
 
 
@@ -33,15 +32,13 @@ class QuestionBase(BaseModel):
     title: Optional[str] = None
     ai_generated: Optional[bool] = None
     isAdaptive: Optional[bool] = None
-    base_path: str | None = None
-    question_path: str | None = None
+    storage_path: str | None = None
     model_config = ConfigDict(extra="ignore")
 
 
 class QRelationshipData(BaseModel):
     topics: Sequence[str] = Field(default_factory=list)
     qTypes: Sequence[str] = Field(default_factory=list)
-    languages: Sequence[str] = Field(default_factory=list)
 
 
 class QuestionData(QuestionBase, QRelationshipData):
@@ -80,16 +77,6 @@ class QuestionQTypeLink(SQLModel, table=True):
     )
 
 
-class QuestionLanguageLink(SQLModel, table=True):
-    __tablename__ = "question_language_link"  # type: ignore
-    question_id: UUID | None = SQLField(
-        default=None, foreign_key="question.id", primary_key=True
-    )
-    language_id: UUID | None = SQLField(
-        default=None, foreign_key="language.id", primary_key=True
-    )
-
-
 class Question(SQLModel, table=True):
     id: UUID | None = SQLField(default_factory=uuid4, primary_key=True, index=True)
     title: Optional[str] = SQLField(default=None, index=True)
@@ -97,8 +84,8 @@ class Question(SQLModel, table=True):
     isAdaptive: bool = SQLField(default=False)
     ai_generated: bool = SQLField(default=False)
 
-    local_path: Optional[str] = None
-    blob_path: Optional[str] = None
+    storage_type: str = SQLField(default="cloud")
+    storage_path: Optional[str] = None
 
     status: Status = SQLField(
         default=Status.DRAFT.name,
@@ -108,17 +95,13 @@ class Question(SQLModel, table=True):
     created_by_id: Optional[UUID] = SQLField(
         default=None, foreign_key="developer_profile.id"
     )
-
     topics: List["Topic"] = Relationship(
         back_populates="questions", link_model=QuestionTopicLink
     )
     qTypes: List["QuestionType"] = Relationship(
-        back_populates="questions", link_model=QuestionQTypeLink
+        back_populates="questions",
+        link_model=QuestionQTypeLink,
     )
-    languages: List["Language"] = Relationship(
-        back_populates="questions", link_model=QuestionLanguageLink
-    )
-
     created_by: Optional["DeveloperProfile"] = Relationship(
         back_populates="created_questions"
     )
@@ -135,16 +118,6 @@ class Topic(SQLModel, table=True):
     questions: List[Question] = Relationship(
         back_populates="topics",
         link_model=QuestionTopicLink,
-    )
-
-
-class Language(SQLModel, table=True):
-    id: UUID = SQLField(default_factory=uuid4, primary_key=True, index=True)
-    name: str = SQLField(index=True, unique=True)
-    description: str | None = SQLField(default=None)
-    questions: List[Question] = Relationship(
-        back_populates="languages",
-        link_model=QuestionLanguageLink,
     )
 
 

@@ -110,13 +110,17 @@ class DeveloperAccessService:
 
 
 class DeveloperQuestionService:
-    def __init__(self, developer_access: DeveloperAccessService, question_manager: QuestionManager):
+    def __init__(
+        self,
+        developer_access: DeveloperAccessService,
+        question_manager: QuestionManager,
+    ):
         self.developer_access = developer_access
         self.question_manager = question_manager
 
     async def list_my_questions(self, user_id):
         await self.developer_access.require_developer_access(user_id)
-        return self.question_manager.list_questions_by_creator(user_id)
+        # return self.question_manager.list_questions_by_creator(user_id)
 
     async def create_question(self, user_id, payload):
         await self.developer_access.require_developer_access(user_id)
@@ -126,6 +130,7 @@ class DeveloperQuestionService:
             created_by=user_id,
             storage_path=profile.storage_path,
         )
+
 
 # Backward-compatible alias while call sites migrate.
 Developer = DeveloperAccessService

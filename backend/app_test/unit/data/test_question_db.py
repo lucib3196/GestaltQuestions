@@ -1,6 +1,6 @@
 import pytest
 from typing import Any, Literal
-from src.data.question_exceptions import QuestionValidationError
+from src.data.exceptions.question_exceptions import QuestionValidationError
 from src.model.question import Question, QuestionData
 from src.data.question import QuestionDB
 from uuid import uuid4
@@ -16,42 +16,41 @@ def question_payloads() -> PayloadMap:
             "title": "Addition",
             "ai_generated": True,
             "isAdaptive": False,
-            "base_path": "questions/",
+            "storage_path": "questions/addition/",
         },
         "nested": {
             "title": "Multiplication",
             "ai_generated": True,
             "isAdaptive": False,
-            "base_path": "questions/math/",
+            "storage_path": "questions/math/multiplication/",
         },
         "scoped": {
             "title": "Division",
             "ai_generated": False,
             "isAdaptive": False,
-            "base_path": "user123/questions/",
+            "storage_path": "user123/questions/division/",
         },
         "with_relationships": {
             "title": "Bernoulli Equation",
             "ai_generated": True,
             "isAdaptive": True,
             "topics": ["fluid-dynamics", "flow-analysis"],
-            "languages": ["javascript"],
             "qTypes": ["multiple-choice"],
+            "storage_path": "questions/bernoulli-equation/",
         },
         "filter_seed": {
             "title": "Addition",
             "ai_generated": True,
             "isAdaptive": False,
             "topics": ["math"],
-            "languages": ["python"],
             "qTypes": ["multiple-choice"],
+            "storage_path": "questions/addition/",
         },
         "creator_owned": {
             "title": "Creator Owned",
             "ai_generated": False,
             "isAdaptive": False,
-            "base_path": "developers/user123/",
-            "question_path": "developers/user123/creator-owned",
+            "storage_path": "developers/user123/creator-owned/",
         },
     }
 
@@ -63,20 +62,21 @@ def bad_question_payloads() -> dict[str, dict[str, Any]]:
             "title": {"bad": "value"},
             "ai_generated": True,
             "isAdaptive": False,
-            "base_path": "questions/",
+            "storage_path": "questions/bad-title/",
         },
         "invalid_topic_shape": {
             "title": "Bad Topics",
             "ai_generated": True,
             "isAdaptive": False,
             "topics": [{"name": "math"}],
+            "storage_path": "questions/bad-topics/",
         },
         "invalid_uuid": {
             "id": "not-a-real-uuid",
             "title": "Bad UUID",
             "ai_generated": False,
             "isAdaptive": False,
-            "base_path": "questions/",
+            "storage_path": "questions/bad-uuid/",
         },
     }
 
@@ -123,7 +123,6 @@ async def test_create_question_with_relationships(
     assert created is not None
     assert created.title == payload["title"]
     assert len(created.topics) == 2
-    assert len(created.languages) == 1
     assert len(created.qTypes) == 1
 
 
@@ -205,6 +204,7 @@ async def test_update_question_updates_scalar_and_relationship_fields(
 
     update_data = QuestionData(
         title="new title",
+        storage_path=created.storage_path,
         topics=["history", "math", "science"],
     )
 
@@ -218,11 +218,8 @@ async def test_update_question_updates_scalar_and_relationship_fields(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "storage_type, expected_attr",
-    [
-        ("cloud", "blob_path"),
-        ("local", "local_path"),
-    ],
+    "storage_type",
+    ["cloud", "local"],
 )
 @pytest.mark.parametrize(
     "payload_key",
@@ -232,7 +229,6 @@ async def test_set_question_path(
     question_db: QuestionDB,
     question_payloads: PayloadMap,
     storage_type: StorageType,
-    expected_attr: str,
     payload_key: str,
 ) -> None:
     payload = question_payloads[payload_key]
@@ -244,40 +240,25 @@ async def test_set_question_path(
         storage_type=storage_type,
     )
 
-    assert getattr(updated, expected_attr) == "/test/"
+    assert updated.storage_path == "/test/"
+    assert updated.storage_type == storage_type
+
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "storage_type, expected_attr, unexpected_attr",
-    [
-        ("local", "local_path", "blob_path"),
-        ("cloud", "blob_path", "local_path"),
-    ],
-)
-async def test_create_question_with_user_sets_question_path(
+async def test_create_question_sets_storage_path(
     question_db: QuestionDB,
     question_payloads: PayloadMap,
-    storage_type: StorageType,
-    expected_attr: str,
-    unexpected_attr: str,
 ) -> None:
     payload = question_payloads["creator_owned"]
-    user = uuid4()
 
-    q = await question_db.create_question(
-        payload,
-        created_by=user,
-        storage_type=storage_type,
-    )
+    q = await question_db.create_question(payload)
 
     assert q is not None
     assert isinstance(q, Question)
-    assert q.created_by_id == user
     assert q.title == payload["title"]
     assert q.ai_generated == payload["ai_generated"]
     assert q.isAdaptive == payload["isAdaptive"]
-    assert getattr(q, expected_attr) == "developers/user123/creator-owned/"
-    assert getattr(q, unexpected_attr) is None
+    assert q.storage_path == "developers/user123/creator-owned/"
 
 
 @pytest.mark.asyncio
@@ -311,74 +292,24 @@ async def test_create_question_with_bad_uuid_raises_value_error(
 
 
 @pytest.mark.asyncio
-async def test_create_question_with_user_requires_question_path(
-    question_db: QuestionDB,
-    question_payloads: PayloadMap,
-) -> None:
-    payload = dict(question_payloads["basic"])
-    user = uuid4()
-
-    with pytest.raises(
-        QuestionValidationError,
-        match="question_path is required when created_by is provided.",
-    ):
-        await question_db.create_question(
-            payload,
-            created_by=user,
-            storage_type="local",
-        )
-
-
-@pytest.mark.asyncio
-async def test_create_question_with_user_requires_storage_type(
-    question_db: QuestionDB,
-    question_payloads: PayloadMap,
-) -> None:
-    payload = question_payloads["creator_owned"]
-    user = uuid4()
-
-    with pytest.raises(
-        QuestionValidationError,
-        match="storage_type is required when created_by is provided.",
-    ):
-        await question_db.create_question(payload, created_by=user)
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("storage_type", ["local", "cloud"])
 async def test_get_questions_by_user_returns_all_questions_for_creator(
     question_db: QuestionDB,
-    question_payloads: PayloadMap,
-    storage_type: StorageType,
 ) -> None:
     user = uuid4()
     other_user = uuid4()
 
     created_for_user = [
-        await question_db.create_question(
-            {**question_payloads["creator_owned"], "question_path": "developers/user123/q1"},
-            created_by=user,
-            storage_type=storage_type,
-        ),
-        await question_db.create_question(
-            {**question_payloads["creator_owned"], "question_path": "developers/user123/q2"},
-            created_by=user,
-            storage_type=storage_type,
-        ),
-        await question_db.create_question(
-            {**question_payloads["creator_owned"], "question_path": "developers/user123/q3"},
-            created_by=user,
-            storage_type=storage_type,
-        ),
+        Question(title="Q1", storage_path="developers/user123/q1/", created_by_id=user),
+        Question(title="Q2", storage_path="developers/user123/q2/", created_by_id=user),
+        Question(title="Q3", storage_path="developers/user123/q3/", created_by_id=user),
     ]
-    other_question = await question_db.create_question(
-        {
-            **question_payloads["creator_owned"],
-            "question_path": "developers/other-user/q4",
-        },
-        created_by=other_user,
-        storage_type=storage_type,
+    other_question = Question(
+        title="Q4",
+        storage_path="developers/other-user/q4/",
+        created_by_id=other_user,
     )
+    question_db.session.add_all([*created_for_user, other_question])
+    question_db.session.commit()
 
     q_retrieved = await question_db.get_questions_by_creator(user)
 

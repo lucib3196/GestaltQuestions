@@ -1,25 +1,4 @@
-import base64
-import mimetypes
-from pathlib import Path
-from typing import (
-    Dict,
-    List,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
-    Union,
-)
-from uuid import UUID, uuid4
-
-from google.cloud.storage.blob import Blob
-from src.data import QuestionDB
-from src.model.question import Question, QuestionData
-from src.service.storage.base import Storage
-from src.app_types.general import ID
-from src.model.files import FileData
-from src.service.file_service.utils import safe_dir_name
-from src.core import logger
+from . import *
 
 
 class QuestionManager:
@@ -68,21 +47,12 @@ class QuestionManager:
     ) -> Question:
         try:
 
-            question_data = QuestionData.model_validate(question_data)
-            if storage_path and not question_data.base_path:
-                question_data.base_path = storage_path
+            # Create the question first
 
-            if not question_data.base_path:
-                raise ValueError("Base path missing")
-
-            if created_by and not question_data.question_path:
-                if not question_data.id:
-                    question_data.id = uuid4()
-                question_stub = Question(id=question_data.id, title=question_data.title)
-                question_data.question_path = self._question_dir(
-                    question_data.base_path,
-                    question_stub,
-                )
+            question_data.question_path = self._question_dir(
+                question_data.base_path,
+                question_stub,
+            )
 
             question = await self.qdb.create_question(
                 question_data,

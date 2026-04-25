@@ -1,34 +1,14 @@
-import asyncio
-from pathlib import Path
-from typing import Any, Dict, Literal, Sequence
-from uuid import UUID
-
-from pydantic import ValidationError
-from sqlalchemy.exc import SQLAlchemyError
-from pathlib import PurePosixPath
-from sqlmodel import Session, delete, select
-
+from . import *
 from src.data import generic as gdb
-from src.data.question_exceptions import (
+from src.data.exceptions.question_exceptions import (
     QuestionCreateError,
     QuestionDeleteError,
     QuestionNotFoundError,
     QuestionPathError,
     QuestionReadError,
-    QuestionStorageTypeError,
     QuestionUpdateError,
     QuestionValidationError,
 )
-from src.core import logger
-from src.model.question import (
-    Language,
-    Question,
-    QuestionData,
-    QuestionType,
-    Topic,
-)
-from src.app_types.general import STORAGE_TYPE, ID
-from src.utils import convert_uuid
 
 
 class QuestionDB:
@@ -40,15 +20,12 @@ class QuestionDB:
             session: Active SQLModel session used for database operations.
         """
         self.session = session
-        self.metadata_rel = ["topics", "languages", "qTypes"]
+        self.metadata_rel = ["topics", "qTypes"]
         self.excluded_fields = self.metadata_rel
 
     async def create_question(
         self,
         question: QuestionData | dict,
-        *,
-        created_by: UUID | None = None,
-        storage_type: STORAGE_TYPE | None = None,
     ) -> Question:
         """
         Create a question record and attach its relationships.
@@ -61,20 +38,9 @@ class QuestionDB:
             The created Question ORM instance.
         """
         question = self.validate_data(question)
-        if created_by and not question.question_path:
-            raise QuestionValidationError(
-                "question_path is required when created_by is provided."
-            )
-        if question.question_path:
-            question.question_path = PurePosixPath(question.question_path).as_posix()
-        if created_by and not storage_type:
-            raise QuestionValidationError(
-                "storage_type is required when created_by is provided."
-            )
-        logger.debug("This is the question %s", question)
+
         question_orm = Question(
             **question.model_dump(exclude=set(self.excluded_fields)),
-            created_by_id=created_by,
         )
 
         self.session.add(question_orm)
@@ -84,12 +50,6 @@ class QuestionDB:
         try:
             self.session.commit()
             self.session.refresh(question_orm)
-            if created_by and question.question_path and storage_type:
-                question_orm = await self.set_question_path(
-                    question_orm.id,
-                    storage_type,
-                    question.question_path,
-                )
             return question_orm
         except SQLAlchemyError as e:
             self.session.rollback()
@@ -218,7 +178,6 @@ class QuestionDB:
         q = await self.get_question(qid)
         if not q:
             raise QuestionNotFoundError(f"Question '{qid}' was not found.")
-
         update_data = self.validate_data(update)
         q = await self._attach_question_relationships(q, update_data)
 
@@ -284,29 +243,11 @@ class QuestionDB:
             raise QuestionDeleteError(f"Failed to delete all questions: {e}") from e
 
     # Setter and Getters
-    async def get_question_path(self, id: ID, storage_type: STORAGE_TYPE) -> str | None:
-        """
-        Retrieve the stored path for a question in the requested storage backend.
-
-        Args:
-            id: Question identifier.
-            storage_type: Storage backend selector, such as ``local`` or ``cloud``.
-
-        Returns:
-            The stored path string, or None if no path has been set.
-        """
+    async def get_question_path(self, id: ID) -> str | None:
         question = await self.get_question(id)
         if not question:
-            raise QuestionNotFoundError(f"Question '{id}' was not found.")
-        if storage_type == "cloud":
-            path = question.blob_path
-        elif storage_type == "local":
-            path = question.local_path
-        else:
-            raise QuestionStorageTypeError(
-                f"Invalid storage type '{storage_type}'. Expected 'cloud' or 'local'."
-            )
-        return path
+            raise QuestionNotFoundError(f"Question with {id} does not exist")
+        return question.storage_path
 
     async def set_question_path(
         self, id: ID, storage_type: STORAGE_TYPE, path: Path | str
@@ -325,17 +266,9 @@ class QuestionDB:
         question = await self.get_question(id)
         if not question:
             raise QuestionNotFoundError(f"Question '{id}' was not found.")
-        path_str = PurePosixPath(path).as_posix() + "/"
         try:
-            if storage_type == "cloud":
-                question.blob_path = path_str
-            elif storage_type == "local":
-                question.local_path = path_str
-            else:
-                raise QuestionStorageTypeError(
-                    f"Invalid storage type '{storage_type}'. Expected 'cloud' or 'local'."
-                )
-
+            question.storage_path = PurePosixPath(path).as_posix().rstrip("/") + "/"
+            question.storage_type = storage_type
             self.session.add(question)
             self.session.commit()
             self.session.refresh(question)
@@ -365,13 +298,8 @@ class QuestionDB:
         data = self.validate_data(data)
         # Extract relationship meta
         topic_names = data.topics
-        language_names = data.languages
         qtype_names = data.qTypes
-
         question.topics = await gdb.get_or_create_many(self.session, Topic, topic_names)
-        question.languages = await gdb.get_or_create_many(
-            self.session, Language, language_names
-        )
         question.qTypes = await gdb.get_or_create_many(
             self.session, QuestionType, qtype_names
         )
@@ -389,9 +317,8 @@ class QuestionDB:
         """
         # Get the topics,languages and qtypes
         topics = await gdb.get_relationship_data(q, "topics", mode="list")
-        languages = await gdb.get_relationship_data(q, "languages", mode="list")
         qtypes = await gdb.get_relationship_data(q, "qTypes", mode="list")
-        relationship_data = {"topics": topics, "languages": languages, "qtypes": qtypes}
+        relationship_data = {"topics": topics, "qtypes": qtypes}
         return relationship_data
 
     def validate_data(self, question: QuestionData | dict) -> QuestionData:

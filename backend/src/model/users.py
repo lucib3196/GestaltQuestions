@@ -83,5 +83,4 @@ class DeveloperProfile(SQLModel, table=True):
 
     user: Optional["User"] = Relationship(back_populates="developer_profile")
     storage_path: Optional[str] = None
-
     created_questions: List["Question"] = Relationship(back_populates="created_by")
