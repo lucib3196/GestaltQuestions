@@ -20,6 +20,10 @@ class QuestionStorageService:
             storage (Storage): Storage backend instance (cloud or local)
         """
         self.storage = storage
+        logger.debug(
+            "QuestionStorageService initialized with %s",
+            storage.__class__.__name__,
+        )
 
     # Core Operations
 
@@ -34,7 +38,9 @@ class QuestionStorageService:
         Returns:
             bytes | None: File content as bytes, or None if file doesn't exist
         """
-        return self.storage.read(self._construct_file_path(dir_path, filename=filename))
+        file = self._construct_file_path(dir_path, filename=filename)
+        logger.debug("Reading question file %s", file)
+        return self.storage.read(file)
 
     def write_file(self, dir_path: str, data: Any, *, filename: str | None = None):
         """Write data to storage.
@@ -49,7 +55,9 @@ class QuestionStorageService:
             str: Path where file was written
         """
         file = self._construct_file_path(dir_path, filename=filename)
-        return self.storage.write(file, data)
+        written_path = self.storage.write(file, data)
+        logger.info("Wrote question file %s", written_path)
+        return written_path
 
     def delete_file(self, dir_path: str, *, filename: str | None = None) -> None:
         """Delete a file from storage.
@@ -60,6 +68,7 @@ class QuestionStorageService:
             If None, treats dir_path as full file path.
         """
         file = self._construct_file_path(dir_path, filename=filename)
+        logger.info("Deleting question file %s", file)
         self.storage.delete(file)
 
     def delete_dir(self, dir_path: str) -> None:
@@ -68,6 +77,7 @@ class QuestionStorageService:
         Args:
             dir_path (str): Directory path to delete
         """
+        logger.info("Deleting question storage directory %s", dir_path)
         self.storage.delete(dir_path)
 
     def list_files(self, dir_path: str, *, recursive: bool = False) -> Sequence[str]:
@@ -80,7 +90,9 @@ class QuestionStorageService:
             Sequence[str]: List of file paths in the directory
         """
         normalized_path = self._norm_path(dir_path)
-        return [str(p) for p in self.storage.list(normalized_path, recursive=recursive)]
+        files = [str(p) for p in self.storage.list(normalized_path, recursive=recursive)]
+        logger.debug("Listed %s question files under %s", len(files), normalized_path)
+        return files
 
     def batch_save_files(self, dir_path: str, files: List[FileData]) -> List[str]:
         """Save multiple files to storage in batch.
@@ -93,6 +105,7 @@ class QuestionStorageService:
             List[str]: List of paths where files were saved
         """
         targets = []
+        logger.debug("Batch saving %s question files under %s", len(files), dir_path)
         for f in files:
             self.write_file(dir_path, data=f.content, filename=f.filename)
             targets.append(self._construct_file_path(dir_path, filename=f.filename))
@@ -106,7 +119,7 @@ class QuestionStorageService:
 
         new = self.storage.create_dir(target)
         self.storage.move(old, new)
-        logger.debug(f"Changing question storage from old: {old}->new:{target}")
+        logger.info("Moved question storage from %s to %s", old, target)
         return new
 
     def get_filedata(self, target: str, *, filename: str | None = None) -> FileData:
@@ -188,6 +201,9 @@ class QuestionStorageService:
                 raise ValueError(f"Cannot determine blob: {val}")
             return val.name.rstrip("/") + "/"
         else:
+            logger.warning(
+                "Cannot normalize unsupported question file path type %s", type(val)
+            )
             raise InvalidQuestionFile(
                 f"Cannot normalize path: unsupported type {type(val)}"
             )

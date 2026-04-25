@@ -1,3 +1,4 @@
+from src.model.question import QuestionCreate
 from . import *
 from .question_storage_service import QuestionStorageService
 
@@ -9,9 +10,13 @@ class QuestionManager:
         """Create a manager backed by a storage implementation and question DB."""
         self.qdb = qdb
         self.storage = QuestionStorageService(storage)
+        logger.debug("QuestionManager initialized with %s", storage.__class__.__name__)
 
     async def create_question(
-        self, qdata: QuestionData, files: Optional[List[FileData]] = None
+        self,
+        qdata: QuestionCreate,
+        storage_base_path: str,
+        files: Optional[List[FileData]] = None,
     ) -> Question:
         """Create a question record and optionally save its initial files.
 
@@ -22,29 +27,48 @@ class QuestionManager:
         saved_files: list[str] = []
 
         try:
+            logger.debug(
+                "Creating question title=%s file_count=%s",
+                qdata.title,
+                len(files or []),
+            )
+            # Create the base question
             qdata = self._validate_question_data(qdata)
             question = await self.qdb.create_question(qdata)
+
+            storage_path = f"{storage_base_path.rstrip('/')}/questions/{question.id}/"
+            question = await self.qdb.set_question_path(question.id, path=storage_path)
+
             if not question.storage_path:
                 raise StoragePathNotFoundError(str(question.id))
             if files:
                 saved_files = self._save_files(
                     question.storage_path, files, question.id
                 )
+            logger.info("Created question %s", question.id)
             return question
         except QuestionManagerException:
             if question is not None:
+                logger.warning(
+                    "Rolling back question %s after create failure", question.id
+                )
                 await self._rollback_created_question(question, saved_files)
             raise
         except Exception as e:
             if question is not None:
+                logger.warning(
+                    "Rolling back question %s after unexpected create failure",
+                    question.id,
+                )
                 await self._rollback_created_question(question, saved_files)
             raise QuestionCreationError("database or storage error", str(e))
 
     async def update_question_meta(
         self, id: ID, update: QuestionUpdate
-    ) -> QuestionData:
+    ) -> QuestionRead:
         """Update database-backed question metadata and relationship fields."""
         try:
+            logger.debug("Updating question metadata for %s", id)
             return await self.qdb.update_question(id, update)
         except QuestionManagerException:
             raise
@@ -61,15 +85,21 @@ class QuestionManager:
         storage_snapshot: list[tuple[str, bytes]] = []
 
         try:
+            logger.debug("Deleting question %s", qid)
             storage_path = await self.get_storage_path(qid)
             storage_snapshot = self._snapshot_storage_dir(storage_path)
             self.storage.delete_dir(storage_path)
             await self.qdb.delete_question(qid)
+            logger.info("Deleted question %s", qid)
             return True
         except QuestionManagerException:
             raise
         except Exception as e:
             if storage_path and storage_snapshot:
+                logger.warning(
+                    "Restoring storage files for question %s after delete failure",
+                    qid,
+                )
                 self._restore_storage_files(storage_path, storage_snapshot)
             raise QuestionDeletionError(
                 question_id=str(qid),
@@ -149,21 +179,21 @@ class QuestionManager:
         """Resolve the persisted storage path for a question."""
         question = await self.qdb.get_question(qid)
         if not question:
+            logger.warning("Question %s was not found", qid)
             raise QuestionNotFoundError(str(qid))
         if not question.storage_path:
+            logger.warning("Question %s has no storage path", qid)
             raise QuestionDeletionError(
                 question_id=str(qid),
                 reason="Cannot determine storage path for question cannot delete",
             )
         return question.storage_path
 
-    def _validate_question_data(self, question_data: QuestionData) -> QuestionData:
+    def _validate_question_data(self, question_data: QuestionCreate) -> QuestionCreate:
         """Validate the required fields needed to create a question."""
         try:
             if not question_data.title:
                 raise MissingQuestionDataError("title")
-            if not question_data.storage_path:
-                raise MissingQuestionDataError("storage_path")
             return question_data
         except QuestionManagerException:
             raise
@@ -183,7 +213,15 @@ class QuestionManager:
                     filename=file.filename,
                 )
                 saved_files.append(saved_path)
+                logger.debug(
+                    "Saved file %s for question %s", file.filename, question_id
+                )
             except Exception as e:
+                logger.warning(
+                    "Failed to save file %s for question %s",
+                    file.filename,
+                    question_id,
+                )
                 self._rollback_saved_files(saved_files)
                 raise FileSaveError(file.filename, str(question_id), str(e))
         return saved_files

@@ -1,15 +1,5 @@
-from src.model.question import QuestionUpdate
 from . import *
 from src.data import generic as gdb
-from src.data.exceptions.question_exceptions import (
-    QuestionCreateError,
-    QuestionDeleteError,
-    QuestionNotFoundError,
-    QuestionPathError,
-    QuestionReadError,
-    QuestionUpdateError,
-    QuestionValidationError,
-)
 
 
 class QuestionDB:
@@ -26,7 +16,7 @@ class QuestionDB:
 
     async def create_question(
         self,
-        question: QuestionData | dict,
+        question: QuestionCreate | dict,
     ) -> Question:
         """
         Create a question record and attach its relationships.
@@ -111,7 +101,7 @@ class QuestionDB:
         offset: int = 0,
         limit: int = 100,
         method: Literal["default", "full"] = "default",
-    ) -> Sequence[Question | QuestionData]:
+    ) -> Sequence[Question | QuestionRead]:
         """
         Retrieve a paginated list of questions.
 
@@ -142,7 +132,7 @@ class QuestionDB:
             logger.exception("[QuestionDB] Failed to retrieve questions")
             raise QuestionReadError(f"Failed to retrieve questions: {e}") from e
 
-    async def get_question_data(self, qid: ID) -> QuestionData:
+    async def get_question_data(self, qid: ID) -> QuestionRead:
         """
         Retrieve a question and expand its relationship fields into QuestionData.
 
@@ -157,14 +147,14 @@ class QuestionDB:
             raise QuestionNotFoundError(f"Question '{qid}' was not found.")
         question_data = q.model_dump(exclude=set(self.metadata_rel))
         relationship_data = await self.get_question_relationship_data(q)
-        q = QuestionData(**question_data, **relationship_data)
+        q = QuestionRead(**question_data, **relationship_data)
         return q
 
     async def update_question(
         self,
         qid: ID,
-        update: QuestionData | QuestionUpdate | dict,
-    ) -> QuestionData:
+        update: QuestionUpdate,
+    ) -> QuestionRead:
         """
         Update a question and its relationship metadata.
 
@@ -179,7 +169,7 @@ class QuestionDB:
         q = await self.get_question(qid)
         if not q:
             raise QuestionNotFoundError(f"Question '{qid}' was not found.")
-        update_data = self.validate_data(update)
+        update_data = self._validate_update_data(update)
         q = await self._attach_question_relationships(q, update_data)
 
         try:
@@ -250,9 +240,7 @@ class QuestionDB:
             raise QuestionNotFoundError(f"Question with {id} does not exist")
         return question.storage_path
 
-    async def set_question_path(
-        self, id: ID, storage_type: STORAGE_TYPE, path: Path | str
-    ):
+    async def set_question_path(self, id: ID, path: Path | str):
         """
         Persist a question path for the requested storage backend.
 
@@ -269,7 +257,6 @@ class QuestionDB:
             raise QuestionNotFoundError(f"Question '{id}' was not found.")
         try:
             question.storage_path = PurePosixPath(path).as_posix().rstrip("/") + "/"
-            question.storage_type = storage_type
             self.session.add(question)
             self.session.commit()
             self.session.refresh(question)
@@ -284,7 +271,7 @@ class QuestionDB:
 
     # Utils
     async def _attach_question_relationships(
-        self, question: Question, data: dict | QuestionData
+        self, question: Question, data: QuestionRelationships | QuestionUpdate
     ) -> Question:
         """
         Attach topic, language, and question-type relationships to a question.
@@ -296,10 +283,9 @@ class QuestionDB:
         Returns:
             The same Question instance with relationships attached.
         """
-        data = self.validate_data(data)
         # Extract relationship meta
-        topic_names = data.topics
-        qtype_names = data.qTypes
+        topic_names = data.topics or []
+        qtype_names = data.qTypes or []
         question.topics = await gdb.get_or_create_many(self.session, Topic, topic_names)
         question.qTypes = await gdb.get_or_create_many(
             self.session, QuestionType, qtype_names
@@ -322,9 +308,7 @@ class QuestionDB:
         relationship_data = {"topics": topics, "qtypes": qtypes}
         return relationship_data
 
-    def validate_data(
-        self, question: QuestionData | QuestionUpdate | dict
-    ) -> QuestionData:
+    def validate_data(self, question: QuestionCreate | Dict) -> QuestionCreate:
         """
         Validate and normalize raw question input.
 
@@ -336,14 +320,36 @@ class QuestionDB:
         """
         try:
             data = (
-                question.model_dump(exclude={"question_path"}, exclude_none=True)
-                if isinstance(question, QuestionData)
+                question.model_dump(exclude_none=True)
+                if isinstance(question, QuestionCreate)
                 else question
             )
-            question = QuestionData.model_validate(data)
+            question = QuestionCreate.model_validate(data)
             if question.id:
                 logger.info("[QDB] Question ID is in data converting")
                 question.id = convert_uuid(question.id)
             return question
+        except ValidationError as e:
+            raise QuestionValidationError(f"Question payload is invalid: {e}") from e
+
+    def _validate_update_data(self, update: QuestionUpdate | dict) -> QuestionUpdate:
+        """
+        Validate and normalize raw question input.
+
+        Args:
+            question: Question payload as a QuestionData model or raw dict.
+
+        Returns:
+            A validated QuestionData instance.
+        """
+        try:
+            data = (
+                update.model_dump(exclude_none=True)
+                if isinstance(update, QuestionUpdate)
+                else update
+            )
+            update = QuestionUpdate.model_validate(data)
+
+            return update
         except ValidationError as e:
             raise QuestionValidationError(f"Question payload is invalid: {e}") from e

@@ -15,9 +15,22 @@ from src.app_types.general import ID, STORAGE_TYPE
 from src.core import SessionDep, logger
 from src.model.question import (
     Question,
-    QuestionData,
+    QuestionRelationships,
+    QuestionCreate,
+    QuestionUpdate,
     QuestionType,
+    QuestionRead,
+    QuestionInternalCreate,
     Topic,
     QuestionUpdate
 )
 from src.utils import convert_uuid
+from src.data.exceptions.question_exceptions import (
+    QuestionCreateError,
+    QuestionDeleteError,
+    QuestionNotFoundError,
+    QuestionPathError,
+    QuestionReadError,
+    QuestionUpdateError,
+    QuestionValidationError,
+)

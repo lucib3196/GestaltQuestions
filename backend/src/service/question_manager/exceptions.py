@@ -8,6 +8,57 @@ class QuestionManagerException(Exception):
 
 
 # ============================================================
+# Developer Question Service Exceptions
+# ============================================================
+
+
+class DeveloperQuestionServiceError(QuestionManagerException):
+    """Base exception for developer question service errors."""
+
+
+class DeveloperAccessDenied(DeveloperQuestionServiceError, PermissionError):
+    """Raised when a user is not allowed to perform a developer question action."""
+
+    def __init__(
+        self,
+        reason: str,
+        user_id: str | None = None,
+        question_id: str | None = None,
+    ):
+        message = "Developer access denied"
+        if user_id:
+            message += f" for user {user_id}"
+        if question_id:
+            message += f" on question {question_id}"
+        if reason:
+            message += f": {reason}"
+        super().__init__(message)
+
+
+class DeveloperProfileError(DeveloperQuestionServiceError):
+    """Raised when developer profile data cannot be retrieved or prepared."""
+
+    def __init__(self, action: str, user_id: str, details: str = ""):
+        message = f"Failed to {action} developer profile for user {user_id}"
+        if details:
+            message += f": {details}"
+        super().__init__(message)
+
+
+class DeveloperQuestionControlError(DeveloperQuestionServiceError):
+    """Raised when developer question ownership/control cannot be evaluated."""
+
+    def __init__(self, user_id: str, question_id: str, details: str = ""):
+        message = (
+            f"Failed to evaluate question control for user {user_id} "
+            f"on question {question_id}"
+        )
+        if details:
+            message += f": {details}"
+        super().__init__(message)
+
+
+# ============================================================
 # Storage & Path Exceptions
 # ============================================================
 

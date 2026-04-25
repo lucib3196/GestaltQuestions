@@ -1,24 +1,8 @@
-# Standard library
-from typing import List, Optional, Sequence, TYPE_CHECKING
-from uuid import UUID, uuid4
-from enum import Enum
-
-# Third-party libraries
-from pydantic import BaseModel, ConfigDict, Field
-from sqlmodel import Field as SQLField, Relationship, SQLModel
-
-from typing import Optional, Sequence
-from uuid import UUID
-from pydantic import BaseModel, ConfigDict, Field
+from . import *
 
 # Base Models
 if TYPE_CHECKING:
     from .users import DeveloperProfile
-
-
-# ---------------------------------
-# -----------BaseModels-----------
-# ---------------------------------
 
 
 class Status(Enum):
@@ -27,28 +11,47 @@ class Status(Enum):
     PUBLISHED = "published"
 
 
-class QuestionBase(BaseModel):
-    id: str | UUID | None = None
-    title: Optional[str] = None
-    ai_generated: Optional[bool] = None
-    isAdaptive: Optional[bool] = None
-    storage_path: str | None = None
-    model_config = ConfigDict(extra="ignore")
-
-
-class QRelationshipData(BaseModel):
+class QuestionRelationships(BaseModel):
     topics: Sequence[str] = Field(default_factory=list)
     qTypes: Sequence[str] = Field(default_factory=list)
 
 
-class QuestionUpdate(QRelationshipData):
+class QuestionCreate(QuestionRelationships):
+    id: UUID | str | None = None
+    title: str
+    ai_generated: bool = False
+    isAdaptive: bool = False
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class QuestionUpdate(BaseModel):
     title: Optional[str] = None
     ai_generated: Optional[bool] = None
     isAdaptive: Optional[bool] = None
+    topics: Optional[Sequence[str]] = None
+    qTypes: Optional[Sequence[str]] = None
+
+    model_config = ConfigDict(extra="forbid")
 
 
-class QuestionData(QuestionBase, QRelationshipData):
-    pass
+class QuestionRead(QuestionRelationships):
+    id: UUID
+    title: Optional[str] = None
+    ai_generated: bool
+    isAdaptive: bool
+    storage_path: Optional[str] = None
+    storage_type: str
+    status: Status
+    created_by_id: Optional[UUID] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class QuestionInternalCreate(QuestionCreate):
+    storage_path: Optional[str] = None
+    storage_type: str = "cloud"
+    created_by_id: Optional[UUID] = None
 
 
 class UpdateFile(BaseModel):
@@ -113,7 +116,6 @@ class Question(SQLModel, table=True):
     )
 
 
-#
 class Topic(SQLModel, table=True):
     __tablename__ = "topic"  # type: ignore
 
