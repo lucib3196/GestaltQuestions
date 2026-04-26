@@ -1,22 +1,4 @@
-from enum import Enum
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    List,
-    Literal,
-    Sequence,
-    Type,
-    TypeVar,
-)
-
-from sqlalchemy import func
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.inspection import inspect
-from sqlalchemy.orm.properties import RelationshipProperty
-from sqlmodel import SQLModel, select
-
-from src.core import SessionDep, logger
+from . import *
 
 
 T = TypeVar("T", bound=SQLModel)
@@ -38,7 +20,6 @@ async def get_or_create_many(
                 func.lower(getattr(model, lookup_field)) == name.lower()
             )
             obj = session.exec(stmt).one_or_none()
-            logger.info(f"This is the object {object}")
             if not obj:
                 obj = model(**{lookup_field: name})
                 session.add(obj)
@@ -48,7 +29,9 @@ async def get_or_create_many(
     except SQLAlchemyError as e:
         session.rollback()
         logger.error(f"[DB] could not create {model} {e}")
-        raise ValueError(f"[DB] failed to create or get many relationship {model} an error occured {e}")
+        raise ValueError(
+            f"[DB] failed to create or get many relationship {model} an error occured {e}"
+        )
 
 
 NormalizeMode = Literal["auto", "list", "scalar"]

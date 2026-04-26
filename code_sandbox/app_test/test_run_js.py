@@ -6,71 +6,94 @@ import pytest
 
 # --- Local Modules ---
 from src.services.code_runner.javascript_runner import JavaScriptRunner
-from src.services.code_runner.models import ExecutionResult
-from src.utils.utils import logs_contain
+from src.services.code_runner.models import ExecutionResult, RuntimeExecutionConfig
 from src.services.code_runner.error_handling import ExecutionError
 
-# --------------------------------------------------------------------------- #
-# Fixtures
-# --------------------------------------------------------------------------- #
+
+def _read_asset(asset_dir: Path, filename: str) -> str:
+    return (asset_dir / filename).read_text(encoding="utf-8")
 
 
 @pytest.fixture
-def js_execution_result(js_script_path):
-    """Run the JavaScript file and return a validated ExecutionResult."""
-    code = Path(js_script_path).read_text()
-    runner = JavaScriptRunner()
-    raw_result = runner.run(code)
+def asset_dir(get_asset_path) -> Path:
+    return get_asset_path
 
-    response = ExecutionResult.model_validate(raw_result)
+
+@pytest.fixture
+def js_config_without_utils(asset_dir: Path) -> RuntimeExecutionConfig:
+    return RuntimeExecutionConfig(
+        entry="server.js",
+        language="javascript",
+        files={"server.js": _read_asset(asset_dir, "mock_entry.js")},
+    )
+
+
+@pytest.fixture
+def js_config_with_utils(asset_dir: Path) -> RuntimeExecutionConfig:
+    return RuntimeExecutionConfig(
+        entry="server.js",
+        language="javascript",
+        files={
+            "server.js": _read_asset(asset_dir, "mock_entry_with_utils.js"),
+            "utils.js": _read_asset(asset_dir, "utils.js"),
+        },
+    )
+
+
+@pytest.fixture
+def js_config_custom_func(asset_dir: Path) -> RuntimeExecutionConfig:
+    return RuntimeExecutionConfig(
+        entry="server.js",
+        func_name="run",
+        language="javascript",
+        files={"server.js": _read_asset(asset_dir, "mock_entry_run.js")},
+    )
+
+
+def test_js_execution_without_utils(js_config_without_utils: RuntimeExecutionConfig):
+    runner = JavaScriptRunner(js_config_without_utils)
+    response = ExecutionResult.model_validate(runner.run())
+
     assert response is not None
-
-    return response
-
-
-# --------------------------------------------------------------------------- #
-# Tests
-# --------------------------------------------------------------------------- #
+    assert isinstance(response.output, dict)
+    assert response.output["source"] == "mock_entry.js"
+    assert response.output["values"] == {"a": 2, "b": 3}
+    assert response.output["total"] == 5
+    assert any("mock js no import" in log for log in response.logs)
 
 
-def test_js_execution_success(js_execution_result):
-    """Verify the JavaScript successfully executes and validates."""
-    resp = js_execution_result
-    assert ExecutionResult.model_validate(resp)
-    assert resp is not None
+def test_js_execution_with_utils(js_config_with_utils: RuntimeExecutionConfig):
+    runner = JavaScriptRunner(js_config_with_utils)
+    response = ExecutionResult.model_validate(runner.run())
+
+    assert response is not None
+    assert isinstance(response.output, dict)
+    assert response.output["source"] == "mock_entry_with_utils.js"
+    assert response.output["values"] == {"a": 4, "b": 5}
+    assert response.output["total"] == 9
+    assert response.output["message"] == "4 + 5 = 9"
+    assert any("mock js with utils" in log for log in response.logs)
 
 
-def test_js_execution_returns_quiz_response(js_execution_result):
-    """Verify that the JavaScript returns correctly structured output."""
-    output = js_execution_result.output
+def test_js_execution_with_custom_function(js_config_custom_func: RuntimeExecutionConfig):
+    runner = JavaScriptRunner(js_config_custom_func)
+    response = ExecutionResult.model_validate(runner.run())
 
-    assert isinstance(output, dict)
-    assert output
-
-    assert output["params"] == {"a": 1, "b": 2}
-    assert output["correct_answers"]["sum"] == 3
-
-
-def test_js_execution_logs_expected_output(js_execution_result):
-    """Verify console logs include expected values and structures."""
-    logs = js_execution_result.logs
-
-    # Basic value logs
-    assert logs_contain(logs, "This is the value of a", "1")
-    assert logs_contain(logs, "This is the value of b", "2")
-
-    # Structure logs (at least one format must match)
-    assert logs_contain(logs, "Here is a structure")
-    assert logs_contain(
-        logs, "Here is a structure", '"a"', "1"
-    ) or logs_contain(  # JSON-like
-        logs, "Here is a structure", "a", "1"
-    )  # fallback
+    assert response is not None
+    assert isinstance(response.output, dict)
+    assert response.output["source"] == "mock_entry_run.js"
+    assert response.output["values"] == {"x": 6, "y": 7}
+    assert response.output["total"] == 13
+    assert any("mock js custom func" in log for log in response.logs)
 
 
 def test_failed_execution(js_bad_code_path):
-    with pytest.raises(ExecutionError) as exc_info:
-        code = Path(js_bad_code_path).read_text("utf-8")
-        runner = JavaScriptRunner()
-        runner.run(code)
-    assert "stderr" in str(exc_info.value)
+    bad_code = Path(js_bad_code_path).read_text(encoding="utf-8")
+    config = RuntimeExecutionConfig(
+        entry="server.js",
+        language="javascript",
+        files={"server.js": bad_code},
+    )
+
+    with pytest.raises(ExecutionError):
+        JavaScriptRunner(config).run()

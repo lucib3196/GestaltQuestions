@@ -1,82 +1,61 @@
-# --- Standard Library ---
-from typing import cast
+from typing import List
 
-# --- Third-Party ---
 from fastapi import APIRouter, HTTPException
+from firebase_admin import auth
 from pydantic import BaseModel
+import requests
 from starlette import status
 
-
-# --- Internal ---
-from src.core.firebase import initialize_firebase_app
 from src.core.logging import logger
-from src.model.users import User, UserBase, UserRead, UserRoles, UserUpdate, UserCreate
+from src.core.config import get_settings
 from src.model.institution import ValidInstitutions
-
-from src.web.dependencies import FireBaseToken
-from src.data.user import UserManagerDependeny
+from src.app_types.general import ID
+from src.model.users import Role, User, UserCreate, UserRead, UserRoles
+from src.web.dependencies import FireBaseToken, UserManagerDependeny
+from src.model.institution import Institution
 
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
 class CreateUserFullPayload(BaseModel):
-    user: UserBase
+    user: UserCreate
+    role: UserRoles = UserRoles.STUDENT
     institution: ValidInstitutions | None = None
+
+
+class UpdateUserRole(BaseModel):
+    role: UserRoles
+
+
+class UpdateUserInstitution(BaseModel):
+    institution: ValidInstitutions
+
+
+class LoginRequest(BaseModel):
+    id_token: str
+
+
+class UserRoleResponse(BaseModel):
+    user: User
+    roles: List[Role] = []
+
+
+class UserInstResponse(BaseModel):
+    user: User
+    inst: Institution | None
 
 
 @router.post("/")
 async def create_user(
     user_manager: UserManagerDependeny,
-    data: UserCreate,
-) -> User:
-    """
-    Create a new user in the system.
-
-    Args:
-        user_manager (UserManagerDependeny): Dependency providing user management operations.
-        data (UserBase): Incoming user registration data (email, fb_id, etc.).
-
-    Returns:
-        User: The newly created user object.
-    """
-
-    # Check if the user already exist in the database
-    logger.debug("Received request")
-    try:
-        user = await user_manager.create_user(data)
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An error occured while creating the user {e}",
-        )
-
-
-@router.post("/full")
-def create_user_full(
-    user_manager: UserManagerDependeny,
-    fb_token: FireBaseToken,
     payload: CreateUserFullPayload,
-    role: UserRoles = UserRoles.STUDENT,
 ):
     try:
-        fb_uid = fb_token["uid"]
-        existing_user = user_manager.get_user_by_fb(fb_uid)
-        if existing_user:
-            logger.info(f"[DB] User already exists: {existing_user.fb_id}")
-            return existing_user
-        # Other wise create a user
-        logger.info(
-            "Creating user with email='%s' and fb_id='%s'",
-            payload.user.email,
+        logger.debug("Attempting to create user")
+        created_user = await user_manager.create_user(
+            data=payload.user, role=payload.role, institution=payload.institution
         )
-        payload.user.fb_id = fb_uid
-        created_user = user_manager.create_user_full(
-            payload.user, role, payload.institution
-        )
-        logger.info("User created successfully: uid='%s'", created_user.id)
         return created_user
     except HTTPException:
         raise
@@ -87,119 +66,230 @@ def create_user_full(
         )
 
 
-@router.get("/by-id/{id}")
-async def get_user_by_id(user_manager: UserManagerDependeny, id: str) -> User:
-    try:
-        return user_manager.get_user(id)
-    except Exception:
-        raise
+@router.post("/login")
+async def login(payload: LoginRequest):
+    decoded = auth.verify_id_token(payload.id_token)
+    user_read = UserRead(
+        email=decoded.get("email", None),
+    )
+    return user_read
 
 
-@router.get("/by-email/")
-async def get_user_by_email(
-    user_manager: UserManagerDependeny, email: str
-) -> UserRead | None:
+@router.post("/get_current_user")
+def get_current_user(
+    token: FireBaseToken,
+) -> UserRead:
+    decoded = token
+    user_read = UserRead(email=decoded.get("email", None))
+    return user_read
+
+
+@router.post("/login_test")
+def emulator_login(email: str, password: str):
+    """Testing endpoint for login using password and email
+
+    Args:
+        email (str):
+        password (str):
+
+    Returns:
+        _type_: _description_
+    """
+    settings = get_settings()
+    emulator_host = settings.FIREBASE_AUTH_EMULATOR_HOST or "host.docker.internal:9099"
+    if not emulator_host.startswith(("http://", "https://")):
+        emulator_host = f"http://{emulator_host}"
+    emulator_host = emulator_host.rstrip("/")
+    url = f"{emulator_host}/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake-key"
+
+    payload = {"email": email, "password": password, "returnSecureToken": True}
+
+    response = requests.post(url, json=payload)
+    return response.json()
+
+
+# ---------- ID-based user management
+# These endpoints operate directly on internal user IDs and are intended for
+# service/admin workflows rather than frontend token-based self-service paths.
+
+
+@router.get("/{id}")
+async def get_user_by_id(user_manager: UserManagerDependeny, id: ID) -> User | None:
+    """
+    Retrieve a user by internal ID.
+
+    This endpoint is intended for backend/admin flows where user IDs are
+    already known.
+    """
     try:
-        user = user_manager.get_user_by_email(email)
-        if user is not None:
-            institution = user.institution
-            role = user.role
-            return UserRead(
-                first_name=user.first_name,
-                last_name=user.last_name,
-                username=user.username,
-                email=user.email,
-                institution=institution.name if institution else None,
-                role=cast(UserRoles, role),
+        user = await user_manager.get_user(id)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User '{id}' not found",
             )
-        return None
-    except Exception:
+        return user
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Failed to retrieve user by id='%s'", id)
         raise HTTPException(
-            status_code=400,
-            detail="Failed to retrieve user by email",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve user '{id}': {e}",
         )
 
 
-@router.get("/")
-async def get_user(
-    user_manager: UserManagerDependeny,
-    token: FireBaseToken,
-) -> UserRead | None:
+@router.delete("/{id}")
+async def delete_user_by_id(user_manager: UserManagerDependeny, id: ID):
     """
-    Retrieve a user by their unique ID.
+    Delete a user by internal ID.
 
-    Args:
-        user_manager (UserManagerDependeny): User management service.
-        id (str): The user ID to retrieve.
-
-    Returns:
-        User: The user with the specified ID.
+    This endpoint is intended for backend/admin flows.
     """
     try:
-        user = user_manager.get_user_by_fb(token["uid"])
-        if user is not None:
-            institution = user.institution
-            role = user.role.name
-            return UserRead(
-                first_name=user.first_name,
-                last_name=user.last_name,
-                username=user.username,
-                email=user.email,
-                institution=institution.name if institution else None,
-                role=cast(UserRoles, role),
+        user = await user_manager.get_user(id)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User '{id}' not found",
             )
-        return None
-    except HTTPException as e:
-        logger.error(f"[DB] User not found: {e}")
+        await user_manager.delete_user(id)
+        return {"detail": "user deleted"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Failed to delete user id='%s'", id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete user '{id}': {e}",
+        )
+
+
+@router.get("/{id}/roles")
+async def get_user_roles_by_id(
+    user_manager: UserManagerDependeny, id: ID
+) -> UserRoleResponse:
+    """
+    Retrieve all roles for a user by internal ID.
+
+    This endpoint is intended for backend/admin flows.
+    """
+    try:
+        user = await user_manager.get_user(id)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User '{id}' not found",
+            )
+        roles = await user_manager.get_user_role(id)
+        return UserRoleResponse(user=user, roles=roles)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Failed to retrieve roles for user id='%s'", id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve roles for user '{id}': {e}",
+        )
+
+
+@router.post("/{id}/roles")
+async def add_user_role(
+    user_manager: UserManagerDependeny, id: ID, payload: UpdateUserRole
+) -> UserRoleResponse:
+    """
+    Add a role to a user by internal ID and return the updated role set.
+
+    This endpoint is intended for backend/admin flows.
+    """
+    try:
+        user_record = await user_manager.get_user(id)
+        if user_record is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User '{id}' not found",
+            )
+        user = await user_manager.add_role_to_user(role=payload.role, user=id)
+        roles = await user_manager.get_user_role(id)
+        return UserRoleResponse(user=user, roles=roles)
+    except HTTPException:
+        raise
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to get user {e}",
+            detail=f"Invalid role update for user '{id}': {e}",
+        )
+    except Exception as e:
+        logger.exception("Failed to add role '%s' to user id='%s'", payload.role, id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to add role for user '{id}': {e}",
         )
 
 
-@router.delete("/")
-async def delete_user(
-    user_manager: UserManagerDependeny,
-    token: FireBaseToken,
-):
+@router.get("/{id}/institution")
+async def get_institution_by_id(
+    user_manager: UserManagerDependeny, id: ID
+) -> UserInstResponse:
     """
-    Delete a user by their ID.
+    Retrieve the institution for a user by internal ID.
 
-    Args:
-        user_manager (UserManagerDependeny): User management service.
-        id (str): User ID to delete.
-
-    Returns:
-        dict: Success message.
+    This endpoint is intended for backend/admin flows.
     """
-    logger.warning("Deleting user with id='%s'", id)
-    user = user_manager.get_user_by_fb(token["uid"])
-    assert user.id
+    try:
+        user = await user_manager.get_user(id)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User '{id}' not found",
+            )
+        inst = await user_manager.get_user_inst(id)
+        return UserInstResponse(user=user, inst=inst)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Failed to retrieve institution for user id='%s'", id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve institution for user '{id}': {e}",
+        )
 
-    user_manager.delete_user(user.id)
 
-    logger.info("User successfully deleted: id='%s'", id)
-    return {"detail": "user deleted"}
-
-
-@router.put("/")
-async def update_user(
-    user_manager: UserManagerDependeny,
-    token: FireBaseToken,
-    data: UserUpdate,
-) -> User:
+@router.post("/{id}/institution")
+async def add_user_inst(
+    user_manager: UserManagerDependeny, id: ID, payload: UpdateUserInstitution
+) -> UserInstResponse:
     """
-    Update an existing user's information.
+    Set a user's institution by internal ID and return the updated institution.
 
-    Args:
-        user_manager (UserManagerDependeny): User service handler.
-        id (str): ID of the user to update.
-        data (UserBase): Updated user information.
-
-    Returns:
-        User: The updated user object.
+    This endpoint is intended for backend/admin flows.
     """
-    user = user_manager.get_user_by_fb(token["uid"])
-    updated_user = user_manager.update_user(user.id, data)
-    logger.info("User updated successfully: id='%s'", id)
-    return updated_user
+    try:
+        user_record = await user_manager.get_user(id)
+        if user_record is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User '{id}' not found",
+            )
+        user = await user_manager.set_user_institution(
+            institution=payload.institution, user=id
+        )
+        inst = await user_manager.get_user_inst(id)
+        return UserInstResponse(user=user, inst=inst)
+    except HTTPException:
+        raise
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid institution update for user '{id}': {e}",
+        )
+    except Exception as e:
+        logger.exception(
+            "Failed to set institution '%s' for user id='%s'",
+            payload.institution,
+            id,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to set institution for user '{id}': {e}",
+        )

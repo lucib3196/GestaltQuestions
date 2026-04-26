@@ -33,9 +33,6 @@ class AppSettings(BaseSettings):
 
 @lru_cache
 def get_settings() -> AppSettings:
-    valid_modes = ("testing", "dev", "production")
-    env_mode = os.getenv("MODE", "dev")
-
     return AppSettings()
 
 

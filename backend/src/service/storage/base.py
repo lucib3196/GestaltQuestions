@@ -1,10 +1,4 @@
-from pathlib import Path
-from typing import List, Sequence, Union
-from google.cloud.storage.blob import Blob
-import json
-from abc import ABC, abstractmethod
-from . import STORAGE_TYPE
-
+from . import  *
 
 
 class Storage(ABC):
@@ -25,7 +19,7 @@ class Storage(ABC):
     # ---------------------------------------------------------
 
     @abstractmethod
-    def set_storage_type(self)->STORAGE_TYPE:
+    def set_storage_type(self) -> STORAGE_TYPE:
         """Set the storage type for the given target .
 
         Raises:
@@ -36,8 +30,9 @@ class Storage(ABC):
         Returns:
             STORAGE_TYPE: [description]
         """
+
     @abstractmethod
-    def get_storage_type(self)->STORAGE_TYPE:
+    def get_storage_type(self) -> STORAGE_TYPE:
         """Get the storage type for the given target .
 
         Raises:
@@ -50,7 +45,7 @@ class Storage(ABC):
         """
 
     @abstractmethod
-    def exists(self, target:str) -> bool:
+    def exists(self, target: str) -> bool:
         """
         Return True if the given target exists in storage.
 
@@ -61,8 +56,9 @@ class Storage(ABC):
             bool indicating existence.
         """
         ...
+
     @abstractmethod
-    def is_dir(self, target:str)->bool:
+    def is_dir(self, target: str) -> bool:
         """
         Return True if the given target represents a directory/prefix.
 
@@ -72,8 +68,9 @@ class Storage(ABC):
         Returns:
             bool indicating whether the target is a directory.
         """
+
     @abstractmethod
-    def create_dir(self,target: str)->str:
+    def create_dir(self, target: str) -> str:
         """Create a new directory under the given path .
 
         Args:
@@ -89,7 +86,7 @@ class Storage(ABC):
         """
 
     @abstractmethod
-    def read(self, target: str) -> bytes|None:
+    def read(self, target: str) -> bytes | None:
         """
         Read the contents of a stored object.
 
@@ -107,7 +104,7 @@ class Storage(ABC):
     @abstractmethod
     def write(
         self,
-        target:str,
+        target: str,
         data: str | dict | List | bytes | bytearray,
         *,
         overwrite: bool = True,
@@ -140,8 +137,9 @@ class Storage(ABC):
             FileNotFoundError if target does not exist.
         """
         ...
+
     @abstractmethod
-    def download(self, target:str)->bytes:
+    def download(self, target: str) -> bytes:
         """
         Download and return the raw bytes for the specified storage target.
 
@@ -155,6 +153,7 @@ class Storage(ABC):
             FileNotFoundError if target does not exist.
         """
         ...
+
     # ---------------------------------------------------------
     # Directory / prefix operations
     # ---------------------------------------------------------
@@ -247,4 +246,3 @@ class Storage(ABC):
         else:
             raise ValueError(f"Unsupported content type: {type(content)}")
         return content_bytes
-

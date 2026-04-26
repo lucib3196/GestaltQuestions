@@ -1,16 +1,15 @@
 import json
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 from uuid import UUID
 
 import httpx
 from fastapi import APIRouter
 
 from src.core import logger
-from src.data import UserManagerDependeny
+from src.web.dependencies import UserManagerDependeny
 from src.app_types.run_server import (
     AllowedLanguages,
-    AllowedServer,
     MappingServer,
     QuizData,
     SandboxResponse,

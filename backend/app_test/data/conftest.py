@@ -4,31 +4,23 @@ from app_test.shared.mock_data import (
 )
 from src.model.question import QuestionData
 from src.data import (
-    UserDB,
-    RoleManager,
-    InstitutionDB,
     QuestionAttemptDB,
 )
-from app_test.shared.factories.user_factory import make_user
+
+
 
 @pytest.fixture
 def combined_payload():
     return [QuestionData(**q) for q in QUESTIONS]
 
 
-@pytest.fixture
-def role_manager(db_session) -> RoleManager:
-    return RoleManager(db_session)
 
 
-@pytest.fixture
-def user_db(db_session) -> UserDB:
-    return UserDB(db_session)
 
 
-@pytest.fixture
-def institution_db(db_session) -> InstitutionDB:
-    return InstitutionDB(db_session)
+
+
+
 
 
 @pytest.fixture

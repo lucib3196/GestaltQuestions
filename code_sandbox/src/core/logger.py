@@ -1,16 +1,6 @@
 import logging
 import os
 from dotenv import load_dotenv
-import contextvars, pytest
-
-in_test_ctx = contextvars.ContextVar("in_test", default=False)
-
-
-# Define a class for Capturing Test Logs
-class TestFilter(logging.Filter):
-    def filter(self, record):
-        record.in_test = in_test_ctx.get()
-        return True
 
 
 # Create the logger
@@ -25,16 +15,10 @@ formatter = logging.Formatter(
 )
 
 
-
 ## Define the streaming
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-
-
-# Add a filter to inject testing
-filter = TestFilter()
-logger.addFilter(filter)
 
 
 if __name__ == "__main__":

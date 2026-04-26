@@ -67,6 +67,16 @@ venv.bak/
 
 **/.venv
 
+
+emulator-data/firebase-export-metadata.json
+emulator-data
+firebase-debug.log
+firebase-export**
+.vscode
+.github
+
+backend/src/service/sandbox_execution/test_question
+
 emulator-data
 firebase-export-**
 firebase-debug.log

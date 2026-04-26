@@ -3,6 +3,7 @@ from starlette import status
 from typing import Sequence
 
 from src.core import logger
+from src.data.question_filter import filter_questions as filter_question_data
 from src.model.question import Question
 from src.model.question import QuestionData
 from src.web.dependencies import (
@@ -117,7 +118,7 @@ async def filter_questions(
 ) -> Sequence[QuestionData]:
     try:
         logger.debug("Retrieved filter %s", filter_data)
-        return await qm.qdb.filter_questions(filter_data)
+        return await filter_question_data(qm.qdb.session, filter_data)
     except HTTPException:
         raise
     except Exception as e:

@@ -1,61 +1,20 @@
 import pytest
-from sqlmodel import Session, create_engine
-
-from app_test.shared.fixtures.fixture_crud import *
+from sqlmodel import SQLModel, Session, create_engine
 
 from src.core import (
-    get_settings,
     in_test_ctx,
     logger,
-    Base,
 )
-
-from . import FbStorage, LocalStorage, QuestionManager, initialize_firebase_app
-from src.data import QuestionDB
+from src.data.question import QuestionDB
 
 
-settings = get_settings()
-initialize_firebase_app()
-
-
-# DATABASE Fixtures
+# ===== Database Fixtures =========================================================
 @pytest.fixture
 def question_db(db_session) -> QuestionDB:
     return QuestionDB(db_session)
 
 
-@pytest.fixture(
-    params=[
-        ("local", LocalStorage),
-        ("cloud", FbStorage),
-    ]
-)
-def storage(request):
-    name, StorageClass = request.param
-
-    if StorageClass is FbStorage:
-        instance = StorageClass(settings.STORAGE_BUCKET)
-    else:
-        instance = StorageClass()
-
-    return instance
-
-
-@pytest.fixture(scope="function", autouse=True)
-def clean_cloud(storage):
-    if storage.get_storage_type() == "cloud":
-        storage._hard_delete()
-
-
-@pytest.fixture
-def question_manager(storage, question_db):
-    qm = QuestionManager(
-        question_db,
-        storage,
-    )
-    return qm
-
-
+# ===== Engine Fixtures ===========================================================
 @pytest.fixture(scope="function")
 def test_engine(tmp_path):
     """Provide a temporary SQLite engine for testing."""
@@ -65,11 +24,12 @@ def test_engine(tmp_path):
         echo=False,
         connect_args={"check_same_thread": False},
     )
-    Base.metadata.create_all(engine)
+    SQLModel.metadata.create_all(engine)
     yield engine
     engine.dispose()
 
 
+# ===== Session & Isolation Fixtures ==============================================
 @pytest.fixture(scope="function")
 def db_session(test_engine):
     """Provide a new SQLModel session for each test with isolation."""
@@ -82,10 +42,11 @@ def db_session(test_engine):
 def _clean_db(db_session, test_engine):
     """Automatically reset database tables between tests."""
     logger.debug("Cleaning Database")
-    Base.metadata.drop_all(test_engine)
-    Base.metadata.create_all(test_engine)
+    SQLModel.metadata.drop_all(test_engine)
+    SQLModel.metadata.create_all(test_engine)
 
 
+# ===== Logging / Test Context Fixtures ===========================================
 @pytest.fixture(autouse=True)
 def mark_logs_in_test():
     """Mark logs as being inside test context for duration of each test."""

@@ -1,17 +1,13 @@
 from enum import Enum
 from typing import TYPE_CHECKING, List, Optional, Literal
 from uuid import UUID, uuid4
-
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from sqlmodel import Field, Relationship, SQLModel
 
 
 if TYPE_CHECKING:
     from .institution import Institution
     from .question import Question
-
-
-VALID_ROLES = Literal["educator", "student", "admin", "developer"]
 
 
 class UserRoles(str, Enum):
@@ -32,8 +28,8 @@ class UserCreate(BaseModel):
     first_name: str
     last_name: str
     password: str
-    username: str
-    email: str
+    username: str | None = None
+    email: EmailStr
 
 
 class UserUpdate(UserBase):
@@ -74,7 +70,9 @@ class User(SQLModel, table=True):
     institution_id: Optional[UUID] = Field(default=None, foreign_key="institution.id")
     institution: Optional["Institution"] = Relationship(back_populates="users")
 
-    developer_profile: Optional["DeveloperProfile"] = Relationship(back_populates="user")
+    developer_profile: Optional["DeveloperProfile"] = Relationship(
+        back_populates="user"
+    )
 
 
 class DeveloperProfile(SQLModel, table=True):
@@ -85,5 +83,4 @@ class DeveloperProfile(SQLModel, table=True):
 
     user: Optional["User"] = Relationship(back_populates="developer_profile")
     storage_path: Optional[str] = None
-
     created_questions: List["Question"] = Relationship(back_populates="created_by")

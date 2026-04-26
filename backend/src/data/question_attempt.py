@@ -1,14 +1,5 @@
-from typing import Any, Dict, Sequence
-
-from sqlalchemy import desc
-from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import select
-
-from src.core import SessionDep, logger
+from . import *
 from src.model.question_attempt import QuestionAttempt
-from src.utils import convert_uuid
-
-from src.app_types.general import STORAGE_TYPE, ID
 
 
 class QuestionAttemptDB:

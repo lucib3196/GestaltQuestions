@@ -1,16 +1,12 @@
-from typing import Annotated, Sequence
+from typing import Sequence
 
-from fastapi import Depends
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
 from src.core import logger, SessionDep
-from src.model.institution import Institution, ValidInstitutions
 from src.model.users import (
-    Role,
     User,
-    UserRoles,
     UserUpdate,
     UserCreate,
 )
@@ -76,7 +72,7 @@ class UserDB:
     async def delete_user(self, id: ID) -> bool:
         user = await self.get_user(id)
         if not user:
-            logger.warn(f"DB User not found cannot delete")
+            logger.warning(f"DB User not found cannot delete")
             return False
         try:
             self.session.delete(user)
@@ -105,39 +101,6 @@ class UserDB:
             logger.error(f"[DB] Failed to edit user: {e}")
             raise ValueError(f"[DB] Failed to edit user: {e}")
 
-    async def set_user_role(self, id: ID, role: UserRoles):
-        r = self.session.exec(select(Role).where(Role.name == role)).first()
-        if r is None:
-            raise ValueError(f"Role {r} not present in database ")
-        user = await self.get_user(id)
-        if not user:
-            raise ValueError("[DB] Failed to get user")
-        try:
-            user.role = r
-            self.session.commit()
-            self.session.refresh(user)
-            return user
-        except Exception:
-            raise
-
-    async def set_user_institution(
-        self, id: ID, institution: Institution | ValidInstitutions
-    ) -> User:
-        user = await self.get_user(id)
-        if not user:
-            raise ValueError("[DB] Failed to get user")
-        if isinstance(institution, ValidInstitutions):
-            institution = self.session.exec(
-                select(Institution).where(Institution.name == institution.value)
-            ).one()
-        try:
-            user.institution = institution
-            self.session.commit()
-            self.session.refresh(user)
-            return user
-        except Exception:
-            raise
-
     async def _validate_data(self, data: UserCreate | dict):
         try:
             if isinstance(data, dict):
@@ -146,10 +109,3 @@ class UserDB:
         except ValidationError as e:
             logger.error("Validation error for user %s", e)
             raise
-
-
-def get_user_database(session: SessionDep) -> UserDB:
-    return UserDB(session)
-
-
-UserManagerDependeny = Annotated[UserDB, Depends(get_user_database)]

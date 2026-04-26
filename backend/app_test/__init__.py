@@ -16,6 +16,5 @@ from src.service.question_manager.question_manager import QuestionManager
 # -----------------------------------------
 # -------------Types-----------------------
 # -----------------------------------------
-from src.model.question import QuestionData
+from src.model.question import QuestionCreate
 from src.model.files import FileData
-

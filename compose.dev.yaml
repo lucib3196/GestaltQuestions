@@ -11,3 +11,9 @@ services:
       - 8000:8000
     volumes:
       - ./backend:/app        # mount project allows for reloading
+  code_sandbox:
+    build: 
+      context: ./code_sandbox
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
