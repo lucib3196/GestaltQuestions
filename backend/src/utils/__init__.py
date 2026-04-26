@@ -16,7 +16,6 @@ from .general_utils import pick, validate_response_payload
 from .image_processing import encode_image, handle_image_data, write_image_data
 from .normalization_utils import (
     names,
-    normalize,
     normalize_content,
     normalize_name,
     normalize_names,

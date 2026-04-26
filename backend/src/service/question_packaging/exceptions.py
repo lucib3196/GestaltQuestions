@@ -24,3 +24,6 @@ class RuntimeResolutionError(RuntimePrepareError):
     """Raised when the target language cannot be resolved."""
 
     pass
+
+class MissingQuestionFileError(Exception):
+    pass
