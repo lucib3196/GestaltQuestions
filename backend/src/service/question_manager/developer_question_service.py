@@ -1,6 +1,25 @@
-from . import *
+from dataclasses import dataclass
+from typing import Any, List, Optional, Sequence
+
+from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import Session, select
+
+from src.app_types.general import ID
+from src.core.logging import logger
+from src.model.files import FileData
+from src.model.question import Question, QuestionCreate, QuestionUpdate
+from src.service.user.exceptions import DeveloperAccessDenied, DeveloperProfileError
+from src.utils.database_utils import convert_uuid
+
+from .exceptions import (
+    DeveloperQuestionControlError,
+    DeveloperQuestionServiceError,
+    QuestionNotFoundError,
+)
 from .question_manager import QuestionManager
-from src.service.user.developer_access import DeveloperAccessService
+from src.service.user.developer_access import (
+    DeveloperAccessService,
+)
 
 
 @dataclass
@@ -34,7 +53,9 @@ class DeveloperQuestionService:
         if not profile:
             raise DeveloperProfileError("retrieve", str(user_id), "Profile not set")
         try:
-            stmt = select(Question).where(Question.created_by_id == profile.id)
+            stmt = select(Question).where(
+                Question.created_by_id == convert_uuid(profile.id)
+            )
             q = self.session.exec(stmt).first()
             if q is None:
                 logger.warning(

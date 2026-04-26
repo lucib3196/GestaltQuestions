@@ -1,6 +1,21 @@
-from . import *
+import re
+from dataclasses import dataclass
+
+from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import Session, select
+
+from src.app_types.general import ID
+from src.core.logging import logger
+from src.model.users import DeveloperProfile, UserRoles
+from src.service.storage.base import Storage
+from src.utils.database_utils import convert_uuid
+
 from .user_manager import UserManager
-from .exceptions import DeveloperAccessDenied, DeveloperProfileError
+from .exceptions import (
+    DeveloperAccessDenied,
+    DeveloperProfileError,
+    DeveloperProfileNotSet,
+)
 
 
 @dataclass
@@ -60,9 +75,18 @@ class DeveloperAccessService:
         await self.require_developer_access(user_id)
         try:
             logger.debug("Fetching developer profile for user %s", user_id)
-            return self.session.exec(
-                select(DeveloperProfile).where(DeveloperProfile.user_id == user_id)
+            profile = self.session.exec(
+                select(DeveloperProfile).where(
+                    DeveloperProfile.user_id == convert_uuid(user_id)
+                )
             ).first()
+            if not profile:
+                raise DeveloperProfileNotSet(
+                    action="retrieve_developer_data",
+                    user_id="user_id",
+                    details=f"Developer {user_id} profile not complete must be set",
+                )
+            return profile
         except SQLAlchemyError as e:
             logger.warning("Failed fetching developer profile for user %s", user_id)
             raise DeveloperProfileError("retrieve", str(user_id), str(e)) from e
@@ -75,7 +99,9 @@ class DeveloperAccessService:
             logger.debug("Setting developer profile for user %s", user_id)
 
             dev_profile = self.session.exec(
-                select(DeveloperProfile).where(DeveloperProfile.user_id == user_id)
+                select(DeveloperProfile).where(
+                    DeveloperProfile.user_id == convert_uuid(user_id)
+                )
             ).first()
 
             if dev_profile is None:

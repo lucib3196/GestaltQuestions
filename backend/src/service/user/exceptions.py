@@ -25,3 +25,11 @@ class DeveloperProfileError(DeveloperAccessDenied):
         if details:
             message += f": {details}"
         super().__init__(message)
+
+
+class DeveloperProfileNotSet(DeveloperAccessDenied):
+    def __init__(self, action: str, user_id: str, details: str = ""):
+        message = f"Failed to {action} developer profile for user {user_id}"
+        if details:
+            message += f": {details}"
+        super().__init__(message)

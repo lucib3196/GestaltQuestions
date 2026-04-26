@@ -1,49 +1,27 @@
-from typing import List
-
 from fastapi import APIRouter, HTTPException
 from firebase_admin import auth
 from pydantic import BaseModel
-import requests
 from starlette import status
 
-from src.core.logging import logger
-from src.core.config import get_settings
-from src.model.institution import ValidInstitutions
 from src.app_types.general import ID
-from src.model.users import Role, User, UserCreate, UserRead, UserRoles
-from src.web.dependencies import FireBaseToken, UserManagerDependeny
-from src.model.institution import Institution
+from src.core.logging import logger
+from src.model.users import (
+    CreateUserFullPayload,
+    UpdateUserInstitution,
+    UpdateUserRole,
+    User,
+    UserInstResponse,
+    UserRead,
+    UserRoleResponse,
+)
+from .dependencies import UserManagerDependeny, FireBaseToken
 
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-class CreateUserFullPayload(BaseModel):
-    user: UserCreate
-    role: UserRoles = UserRoles.STUDENT
-    institution: ValidInstitutions | None = None
-
-
-class UpdateUserRole(BaseModel):
-    role: UserRoles
-
-
-class UpdateUserInstitution(BaseModel):
-    institution: ValidInstitutions
-
-
 class LoginRequest(BaseModel):
     id_token: str
-
-
-class UserRoleResponse(BaseModel):
-    user: User
-    roles: List[Role] = []
-
-
-class UserInstResponse(BaseModel):
-    user: User
-    inst: Institution | None
 
 
 @router.post("/")
@@ -82,30 +60,6 @@ def get_current_user(
     decoded = token
     user_read = UserRead(email=decoded.get("email", None))
     return user_read
-
-
-@router.post("/login_test")
-def emulator_login(email: str, password: str):
-    """Testing endpoint for login using password and email
-
-    Args:
-        email (str):
-        password (str):
-
-    Returns:
-        _type_: _description_
-    """
-    settings = get_settings()
-    emulator_host = settings.FIREBASE_AUTH_EMULATOR_HOST or "host.docker.internal:9099"
-    if not emulator_host.startswith(("http://", "https://")):
-        emulator_host = f"http://{emulator_host}"
-    emulator_host = emulator_host.rstrip("/")
-    url = f"{emulator_host}/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake-key"
-
-    payload = {"email": email, "password": password, "returnSecureToken": True}
-
-    response = requests.post(url, json=payload)
-    return response.json()
 
 
 # ---------- ID-based user management

@@ -115,5 +115,6 @@ def get_settings() -> AppSettings:
     return app_settings
 
 
+
 if __name__ == "__main__":
     print(get_settings())

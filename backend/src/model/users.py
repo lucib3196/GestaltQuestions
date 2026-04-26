@@ -1,12 +1,11 @@
 from enum import Enum
-from typing import TYPE_CHECKING, List, Optional, Literal
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID, uuid4
 from pydantic import BaseModel, EmailStr
 from sqlmodel import Field, Relationship, SQLModel
-
+from .institution import Institution, ValidInstitutions
 
 if TYPE_CHECKING:
-    from .institution import Institution
     from .question import Question
 
 
@@ -38,6 +37,30 @@ class UserUpdate(UserBase):
 
 class UserRead(UserUpdate):
     pass
+
+
+class CreateUserFullPayload(BaseModel):
+    user: UserCreate
+    role: UserRoles = UserRoles.STUDENT
+    institution: ValidInstitutions | None = None
+
+
+class UpdateUserRole(BaseModel):
+    role: UserRoles
+
+
+class UpdateUserInstitution(BaseModel):
+    institution: "ValidInstitutions"
+
+
+class UserRoleResponse(BaseModel):
+    user: "User"
+    roles: List["Role"] = []
+
+
+class UserInstResponse(BaseModel):
+    user: "User"
+    inst: Optional["Institution"] = None
 
 
 # Create a link between a user a many to many relationship
@@ -84,3 +107,7 @@ class DeveloperProfile(SQLModel, table=True):
     user: Optional["User"] = Relationship(back_populates="developer_profile")
     storage_path: Optional[str] = None
     created_questions: List["Question"] = Relationship(back_populates="created_by")
+
+
+UserRoleResponse.model_rebuild()
+UserInstResponse.model_rebuild()
