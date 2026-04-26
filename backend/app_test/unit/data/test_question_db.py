@@ -1,57 +1,50 @@
 import pytest
-from typing import Any, Literal
+from typing import Any
 from src.data.exceptions.question_exceptions import QuestionValidationError
-from src.model.question import Question, QuestionData
+from src.model.question import Question, QuestionCreate, QuestionRead, QuestionUpdate
 from src.data.question import QuestionDB
 from uuid import uuid4
 
-PayloadMap = dict[str, dict[str, Any]]
-StorageType = Literal["local", "cloud"]
+PayloadMap = dict[str, QuestionCreate]
 
 
 @pytest.fixture
 def question_payloads() -> PayloadMap:
     return {
-        "basic": {
-            "title": "Addition",
-            "ai_generated": True,
-            "isAdaptive": False,
-            "storage_path": "questions/addition/",
-        },
-        "nested": {
-            "title": "Multiplication",
-            "ai_generated": True,
-            "isAdaptive": False,
-            "storage_path": "questions/math/multiplication/",
-        },
-        "scoped": {
-            "title": "Division",
-            "ai_generated": False,
-            "isAdaptive": False,
-            "storage_path": "user123/questions/division/",
-        },
-        "with_relationships": {
-            "title": "Bernoulli Equation",
-            "ai_generated": True,
-            "isAdaptive": True,
-            "topics": ["fluid-dynamics", "flow-analysis"],
-            "qTypes": ["multiple-choice"],
-            "storage_path": "questions/bernoulli-equation/",
-        },
-        "filter_seed": {
-            "title": "Addition",
-            "ai_generated": True,
-            "isAdaptive": False,
-            "topics": ["math"],
-            "qTypes": ["multiple-choice"],
-            "storage_path": "questions/addition/",
-        },
-        "creator_owned": {
-            "title": "Creator Owned",
-            "ai_generated": False,
-            "isAdaptive": False,
-            "storage_path": "developers/user123/creator-owned/",
-        },
+        "basic": QuestionCreate(
+            title="Addition",
+            ai_generated=True,
+            isAdaptive=False,
+        ),
+        "nested": QuestionCreate(
+            title="Multiplication",
+            ai_generated=True,
+            isAdaptive=False,
+        ),
+        "scoped": QuestionCreate(
+            title="Division",
+            ai_generated=False,
+            isAdaptive=False,
+        ),
+        "with_relationships": QuestionCreate(
+            title="Bernoulli Equation",
+            ai_generated=True,
+            isAdaptive=True,
+            topics=["fluid-dynamics", "flow-analysis"],
+            qTypes=["multiple-choice"],
+        ),
+        "filter_seed": QuestionCreate(
+            title="Addition",
+            ai_generated=True,
+            isAdaptive=False,
+            topics=["math"],
+            qTypes=["multiple-choice"],
+        ),
+        "creator_owned": QuestionCreate(
+            title="Creator Owned",
+            ai_generated=False,
+            isAdaptive=False,
+        ),
     }
 
 
@@ -62,31 +55,28 @@ def bad_question_payloads() -> dict[str, dict[str, Any]]:
             "title": {"bad": "value"},
             "ai_generated": True,
             "isAdaptive": False,
-            "storage_path": "questions/bad-title/",
         },
         "invalid_topic_shape": {
             "title": "Bad Topics",
             "ai_generated": True,
             "isAdaptive": False,
             "topics": [{"name": "math"}],
-            "storage_path": "questions/bad-topics/",
         },
         "invalid_uuid": {
             "id": "not-a-real-uuid",
             "title": "Bad UUID",
             "ai_generated": False,
             "isAdaptive": False,
-            "storage_path": "questions/bad-uuid/",
         },
     }
 
 
 @pytest.fixture
-def combined_payload(question_payloads: PayloadMap) -> list[QuestionData]:
+def combined_payload(question_payloads: PayloadMap) -> list[QuestionCreate]:
     return [
-        QuestionData(**question_payloads["basic"]),
-        QuestionData(**question_payloads["nested"]),
-        QuestionData(**question_payloads["scoped"]),
+        question_payloads["basic"],
+        question_payloads["nested"],
+        question_payloads["scoped"],
     ]
 
 
@@ -106,9 +96,9 @@ async def test_create_question(
 
     assert created is not None
     assert isinstance(created, Question)
-    assert created.title == payload["title"]
-    assert created.ai_generated == payload["ai_generated"]
-    assert created.isAdaptive == payload["isAdaptive"]
+    assert created.title == payload.title
+    assert created.ai_generated == payload.ai_generated
+    assert created.isAdaptive == payload.isAdaptive
 
 
 @pytest.mark.asyncio
@@ -121,7 +111,7 @@ async def test_create_question_with_relationships(
     created = await question_db.create_question(payload)
 
     assert created is not None
-    assert created.title == payload["title"]
+    assert created.title == payload.title
     assert len(created.topics) == 2
     assert len(created.qTypes) == 1
 
@@ -147,7 +137,7 @@ async def test_get_question(
 @pytest.mark.asyncio
 async def test_get_all_questions(
     question_db: QuestionDB,
-    combined_payload: list[QuestionData],
+    combined_payload: list[QuestionCreate],
 ) -> None:
     for payload in combined_payload:
         created = await question_db.create_question(payload)
@@ -163,7 +153,7 @@ async def test_get_all_questions(
 @pytest.mark.asyncio
 async def test_delete_all_questions(
     question_db: QuestionDB,
-    combined_payload: list[QuestionData],
+    combined_payload: list[QuestionCreate],
 ) -> None:
     for payload in combined_payload:
         created = await question_db.create_question(payload)
@@ -202,25 +192,20 @@ async def test_update_question_updates_scalar_and_relationship_fields(
 ) -> None:
     created = await question_db.create_question(question_payloads["basic"])
 
-    update_data = QuestionData(
+    update_data = QuestionUpdate(
         title="new title",
-        storage_path=created.storage_path,
         topics=["history", "math", "science"],
     )
 
     updated = await question_db.update_question(created.id, update_data)
 
     assert updated is not None
-    assert isinstance(updated, QuestionData)
+    assert isinstance(updated, QuestionRead)
     assert updated.title == "new title"
     assert set(updated.topics) == set(["history", "math", "science"])
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "storage_type",
-    ["cloud", "local"],
-)
 @pytest.mark.parametrize(
     "payload_key",
     ["basic", "with_relationships"],
@@ -228,7 +213,6 @@ async def test_update_question_updates_scalar_and_relationship_fields(
 async def test_set_question_path(
     question_db: QuestionDB,
     question_payloads: PayloadMap,
-    storage_type: StorageType,
     payload_key: str,
 ) -> None:
     payload = question_payloads[payload_key]
@@ -237,15 +221,13 @@ async def test_set_question_path(
     updated = await question_db.set_question_path(
         created.id,
         path="/test",
-        storage_type=storage_type,
     )
 
     assert updated.storage_path == "/test/"
-    assert updated.storage_type == storage_type
 
 
 @pytest.mark.asyncio
-async def test_create_question_sets_storage_path(
+async def test_create_question_does_not_set_storage_path(
     question_db: QuestionDB,
     question_payloads: PayloadMap,
 ) -> None:
@@ -255,10 +237,10 @@ async def test_create_question_sets_storage_path(
 
     assert q is not None
     assert isinstance(q, Question)
-    assert q.title == payload["title"]
-    assert q.ai_generated == payload["ai_generated"]
-    assert q.isAdaptive == payload["isAdaptive"]
-    assert q.storage_path == "developers/user123/creator-owned/"
+    assert q.title == payload.title
+    assert q.ai_generated == payload.ai_generated
+    assert q.isAdaptive == payload.isAdaptive
+    assert q.storage_path is None
 
 
 @pytest.mark.asyncio

@@ -5,7 +5,7 @@ from src.core import (
     in_test_ctx,
     logger,
 )
-from src.data import QuestionDB
+from src.data.question import QuestionDB
 
 
 # ===== Database Fixtures =========================================================
