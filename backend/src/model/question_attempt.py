@@ -10,8 +10,6 @@ from sqlalchemy.types import JSON
 class QuizData(BaseModel):
     params: Dict[str, Any]
     correct_answers: Dict[str, Any]
-    intermediate: Optional[Dict[str, Any]] = None
-    test_results: Optional[Dict[str, Any]] = None
     logs: List[Any] = Field(default_factory=list)
     nDigits: Optional[int] = 3
     sigfigs: Optional[int] = 3
