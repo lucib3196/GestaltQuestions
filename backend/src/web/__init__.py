@@ -8,6 +8,7 @@ from src.web.question_manager.question_manager import (
 from src.web.langchain.langchain import router as agent_router
 from src.web.general import routes as general_routes
 from src.web.run_question.run_question import router as qrunner_router
+from src.web.questions import qcrud_router
 
 ALL_ROUTES = [
     user_router,
@@ -16,4 +17,5 @@ ALL_ROUTES = [
     developer_question_router,
     qrunner_router,
     agent_router,
+    qcrud_router,
 ] + general_routes

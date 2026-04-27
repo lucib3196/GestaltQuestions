@@ -1,13 +1,25 @@
 import requests
-from fastapi import APIRouter
-
+from fastapi import APIRouter, Body
+from pydantic import BaseModel
 from src.core.config import get_settings
 
 router = APIRouter(prefix="/users", tags=["health"])
 
 
+class LogInPayload(BaseModel):
+    email: str
+    password: str
+
+
 @router.post("/login_test")
-def emulator_login(email: str, password: str):
+def emulator_login(
+    login: LogInPayload = Body(
+        example={
+            "email": "user@example.com",
+            "password": "string",
+        }
+    )
+):
     """Testing endpoint for login using password and email
 
     Args:
@@ -24,7 +36,11 @@ def emulator_login(email: str, password: str):
     emulator_host = emulator_host.rstrip("/")
     url = f"{emulator_host}/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake-key"
 
-    payload = {"email": email, "password": password, "returnSecureToken": True}
+    payload = {
+        "email": login.email,
+        "password": login.password,
+        "returnSecureToken": True,
+    }
 
     response = requests.post(url, json=payload)
     return response.json()

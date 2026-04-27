@@ -9,12 +9,16 @@ from src.service.question_packaging.models import (
 )
 
 from src.utils.normalization_utils import normalize_content
+from src.service.question_packaging.models import Language
 from .runtime_preparer import RuntimePreparer
 
 
 class QuestionPackageBuilder:
     def build(
-        self, question_files: List[FileData], is_adaptive: bool
+        self,
+        question_files: List[FileData],
+        is_adaptive: bool,
+        language: Language | None = None,
     ) -> PreparedQuestion:
         files = QuestionFiles.from_file_data(question_files)
         f = {fd.filename: normalize_content(fd.content) for fd in question_files}
@@ -22,7 +26,7 @@ class QuestionPackageBuilder:
         if is_adaptive:
             return PreparedAdaptiveQuestion(
                 kind="adaptive",
-                runtime=RuntimePreparer().prepare_runtime(f),
+                runtime=RuntimePreparer().prepare_runtime(f, language=language),
                 question_files=files,
             )
 

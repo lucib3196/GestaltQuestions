@@ -53,3 +53,17 @@ async def upload_zip(file: UploadFile, storage: StorageDependency) -> UploadZipR
         zip_path=base,
         file_count=len(extracted_files),
     )
+
+# @router.post("/filter")
+# async def filter_questions(
+#     filter_data: QuestionData,
+#     qm: QuestionManagerDependency,
+#     storage_type: StorageTypeDep,
+# ) -> Sequence[QuestionData]:
+#     try:
+#         logger.debug("Retrieved filter %s", filter_data)
+#         return await filter_question_data(qm.qdb.session, filter_data)
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Failed to filter question {e}")

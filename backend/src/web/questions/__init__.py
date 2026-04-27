@@ -6,3 +6,5 @@
 # from .uploads import router as upload_router
 
 # routes = [qcrud_router, qfile_router, sync_router, download_router, upload_router]
+
+from .crud import router as qcrud_router
