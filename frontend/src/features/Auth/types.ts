@@ -1,21 +1,25 @@
-export type UserRole = "admin" | "teacher" | "developer" | "student";
-export type AllowedRoles = readonly UserRole[];
 export type ValidInstitutions =
   | "University of California, Riverside"
-  | "California State Polytechnic University, Pomona"
-  | "Norco College";
+  | "California State Polytechnic University, Pomona";
 export const AllowedInstitutions: ValidInstitutions[] = [
   "University of California, Riverside",
   "California State Polytechnic University, Pomona",
-  "Norco College",
 ];
+export type UserRole = "admin" | "developer" | "student" | "teacher";
+export type AllowedRoles = readonly UserRole[];
 
 export type UserBase = {
   first_name: string;
   last_name: string;
   username: string;
-  email?: string;
-  fb_id?: string;
+};
+
+export type UserCreate = {
+  first_name: string;
+  last_name: string;
+  password: string;
+  username?: string;
+  email: string;
 };
 
 export type UserRead = {
@@ -24,7 +28,7 @@ export type UserRead = {
   username: string;
   email: string;
   institution: ValidInstitutions | null;
-  role: UserRole;
+  roles: UserRole[];
 };
 
 export type UserUpdate = {

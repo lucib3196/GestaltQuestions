@@ -1,6 +1,6 @@
 import { sendEmailVerification } from "firebase/auth";
-import { useAuth } from "../../../context/AuthContext";
-import { Button } from "../../../components/Button";
+import { useAuth } from "../../AuthContext";
+import { Button } from "../../../../components/Button";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useEffect } from "react";

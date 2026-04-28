@@ -1,16 +1,18 @@
 import { onAuthStateChanged } from "firebase/auth";
 import type { User } from "firebase/auth";
-import { auth } from "../config/firebaseClient";
+import { auth } from "../../config/firebaseClient"
 import { useState, useEffect } from "react";
 import { createContext, useContext } from "react";
-import { UserAPI } from "../services/userAPI";
-import { type UserRead } from "../types/userTypes";
+import { type UserRead } from "./types";
+import { UserAPI } from "./api";
 
 
 export function useStateAuth() {
     const [user, setUser] = useState<User | null>(null);
     const [userData, setUserData] = useState<UserRead | null>(null)
     const [loading, setLoading] = useState<boolean>(true);
+
+    console.log(userData)
 
     useEffect(() => {
         const unSubscribe = onAuthStateChanged(auth, (fbUser) => {
@@ -55,6 +57,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { user, userData, loading } = useStateAuth();
+
+    
 
     const logout = async () => {
         await auth.signOut();

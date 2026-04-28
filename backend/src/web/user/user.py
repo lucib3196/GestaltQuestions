@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from firebase_admin import auth
 from pydantic import BaseModel
+import src.service.user
 from starlette import status
 
 from src.app_types.general import ID
@@ -14,8 +15,8 @@ from src.model.users import (
     UserRead,
     UserRoleResponse,
 )
-from .dependencies import UserManagerDependeny, FireBaseToken
-
+from .dependencies import UserManagerDependeny, FireBaseToken, CurrentUser
+from src.service.user.user_manager import UserNotFound
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -41,6 +42,23 @@ async def create_user(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occured while creating the user {e}",
+        )
+
+
+@router.get("/")
+async def get_user(
+    user_manager: UserManagerDependeny, current_user: CurrentUser
+) -> UserRead:
+    try:
+        return await user_manager.read_user(current_user)
+    except UserNotFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve user information",
         )
 
 

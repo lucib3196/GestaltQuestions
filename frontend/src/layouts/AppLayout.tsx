@@ -4,7 +4,8 @@ import NavBar from "../features/NavBar/NavBar";
 import type { NavigationItem } from "../features/NavBar";
 const navigationItems: NavigationItem[] = [
     { label: "Home", to: "/", type: "route" },
-    { label: "QuestionBuilder", to: "/question_builder", type: "route" },
+    { label: "QuestionBuilder", to: "/question_builder", type: "route", allowedRoles: ["developer", "teacher"], requiresAuth: true },
+    { label: "Questions", to: "questions", type: "route" }
 ];
 
 export default function AppLayout() {

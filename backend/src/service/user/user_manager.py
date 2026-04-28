@@ -9,7 +9,11 @@ from src.data.institution import InstitutionDB
 from src.data.role import RoleDB
 from src.data.user import UserDB
 from src.model.institution import Institution, ValidInstitutions
-from src.model.users import Role, User, UserCreate, UserRoles
+from src.model.users import Role, User, UserCreate, UserRoles, UserRead
+
+
+class UserNotFound(Exception):
+    pass
 
 
 class UserManager:
@@ -107,6 +111,24 @@ class UserManager:
     async def get_user(self, id: ID) -> User | None:
         """Return a user by UUID or string ID."""
         return await self.udb.get_user(id)
+
+    async def read_user(self, id: ID) -> UserRead:
+        try:
+            base_user = await self.get_user(id)
+            if not base_user:
+                raise UserNotFound(f"Cannot find user with id {id}")
+            user_roles = await self.get_user_role(id)
+            institution = await self.get_user_inst(id)
+            return UserRead(
+                first_name=base_user.first_name,
+                last_name=base_user.last_name,
+                username=base_user.username,
+                email=base_user.email,
+                roles=[r.name for r in user_roles],
+                institution=institution.name if institution else None,
+            )
+        except Exception as e:
+            raise ValueError("Failed to get user data")
 
     async def get_user_role(self, id: ID) -> List[Role]:
         """Return all roles assigned to a user."""

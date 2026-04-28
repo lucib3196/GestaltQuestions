@@ -13,12 +13,15 @@ import clsx from "clsx";
 import { Link, NavLink } from "react-router-dom";
 
 import { ThemeToggle } from "../ThemeToggle";
-import { useAuth } from "../../context/AuthContext";
-import { canAccessRoute } from "./utils";
+import { useAuth, type UserRole } from "../Auth"
+import { type User } from "firebase/auth";
+
 
 type Base = {
   label: string;
   to: string;
+  requiresAuth?: boolean
+  allowedRoles?: UserRole[]
 };
 
 export type BaseRoute = Base & {
@@ -60,6 +63,27 @@ const styles = {
     "text-text-muted transition hover:bg-surface-muted hover:text-text"
   ),
 };
+
+export function canAccessRoute(
+  nav: NavigationItem,
+  user: User | null,
+  userRole: UserRole[] // Actual role of the user
+): boolean {
+
+  if (nav.requiresAuth && !user) return false;
+
+
+  // Route has role restrictions
+  if (nav.allowedRoles && nav.allowedRoles.length > 0) {
+    if (!userRole) return false;
+    return nav.allowedRoles.some((role) => userRole.includes(role));
+  }
+
+  // Public OR only requires login
+  return true;
+}
+
+
 
 function routePillClassName(isActive: boolean) {
   return clsx(
@@ -107,7 +131,7 @@ function DropDownNav({ nav }: { nav: DropDownNavRoute }) {
 
 function NavBar({ items }: NavBarProps) {
   const { user, logout, userData } = useAuth();
-  const role = userData?.role ?? "student";
+  const role = userData?.roles ?? [];
 
   const visibleItems = items.filter((item) => canAccessRoute(item, user, role));
 
@@ -137,16 +161,21 @@ function NavBar({ items }: NavBarProps) {
             </nav>
           </div>
         </div>
-
+        {/* Container for login and signup */}
         <div className="ml-auto flex items-center gap-2">
           {user ? (
-            <button type="button" onClick={logout} className={styles.rightAction}>
-              Logout
-            </button>
+            <>
+              <Link to="/account">
+                My Account
+              </Link>
+              <button type="button" onClick={logout} className={styles.rightAction}>
+                Logout
+              </button>
+            </>
           ) : (
-            <button type="button" className={styles.rightAction}>
+            <Link to="/login" className={styles.rightAction}>
               Sign Up / Log In
-            </button>
+            </Link>
           )}
           <ThemeToggle />
         </div>

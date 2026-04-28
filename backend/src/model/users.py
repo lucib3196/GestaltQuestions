@@ -35,8 +35,10 @@ class UserUpdate(UserBase):
     email: str | None = None
 
 
-class UserRead(UserUpdate):
-    pass
+class UserRead(UserBase):
+    email: str | None = None
+    roles: List[UserRoles | str] = Field(..., default_factory=list)
+    institution: ValidInstitutions | None = None
 
 
 class CreateUserFullPayload(BaseModel):

@@ -1,7 +1,6 @@
 // import dotenv from "dotenv";
 import { initializeApp } from "firebase/app";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 
 export const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -26,5 +25,3 @@ if (import.meta.env.VITE_MODE === "dev") {
 
   connectAuthEmulator(auth, authEmulatorAPI);
 }
-
-export const db = getFirestore(firebase);
