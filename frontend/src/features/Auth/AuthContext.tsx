@@ -12,13 +12,13 @@ export function useStateAuth() {
     const [userData, setUserData] = useState<UserRead | null>(null)
     const [loading, setLoading] = useState<boolean>(true);
 
-    console.log(userData)
+
 
     useEffect(() => {
         const unSubscribe = onAuthStateChanged(auth, (fbUser) => {
             async function handleUser() {
                 if (fbUser) {
-                    console.log("User Signed In", fbUser.uid);
+
                     setUser(fbUser);
                     setLoading(false);
 
@@ -58,7 +58,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { user, userData, loading } = useStateAuth();
 
-    
+
 
     const logout = async () => {
         await auth.signOut();

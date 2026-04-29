@@ -2,7 +2,7 @@ import { BsCollection } from "react-icons/bs";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { FiDownload, FiTrash2, FiSend, FiUploadCloud } from "react-icons/fi";
 import { SideBarItem } from "../../components/SideBar";
-import { type QuestionCollectionView } from "../QuestionBuilder";
+import { type QuestionCollectionView } from ".";
 import type { ToolBarItem } from "../../types";
 import type { ToolBarOptions } from "./types";
 import { RxComponent2 } from "react-icons/rx";

@@ -29,12 +29,9 @@ export default function QuestionTable() {
 
   } = useQuestionCollectionContext();
 
-  
+
   const { multiSelect, setResetKey, resetKey, columns, setColumns } =
     useQuestionTableContext();
-
-
-
   const paged = useMemo(
     () => questions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
     [questions, page, rowsPerPage]
