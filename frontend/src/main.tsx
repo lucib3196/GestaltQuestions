@@ -3,14 +3,40 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from './features/Auth/AuthContext.tsx'
-
-
+import { MathJaxContext } from "better-react-mathjax";
+import { ToastContainer } from "react-toastify";
+import { QuestionResponseProvider } from "./features/QuestionRender";
+/* =========================
+   MathJax Config
+========================= */
+const config = {
+  loader: {
+    load: ["[tex]/ams"],
+  },
+  tex: {
+    inlineMath: [["$", "$"]],
+    displayMath: [
+      ["$$", "$$"],
+      ["\\[", "\\]"],
+    ],
+    processEscapes: true,
+  },
+  options: {
+    ignoreHtmlClass: "no-mathjax",
+    processHtmlClass: "mathjax-process",
+  },
+};
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <QuestionResponseProvider>
+      <MathJaxContext version={3} config={config}>
+        <AuthProvider>
+          <ToastContainer />
+          <App />
+        </AuthProvider>
+      </MathJaxContext>
+    </QuestionResponseProvider>
 
   </StrictMode>,
 )

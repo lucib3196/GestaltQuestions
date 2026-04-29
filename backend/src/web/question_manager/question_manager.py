@@ -1,10 +1,12 @@
 import asyncio
-from typing import Any, Sequence
+from typing import Any, Sequence, List
+from pydantic import BaseModel
 
 from fastapi import APIRouter, HTTPException, UploadFile
 from starlette import status
 
 from src.app_types.general import ID
+from src.model.files import FileData
 from src.model.question import Question, QuestionCreate, QuestionRead, QuestionUpdate
 from src.service import FileConverter
 from src.web.user.dependencies import CurrentUser
@@ -15,6 +17,10 @@ router = APIRouter(
     prefix="/developer/questions",
     tags=["developer", "questions"],
 )
+
+
+class WriteFilePayload(BaseModel):
+    content: str
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -36,9 +42,9 @@ async def create_question(
 async def list_my_questions(
     current_user: CurrentUser,
     question_manager: DeveloperQuestionManagerDependency,
-) -> list[Question]:
+) -> List[Question] | List[QuestionRead]:
     try:
-        return await question_manager.list_my_questions(current_user)
+        return await question_manager.list_my_questions(current_user, method="full")
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -107,6 +113,21 @@ async def get_question_files(
         )
 
 
+@router.get("/{question_id}/filedata")
+async def get_question_filedata(
+    question_id: ID,
+    current_user: CurrentUser,
+    question_manager: DeveloperQuestionManagerDependency,
+) -> Sequence[FileData]:
+    try:
+        return await question_manager.get_question_filedata(current_user, question_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to list question files: {e}",
+        )
+
+
 @router.post("/{question_id}/files", status_code=status.HTTP_201_CREATED)
 async def upload_files(
     question_id: ID,
@@ -147,13 +168,13 @@ async def read_file(
 async def write_file(
     question_id: ID,
     filename: str,
-    data: Any,
+    data: WriteFilePayload,
     current_user: CurrentUser,
     question_manager: DeveloperQuestionManagerDependency,
 ):
     try:
         return await question_manager.write_file(
-            current_user, question_id, filename, data
+            current_user, question_id, filename, data.content
         )
     except Exception as e:
         raise HTTPException(

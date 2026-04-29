@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import Any, List, Optional, Sequence
-
+from typing import Any, List, Optional, Sequence, Literal
+import asyncio
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
@@ -11,6 +11,7 @@ from src.model.question import Question, QuestionCreate, QuestionUpdate
 from src.service.user.exceptions import DeveloperAccessDenied, DeveloperProfileError
 from src.utils.database_utils import convert_uuid
 
+from src.model.question import QuestionRead
 from .exceptions import (
     DeveloperQuestionControlError,
     DeveloperQuestionServiceError,
@@ -125,7 +126,9 @@ class DeveloperQuestionService:
                 "assign question creator", str(user_id), str(e)
             ) from e
 
-    async def list_my_questions(self, user_id: ID) -> List[Question]:
+    async def list_my_questions(
+        self, user_id: ID, method: Literal["default", "full"] = "default"
+    ) -> List[Question] | List[QuestionRead]:
         """List questions created by the developer profile for the user."""
         await self.developer_access.require_developer_access(user_id)
         try:
@@ -135,7 +138,16 @@ class DeveloperQuestionService:
                     "retrieve", str(user_id), "Profile not found"
                 )
             logger.debug("Listing questions for developer user %s", user_id)
-            return user.created_questions
+            if method == "default":
+                return user.created_questions
+            else:
+                results = await asyncio.gather(
+                    *(
+                        self.qmng.qdb.get_question_data(q.id)
+                        for q in user.created_questions
+                    )
+                )
+                return results
         except DeveloperQuestionServiceError:
             raise
         except SQLAlchemyError as e:
@@ -167,6 +179,10 @@ class DeveloperQuestionService:
         """List stored files for a controlled question."""
         await self.has_question_control(user_id, qid)
         return await self.qmng.get_question_files(qid)
+
+    async def get_question_filedata(self, user_id: ID, qid: ID) -> Sequence[FileData]:
+        await self.has_question_control(user_id, qid)
+        return await self.qmng.get_question_filedata(qid)
 
     async def read_file(self, user_id: ID, qid: ID, filename: str) -> bytes | None:
         """Read a stored question file after checking developer question control."""

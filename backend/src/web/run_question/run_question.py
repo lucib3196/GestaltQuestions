@@ -16,7 +16,6 @@ from src.web.question_manager.dependencies import QuestionManagerDependency
 from typing import Literal
 from .sandbox_client import execute_sandbox_runtime
 
-
 router = APIRouter(
     prefix="/runtime/questions",
     tags=["questions", "runtime"],
@@ -95,7 +94,7 @@ async def run_question(
         logger.exception("Failed to prepare question runtime bundle.")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to prepare question runtime bundle.",
+            detail=f"Failed to prepare question runtime bundle. {e}",
         ) from e
 
     # Actual Logic for proper rendiering of the question
