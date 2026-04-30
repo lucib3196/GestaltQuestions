@@ -1,8 +1,8 @@
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
-import { useQuestionResponses } from "../answerContext";
-import { uiChoiceStyles, uiInputStyles } from "../styles/PanelStyles";
+
+import { uiChoiceStyles, uiInputStyles } from "../../../styles";
 
 export type PLAnswerProps = {
     correct: "true" | "false";
@@ -37,7 +37,7 @@ export const PLMultipleChoice: React.FC<PLMultipleChoiceProps> = ({
     children,
 }) => {
     const [selected, setSelected] = useState<string[]>([]);
-    const { setResponse } = useQuestionResponses();
+
 
     const answersText = React.Children.toArray(children).filter(
         (child): child is React.ReactElement<PLAnswerProps> =>
@@ -56,7 +56,7 @@ export const PLMultipleChoice: React.FC<PLMultipleChoiceProps> = ({
         }
     };
 
-    useEffect(() => setResponse(answersName, selected), [answersName, selected, setResponse]);
+    // useEffect(() => setResponse(answersName, selected), [answersName, selected, setResponse]);
 
     return (
         <div

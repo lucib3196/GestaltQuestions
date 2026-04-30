@@ -6,7 +6,7 @@ import {
     uiPanelSizeStyles,
     type UIPanelSize,
     type UIPanelVariant,
-} from "../styles/PanelStyles";
+} from "../../../styles";
 
 export interface PLQuestionPanelProps {
     children?: React.ReactNode;

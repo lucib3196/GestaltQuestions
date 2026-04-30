@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { CodeEditor } from "../../../components/CodeEditor";
 import { Button } from "../../../components/Button";
-import { QuestionHTMLToReact } from "../../QuestionRender";
-import questionComponentDocsRaw from "../../QuestionRender/constants/questionComponentDocumentation.json?raw";
-import { useQuestionRuntime } from "../../QuestionRender";
+import QuestionHTMLToReact from "../../QuestionEngine/render/QuestionHtmlToReact";
+import questionComponentDocsRaw from "../../QuestionEngine/docs/questionComponentDocumentation.json?raw";
+import { QuestionInstanceProvider } from "../../QuestionEngine/instance/context";
 
 type QuestionComponentAttribute = {
     htmlAttribute: string;
@@ -82,7 +82,6 @@ export default function QuestionComponentPlayground() {
     const components = docs.components;
     const [selectedTag, setSelectedTag] = useState<string>(components[0]?.tag ?? "");
     const [editorValue, setEditorValue] = useState("");
-    const { } = useQuestionRuntime()
 
     const selectedComponent = useMemo(
         () => components.find((c) => c.tag === selectedTag) ?? components[0],

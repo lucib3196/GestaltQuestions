@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-import uuid
 from src.service.question_rendering.parser import TemplateParser
 from fastapi import APIRouter, HTTPException, Query
 from starlette import status
@@ -13,10 +12,11 @@ from src.service.question_packaging.models import PreparedQuestion
 from src.service.question_packaging.question_package_builder import (
     QuestionPackageBuilder,
 )
+from src.model.question import QuestionRead
 from src.web.dependencies import SettingDependency
 from src.web.question_manager.dependencies import QuestionManagerDependency
 from typing import Literal
-from backend.src.model.question_attempt import QuizData
+from src.model.question_attempt import QuizData
 from .sandbox_client import execute_sandbox_runtime
 
 router = APIRouter(
@@ -24,8 +24,10 @@ router = APIRouter(
     tags=["questions", "runtime"],
 )
 
+
 class RenderedQuestionBundle(BaseModel):
     instance: UUID = Field(default_factory=uuid4)
+    question_meta: QuestionRead
     question_html: str
     solution_html: str | None = None
     logs: List[str] | None = None
@@ -89,6 +91,7 @@ async def run_question(
         bundle = QuestionPackageBuilder().build(
             question_files, question.isAdaptive, language=language
         )
+        question_metadata = await qm.qdb.get_question_data(qid)
     except MissingQuestionFileError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -105,6 +108,7 @@ async def run_question(
 
     if bundle.kind == "static":
         return RenderedQuestionBundle(
+            question_meta=question_metadata,
             question_html=bundle.question_files.question_html,
             solution_html=bundle.question_files.solution_html,
         )
@@ -121,7 +125,9 @@ async def run_question(
             bundle.question_files.solution_html, output or {}
         )
         return RenderedQuestionBundle(
+            question_meta=question_metadata,
             question_html=formatted_question,
             solution_html=formatted_solution,
             logs=logs,
+            quiz_data=output,
         )

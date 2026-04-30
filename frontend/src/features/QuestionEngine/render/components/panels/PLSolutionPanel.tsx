@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
-import { Button } from "../../../components/Button";
+import { Button } from "../../../../../components/Button";
 import {
     uiPanelBaseStyles,
     uiPanelVariantStyles,
@@ -8,7 +8,7 @@ import {
     uiTextStyles,
     type UIPanelSize,
     type UIPanelVariant,
-} from "../styles/PanelStyles";
+} from "../../../styles";
 
 export interface PLSolutionPanelProps {
     title?: string

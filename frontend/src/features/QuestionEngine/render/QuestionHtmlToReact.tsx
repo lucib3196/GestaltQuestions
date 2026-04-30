@@ -1,7 +1,7 @@
 import React from "react";
 import { MathJax } from "better-react-mathjax";
 import parse, { domToReact, type DOMNode } from "html-react-parser";
-import { TagAttributeMapping, type TagRegistry, type ValidComponents, ComponentMap } from "./mappings";
+import { TagAttributeMapping, type TagRegistry, type ValidComponents, ComponentMap } from "../mappings"
 
 
 class SafeRenderer extends React.Component<

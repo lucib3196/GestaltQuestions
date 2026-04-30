@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { MathJax } from "better-react-mathjax";
-import { Button } from "../../../components/Button";
+import { Button } from "../../../../../components/Button";
 import React, { useState } from "react";
 import {
     uiPanelBaseStyles,
@@ -9,7 +9,7 @@ import {
     uiTextStyles,
     type UIPanelSize,
     type UIPanelVariant,
-} from "../styles/PanelStyles";
+} from "../../../styles"
 
 export interface PLDerivationProps {
     title?: string;

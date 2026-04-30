@@ -1,9 +1,8 @@
 import React from "react";
 import clsx from "clsx";
-import { useQuestionResponses } from "../answerContext";
+import { useQuestionInstance } from "../../../instance";
 import { MathJax } from "better-react-mathjax";
-import { uiInputStyles } from "../styles/PanelStyles";
-
+import { uiInputStyles } from "../../../styles";
 export type PLNumberInputProps = {
     answerName: string;
     comparison: string;
@@ -26,8 +25,10 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
     variant = "default",
 }) => {
     const step = 1 / Math.pow(10, Number(digits) || 0);
-    const { responses, setResponse } = useQuestionResponses();
-    const currentResponse = responses[answerName];
+
+    const currentResponse = useQuestionInstance((s) => s.answers[answerName]);
+    const setAnswer = useQuestionInstance((s) => s.setAnswer);
+    const submitted = useQuestionInstance((s) => s.hasSubmitted)
     const inputValue =
         typeof currentResponse === "string" || typeof currentResponse === "number"
             ? currentResponse
@@ -36,22 +37,37 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
     return (
         <MathJax>
             <div className={className}>
-                <fieldset className={clsx(uiInputStyles.fieldset, variantStyles[variant], className)}>
+                <fieldset
+                    className={clsx(
+                        uiInputStyles.fieldset,
+                        variantStyles[variant],
+                        className,
+                        submitted && "opacity-60"
+                    )}
+                >
                     <label
                         htmlFor={answerName}
-                        className="text-sm font-bold text-text-muted px-2"
+                        className={clsx(
+                            "text-sm font-bold px-2",
+                            submitted ? "text-text-disabled" : "text-text-muted"
+                        )}
                     >
                         {label}
                     </label>
                     <input
                         id={answerName}
                         name={answerName}
+                        disabled={submitted}
                         type="number"
                         step={step}
                         placeholder={String(answerName)}
                         value={inputValue}
-                        onChange={(e) => setResponse(answerName, e.target.value)}
-                        className={uiInputStyles.base}
+                        onChange={(e) => setAnswer(answerName, e.target.value)}
+                        className={clsx(
+                            uiInputStyles.base,
+                            submitted &&
+                                "cursor-not-allowed bg-[var(--color-surface-muted)] text-text-disabled"
+                        )}
                     />
                 </fieldset>
             </div>

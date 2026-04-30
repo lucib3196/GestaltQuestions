@@ -13,7 +13,7 @@ cleanup_ports() {
   done
 
   # Give OS time to release ports
-  sleep 1
+  sleep 5
 }
 
 cleanup() {
@@ -27,7 +27,7 @@ cleanup() {
   docker compose -f compose.dev.yaml down || true
 }
 
-trap cleanup EXIT INT TERM
+# trap cleanup EXIT INT TERM
 
 # 🔥 IMPORTANT: CLEAN FIRST
 cleanup_ports
@@ -39,7 +39,7 @@ setsid firebase emulators:start --import=./emulator-data --export-on-exit &
 FIREBASE_PID=$!
 
 # Wait a bit for Firebase to bind ports
-sleep 3
+sleep 10
 
 echo "Starting backend container..."
 docker compose -f compose.dev.yaml up --build

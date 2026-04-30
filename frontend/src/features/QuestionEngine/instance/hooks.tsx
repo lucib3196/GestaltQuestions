@@ -1,57 +1,55 @@
-import { useEffect, useState } from "react";
-import type { ServerSettings } from "../QuestionBuilder/components/ServerToggle";
-import { QuestionRunnerApi } from "./runtime/questionRuntimeApi";
-import type { QuestionRunTimeResponse } from "./instance/types";
+import { useEffect } from "react";
+import type { ServerSettings } from "../../QuestionBuilder/components/ServerToggle";
+import { QuestionRunnerApi } from "../runtime/questionRuntimeApi";
+import { useQuestionInstance } from "./context";
 
-export function useQuestionRuntimeContent(
+export function useLoadQuestionRuntime(
     questionId: string | null,
     serverMode: ServerSettings,
-    refreshKey: number = 0
+    refreshKey: number = 0,
 ) {
-    const [runtimeContent, setRuntimeContent] = useState<QuestionRunTimeResponse | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const startLoading = useQuestionInstance((s) => s.startLoading);
+    const setRuntimeContent = useQuestionInstance((s) => s.setRunTimeContent); // Initially all values are null
+    const setError = useQuestionInstance((s) => s.setError);
 
     useEffect(() => {
-        let isCancelled = false;
-
+        let cancelled = false;
         if (!questionId) {
-            setRuntimeContent(null);
-            setLoading(false);
             setError(null);
             return;
         }
-
-        setLoading(true);
-        setError(null);
-
-        const fetchRuntimeContent = async () => {
+        startLoading();
+        const run = async () => {
             try {
-                const data = await QuestionRunnerApi.runQuestion(questionId, serverMode);
-                if (!isCancelled) {
-                    setRuntimeContent(data);
+                const data = await QuestionRunnerApi.runQuestion(
+                    questionId,
+                    serverMode,
+                );
+                if (!cancelled) {
+                    setRuntimeContent(data); // stores instance, html, quiz_data, logs, etc.
                 }
             } catch (err) {
-                if (!isCancelled) {
+                if (!cancelled) {
                     const message = err instanceof Error ? err.message : String(err);
                     setError(message);
-                }
-            } finally {
-                if (!isCancelled) {
-                    setLoading(false);
                 }
             }
         };
 
-        fetchRuntimeContent();
+        run();
 
         return () => {
-            isCancelled = true;
+            cancelled = true;
         };
-    }, [questionId, serverMode, refreshKey]);
-
-    return { runtimeContent, loading, error };
+    }, [
+        questionId,
+        serverMode,
+        refreshKey,
+        startLoading,
+        setRuntimeContent,
+        setError,
+    ]);
 }
 
 // Backward-compatible alias
-export const useRunQuestion = useQuestionRuntimeContent;
+export const useRunQuestion = useLoadQuestionRuntime;

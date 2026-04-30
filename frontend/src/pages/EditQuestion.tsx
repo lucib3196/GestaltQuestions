@@ -13,7 +13,7 @@ import { useCallback } from "react";
 import { ServerModeSwitch } from "../features/QuestionBuilder/components/ServerToggle";
 import { Button } from "../components/Button";
 import React from "react";
-import { QuestionRender } from "../features/QuestionRender";
+import { QuestionRender } from "../features/QuestionEngine";
 
 
 type EditorOptions = "LivePreview" | "Edit" | "Metadata";

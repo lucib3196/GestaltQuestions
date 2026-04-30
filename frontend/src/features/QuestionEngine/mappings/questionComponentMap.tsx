@@ -1,29 +1,24 @@
 import type { FC } from "react";
-
-import PLQuestionPanel, {
-  type PLQuestionPanelProps,
-} from "../components/PLQuestionPanel";
-import PLNumberInput, {
-  type PLNumberInputProps,
-} from "../components/PLNumberInput";
-import PLFigure, { type PLFigureProps } from "../components/PLFigure";
-import PLSolutionPanel, {
-  type PLSolutionPanelProps,
-} from "../components/PLSolutionPanel";
-import PLHint, { type PLHintProps } from "../components/PLHint";
 import {
-  PLDerivation,
-  type PLDerivationProps,
-} from "../components/PLDerivationContainer";
-import {
-  PLDerivationStep,
-  type PLDerivationStepProps,
-} from "../components/PLDerivationStep";
-import PLMultipleChoice, {
   PLAnswer,
+  PLDerivation,
+  PLDerivationStep,
+  PLFigure,
+  PLHint,
+  PLMultipleChoice,
+  PLNumberInput,
+  PLQuestionPanel,
+  PLSolutionPanel,
   type PLAnswerProps,
+  type PLDerivationProps,
+  type PLDerivationStepProps,
+  type PLFigureProps,
+  type PLHintProps,
   type PLMultipleChoiceProps,
-} from "../components/PLMultipleChoice";
+  type PLNumberInputProps,
+  type PLQuestionPanelProps,
+  type PLSolutionPanelProps,
+} from "../render/components";
 
 // The currently available tags that are processed, this is the mapping
 // These in html look like EX: <pl-question-panel>Hello world</pl-question-panel

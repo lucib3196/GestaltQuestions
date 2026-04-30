@@ -1,133 +1,117 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { ServerSettings } from "../QuestionBuilder/components/ServerToggle";
-import { useQuestionMetadata } from "../QuestionBuilder/hooks";
-import { Button } from "../../components/Button";
+import {
+    QuestionInstanceProvider,
+    useQuestionInstance,
+    useRunQuestion,
+} from "./instance";
 import QuestionHTMLToReact from "./render/QuestionHtmlToReact";
-import { useQuestionRuntimeContent } from "./hooks";
-import { QuestionResponseProvider, useQuestionResponses } from "./answerContext";
-import type { QuizData } from "./instance/types";
-import DisplayAnswers from "./ui/feedback/DisplayAnswers";
-
+import { Error } from "../../components/Error";
+import { Button } from "../../components/Button";
+import { DisplayAnswers, QuestionHeader } from "./ui";
 type QuestionRenderProps = {
     qid: string | null;
-    type: "question.html" | "solution.html";
     serverSettings: ServerSettings;
 };
 
-const STATIC_QUIZ_DATA: QuizData = {
-    params: {
-        a: 5,
-        b: 10,
-    },
-    correct_answers: {
-        c: 10,
-    },
-};
-
-function QuestionRenderBody({ qid, type, serverSettings }: QuestionRenderProps) {
+function QuestionRenderBody({ qid, serverSettings }: QuestionRenderProps) {
     const [refreshKey, setRefreshKey] = useState(0);
-    const [hasSubmitted, setHasSubmitted] = useState(false);
+    const [showSolution, setShowSolution] = useState<boolean>(false);
+    useRunQuestion(qid, serverSettings, refreshKey);
 
-    const { runtimeContent, loading, error } = useQuestionRuntimeContent(
-        qid,
-        serverSettings,
-        refreshKey
+    // Unpack
+    const loading = useQuestionInstance((s) => s.loading);
+    const error = useQuestionInstance((s) => s.error);
+    const qhtml = useQuestionInstance((s) => s.questionHtml);
+    const shtml = useQuestionInstance(
+        (s) => s.solutionHtml ?? "No Solution Available for Question",
     );
-    const { questionMetadata } = useQuestionMetadata(qid);
-    const { responses } = useQuestionResponses();
+    const quizData = useQuestionInstance((s) => s.quizData);
+    const qmeta = useQuestionInstance((s) => s.questionMeta);
+    const answers = useQuestionInstance((s) => s.answers);
+    const resetAll = useQuestionInstance((s) => s.resetAll);
+    const isSubmitted = useQuestionInstance((s) => s.hasSubmitted);
+    const submit = useQuestionInstance((s) => s.submitAnswers);
 
-    const isQuestionView = type === "question.html";
+    if (error) {
+        return <Error error={error} variant="codeExecution" />;
+    }
 
-    const html = useMemo(() => {
-        if (!runtimeContent) return "";
-        if (isQuestionView) return runtimeContent.question_html ?? "";
-        return runtimeContent.solution_html ?? "No Solution Available";
-    }, [runtimeContent, isQuestionView]);
-    const hasRenderableContent = html.trim().length > 0;
-    const showLoadingOverlay = loading && hasRenderableContent;
-    const showInitialLoadingState = loading && !hasRenderableContent;
-    const showBlockingError = Boolean(error) && !hasRenderableContent;
-
-    const handleSubmit = (event: FormEvent) => {
-        event.preventDefault();
-        setHasSubmitted(true);
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        submit();
+    };
+    const handleGenerateVariant = () => {
+        setRefreshKey((prev) => prev + 1);
+        resetAll();
     };
 
-    const handleGenerateQuestionVariant = () => {
-        setRefreshKey((current) => current + 1);
-        setHasSubmitted(false);
-    };
-
-    if (showBlockingError) {
-        return (
-            <div role="alert" className="qr-status qr-status--error">
-                Failed to load question content. {error}
-            </div>
-        );
+    if (loading) {
+        return <div>Loading</div>;
     }
 
     return (
-        <div className="qr-shell">
-            <header className="qr-header">
-                <h2 className="qr-title">{questionMetadata?.title ?? "Question Preview"}</h2>
-                <p className="qr-subtitle">
-                    {isQuestionView ? "Question view for learners" : "Solution preview"}
-                </p>
-            </header>
+        <div className="space-y-4">
+            <QuestionHeader qdata={qmeta} />
 
-            <form className="qr-form" onSubmit={handleSubmit}>
-                <div className={`qr-content ${showLoadingOverlay ? "qr-content--loading" : ""}`}>
-                    {showInitialLoadingState ? (
-                        <div className="qr-loading-placeholder">Loading question content...</div>
-                    ) : (
-                        <QuestionHTMLToReact html={html} />
-                    )}
-                    {showLoadingOverlay && (
-                        <div className="qr-loading-overlay" aria-live="polite">
-                            Loading updated variant...
+            <PanelGroup direction="horizontal" className="w-full gap-3">
+                <Panel
+                    order={1}
+                    defaultSize={200}
+                    minSize={25}
+                    className="rounded-lg border border-border bg-surface p-4"
+                >
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="text-text">
+                            <QuestionHTMLToReact html={qhtml} />
                         </div>
+
+                        <div className="flex flex-wrap gap-2">
+                            <Button type="submit" name="Submit" color="submitQuestion" />
+                            <Button
+                                type="button"
+                                onClick={handleGenerateVariant}
+                                name="Generate Variant"
+                                color="generateVariant"
+                            />
+                            <Button
+                                type="button"
+                                onClick={() => setShowSolution((prev) => !prev)}
+                                name={showSolution ? "Hide Solution" : "Show Solution"}
+                                color="showSolution"
+                            />
+                        </div>
+                    </form>
+                    {isSubmitted && (
+                        <DisplayAnswers quizData={quizData} submittedAnswer={answers} />
                     )}
-                </div>
-                {error && hasRenderableContent && (
-                    <div role="alert" className="qr-status qr-status--error">
-                        Failed to refresh content. Showing previous version.
-                    </div>
-                )}
+                </Panel>
 
-                {isQuestionView && (
-                    <div className="qr-actions">
-                        <Button
-                            type="button"
-                            name="Generate Question Variant"
-                            color="generateVariant"
-                            onClick={handleGenerateQuestionVariant}
-                        />
-                        <Button
-                            type="submit"
-                            name="Submit Question Answers"
-                            color="submitQuestion"
-                        />
-                    </div>
+                {showSolution && (
+                    <>
+                        <PanelResizeHandle className="w-2 rounded-sm bg-border hover:bg-border-strong transition-colors duration-200 cursor-col-resize" />
+                        <Panel
+                            order={2}
+                            defaultSize={200}
+                            minSize={25}
+                            className="rounded-lg border border-border bg-surface p-4"
+                        >
+                            <div className="text-text">
+                                <QuestionHTMLToReact html={shtml} />
+                            </div>
+                        </Panel>
+                    </>
                 )}
-            </form>
-
-            {isQuestionView && hasSubmitted && (
-                <div className="qr-results">
-                    <DisplayAnswers
-                        quizData={STATIC_QUIZ_DATA}
-                        submittedResponses={responses}
-                        variant="emphasis"
-                    />
-                </div>
-            )}
+            </PanelGroup>
         </div>
     );
 }
 
 export default function QuestionRender(props: QuestionRenderProps) {
     return (
-        <QuestionResponseProvider key={props.qid ?? "no-question"}>
+        <QuestionInstanceProvider>
             <QuestionRenderBody {...props} />
-        </QuestionResponseProvider>
+        </QuestionInstanceProvider>
     );
 }
