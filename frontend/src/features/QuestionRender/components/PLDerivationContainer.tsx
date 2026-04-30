@@ -55,7 +55,7 @@ export function PLDerivation({
                     className
                 )}
             >
-                <div className="text-center pb-4 border-b border-[var(--color-border)] w-full">
+                <div className="text-center pb-4 border-b border-border w-full">
                     {title && (
                         <h1 className={clsx("text-2xl", uiTextStyles.title)}>{title}</h1>
                     )}

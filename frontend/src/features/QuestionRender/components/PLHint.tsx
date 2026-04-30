@@ -26,16 +26,16 @@ export default function PLHint({
         <MathJax>
             <div
                 className={clsx(
-                    "flex w-full items-start gap-4 rounded-[var(--radius-md)] p-4 mb-3 transition-all duration-[var(--duration-base)]",
+                    "flex w-full items-start gap-4 rounded-md p-4 mb-3 transition-all duration-(--duration-base)",
                     variantStyles[variant as PLHintVariant],
                     className
                 )}
             >
-                <div className="flex h-8 w-8 flex-none items-center justify-center rounded-full border border-[var(--color-border-strong)] bg-[var(--color-surface-muted)] text-sm font-semibold text-[var(--color-accent)] shadow-sm">
+                <div className="flex h-8 w-8 flex-none items-center justify-center rounded-full border border-border-strong bg-surface-muted text-sm font-semibold text-accent shadow-sm">
                     {level}
                 </div>
 
-                <div className="max-w-none text-left text-[var(--color-text)]">
+                <div className="max-w-none text-left text-text">
                     {children}
                 </div>
             </div>

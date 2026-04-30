@@ -4,7 +4,7 @@ import { useQuestionMetadata } from "../QuestionBuilder/hooks";
 import { Button } from "../../components/Button";
 import QuestionHTMLToReact from "./QuestionHtmlToReact";
 import { useQuestionRuntimeContent } from "./hooks";
-import { useQuestionResponses } from "./answerContext";
+import { QuestionResponseProvider, useQuestionResponses } from "./answerContext";
 import type { QuizData } from "./types";
 import DisplayAnswers from "./components/DisplayAnswers";
 
@@ -24,7 +24,7 @@ const STATIC_QUIZ_DATA: QuizData = {
     },
 };
 
-export default function QuestionRender({ qid, type, serverSettings }: QuestionRenderProps) {
+function QuestionRenderBody({ qid, type, serverSettings }: QuestionRenderProps) {
     const [refreshKey, setRefreshKey] = useState(0);
     const [hasSubmitted, setHasSubmitted] = useState(false);
 
@@ -121,5 +121,13 @@ export default function QuestionRender({ qid, type, serverSettings }: QuestionRe
                 </div>
             )}
         </div>
+    );
+}
+
+export default function QuestionRender(props: QuestionRenderProps) {
+    return (
+        <QuestionResponseProvider key={props.qid ?? "no-question"}>
+            <QuestionRenderBody {...props} />
+        </QuestionResponseProvider>
     );
 }

@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { questionAPIURL } from "../../../config/apiConfig";
-import { useQuestionCollectionContext } from "../../../context/QuestionCollectionContext";
 import { twMerge } from "tailwind-merge"
 
 export type ImageSize = "sm" | "md" | "lg";
@@ -31,7 +30,10 @@ export default function PLFigure({
     size = "md",
     variant = "default",
 }: PLFigureProps) {
-    const { questionMeta: qdata } = useQuestionCollectionContext();
+    const qdata = {
+        question_path: ""
+    }
+
 
     const resolvedSource = filename && qdata?.question_path ? filename : (src ?? "");
     const isExternalUrl =
@@ -59,7 +61,7 @@ export default function PLFigure({
                 src={imagePath}
                 alt={resolvedSource}
                 className={clsx(
-                    "w-full h-auto object-contain transition-transform duration-[var(--duration-base)] hover:scale-[1.02]",
+                    "w-full h-auto object-contain transition-transform duration-(--duration-base) hover:scale-[1.02]",
                     sizeStyles[size as ImageSize]
                 )}
             />

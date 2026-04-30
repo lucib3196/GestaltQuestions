@@ -5,7 +5,6 @@ import App from './App.tsx'
 import { AuthProvider } from './features/Auth/AuthContext.tsx'
 import { MathJaxContext } from "better-react-mathjax";
 import { ToastContainer } from "react-toastify";
-import { QuestionResponseProvider } from "./features/QuestionRender";
 /* =========================
    MathJax Config
 ========================= */
@@ -29,14 +28,11 @@ const config = {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QuestionResponseProvider>
-      <MathJaxContext version={3} config={config}>
-        <AuthProvider>
-          <ToastContainer />
-          <App />
-        </AuthProvider>
-      </MathJaxContext>
-    </QuestionResponseProvider>
-
+    <MathJaxContext version={3} config={config}>
+      <AuthProvider>
+        <ToastContainer />
+        <App />
+      </AuthProvider>
+    </MathJaxContext>
   </StrictMode>,
 )

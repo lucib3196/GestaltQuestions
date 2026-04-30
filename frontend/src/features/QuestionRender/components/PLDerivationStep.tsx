@@ -12,7 +12,7 @@ export function PLDerivationStep({
     return (
         <div
             className={clsx(
-                "p-4 rounded-[var(--radius-md)] shadow-sm leading-relaxed text-[15px] border-l-4 border-[var(--color-accent)] bg-[var(--color-surface-muted)] text-[var(--color-text)]",
+                "p-4 rounded-md shadow-sm leading-relaxed text-[15px] border-l-4 border-accent bg-surface-muted text-text",
                 className
             )}
         >

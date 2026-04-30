@@ -61,7 +61,7 @@ export const PLMultipleChoice: React.FC<PLMultipleChoiceProps> = ({
     return (
         <div
             className={clsx(
-                "flex py-3 px-3 rounded-[var(--radius-md)]",
+                "flex py-3 px-3 rounded-md",
                 inline ? "flex-row gap-6 items-center" : "flex-col gap-2",
                 variantStyles[style]
             )}
@@ -91,10 +91,10 @@ export const PLMultipleChoice: React.FC<PLMultipleChoiceProps> = ({
                                 className={clsx(
                                     uiChoiceStyles.checkbox,
                                     uiInputStyles.base,
-                                    "h-4 w-4 max-w-[1rem] p-0"
+                                    "h-4 w-4 max-w-4 p-0"
                                 )}
                             />
-                            <span className="text-[var(--color-text)]">{answer.props.children}</span>
+                            <span className="text-text">{answer.props.children}</span>
                         </label>
                     );
                 })}

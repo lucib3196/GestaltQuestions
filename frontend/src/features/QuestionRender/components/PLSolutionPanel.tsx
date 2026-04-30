@@ -80,7 +80,7 @@ const PLSolutionPanel: React.FC<PLSolutionPanelProps> = ({
                 )}
             </div>
 
-            <div className={clsx("mt-6 border-t border-[var(--color-border)] pt-4 text-center text-xs", uiTextStyles.helper)}>
+            <div className={clsx("mt-6 border-t border-border pt-4 text-center text-xs", uiTextStyles.helper)}>
                 Review each step before proceeding.
             </div>
         </div>
