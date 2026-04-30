@@ -1,7 +1,7 @@
 import { Section } from "../components/Section";
 import { Button } from "../components/Button";
 import { HashLink } from "react-router-hash-link";
-import { GeneratorContainer } from "../features_temp/CodeGenerators/AIGeneratorBox";
+
 import Card from "../components/Card/Card";
 import { Link } from "react-router-dom";
 
@@ -77,22 +77,7 @@ function AboutSection() {
     );
 }
 
-function GeneratorSection() {
-    return (
-        <Section id="generator-section" variant="hero" className="bg-gray-50 dark:bg-gray-900">
-            <div className="flex flex-col items-center justify-center space-y-10 py-20">
-                <GeneratorContainer />
-                <HashLink smooth to="#learn-more">
-                    <Button
-                        name="Learn More"
-                        color="secondary"
-                        className="px-6 py-3 rounded-xl text-lg sm:text-xl font-bold shadow-md hover:scale-105 transition-transform"
-                    />
-                </HashLink>
-            </div>
-        </Section>
-    );
-}
+
 
 function LearnMore() {
     return (
@@ -300,7 +285,7 @@ export default function Home() {
             <Hero />
             <AboutSection />
             <HowItWorks />
-            <GeneratorSection />
+
             <QuestionsSection />
             <LearnMore />
 

@@ -1,10 +1,12 @@
-from pydantic import BaseModel
-from uuid import UUID
+from pydantic import BaseModel, Field
+import uuid
 from src.service.question_rendering.parser import TemplateParser
 from fastapi import APIRouter, HTTPException, Query
 from starlette import status
 from typing import List
-
+from uuid import uuid4, UUID
+from typing import Dict, Union, Optional
+from src.model.question_attempt import QuizData
 from src.core.logging import logger
 from src.service.question_packaging.exceptions import MissingQuestionFileError
 from src.service.question_packaging.models import PreparedQuestion
@@ -14,6 +16,7 @@ from src.service.question_packaging.question_package_builder import (
 from src.web.dependencies import SettingDependency
 from src.web.question_manager.dependencies import QuestionManagerDependency
 from typing import Literal
+from backend.src.model.question_attempt import QuizData
 from .sandbox_client import execute_sandbox_runtime
 
 router = APIRouter(
@@ -21,11 +24,12 @@ router = APIRouter(
     tags=["questions", "runtime"],
 )
 
-
 class RenderedQuestionBundle(BaseModel):
+    instance: UUID = Field(default_factory=uuid4)
     question_html: str
     solution_html: str | None = None
     logs: List[str] | None = None
+    quiz_data: Optional[Union[QuizData, Dict]] = None
 
 
 @router.get("/{qid}", response_model=PreparedQuestion)

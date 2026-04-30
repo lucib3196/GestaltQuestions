@@ -2,11 +2,11 @@ import { useMemo, useState, type FormEvent } from "react";
 import type { ServerSettings } from "../QuestionBuilder/components/ServerToggle";
 import { useQuestionMetadata } from "../QuestionBuilder/hooks";
 import { Button } from "../../components/Button";
-import QuestionHTMLToReact from "./QuestionHtmlToReact";
+import QuestionHTMLToReact from "./render/QuestionHtmlToReact";
 import { useQuestionRuntimeContent } from "./hooks";
 import { QuestionResponseProvider, useQuestionResponses } from "./answerContext";
-import type { QuizData } from "./types";
-import DisplayAnswers from "./components/DisplayAnswers";
+import type { QuizData } from "./instance/types";
+import DisplayAnswers from "./ui/feedback/DisplayAnswers";
 
 type QuestionRenderProps = {
     qid: string | null;

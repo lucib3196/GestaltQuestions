@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { ServerSettings } from "../QuestionBuilder/components/ServerToggle";
-import { QuestionRunnerApi } from "./api";
-import type { QuestionRunTimeResponse } from "./types";
+import { QuestionRunnerApi } from "./runtime/questionRuntimeApi";
+import type { QuestionRunTimeResponse } from "./instance/types";
 
 export function useQuestionRuntimeContent(
     questionId: string | null,
