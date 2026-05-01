@@ -1,8 +1,8 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useMyQuestions } from "../features/QuestionBuilder/hooks";
 import DevQuestionTable from "../features/QuestionBuilder/sections/DevQuestionTable";
-import QuestionComponentPlayground from "../features/QuestionBuilder/sections/QuestionComponentPlayground";
-
+import { ComponentPlayGround } from "../features/ComponentPlayGround";
+import { CreateNewQuestion } from "../features/CreateNewQuestion";
 export default function QuestionBuilderPage() {
     return (
         <div className="min-h-screen bg-bg text-text p-6">
@@ -69,9 +69,9 @@ export function QuestionsListPage() {
 }
 
 export function NewQuestion() {
-    return <div>New Question</div>;
+    return <CreateNewQuestion />;
 }
 
 export function QuestionBuilderPlaygroundPage() {
-    return <QuestionComponentPlayground />;
+    return <ComponentPlayGround />;
 }

@@ -7,7 +7,7 @@ export default function ShowUploadedFiles({
 }: {
     files: File[];
     onRemove: (index: number) => void;
-    onSubmit: () => void;
+    onSubmit?: () => void;
 }) {
     return (
         <div className="mt-3 rounded-md border border-border bg-surface p-3">
@@ -36,13 +36,13 @@ export default function ShowUploadedFiles({
                 </div>
             )}
 
-            <div className="mt-3">
+            {onSubmit && <div className="mt-3">
                 <Button
                     name="Upload"
                     onClick={onSubmit}
                     disabled={files.length === 0}
                 />
-            </div>
+            </div>}
         </div>
     );
 }

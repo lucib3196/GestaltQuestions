@@ -26,8 +26,8 @@ type PaneContext = {
 };
 
 const paneRenderMap: Record<EditorOptions, (ctx: PaneContext) => React.ReactNode> = {
-    LivePreview: ({ qid, serverMode, type }) => (
-        <QuestionRender qid={qid} serverSettings={serverMode} type={type} />
+    LivePreview: ({ qid, serverMode, }) => (
+        <QuestionRender qid={qid} serverSettings={serverMode} />
     ),
     Edit: ({ qid, fileData }) => <EditorPane qid={qid} fileData={fileData} />,
     Metadata: ({ qid }) => <QuestionMetaDataPreview qid={qid} />,

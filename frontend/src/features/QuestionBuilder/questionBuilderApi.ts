@@ -8,7 +8,7 @@ import type {
 } from "./types";
 import type { FileData } from "../../types/fileTypes";
 
-export class QuestionBuilderAPI {
+export default class QuestionBuilderAPI {
   private static readonly base = "/developer/questions";
 
   private static authHeaders(token: string) {

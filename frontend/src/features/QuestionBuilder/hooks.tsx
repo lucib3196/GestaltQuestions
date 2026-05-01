@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../Auth";
-import { QuestionBuilderAPI } from "./questionBuilderApi";
-import { type QuestionRead } from "./types";
+import QuestionBuilderAPI from "./questionBuilderApi";
+import { type QuestionCreate, type QuestionRead } from "./types";
 import { type FileData } from "../../types/fileTypes";
 
 export function useMyQuestions() {
@@ -230,8 +230,6 @@ export function useUploadFile(onRefresh?: () => void) {
     return { uploadFile, loading, error };
 }
 
-
-
 export function useQuestionMetadata(qid: string | null | undefined) {
     const [loading, setLoading] = useState(false);
     const [questionMetadata, setQuestionMetadata] = useState<QuestionRead | null>(null);
@@ -280,4 +278,39 @@ export function useQuestionMetadata(qid: string | null | undefined) {
     }, [qid, user]);
 
     return { questionMetadata, loading, error };
+}
+
+
+export function useCreateQuestion() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { user } = useAuth();
+
+    const createQuestion = useCallback(
+        async (payload: QuestionCreate, files?: File[]) => {
+            setLoading(true);
+            setError(null);
+
+            if (!user) {
+                setError("You must be signed in to delete files.");
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const token = await user.getIdToken();
+                const qCreated = await QuestionBuilderAPI.createQuestion(token, payload);
+                const qId = qCreated.id
+                if (files) {
+                    await QuestionBuilderAPI.uploadFiles(token, qId, files);
+                }
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "Failed to upload file");
+            } finally {
+                setLoading(false);
+            }
+        },
+        [user],
+    );
+    return { createQuestion, loading, error };
 }

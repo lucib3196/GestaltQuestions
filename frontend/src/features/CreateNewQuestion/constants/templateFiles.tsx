@@ -1,13 +1,14 @@
-import type { QuestionFileSpec,CreateMode } from "./types";
+import type { QuestionCreate } from "../../QuestionBuilder/types";
+import { type Filenames, type QuestionFileSpec } from "../instance";
 
-const QUESTION_FILE_SPECS: QuestionFileSpec[] = [
+const TemplateFiles: QuestionFileSpec[] = [
   {
     filename: "question.html",
+    type: "html",
     required: true,
     isAdaptive: false,
     description: "Defines the question content and user inputs.",
     template: [
-      // ───────────── Adaptive Version ─────────────
       {
         adaptive: true,
         template: `
@@ -23,8 +24,6 @@ const QUESTION_FILE_SPECS: QuestionFileSpec[] = [
 />
         `.trim(),
       },
-
-      // ───────────── Non-Adaptive Version ─────────────
       {
         adaptive: false,
         template: `
@@ -43,14 +42,13 @@ const QUESTION_FILE_SPECS: QuestionFileSpec[] = [
       },
     ],
   },
-
   {
     filename: "solution.html",
+    type: "html",
     required: false,
     isAdaptive: false,
     description: "Provides an optional worked solution or explanation.",
     template: [
-      // ───────────── Adaptive Version ─────────────
       {
         adaptive: true,
         template: `
@@ -65,8 +63,6 @@ const QUESTION_FILE_SPECS: QuestionFileSpec[] = [
 </pl-solution-panel>
         `.trim(),
       },
-
-      // ───────────── Non-Adaptive Version ─────────────
       {
         adaptive: false,
         template: `
@@ -83,9 +79,9 @@ const QUESTION_FILE_SPECS: QuestionFileSpec[] = [
       },
     ],
   },
-
   {
     filename: "server.js",
+    type: "javascript",
     required: false,
     isAdaptive: true,
     description: "Generates dynamic parameters for adaptive questions (JavaScript).",
@@ -112,9 +108,9 @@ module.exports = { generate };
       },
     ],
   },
-
   {
     filename: "server.py",
+    type: "python",
     required: false,
     isAdaptive: true,
     description: "Generates dynamic parameters for adaptive questions (Python).",
@@ -143,21 +139,32 @@ def generate():
   },
 ];
 
-export const CREATE_MODE_OPTIONS: {
-  value: CreateMode;
-  label: string;
-  ariaLabel: string;
-}[] = [
-    {
-      value: "blank",
-      label: "Blank Template",
-      ariaLabel: "Create a blank question template",
+type TemplateModePreset = {
+  questionData: Partial<QuestionCreate>;
+  defaultFiles: Filenames[];
+};
+
+const TemplateModePresets: Record<"adaptive" | "nonAdaptive", TemplateModePreset> = {
+  adaptive: {
+    questionData: {
+      isAdaptive: true,
+      topics: ["adaptive", "generated-params"],
+      qTypes: ["numerical"],
+      ai_generated: false,
+      title: "Add Numbers Adaptive"
     },
-    {
-      value: "upload",
-      label: "Upload Question",
-      ariaLabel: "Upload an existing question",
+    defaultFiles: ["question.html", "solution.html", "server.js"],
+  },
+  nonAdaptive: {
+    questionData: {
+      isAdaptive: false,
+      topics: ["static"],
+      qTypes: ["multiple-choice"],
+      ai_generated: false,
+      title: "Add Numbers MC"
     },
-    
-  ];
-export { QUESTION_FILE_SPECS };
+    defaultFiles: ["question.html", "solution.html"],
+  },
+};
+
+export { TemplateFiles, TemplateModePresets };
