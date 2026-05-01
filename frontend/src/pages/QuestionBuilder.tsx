@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useMyQuestions } from "../features/QuestionBuilder/hooks";
-import DevQuestionTable from "../features/QuestionBuilder/sections/DevQuestionTable";
+import { DevQuestionTable } from "../features/QuestionTables";
 import { ComponentPlayGround } from "../features/ComponentPlayGround";
 import { CreateNewQuestion } from "../features/CreateNewQuestion";
 export default function QuestionBuilderPage() {
@@ -57,12 +57,10 @@ export default function QuestionBuilderPage() {
 }
 
 export function QuestionsListPage() {
-    const { questions } = useMyQuestions();
     const navigate = useNavigate();
 
     return (
         <DevQuestionTable
-            questions={questions}
             onQuestionSelect={(qid) => navigate(`/question_builder/questions/${qid}/edit`)}
         />
     );

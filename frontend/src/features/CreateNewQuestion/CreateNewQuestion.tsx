@@ -132,9 +132,9 @@ export function CreateQuestionFromBlank() {
                 <PanelResizeHandle className="mx-1 w-px bg-border/70" />
 
                 <Panel defaultSize={showTemplateEditor ? 33 : 50} minSize={25}>
-                    
-                        <QuestionFilesDisplay />
-              
+
+                    <QuestionFilesDisplay />
+
                 </Panel>
 
                 {showTemplateEditor && (

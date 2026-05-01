@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../Auth";
 import QuestionBuilderAPI from "./questionBuilderApi";
-import { type QuestionCreate, type QuestionRead } from "./types";
+import { type QuestionCreate, type QuestionFilter, type QuestionRead } from "./types";
 import { type FileData } from "../../types/fileTypes";
 
 export function useMyQuestions() {
@@ -47,6 +47,50 @@ export function useMyQuestions() {
     return { questions, loading, error };
 }
 
+
+export function useFilterMyQuestions(filter: QuestionFilter) {
+    const { user } = useAuth();
+    const [questions, setQuestions] = useState<QuestionRead[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        async function run() {
+            if (!user) {
+                setQuestions([]);
+                setLoading(false);
+                return;
+            }
+
+            setLoading(true);
+            setError(null);
+
+            try {
+                const token = await user.getIdToken();
+                const data = await QuestionBuilderAPI.filterQuestions(token, filter);
+                if (!cancelled) setQuestions(data);
+            } catch (err) {
+                if (!cancelled) {
+                    setError(
+                        err instanceof Error ? err.message : "Failed to load questions",
+                    );
+                }
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        }
+
+        run();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [user, filter]);
+
+    return { questions, loading, error };
+}
 export function useQuestionFileData(qid: string) {
     const { user } = useAuth();
     const [fileData, setFileData] = useState<FileData[]>([]);

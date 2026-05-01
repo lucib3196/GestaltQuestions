@@ -1,10 +1,13 @@
-import { type QuestionRead } from "../types";
-import { QuestionTable } from "../../../components/Tables";
-import { Container } from "../components";
-
+import { type QuestionRead } from "../QuestionBuilder";
+import { QuestionTableBase } from "./components";
+import { Container } from "../../components/Container";
+import { SearchBar } from "../../components/SearchBar";
+import { useFilterMyQuestions } from "../QuestionBuilder";
+import { useState, useMemo } from "react";
+import { useEffect } from "react";
 type TableColumn = {
     key: string;
-    render: (
+    render?: (
         row: { id?: string | null | undefined },
         className?: string,
     ) => React.ReactNode;
@@ -17,15 +20,28 @@ type DevQTableProps = {
 };
 
 export default function DevQuestionTable({
-    questions,
     onQuestionSelect,
-    selectedQuestionId
+    selectedQuestionId,
 }: DevQTableProps) {
+    const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
+    const [debouncedSearchTitle, setDebouncedSearchTitle] = useState("");
+
+    const filter = useMemo(
+        () => ({ title: debouncedSearchTitle }),
+        [debouncedSearchTitle],
+    );
+
+    const { questions } = useFilterMyQuestions(filter);
     const QuestionSummaryColumns: TableColumn[] = [
+        {
+            key: "select",
+        },
         {
             key: "title",
             render: (q) => {
-                const question = q as QuestionRead; const isSelected = question.id === selectedQuestionId; return (
+                const question = q as QuestionRead;
+                const isSelected = question.id === selectedQuestionId;
+                return (
                     <button
                         type="button"
                         onClick={() => onQuestionSelect(question.id)}
@@ -59,13 +75,22 @@ export default function DevQuestionTable({
                     : "—",
         },
     ];
+
     return (
         <Container header="My Questions">
-            <QuestionTable
+            <SearchBar
+                value={debouncedSearchTitle}
+                setValue={setDebouncedSearchTitle}
+                disabled={false}
+            />
+            <QuestionTableBase
+                multiSelect={true}
                 questions={questions}
                 columns={QuestionSummaryColumns}
                 onTitleClick={(v) => onQuestionSelect(v.id)}
-            ></QuestionTable>
+                onSelectedIdsChange={setSelectedQuestions}
+                selectedIds={selectedQuestions}
+            ></QuestionTableBase>
         </Container>
     );
 }

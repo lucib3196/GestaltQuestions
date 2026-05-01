@@ -1,4 +1,4 @@
-import { Container } from "../components";
+import { Container } from "../../../components/Container";
 import { useQuestionMetadata } from "../hooks";
 
 type Props = {

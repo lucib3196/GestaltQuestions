@@ -9,7 +9,6 @@ from sqlmodel import SQLModel, select
 
 from src.core import SessionDep, logger
 
-
 T = TypeVar("T", bound=SQLModel)
 
 

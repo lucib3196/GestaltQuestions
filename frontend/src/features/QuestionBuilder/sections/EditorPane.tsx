@@ -1,4 +1,4 @@
-import { Container } from "../components";
+import { Container } from "../../../components/Container";
 import { type FileData } from "../../../types/fileTypes";
 import { CodeEditor } from "../../../components/CodeEditor";
 import { DropDown } from "../../../components/DropDown";

@@ -23,6 +23,10 @@ class WriteFilePayload(BaseModel):
     content: str
 
 
+class QuestionFilter(BaseModel):
+    title: str
+
+
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_question(
     current_user: CurrentUser,
@@ -49,6 +53,21 @@ async def list_my_questions(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to list questions: {e}",
+        )
+
+
+@router.post("/filter")
+async def filter(
+    current_user: CurrentUser,
+    filter: QuestionFilter,
+    question_manager: DeveloperQuestionManagerDependency,
+) -> Sequence[QuestionRead]:
+    try:
+        return await question_manager.filter_questions(current_user, filter.title)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to delete question file: {e}",
         )
 
 

@@ -3,14 +3,14 @@ from typing import Any, List, Optional, Sequence, Literal
 import asyncio
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
-
+from typing import cast
 from src.app_types.general import ID
 from src.core.logging import logger
 from src.model.files import FileData
 from src.model.question import Question, QuestionCreate, QuestionUpdate
 from src.service.user.exceptions import DeveloperAccessDenied, DeveloperProfileError
 from src.utils.database_utils import convert_uuid
-
+from sqlalchemy.sql.elements import ColumnElement
 from src.model.question import QuestionRead
 from .exceptions import (
     DeveloperQuestionControlError,
@@ -21,6 +21,10 @@ from .question_manager import QuestionManager
 from src.service.user.developer_access import (
     DeveloperAccessService,
 )
+from sqlmodel import select
+from src.model.users import DeveloperProfile
+from src.model.question import Question
+from uuid import UUID
 
 
 @dataclass
@@ -170,6 +174,18 @@ class DeveloperQuestionService:
         """Delete a question and its storage after checking developer question control."""
         await self.has_question_control(user_id, qid)
         return await self.qmng.delete_question(qid)
+
+    # Filtering
+    async def filter_questions(self, user_id: ID, title: str) -> Sequence[QuestionRead]:
+        try:
+            profile = await self.developer_access.get_developer_data(user_id)
+            assert profile
+            add_filter = Question.created_by_id == profile.id
+            return await self.qmng.qdb.filter_questions(
+                title, additional_filters=[add_filter]
+            )
+        except Exception as e:
+            raise ValueError(f"Failed to filer question {e}")
 
     # ------------------------------------------------------------------
     # Question Files

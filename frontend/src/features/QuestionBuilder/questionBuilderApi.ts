@@ -5,6 +5,7 @@ import type {
   QuestionFileList,
   QuestionRead,
   QuestionUpdate,
+  QuestionFilter,
 } from "./types";
 import type { FileData } from "../../types/fileTypes";
 
@@ -141,6 +142,17 @@ export default class QuestionBuilderAPI {
       `${this.base}/${questionId}/files/${encodeURIComponent(filename)}`,
       { headers: this.authHeaders(token) },
     );
+    return response.data;
+  }
+
+  static async filterQuestions(
+    token: string,
+    filter: QuestionFilter,
+  ): Promise<QuestionRead[]> {
+    const response = await api.post<QuestionRead[]>(`${this.base}/filter`,filter, {
+      headers: this.authHeaders(token),
+      
+    });
     return response.data;
   }
 }

@@ -6,7 +6,7 @@ from uuid import UUID
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, delete, select
-
+from sqlalchemy import func
 from src.app_types.general import ID
 from src.core import logger
 from src.data.exceptions.question_exceptions import (
@@ -29,6 +29,7 @@ from src.model.question import (
     Topic,
 )
 from src.utils import convert_uuid
+from sqlalchemy.sql.elements import ColumnElement
 
 
 class QuestionDB:
@@ -261,6 +262,26 @@ class QuestionDB:
             self.session.rollback()
             logger.exception("[QuestionDB] Failed to delete all questions")
             raise QuestionDeleteError(f"Failed to delete all questions: {e}") from e
+
+    async def filter_questions(
+        self, title: str, *, additional_filters: Sequence[ColumnElement[bool] | bool]
+    ) -> Sequence[QuestionRead]:
+        try:
+            print("new_filter", additional_filters)
+            stmt = select(Question).where(
+                func.lower(Question.title).like(f"%{title.lower()}%"),
+                *additional_filters,
+            )
+            logger.debug("The stmt %s", stmt)
+            questions = self.session.exec(stmt).all()
+            return await asyncio.gather(
+                *[self.get_question_data(q.id) for q in questions]
+            )
+
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            logger.exception("[QuestionDB] Failed to filter all questions")
+            raise ValueError(f"Failed to filter  questions: {e}") from e
 
     # Setter and Getters
     async def get_question_path(self, id: ID) -> str | None:

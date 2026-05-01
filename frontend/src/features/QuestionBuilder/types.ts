@@ -36,5 +36,9 @@ export type QuestionUpdate = {
   qTypes?: string[];
 };
 
+export type QuestionFilter = {
+  title?: string;
+};
+
 export type QuestionFileList = string[];
 export type QuestionDeleteResponse = boolean;
