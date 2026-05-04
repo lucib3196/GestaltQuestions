@@ -14,3 +14,4 @@ async def upload_zip(
         return await upload_zip_and_extract(file, storage, path)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+

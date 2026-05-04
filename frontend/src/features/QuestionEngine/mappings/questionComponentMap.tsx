@@ -96,6 +96,7 @@ export const TagAttributeMapping: {
     className: attrs["classname"] || attrs["class"],
     size: attrs["size"],
     variant: attrs["variant"],
+    useClientFilesDir: attrs["legacy"] ? true : false
   }),
   "pl-hint": (attrs) => ({
     level: attrs["level"],

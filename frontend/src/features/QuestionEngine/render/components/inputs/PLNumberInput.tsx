@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { useQuestionInstance } from "../../../instance";
 import { MathJax } from "better-react-mathjax";
 import { uiInputStyles } from "../../../styles";
+
 export type PLNumberInputProps = {
     answerName: string;
     comparison: string;
@@ -66,7 +67,7 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
                         className={clsx(
                             uiInputStyles.base,
                             submitted &&
-                                "cursor-not-allowed bg-[var(--color-surface-muted)] text-text-disabled"
+                                "cursor-not-allowed bg-surface-muted text-text-disabled"
                         )}
                     />
                 </fieldset>

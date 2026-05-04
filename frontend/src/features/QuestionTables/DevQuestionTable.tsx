@@ -4,7 +4,6 @@ import { Container } from "../../components/Container";
 import { SearchBar } from "../../components/SearchBar";
 import { useFilterMyQuestions } from "../QuestionBuilder";
 import { useState, useMemo } from "react";
-import { useEffect } from "react";
 type TableColumn = {
     key: string;
     render?: (
@@ -14,7 +13,6 @@ type TableColumn = {
 };
 
 type DevQTableProps = {
-    questions: QuestionRead[];
     onQuestionSelect: (qid: string) => void;
     selectedQuestionId?: string | null;
 };

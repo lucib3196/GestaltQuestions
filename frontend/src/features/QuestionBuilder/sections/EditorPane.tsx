@@ -91,6 +91,8 @@ export default function EditorPane({ qid, fileData }: EditorPaneProps) {
             return;
         }
 
+        console.log("Inspecting image", selectedFile)
+
         if (isImageExt(selectedFile)) {
             const imageUrl = getImageBase64FileData(activeFile);
             setImage(imageUrl);

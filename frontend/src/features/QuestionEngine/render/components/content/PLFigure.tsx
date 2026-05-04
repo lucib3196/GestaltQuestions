@@ -1,7 +1,6 @@
 import clsx from "clsx";
-import { questionAPIURL } from "../../../../../config/apiConfig";
 import { twMerge } from "tailwind-merge"
-
+import { useQuestionFigureSource } from "../../../instance/hooks";
 export type ImageSize = "sm" | "md" | "lg";
 
 export interface PLFigureProps {
@@ -10,6 +9,7 @@ export interface PLFigureProps {
     className?: string;
     size?: ImageSize | string;
     variant?: "default" | "minimal" | string;
+    useClientFilesDir?: boolean;
 }
 
 const variantStyles: Record<string, string> = {
@@ -22,31 +22,15 @@ const sizeStyles: Record<ImageSize, string> = {
     md: "max-w-[300px] md:max-w-[400px]",
     lg: "max-w-[500px] md:max-w-[700px]",
 };
-
 export default function PLFigure({
     src,
     filename,
     className = "",
     size = "md",
     variant = "default",
+    useClientFilesDir = false,
 }: PLFigureProps) {
-    const qdata = {
-        question_path: ""
-    }
-
-
-    const resolvedSource = filename && qdata?.question_path ? filename : (src ?? "");
-    const isExternalUrl =
-        resolvedSource.startsWith("http://") || resolvedSource.startsWith("https://");
-    const shouldResolveQuestionFile = filename && qdata?.question_path;
-    const imagePath = shouldResolveQuestionFile
-        ? `${questionAPIURL}/${qdata.question_path}/clientFiles/${filename}`
-        : isExternalUrl
-            ? resolvedSource
-            : qdata?.question_path
-                ? `${questionAPIURL}/${qdata.question_path}/clientFiles/${resolvedSource}`
-                : resolvedSource;
-
+    const imagePath = useQuestionFigureSource(src, filename, useClientFilesDir);
     return (
         <div
             className={twMerge(
@@ -59,7 +43,7 @@ export default function PLFigure({
         >
             <img
                 src={imagePath}
-                alt={resolvedSource}
+                alt={filename}
                 className={clsx(
                     "w-full h-auto object-contain transition-transform duration-(--duration-base) hover:scale-[1.02]",
                     sizeStyles[size as ImageSize]
