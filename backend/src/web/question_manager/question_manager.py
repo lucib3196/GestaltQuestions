@@ -1,16 +1,22 @@
 import asyncio
 from typing import Any, Sequence, List
 from pydantic import BaseModel
-
+from fastapi.responses import Response
 from fastapi import APIRouter, HTTPException, UploadFile
 from starlette import status
 
 from src.app_types.general import ID
 from src.model.files import FileData
-from src.model.question import Question, QuestionCreate, QuestionRead, QuestionUpdate
+from src.model.question import (
+    Question,
+    QuestionCreate,
+    QuestionRead,
+    QuestionUpdate,
+    QuestionFilter,
+)
 from src.service import FileConverter
 from src.web.user.dependencies import CurrentUser
-
+from src.service.file_service.zip_files import download_zip
 from .dependencies import DeveloperQuestionManagerDependency
 
 router = APIRouter(
@@ -21,10 +27,6 @@ router = APIRouter(
 
 class WriteFilePayload(BaseModel):
     content: str
-
-
-class QuestionFilter(BaseModel):
-    title: str
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -114,6 +116,52 @@ async def delete_question(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to delete question: {e}",
+        )
+
+
+@router.post("/{question_id}/download")
+async def download_question_as_zip(
+    question_id: ID,
+    current_user: CurrentUser,
+    question_manager: DeveloperQuestionManagerDependency,
+):
+    try:
+        q = await question_manager.get_question(current_user, question_id)
+        payload = await question_manager.prepare_question_download(
+            current_user, question_id
+        )
+        response = download_zip(payload, folder_name=q.title or "Untitled Questions")
+        return Response(
+            content=response,
+            media_type="application/zip",
+            headers={"Content-Disposition": f'attachment; filename="{q.title}.zip"'},
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
+        )
+
+
+@router.post("/{question_id}/{filename}/download")
+async def donwload_question_file(
+    question_id: ID,
+    filename: str,
+    current_user: CurrentUser,
+    question_manager: DeveloperQuestionManagerDependency,
+):
+    try:
+        await question_manager.get_question(current_user, question_id)
+        content = await question_manager.read_file(current_user, question_id, filename)
+        if content is None:
+            content = b""
+        return Response(
+            content=content,
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
         )
 
 

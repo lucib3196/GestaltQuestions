@@ -109,6 +109,7 @@ class QuestionManager:
             storage_path = await self.get_storage_path(qid)
             storage_snapshot = self._snapshot_storage_dir(storage_path)
             self.storage.delete_dir(storage_path)
+            logger.info(f"Deleted dir {storage_path}")
             await self.qdb.delete_question(qid)
             logger.info("Deleted question %s", qid)
             return True

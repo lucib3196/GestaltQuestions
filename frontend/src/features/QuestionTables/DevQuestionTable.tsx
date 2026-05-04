@@ -4,32 +4,58 @@ import { Container } from "../../components/Container";
 import { SearchBar } from "../../components/SearchBar";
 import { useFilterMyQuestions } from "../QuestionBuilder";
 import { useState, useMemo } from "react";
-type TableColumn = {
-    key: string;
-    render?: (
-        row: { id?: string | null | undefined },
-        className?: string,
-    ) => React.ReactNode;
-};
+import type { TableColumn } from "./instance/types";
+import { Button } from "../../components/Button";
+import { useDevTableContext } from "./instance/context";
+import { useDeleteQuestion, useDownloadQuestions } from "../QuestionBuilder";
+
 
 type DevQTableProps = {
     onQuestionSelect: (qid: string) => void;
     selectedQuestionId?: string | null;
 };
 
+function TableActions() {
+    const selectedIDs = useDevTableContext((state) => state.selectedIDs)
+    const multiSelectedEnabled = useDevTableContext((state) => state.multiselect)
+    const { deleteQuestion } = useDeleteQuestion()
+    const { downLoadQuestions } = useDownloadQuestions()
+
+    const enabled = !selectedIDs.length || !multiSelectedEnabled
+    return <div className="ml-auto flex items-center gap-3">
+        <Button
+            disabled={enabled}
+            onClick={() => downLoadQuestions(selectedIDs)}
+            name="Download"
+            color="primary"
+            size="sm"
+            className="min-w-[110px]"
+        />
+        <Button
+            disabled={enabled}
+            onClick={() => deleteQuestion(selectedIDs)}
+            name="Delete"
+            color="danger"
+            size="sm"
+            className="min-w-[110px]"
+        />
+    </div>
+}
+
 export default function DevQuestionTable({
     onQuestionSelect,
     selectedQuestionId,
 }: DevQTableProps) {
-    const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
+    // Search bar debounce 
     const [debouncedSearchTitle, setDebouncedSearchTitle] = useState("");
-
     const filter = useMemo(
         () => ({ title: debouncedSearchTitle }),
         [debouncedSearchTitle],
     );
-
     const { questions } = useFilterMyQuestions(filter);
+    const setQuestionIds = useDevTableContext((state) => state.setSelectedIDs)
+    const selectedIDs = useDevTableContext((state) => state.selectedIDs)
+    const multiSelectedEnabled = useDevTableContext((state) => state.multiselect)
     const QuestionSummaryColumns: TableColumn[] = [
         {
             key: "select",
@@ -76,18 +102,21 @@ export default function DevQuestionTable({
 
     return (
         <Container header="My Questions">
-            <SearchBar
-                value={debouncedSearchTitle}
-                setValue={setDebouncedSearchTitle}
-                disabled={false}
-            />
+            <div className="flex flex-row items-center gap-3">
+                <SearchBar
+                    value={debouncedSearchTitle}
+                    setValue={setDebouncedSearchTitle}
+                    disabled={false}
+                />
+                <TableActions />
+            </div>
             <QuestionTableBase
-                multiSelect={true}
+                multiSelect={multiSelectedEnabled}
                 questions={questions}
                 columns={QuestionSummaryColumns}
                 onTitleClick={(v) => onQuestionSelect(v.id)}
-                onSelectedIdsChange={setSelectedQuestions}
-                selectedIds={selectedQuestions}
+                onSelectedIdsChange={setQuestionIds}
+                selectedIds={selectedIDs}
             ></QuestionTableBase>
         </Container>
     );

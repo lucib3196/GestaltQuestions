@@ -65,6 +65,10 @@ class UpdateFile(BaseModel):
     new_content: str | dict
 
 
+class QuestionFilter(BaseModel):
+    title: str
+
+
 # ---------------------------------
 # -----------Actual DatabaseModels-----------
 # ---------------------------------

@@ -62,7 +62,7 @@ class FbStorage(Storage):
         blob.upload_from_string(
             self._normalize_content(data), content_type="application/octet-stream"
         )
-  
+
         return str(blob.name)
 
     def read(self, target: str) -> bytes | None:
@@ -74,14 +74,14 @@ class FbStorage(Storage):
 
     def delete(self, target: str | Path | Blob) -> None:
         key = self._to_blob_key(target)
+        logger.info(f"Resolved key {key}")
         if key.endswith("/"):
             for blob in self.bucket.list_blobs(prefix=key):
                 blob.delete()
+                logger.info(
+                    f"Deleting {blob}",
+                )
             return
-
-        blob = self.bucket.blob(key.rstrip("/"))
-        if blob.exists():
-            blob.delete()
 
     def list(
         self, target: str | Path | Blob, *, recursive: bool = False

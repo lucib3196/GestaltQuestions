@@ -28,6 +28,6 @@ export function useQuestionCreate<T>(
     selector: (state: QuestionCreationStore) => T
 ): T {
     const store = useContext(QuestionCreateContext);
-    if (!store) throw new Error("useQuestionInstance must be used within QuestionInstanceProvider");
+    if (!store) throw new Error("useQuestionCreate must be used within QuestionCreateProvider");
     return useStore(store, selector);
 }

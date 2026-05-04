@@ -1,6 +1,6 @@
 import asyncio
 from pathlib import Path, PurePosixPath
-from typing import Any, Dict, Literal, Sequence
+from typing import Any, Dict, Literal, Sequence, Optional
 from uuid import UUID
 
 from pydantic import ValidationError
@@ -264,13 +264,15 @@ class QuestionDB:
             raise QuestionDeleteError(f"Failed to delete all questions: {e}") from e
 
     async def filter_questions(
-        self, title: str, *, additional_filters: Sequence[ColumnElement[bool] | bool]
+        self,
+        title: str,
+        *,
+        additional_filters: Optional[Sequence[ColumnElement[bool] | bool]] = None,
     ) -> Sequence[QuestionRead]:
         try:
-            print("new_filter", additional_filters)
             stmt = select(Question).where(
                 func.lower(Question.title).like(f"%{title.lower()}%"),
-                *additional_filters,
+                *(additional_filters or []),
             )
             logger.debug("The stmt %s", stmt)
             questions = self.session.exec(stmt).all()

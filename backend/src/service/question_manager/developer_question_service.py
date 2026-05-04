@@ -1,16 +1,14 @@
 from dataclasses import dataclass
-from typing import Any, List, Optional, Sequence, Literal
+from typing import Any, List, Optional, Sequence, Literal, Dict
 import asyncio
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
-from typing import cast
 from src.app_types.general import ID
 from src.core.logging import logger
 from src.model.files import FileData
 from src.model.question import Question, QuestionCreate, QuestionUpdate
 from src.service.user.exceptions import DeveloperAccessDenied, DeveloperProfileError
 from src.utils.database_utils import convert_uuid
-from sqlalchemy.sql.elements import ColumnElement
 from src.model.question import QuestionRead
 from .exceptions import (
     DeveloperQuestionControlError,
@@ -21,10 +19,9 @@ from .question_manager import QuestionManager
 from src.service.user.developer_access import (
     DeveloperAccessService,
 )
+import json
 from sqlmodel import select
-from src.model.users import DeveloperProfile
 from src.model.question import Question
-from uuid import UUID
 
 
 @dataclass
@@ -186,6 +183,30 @@ class DeveloperQuestionService:
             )
         except Exception as e:
             raise ValueError(f"Failed to filer question {e}")
+
+    async def prepare_question_download(
+        self, user_id: ID, qid: ID
+    ) -> Dict[str, bytes | bytearray]:
+        try:
+            q = await self.get_question(user_id, qid)
+            qfiles = await self.get_question_filedata(user_id, qid)
+            file_payload: Dict[str, bytes | bytearray] = dict()
+            for f in qfiles:
+                content = f.content
+                if isinstance(content, str):
+                    content = content.encode()
+                elif isinstance(content, dict):
+                    content = (json.dumps(content)).encode()
+
+                file_payload[f.filename] = content
+            return file_payload
+
+        except QuestionNotFoundError:
+            raise
+        except DeveloperAccessDenied:
+            raise
+        except Exception as e:
+            raise ValueError(f"Failed to donwload Question {e}")
 
     # ------------------------------------------------------------------
     # Question Files

@@ -1,8 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
+import { toast } from "react-toastify";
 import { useAuth } from "../Auth";
 import QuestionBuilderAPI from "./questionBuilderApi";
 import { type QuestionCreate, type QuestionFilter, type QuestionRead } from "./types";
 import { type FileData } from "../../types/fileTypes";
+
+
 
 export function useMyQuestions() {
     const { user } = useAuth();
@@ -357,4 +360,135 @@ export function useCreateQuestion() {
         [user],
     );
     return { createQuestion, loading, error };
+}
+
+export function useDeleteQuestion() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { user } = useAuth();
+
+
+    const deleteQuestion = useCallback(
+        async (qids: string[]) => {
+            setLoading(true)
+            setError(null)
+
+            if (!user) {
+                const message = "You must be signed in to delete questions.";
+                setError(message);
+                toast.error(message);
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const token = await user.getIdToken();
+                const results = await Promise.allSettled(
+                    qids.map((qid) => QuestionBuilderAPI.deleteQuestion(token, qid)),
+                );
+                const failedQids = results
+                    .map((result, index) => (result.status === "rejected" ? qids[index] : null))
+                    .filter((qid): qid is string => qid !== null);
+                const successCount = results.length - failedQids.length;
+
+                if (failedQids.length === 0) {
+                    toast.success(
+                        successCount === 1
+                            ? "Question deleted successfully."
+                            : `${successCount} questions deleted successfully.`,
+                    );
+                } else if (successCount === 0) {
+                    const message =
+                        failedQids.length === 1
+                            ? `Failed to delete question ${failedQids[0]}.`
+                            : `Failed to delete ${failedQids.length} questions.`;
+                    setError(message);
+                    toast.error(message);
+                } else {
+                    const failedList = failedQids.slice(0, 3).join(", ");
+                    const remaining = failedQids.length > 3 ? ` +${failedQids.length - 3} more` : "";
+                    const message = `Deleted ${successCount}/${results.length}. Failed: ${failedList}${remaining}.`;
+                    setError(message);
+                    toast.warn(message);
+                }
+
+                return results
+            } catch (err) {
+                const message =
+                    err instanceof Error ? err.message : "Failed to process delete requests.";
+                setError(message);
+                toast.error(message);
+            } finally {
+                setLoading(false);
+            }
+
+
+        }, [user]
+    )
+    return { deleteQuestion, loading, error };
+}
+
+export function useDownloadQuestions() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { user } = useAuth();
+
+    const downLoadQuestions = useCallback(
+        async (qids: string[]) => {
+            setLoading(true)
+            setError(null)
+
+            if (!user) {
+                const message = "You must be signed in to download questions.";
+                setError(message);
+                toast.error(message);
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const token = await user.getIdToken();
+                const results = await Promise.allSettled(
+                    qids.map((qid) => QuestionBuilderAPI.downloadQuestion(token, qid)),
+                );
+                const failedQids = results
+                    .map((result, index) => (result.status === "rejected" ? qids[index] : null))
+                    .filter((qid): qid is string => qid !== null);
+                const successCount = results.length - failedQids.length;
+
+                if (failedQids.length === 0) {
+                    toast.success(
+                        successCount === 1
+                            ? "Question download started."
+                            : `${successCount} question downloads started.`,
+                    );
+                } else if (successCount === 0) {
+                    const message =
+                        failedQids.length === 1
+                            ? `Failed to download question ${failedQids[0]}.`
+                            : `Failed to download ${failedQids.length} questions.`;
+                    setError(message);
+                    toast.error(message);
+                } else {
+                    const failedList = failedQids.slice(0, 3).join(", ");
+                    const remaining = failedQids.length > 3 ? ` +${failedQids.length - 3} more` : "";
+                    const message = `Started ${successCount}/${results.length} downloads. Failed: ${failedList}${remaining}.`;
+                    setError(message);
+                    toast.warn(message);
+                }
+
+                return results;
+            } catch (err) {
+                const message =
+                    err instanceof Error ? err.message : "Failed to process download requests.";
+                setError(message);
+                toast.error(message);
+            } finally {
+                setLoading(false);
+            }
+
+
+        }, [user]
+    )
+    return { downLoadQuestions, loading, error };
 }
