@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../Auth";
 import QuestionBuilderAPI from "./questionBuilderApi";
-import { type QuestionCreate, type QuestionFilter, type QuestionRead } from "./types";
+import { type QuestionCreate, type QuestionFilter, type QuestionRead } from "../../types/questionTypes";
 import { type FileData } from "../../types/fileTypes";
 
 

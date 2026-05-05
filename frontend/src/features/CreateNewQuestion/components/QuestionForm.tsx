@@ -1,5 +1,5 @@
 import { InputTextForm, BooleanField } from "../../../components/FormInputs";
-import type { QuestionCreate } from "../../QuestionBuilder/types";
+import type { QuestionCreate } from "../../../types/questionTypes";
 import { handleCommaSeperatedValues } from "../../../utils";
 
 export type QuestionFormProps = {

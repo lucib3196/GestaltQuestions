@@ -1,6 +1,6 @@
 import { createStore } from "zustand";
 import type { QuestionCreationState, QuestionCreationStore } from "./types";
-import type { QuestionCreate } from "../../QuestionBuilder/types";
+import type { QuestionCreate } from "../../../types/questionTypes";
 
 const initialState: QuestionCreationState = {
   defaultFiles: [],

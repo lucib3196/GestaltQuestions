@@ -1,5 +1,5 @@
 // Question Metadata
-import { type QuestionRead } from "../../QuestionBuilder/types";
+import { type QuestionRead } from "../../../types/questionTypes";
 
 // General Types for the values
 

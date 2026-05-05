@@ -1,4 +1,4 @@
-import type { QuestionRead } from "../../../QuestionBuilder/types";
+import type { QuestionRead } from "../../../../types/questionTypes";
 
 export default function QuestionHeader({
   qdata,

@@ -1,4 +1,4 @@
-import type { QuestionCreate } from "../../QuestionBuilder/types";
+import type { QuestionCreate } from "../../../types/questionTypes";
 import { type Filenames, type QuestionFileSpec } from "../instance";
 
 const TemplateFiles: QuestionFileSpec[] = [

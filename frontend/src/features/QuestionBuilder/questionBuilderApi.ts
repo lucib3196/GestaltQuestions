@@ -6,7 +6,7 @@ import type {
   QuestionRead,
   QuestionUpdate,
   QuestionFilter,
-} from "./types";
+} from "../../types/questionTypes";
 import type { FileData } from "../../types/fileTypes";
 import { downloadZip } from "../../utils/downloadUtils";
 export default class QuestionBuilderAPI {
