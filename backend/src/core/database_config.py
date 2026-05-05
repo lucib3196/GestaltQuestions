@@ -1,10 +1,9 @@
+
 from typing import Annotated, Generator
 
-from dotenv import load_dotenv
 from fastapi import Depends
 from sqlmodel import SQLModel, Session, create_engine
 from src.core import get_settings, logger
-
 
 app_settings = get_settings()
 
@@ -17,9 +16,7 @@ elif app_settings.ENV == "production":
     if not DATABASE_URL:
         raise RuntimeError("POSTGRES_URL must be set in production mode")
 elif app_settings.ENV == "dev":
-    DATABASE_URL = f"sqlite:///{app_settings.SQLITE_DB_PATH}"
-
-    # raise NotImplementedError("Development database is not ready yet")
+    DATABASE_URL = app_settings.POSTGRES_URL
 else:
     raise ValueError(f"Unknown environment: {app_settings.ENV}")
 
@@ -28,8 +25,8 @@ logger.debug(f"[DATABASE Intialization]: Database path set to {DATABASE_URL}")
 
 try:
     connect_args = {}
-    if app_settings.ENV == "dev" and DATABASE_URL.startswith("sqlite"):
-        connect_args = {"check_same_thread": False}
+    if not DATABASE_URL:
+        raise ValueError("DATABASE URL is set to None")
     engine = create_engine(
         url=DATABASE_URL,
         echo=True,

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
+trap 'echo "❌ Script failed at line $LINENO"; read -p "Press enter to exit..."' ERR
 cleanup_ports() {
   echo "Cleaning up old Firebase processes..."
 
@@ -27,7 +27,7 @@ cleanup() {
   docker compose -f compose.dev.yaml down || true
 }
 
-# trap cleanup EXIT INT TERM
+trap cleanup EXIT INT TERM
 
 # 🔥 IMPORTANT: CLEAN FIRST
 cleanup_ports
