@@ -143,13 +143,6 @@ async def get_user_roles_by_id(
     """
     Retrieve all roles for a user by internal ID.
 
-@router.get("/{id}/roles")
-async def get_user_roles_by_id(
-    user_manager: UserManagerDependeny, id: ID
-) -> UserRoleResponse:
-    """
-    Retrieve all roles for a user by internal ID.
-
     This endpoint is intended for backend/admin flows.
     """
     try:
