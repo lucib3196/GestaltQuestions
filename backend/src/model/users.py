@@ -26,8 +26,8 @@ class UserBase(BaseModel):
 class UserCreate(BaseModel):
     first_name: str
     last_name: str
-    password: str
     username: str | None = None
+    password: str
     email: EmailStr
 
 

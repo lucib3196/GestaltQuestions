@@ -1,9 +1,11 @@
 export type ValidInstitutions =
   | "University of California, Riverside"
-  | "California State Polytechnic University, Pomona";
+  | "California State Polytechnic University, Pomona"
+  | "Norco College";
 export const AllowedInstitutions: ValidInstitutions[] = [
   "University of California, Riverside",
   "California State Polytechnic University, Pomona",
+  "Norco College",
 ];
 export type UserRole = "admin" | "developer" | "student" | "teacher";
 export type AllowedRoles = readonly UserRole[];

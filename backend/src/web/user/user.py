@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from firebase_admin import auth
 from pydantic import BaseModel
-import src.service.user
+
 from starlette import status
 
 from src.app_types.general import ID
@@ -136,6 +136,12 @@ async def delete_user_by_id(user_manager: UserManagerDependeny, id: ID):
             detail=f"Failed to delete user '{id}': {e}",
         )
 
+@router.get("/{id}/roles")
+async def get_user_roles_by_id(
+    user_manager: UserManagerDependeny, id: ID
+) -> UserRoleResponse:
+    """
+    Retrieve all roles for a user by internal ID.
 
 @router.get("/{id}/roles")
 async def get_user_roles_by_id(

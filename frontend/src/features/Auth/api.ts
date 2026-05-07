@@ -7,14 +7,14 @@ import type {
   AllowedRoles,
   UserBase,
   UserRead,
+  UserCreate,
 } from "./types";
 
 export class UserAPI {
   private static readonly base = "/users";
 
   static async createUser(
-    user: User,
-    data: UserBase,
+    data: UserCreate,
     additionalData?: {
       role?: AllowedRoles;
       institution?: ValidInstitutions | null;
@@ -25,11 +25,10 @@ export class UserAPI {
       role: additionalData?.role,
       institution: additionalData?.institution,
     };
-    const token = await getIdToken(user);
     const response = await api.post<UserBase>(`${this.base}`, payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      // headers: {
+      //   Authorization: `Bearer ${token}`,
+      // },
     });
     return response.data;
   }
