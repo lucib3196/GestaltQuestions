@@ -7,7 +7,7 @@ import { useState, useMemo } from "react";
 import type { TableColumn } from "./instance/types";
 import { Button } from "../../components/Button";
 import { useDevTableContext } from "./instance/context";
-import { useDeleteQuestion, useDownloadQuestions } from "../QuestionBuilder";
+import { useDeleteQuestion, useDownloadQuestions, useCopyQuestion } from "../QuestionBuilder";
 
 
 type DevQTableProps = {
@@ -20,6 +20,7 @@ function TableActions() {
     const multiSelectedEnabled = useDevTableContext((state) => state.multiselect)
     const { deleteQuestion } = useDeleteQuestion()
     const { downLoadQuestions } = useDownloadQuestions()
+    const { copyQuestion } = useCopyQuestion()
 
     const enabled = !selectedIDs.length || !multiSelectedEnabled
     return <div className="ml-auto flex items-center gap-3">
@@ -28,6 +29,14 @@ function TableActions() {
             onClick={() => downLoadQuestions(selectedIDs)}
             name="Download"
             color="primary"
+            size="sm"
+            className="min-w-[110px]"
+        />
+        <Button
+            disabled={enabled}
+            onClick={() => copyQuestion(selectedIDs)}
+            name="Copy"
+            color="secondary"
             size="sm"
             className="min-w-[110px]"
         />

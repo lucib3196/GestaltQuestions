@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../Auth";
 import QuestionBuilderAPI from "./questionBuilderApi";
-import { type QuestionAllRow, type QuestionCreate, type QuestionFilter, type QuestionRead } from "../../types/questionTypes";
+import { type QuestionAllRow, type QuestionCreate, type QuestionFilter, type QuestionRead, type QuestionUpdate } from "../../types/questionTypes";
 import { type FileData } from "../../types/fileTypes";
 
 
@@ -403,6 +403,43 @@ export function useCreateQuestion() {
     return { createQuestion, loading, error };
 }
 
+export function useUpdateQuestion(onRefresh?: () => void) {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { user } = useAuth();
+
+    const updateQuestion = useCallback(
+        async (questionId: string, payload: QuestionUpdate) => {
+            setLoading(true);
+            setError(null);
+
+            if (!user) {
+                setError("You must be signed in to update questions.");
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const token = await user.getIdToken();
+                const updated = await QuestionBuilderAPI.updateQuestion(
+                    token,
+                    questionId,
+                    payload,
+                );
+                onRefresh?.();
+                return updated;
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "Failed to update question");
+            } finally {
+                setLoading(false);
+            }
+        },
+        [user, onRefresh],
+    );
+
+    return { updateQuestion, loading, error };
+}
+
 export function useDeleteQuestion() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -532,4 +569,71 @@ export function useDownloadQuestions() {
         }, [user]
     )
     return { downLoadQuestions, loading, error };
+}
+
+export function useCopyQuestion() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { user } = useAuth();
+
+    const copyQuestion = useCallback(
+        async (qids: string[]) => {
+            setLoading(true)
+            setError(null)
+
+            if (!user) {
+                const message = "You must be signed in to copy questions.";
+                setError(message);
+                toast.error(message);
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const token = await user.getIdToken();
+        
+                const results = await Promise.allSettled(
+                    qids.map((qid) => QuestionBuilderAPI.copyQuestion(token, qid)),
+                );
+                const failedQids = results
+                    .map((result, index) => (result.status === "rejected" ? qids[index] : null))
+                    .filter((qid): qid is string => qid !== null);
+                const successCount = results.length - failedQids.length;
+
+                if (failedQids.length === 0) {
+                    toast.success(
+                        successCount === 1
+                            ? "Question copied."
+                            : `${successCount} questions copied.`,
+                    );
+                } else if (successCount === 0) {
+                    const message =
+                        failedQids.length === 1
+                            ? `Failed to copy question ${failedQids[0]}.`
+                            : `Failed to copy ${failedQids.length} questions.`;
+                    setError(message);
+                    toast.error(message);
+                } else {
+                    const failedList = failedQids.slice(0, 3).join(", ");
+                    const remaining = failedQids.length > 3 ? ` +${failedQids.length - 3} more` : "";
+                    const message = `Copied ${successCount}/${results.length} questions. Failed: ${failedList}${remaining}.`;
+                    setError(message);
+                    toast.warn(message);
+                }
+
+                return results;
+            } catch (err) {
+                const message =
+                    err instanceof Error ? err.message : "Failed to process copy requests.";
+                setError(message);
+                toast.error(message);
+            } finally {
+                setLoading(false);
+            }
+
+
+        }, [user]
+    )
+    return { copyQuestion, loading, error };
+
 }

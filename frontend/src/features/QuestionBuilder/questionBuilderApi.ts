@@ -27,6 +27,20 @@ export default class QuestionBuilderAPI {
     return response.data;
   }
 
+  static async copyQuestion(
+    token: string,
+    questionID: string,
+  ): Promise<QuestionRead> {
+    const response = await api.post<QuestionRead>(
+      `${this.base}/${questionID}/copy`,
+      {},
+      {
+        headers: this.authHeaders(token),
+      },
+    );
+    return response.data;
+  }
+
   static async listMyQuestions(token: string): Promise<QuestionRead[]> {
     const response = await api.get<QuestionRead[]>(`${this.base}/`, {
       headers: this.authHeaders(token),
@@ -168,10 +182,9 @@ export default class QuestionBuilderAPI {
   }
 
   static async filterAllQuestions(
-
     filter: QuestionFilter,
   ): Promise<QuestionAllRow[]> {
-    const response = await api.post<QuestionAllRow[]>("/questions/all", filter,);
+    const response = await api.post<QuestionAllRow[]>("/questions/all", filter);
     return response.data;
   }
 
@@ -183,4 +196,3 @@ export default class QuestionBuilderAPI {
     downloadZip(response.data, response.headers["content-disposition"]);
   }
 }
-

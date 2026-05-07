@@ -24,11 +24,11 @@ export type QuestionAllRow = {
   question_id: string;
   isAdaptive: boolean;
   ai_generated: boolean;
-  status: QuestionStatus
+  status: QuestionStatus;
   user_id: string;
   created_by: string;
-  institution: string
-}
+  institution: string;
+};
 
 export type QuestionCreate = {
   id?: string | null;

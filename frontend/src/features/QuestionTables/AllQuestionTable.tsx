@@ -5,12 +5,35 @@ import { SearchBar } from "../../components/SearchBar";
 import { useState, useMemo } from "react";
 import type { TableColumn } from "./instance/types";
 import { useAllTableContext } from "./instance/context";
+import { useCopyQuestion } from "../QuestionBuilder";
+import { Button } from "../../components/Button";
 
 type AllQTableProps = {
     onQuestionSelect: (qid: string) => void;
     selectedQuestionId?: string | null;
 };
 
+
+
+function TableActions() {
+    const selectedIDs = useAllTableContext((state) => state.selectedIDs)
+    const multiSelectedEnabled = useAllTableContext((state) => state.multiselect)
+    const { copyQuestion } = useCopyQuestion()
+
+    const enabled = !selectedIDs.length || !multiSelectedEnabled
+    return <div className="ml-auto flex items-center gap-3">
+
+        <Button
+            disabled={enabled}
+            onClick={() => copyQuestion(selectedIDs)}
+            name="Copy"
+            color="secondary"
+            size="sm"
+            className="min-w-[110px]"
+        />
+
+    </div>
+}
 export default function AllQuestionTable({
     onQuestionSelect,
     selectedQuestionId,
@@ -61,7 +84,9 @@ export default function AllQuestionTable({
                     setValue={setDebouncedSearchTitle}
                     disabled={false}
                 />
+                <TableActions />
             </div>
+
             <QuestionTableBase
                 multiSelect={multiSelectedEnabled}
                 questions={rows}

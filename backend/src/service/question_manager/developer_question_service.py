@@ -184,10 +184,15 @@ class DeveloperQuestionService:
         except SQLAlchemyError as e:
             raise DeveloperProfileError("list questions", str(user_id), str(e)) from e
 
-    async def get_question(self, user_id: ID, qid: ID) -> Question:
+    async def get_question(
+        self, user_id: ID, qid: ID, method: Literal["full", "simple"] = "simple"
+    ) -> Question | QuestionRead:
         """Retrieve a question after checking developer question control."""
         await self.has_question_control(user_id, qid)
-        q = await self.qmng.qdb.get_question(qid)
+        if method == "full":
+            q = await self.qmng.qdb.get_question_data(qid)
+        else:
+            q = await self.qmng.qdb.get_question(qid)
         if not q:
             raise QuestionNotFoundError(str(qid))
         return q

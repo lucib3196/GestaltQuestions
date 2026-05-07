@@ -79,9 +79,11 @@ async def get_question(
     question_id: ID,
     current_user: CurrentUser,
     question_manager: DeveloperQuestionManagerDependency,
-) -> Question:
+) -> QuestionRead | Question:
     try:
-        return await question_manager.get_question(current_user, question_id)
+        return await question_manager.get_question(
+            current_user, question_id, method="full"
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
