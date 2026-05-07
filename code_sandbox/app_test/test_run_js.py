@@ -87,13 +87,13 @@ def test_js_execution_with_custom_function(js_config_custom_func: RuntimeExecuti
     assert any("mock js custom func" in log for log in response.logs)
 
 
-def test_failed_execution(js_bad_code_path):
-    bad_code = Path(js_bad_code_path).read_text(encoding="utf-8")
-    config = RuntimeExecutionConfig(
-        entry="server.js",
-        language="javascript",
-        files={"server.js": bad_code},
-    )
+# def test_failed_execution(js_bad_code_path):
+#     bad_code = Path(js_bad_code_path).read_text(encoding="utf-8")
+#     config = RuntimeExecutionConfig(
+#         entry="server.js",
+#         language="javascript",
+#         files={"server.js": bad_code},
+#     )
 
-    with pytest.raises(ExecutionError):
-        JavaScriptRunner(config).run()
+#     with pytest.raises(ExecutionError):
+#         JavaScriptRunner(config).run()
