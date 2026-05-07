@@ -127,6 +127,36 @@ class DeveloperQuestionService:
                 "assign question creator", str(user_id), str(e)
             ) from e
 
+    async def copy_question(self, qid: ID, user_id: ID):
+        """Create a copy question under the developer profile and assign ownership."""
+        profile = await self.developer_access.get_developer_data(user_id)
+        if profile is None:
+            logger.info("Creating developer profile for user %s", user_id)
+            profile = await self.developer_access.set_developer_data(user_id)
+
+        if not profile.storage_path:
+            raise DeveloperProfileError(
+                "create question",
+                str(user_id),
+                f"Profile '{profile.id}' has no storage path",
+            )
+        question = await self.qmng.copy_question(qid, profile.storage_path)
+        try:
+            logger.debug(
+                "Assigning creator profile %s to question %s", profile.id, question.id
+            )
+            question.created_by = profile
+            self.session.add(question)
+            self.session.commit()
+            self.session.refresh(question)
+            return question
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            logger.warning("Failed assigning creator to question %s", question.id)
+            raise DeveloperProfileError(
+                "assign question creator", str(user_id), str(e)
+            ) from e
+
     async def list_my_questions(
         self, user_id: ID, method: Literal["default", "full"] = "default"
     ) -> List[Question] | List[QuestionRead]:

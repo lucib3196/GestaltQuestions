@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Navigate, Route, } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import { Home, QuestionBuilder, Questions, LoginPage, AccountPage, EditQuestionPage } from "./pages";
 import { RequireRole } from "./features/Auth";
-import { QuestionsListPage, NewQuestion, QuestionBuilderPlaygroundPage } from "./pages/QuestionBuilder";
-
+import { QuestionsListPage, CreateNewQuestion, QuestionBuilderPlaygroundPage } from "./pages/QuestionBuilder";
+import { GeneralQuestionRender } from "./pages/Questions";
 
 function App() {
   return (
@@ -19,12 +19,16 @@ function App() {
             <Route path="/questions" element={<Questions />} />
             <Route path="*" element={<Navigate to="/" replace />} />
 
+            {/* Non User Specific */}
+
+            <Route path="questions/:qid" element={<GeneralQuestionRender />} />
+
             {/* Developer Only Routes */}
             <Route element={<RequireRole allow={["admin", "developer"]} />}>
               <Route path="/question_builder" element={<QuestionBuilder />}>
-                <Route index element={<QuestionsListPage />} />
                 <Route path="questions" element={<QuestionsListPage />} />
-                <Route path="questions/new" element={<NewQuestion />} />
+                <Route index element={<QuestionsListPage />} />
+                <Route path="questions/new" element={<CreateNewQuestion />} />
                 <Route path="questions/:qid/edit" element={<EditQuestionPage />} />
                 <Route path="playground" element={<QuestionBuilderPlaygroundPage />} />
               </Route>

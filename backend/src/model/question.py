@@ -69,6 +69,17 @@ class QuestionFilter(BaseModel):
     title: str
 
 
+class QuestionTableRow(BaseModel):
+    title: str
+    question_id: UUID | str
+    isAdaptive: bool
+    ai_generated: bool
+    status: Status
+    user_id: str | UUID
+    created_by: str | None = None
+    institution: str
+
+
 # ---------------------------------
 # -----------Actual DatabaseModels-----------
 # ---------------------------------

@@ -12,6 +12,9 @@ from src.service.question_manager.question_manager import QuestionManager
 from src.service.storage.local_storage import Storage
 from src.app_types.general import STORAGE_TYPE
 from src.data.institution import InstitutionDB
+from src.service.question_query_service.question_query_service import (
+    QuestionQueryService,
+)
 
 
 def get_app_settings() -> AppSettings:
@@ -45,6 +48,15 @@ def get_question_database(
 
 
 QuestionDBDependency = Annotated[QuestionDB, Depends(get_question_database)]
+
+
+def get_question_query(
+    session: SessionDep,
+) -> QuestionQueryService:
+    return QuestionQueryService(session)
+
+
+QuestionQueryDependency = Annotated[QuestionQueryService, Depends(get_question_query)]
 
 
 @lru_cache

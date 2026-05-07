@@ -1,5 +1,5 @@
-import { Container } from "../components";
-import { QuestionHTMLToReact } from "../../QuestionRender";
+import { Container } from "../../../components/Container";
+import { QuestionHTMLToReact } from "../../QuestionEngine";
 import { IoLogoJavascript } from "react-icons/io5";
 import { FaPython } from "react-icons/fa";
 import clsx from "clsx";

@@ -43,6 +43,7 @@ export function CreateQuestionFromBlank() {
     const [mode, setMode] = useState<CreateMode>("blank");
     const [showTemplateEditor, setShowTemplateEditor] = useState(mode === "template");
 
+    // Set default files and qdata
     useEffect(() => {
         if (mode !== "template") return;
 
@@ -154,15 +155,4 @@ export function CreateQuestionFromBlank() {
     );
 }
 
-export default function CreateNewQuestion() {
-    return (
-        <QuestionCreateProvider>
-            <Header
-                variant="QuestionBuilder"
-                title="Create Question"
-                className="flex flex-row justify-between"
-            />
-            <CreateQuestionFromBlank />
-        </QuestionCreateProvider>
-    );
-}
+

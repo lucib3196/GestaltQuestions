@@ -1,4 +1,5 @@
 import asyncio
+import src.data
 from typing import Any, Sequence, List
 from pydantic import BaseModel
 from fastapi.responses import Response
@@ -116,6 +117,21 @@ async def delete_question(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to delete question: {e}",
+        )
+
+
+@router.post("/{question_id}/copy")
+async def copy_question(
+    question_id: ID,
+    current_user: CurrentUser,
+    question_manager: DeveloperQuestionManagerDependency,
+):
+    try:
+        q = await question_manager.copy_question(question_id, current_user)
+        return q
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
         )
 
 

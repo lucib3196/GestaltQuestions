@@ -96,6 +96,14 @@ class QuestionUpdateError(QuestionManagerException):
         super().__init__(message)
 
 
+class QuestionCopyFailure(QuestionManagerException):
+    def __init__(self, reason: str, details: str = ""):
+        message = f"Failed to update question : {reason}"
+        if details:
+            message += f" - {details}"
+        super().__init__(message)
+
+
 class QuestionDeletionError(QuestionManagerException):
     """Raised when question deletion fails."""
 

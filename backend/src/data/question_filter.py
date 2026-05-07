@@ -5,9 +5,13 @@ from sqlalchemy import or_
 from sqlmodel import Session, select
 
 from src.data import generic as gdb
-from src.model.question import Question, QuestionRead as QuestionData, QuestionType, Topic
+from src.model.question import (
+    Question,
+    QuestionRead as QuestionData,
+    QuestionType,
+    Topic,
+)
 from src.utils import convert_uuid
-
 
 METADATA_REL = ["topics", "languages", "qtypes"]
 RELATIONSHIP_MAP = {

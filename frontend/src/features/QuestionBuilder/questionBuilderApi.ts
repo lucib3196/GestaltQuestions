@@ -1,5 +1,6 @@
 import api from "../../services/client";
 import type {
+  QuestionAllRow,
   QuestionCreate,
   QuestionDeleteResponse,
   QuestionFileList,
@@ -159,6 +160,21 @@ export default class QuestionBuilderAPI {
     return response.data;
   }
 
+  static async listAllQuestions(token: string): Promise<QuestionAllRow[]> {
+    const response = await api.get<QuestionAllRow[]>("/questions/all", {
+      headers: this.authHeaders(token),
+    });
+    return response.data;
+  }
+
+  static async filterAllQuestions(
+
+    filter: QuestionFilter,
+  ): Promise<QuestionAllRow[]> {
+    const response = await api.post<QuestionAllRow[]>("/questions/all", filter,);
+    return response.data;
+  }
+
   static async downloadQuestion(token: string, qid: string): Promise<void> {
     const response = await api.post(`${this.base}/${qid}/download`, undefined, {
       headers: this.authHeaders(token),
@@ -167,3 +183,4 @@ export default class QuestionBuilderAPI {
     downloadZip(response.data, response.headers["content-disposition"]);
   }
 }
+

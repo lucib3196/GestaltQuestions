@@ -23,6 +23,11 @@ function QuestionFileDisplay({
   const isChecked =
     required || adaptiveRequired || selectedFiles.includes(filename);
 
+  if (required) {
+    add(filename)
+  }
+
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value as Filenames;
     const checked = event.target.checked;
@@ -34,7 +39,7 @@ function QuestionFileDisplay({
       <Checkbox
         value={filename}
         checked={isChecked}
-        disabled={required || adaptiveRequired}
+
         onChange={handleChange}
         className="mt-0.5"
       />

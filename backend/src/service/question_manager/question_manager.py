@@ -5,21 +5,10 @@ from src.core.logging import logger
 from src.data.question import QuestionDB
 from src.model.files import FileData
 from src.model.question import Question, QuestionCreate, QuestionRead, QuestionUpdate
+from src.service.file_service.utils import safe_dir_name
 from src.service.storage.base import Storage
 
-from .exceptions import (
-    FileListError,
-    FileOperationError,
-    FileSaveError,
-    InvalidQuestionDataError,
-    MissingQuestionDataError,
-    QuestionCreationError,
-    QuestionDeletionError,
-    QuestionManagerException,
-    QuestionNotFoundError,
-    QuestionUpdateError,
-    StoragePathNotFoundError,
-)
+from .exceptions import *
 from .question_storage_service import QuestionStorageService
 
 
@@ -56,7 +45,13 @@ class QuestionManager:
             qdata = self._validate_question_data(qdata)
             question = await self.qdb.create_question(qdata)
 
-            storage_path = f"{storage_base_path.rstrip('/')}/questions/{question.id}/"
+            question_slug = safe_dir_name(
+                question.title or "Untitled Question", max_length=80
+            )
+            storage_path = (
+                f"{storage_base_path.rstrip('/')}/questions/"
+                f"{question_slug}_{str(question.id)[:8]}/"
+            )
             question = await self.qdb.set_question_path(question.id, path=storage_path)
 
             if not question.storage_path:
@@ -82,6 +77,26 @@ class QuestionManager:
                 )
                 await self._rollback_created_question(question, saved_files)
             raise QuestionCreationError("database or storage error", str(e))
+
+    async def copy_question(self, qid: ID, storage_base_path: str) -> Question:
+        try:
+            question = await self.qdb.get_question_data(qid)
+            qdata = QuestionCreate(
+                topics=question.topics,
+                qTypes=question.qTypes,
+                title=f"{question.title}_copy",
+                ai_generated=question.ai_generated,
+                isAdaptive=question.isAdaptive,
+            )
+            qfiles = await self.get_question_filedata(qid)
+            q = await self.create_question(
+                qdata, storage_base_path=storage_base_path, files=qfiles
+            )
+            return q
+        except QuestionManagerException:
+            raise
+        except Exception as e:
+            raise QuestionCopyFailure(reason="Failed to copy question ", details=str(e))
 
     async def update_question_meta(
         self, id: ID, update: QuestionUpdate

@@ -2,7 +2,10 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import { DevQuestionTable } from "../features/QuestionTables";
 import { ComponentPlayGround } from "../features/ComponentPlayGround";
-import { CreateNewQuestion } from "../features/CreateNewQuestion";
+import { QuestionCreateProvider } from "../features/CreateNewQuestion/instance";
+import { Header } from "../components/Header";
+import { CreateQuestionFromBlank } from "../features/CreateNewQuestion/CreateNewQuestion";
+
 export default function QuestionBuilderPage() {
     return (
         <div className="min-h-screen bg-bg text-text p-6">
@@ -66,8 +69,17 @@ export function QuestionsListPage() {
     );
 }
 
-export function NewQuestion() {
-    return <CreateNewQuestion />;
+export function CreateNewQuestion() {
+    return (
+        <QuestionCreateProvider>
+            <Header
+                variant="QuestionBuilder"
+                title="Create Question"
+                className="flex flex-row justify-between"
+            />
+            <CreateQuestionFromBlank />
+        </QuestionCreateProvider>
+    );
 }
 
 export function QuestionBuilderPlaygroundPage() {

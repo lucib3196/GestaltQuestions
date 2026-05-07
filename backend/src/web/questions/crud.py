@@ -1,14 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
 from typing import Sequence
-from src.web.question_manager.dependencies import QuestionDBDependency
 from src.model.question import Question, QuestionFilter
 from fastapi import APIRouter, HTTPException
-from src.web.dependencies import (
-    QuestionDBDependency,
-)
+from src.web.dependencies import QuestionDBDependency, QuestionQueryDependency
 from src.app_types.general import ID
-from src.model.question import QuestionRead
+from src.model.question import QuestionRead, QuestionTableRow, QuestionFilter
 
 router = APIRouter(
     prefix="/questions",
@@ -16,6 +13,18 @@ router = APIRouter(
         "questions",
     ],
 )
+
+
+@router.get("/all")
+async def get_all(service: QuestionQueryDependency) -> Sequence[QuestionTableRow]:
+    return await service.get_table()
+
+
+@router.post("/all")
+async def get_all_filtered(
+    service: QuestionQueryDependency, filter: QuestionFilter
+) -> Sequence[QuestionTableRow]:
+    return await service.filter_questions(title=filter.title)
 
 
 # Retrieving

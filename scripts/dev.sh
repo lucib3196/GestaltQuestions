@@ -19,8 +19,11 @@ cleanup_ports() {
 cleanup() {
   echo "Stopping development services..."
 
+  echo "Exporting Firebase emulator data..."
+  firebase emulators:export ./emulator-data --force || true
+
   if [[ -n "${FIREBASE_PID:-}" ]]; then
-    kill -TERM -"${FIREBASE_PID}" 2>/dev/null || true
+    kill -INT -"${FIREBASE_PID}" 2>/dev/null || true
     wait "$FIREBASE_PID" 2>/dev/null || true
   fi
 

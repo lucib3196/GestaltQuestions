@@ -1,5 +1,5 @@
 export type RowId = string;
-import type { QuestionRead } from "../../QuestionBuilder";
+import type { QuestionRead, QuestionAllRow } from "../../QuestionBuilder";
 
 export type TableColumn = {
   key: string;
@@ -9,16 +9,24 @@ export type TableColumn = {
   ) => React.ReactNode;
 };
 
-export type DevQuestionTState = {
-  questions: QuestionRead[];
+type QuestionTableBaseState = {
   selectedIDs: string[];
   multiselect: boolean;
 };
 
-export type DevQuestionTActions = {
+type QuestionTableBaseActions = {
   setSelectedIDs: (ids: string[]) => void;
   setMultiSelect: (val: boolean) => void;
-  setQuestions: (qs: QuestionRead[]) =>void;
 };
 
-export type DevQuestionTStore = DevQuestionTState & DevQuestionTActions;
+export type QuestionTableState<TQuestion> = QuestionTableBaseState & {
+  questions: TQuestion[];
+};
+
+export type QuestionTableActions<TQuestion> = QuestionTableBaseActions & {
+  setQuestions: (qs: TQuestion[]) => void;
+};
+
+export type AllQuestionTActions = QuestionTableActions<QuestionAllRow>;
+export type QuestionTableStore<TQuestion> = QuestionTableState<TQuestion> &
+  QuestionTableActions<TQuestion>;

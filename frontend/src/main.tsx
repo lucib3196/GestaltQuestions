@@ -4,7 +4,7 @@ import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from './features/Auth/AuthContext.tsx'
 import { MathJaxContext } from "better-react-mathjax";
-import { DevTableProvider } from "./features/QuestionTables/instance/context";
+import { DevTableProvider, AllTableProvider } from "./features/QuestionTables/instance/context";
 import { ToastContainer } from "react-toastify";
 /* =========================
    MathJax Config
@@ -31,11 +31,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <MathJaxContext version={3} config={config}>
       <AuthProvider>
-        <DevTableProvider>
-          <ToastContainer />
+        <AllTableProvider>
+          <DevTableProvider>
+            <ToastContainer />
 
-          <App />
-        </DevTableProvider>
+            <App />
+          </DevTableProvider>
+        </AllTableProvider>
       </AuthProvider>
     </MathJaxContext>
   </StrictMode>,
