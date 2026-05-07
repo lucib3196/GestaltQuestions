@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { Header } from "../../components/Header";
 import QuestionFilesDisplay from "./components/QuestionFilesView";
 import QuestionForm from "./components/QuestionForm";
-import { QuestionCreateProvider, useQuestionCreate, type Filenames } from "./instance";
+import { useQuestionCreate, type Filenames } from "./instance";
 import { Button } from "../../components/Button";
 import { useCreateQuestion } from "../QuestionBuilder";
 import { TemplateFiles, TemplateModePresets } from "./constants/templateFiles";
@@ -31,7 +30,7 @@ const getTemplateContent = (
     return adaptiveMatch?.template ?? templateSpec.template[0]?.template ?? "";
 };
 
-export function CreateQuestionFromBlank() {
+export default function CreateQuestionFromBlank() {
     const qdata = useQuestionCreate((s) => s.questionData);
     const defaultFiles = useQuestionCreate((s) => s.defaultFiles);
     const uploadedFiles = useQuestionCreate((s) => s.uploadedFiles);

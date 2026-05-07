@@ -1,5 +1,5 @@
 export type RowId = string;
-import type { QuestionRead, QuestionAllRow } from "../../QuestionBuilder";
+import type { QuestionAllRow } from "../../QuestionBuilder";
 
 export type TableColumn = {
   key: string;
