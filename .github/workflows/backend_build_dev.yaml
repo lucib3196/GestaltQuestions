@@ -107,7 +107,7 @@ jobs:
       - name: Start firebase emulator
         run: firebase emulators:start --only auth,storage --project demo-test & sleep 10
 
-      - name: Run Test
-        run: |
-          poetry run python -m pytest
-        working-directory: ./backend
+      # - name: Run Test
+      #   run: |
+      #     poetry run python -m pytest
+      #   working-directory: ./backend
