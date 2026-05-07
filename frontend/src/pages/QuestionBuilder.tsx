@@ -4,7 +4,7 @@ import { DevQuestionTable } from "../features/QuestionTables";
 import { ComponentPlayGround } from "../features/ComponentPlayGround";
 import { QuestionCreateProvider } from "../features/CreateNewQuestion/instance";
 import { Header } from "../components/Header";
-import { CreateQuestionFromBlank } from "../features/CreateNewQuestion/CreateNewQuestion";
+import CreateQuestionFromBlank from "../features/CreateNewQuestion/CreateNewQuestion";
 
 export default function QuestionBuilderPage() {
     return (

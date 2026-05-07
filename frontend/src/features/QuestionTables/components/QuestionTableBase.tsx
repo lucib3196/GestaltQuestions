@@ -4,7 +4,7 @@ import type { TableColumn, RowId } from "../instance/types";
 
 type QuestionTableProps<T extends { id?: string | null }> = {
     questions: T[];
-    columns: TableColumn<T>[];
+    columns: TableColumn[];
     multiSelect?: boolean;
     selectedIds?: RowId[];
     onSelectedIdsChange?: (next: RowId[]) => void;
