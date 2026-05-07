@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from firebase_admin import auth
 from pydantic import BaseModel
-import src.service.user
+
 from starlette import status
 
 from src.app_types.general import ID

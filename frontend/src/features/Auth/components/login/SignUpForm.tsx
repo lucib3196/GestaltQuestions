@@ -1,14 +1,9 @@
 import AuthBase from "./AuthBase";
 import { toast } from "react-toastify";
 import { FirebaseError } from "firebase/app";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-} from "firebase/auth";
 
-import { auth } from "../../../../config/firebaseClient"
 import { UserAPI } from "../../api";
-import type { UserBase, ValidInstitutions } from "../../types";
+import type { UserCreate, ValidInstitutions } from "../../types";
 
 
 export function SignUpForm() {
@@ -21,21 +16,23 @@ export function SignUpForm() {
     institution?: ValidInstitutions | null
   ) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      // const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // const user = userCredential.user;
 
-      if (user && !user.emailVerified) {
-        await sendEmailVerification(user);
-        toast.info(`A verification email has been sent to ${email}.`);
-      }
+      // if (user && !user.emailVerified) {
+      //   await sendEmailVerification(user);
+      //   toast.info(`A verification email has been sent to ${email}.`);
+      // }
 
-      const userData: UserBase = {
+      const userData: UserCreate = {
         first_name: firstName ?? "",
         last_name: lastName ?? "",
         username: username ?? "",
+        email: email ?? "",
+        password: password ?? ""
       };
 
-      await UserAPI.createUser(user, userData, {
+      await UserAPI.createUser(userData, {
         institution: institution ?? null,
       });
 

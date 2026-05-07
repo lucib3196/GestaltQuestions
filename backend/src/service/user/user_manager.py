@@ -27,7 +27,7 @@ class UserManager:
     async def create_user(
         self,
         data: UserCreate,
-        role: UserRoles | None = UserRoles.STUDENT,
+        role: UserRoles | None = UserRoles.DEVELOPER,
         institution: ValidInstitutions | None = None,
     ) -> User:
         """Create a user and optionally attach a role."""
