@@ -9,7 +9,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/gestalt_db
     env_file:
-      - ./backend/.env.dev
+      - ./backend/.env.dev.docker
     ports:
       - 8000:8000
     volumes:

@@ -16,14 +16,10 @@ class ThreadDB:
     def __init__(self, session: Session):
         self.session = session
 
-    async def create_thread(
-        self,
-        user_id: UUID | str,
-        thread_id: UUID | str | None = None,
-    ) -> Thread:
+    async def create_thread(self, user_id: UUID | str, thread_id: UUID | str) -> Thread:
         try:
             thread_orm = Thread(
-                id=convert_uuid(thread_id) if thread_id else None,
+                id=convert_uuid(thread_id),
                 user_id=convert_uuid(user_id),
                 # created_at/updated_at handled automatically
             )
@@ -70,7 +66,7 @@ class ThreadDB:
         # Used for when a thread is accessed, so it shows up as most recent in the UI. We want threads to sort by last used time, not creation time.
         try:
             thread = await self.get_thread(convert_uuid(id))
-            thread.updated_at = datetime.utcnow()
+            thread.updated_at = datetime.now()
             self.session.add(thread)
             self.session.commit()
             self.session.flush()

@@ -2,7 +2,7 @@
 
 import { createStore } from "zustand";
 import type { ChatState, ChatStore } from "./types";
-import { Client } from "@langchain/langgraph-sdk";
+import ChatApi from "../ChatApi";
 const initialState: ChatState = {
     theadId: null
 }
@@ -10,8 +10,17 @@ const initialState: ChatState = {
 export function createChatStore(preloaded?: Partial<ChatState>) {
     return createStore<ChatStore>()((set) => ({
         ...preloaded, ...initialState,
+        setThreadId: (val) => set({ theadId: val }),
         onThreadId: (val) => {
             console.log(val)
         },
+        createdThread: async (token: string, threadId: string) => {
+            try {
+                const res = await ChatApi.createThreadId(token, threadId)
+                return res
+            } catch (error) {
+                throw new Error("Could not generate thread id")
+            }
+        }
     }))
 }

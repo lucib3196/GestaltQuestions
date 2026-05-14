@@ -4,6 +4,7 @@ import {
   HumanMessage,
   ToolMessageChunk,
 } from "@langchain/core/messages";
+import type { ThreadRead } from "../ChatApi";
 
 // ------------------------
 // TOOL Types
@@ -75,7 +76,9 @@ export type ChatState = {
   theadId: string | null;
 };
 export type ChatActions = {
-  onThreadId:  (val: string) => void;
+  setThreadId: (threadId: string) => void;
+  createdThread: (token: string, threadId: string) => Promise<ThreadRead>;
+  onThreadId: (val: string) => void;
 };
 
 export type ChatStore = ChatState & ChatActions;

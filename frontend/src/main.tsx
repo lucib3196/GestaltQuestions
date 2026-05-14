@@ -30,9 +30,10 @@ const config = {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ChatProvider>
+    
       <MathJaxContext version={3} config={config}>
         <AuthProvider>
+          <ChatProvider>
           <AllTableProvider>
             <DevTableProvider>
               <ToastContainer />
@@ -40,8 +41,9 @@ createRoot(document.getElementById('root')!).render(
               <App />
             </DevTableProvider>
           </AllTableProvider>
+          </ChatProvider>
         </AuthProvider>
       </MathJaxContext>
-    </ChatProvider>
+    
   </StrictMode>,
 )

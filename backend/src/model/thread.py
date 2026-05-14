@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
 class ThreadCreate(BaseModel):
     thread_id: Optional[UUID | str] = None
-    user_id: Optional[UUID | str] = None
 
 
 class MessageCreate(BaseModel):

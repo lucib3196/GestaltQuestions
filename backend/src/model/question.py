@@ -134,7 +134,7 @@ class Question(SQLModel, table=True):
     created_by: Optional["DeveloperProfile"] = Relationship(
         back_populates="created_questions"
     )
-    
+
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 

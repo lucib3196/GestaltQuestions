@@ -2,42 +2,42 @@ from fastapi.routing import APIRouter
 from uuid import UUID
 
 from .dependencies import ThreadDBDependency, MessageDBDependency
-from src.model.thread import Thread, Message, ThreadCreate, MessageCreate
+from src.model.thread import Thread, Message, MessageCreate
 from fastapi.exceptions import HTTPException
 from starlette import status
 from src.web.user.dependencies import CurrentUser
+from typing import List
 
 router = APIRouter(prefix="/threads", tags=["threads"])
 
 
-@router.post("/", response_model=Thread)
+@router.post("/{thread_id}", response_model=Thread)
 async def create_thread(
-    data: ThreadCreate,
+    thread_id: str | UUID,
     tdb: ThreadDBDependency,
     user: CurrentUser,
 ) -> Thread:
     return await tdb.create_thread(
         user_id=user,
-        thread_id=data.thread_id,
+        thread_id=thread_id,
     )
 
 
 @router.post("/{thread_id}/messages", response_model=Message)
 async def create_message(
     thread_id: UUID | str,
-    data: MessageCreate,
+    data: List[MessageCreate],
     mdb: MessageDBDependency,
     tdb: ThreadDBDependency,
-    user: CurrentUser,
-) -> Message:
+) -> None:
     try:
-        msg = await mdb.create_message(
-            thread_id=thread_id,
-            role=data.role,
-            content=data.content,
-        )
-        await tdb.touch_updated_at(thread_id)
-        return msg
+        for m in data:
+            msg = await mdb.create_message(
+                thread_id=thread_id,
+                role=m.role,
+                content=m.content,
+            )
+            await tdb.touch_updated_at(thread_id)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

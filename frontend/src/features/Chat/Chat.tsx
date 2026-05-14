@@ -5,6 +5,9 @@ import { ChatInput } from "./components/ChatInput";
 import { useStream } from "@langchain/react";
 import RenderToolCalls from "./components/ToolCallRender";
 import { useChatContext } from "./instance/context";
+import { useAuth } from "../Auth";
+import { useCallback, useEffect } from "react";
+import ChatApi from "./ChatApi";
 
 async function blobURLtoBase64(blobUrl: string): Promise<string> {
     const response = await fetch(blobUrl);
@@ -19,13 +22,29 @@ async function blobURLtoBase64(blobUrl: string): Promise<string> {
 }
 
 export default function Chat() {
-    const threadId = useChatContext((state) => state.theadId)
-    console.log("Current thread id", threadId)
+    const { user } = useAuth()
+    const threadId = useChatContext((s) => s.theadId)
+    const createThread = useChatContext((state) => state.createdThread)
+    const setThreadId = useChatContext((s) => s.setThreadId)
+
+    const getToken = useCallback(async () => {
+        if (!user) throw new Error("User not authenticated")
+        return user.getIdToken()
+    }, [user])
+
+
     const stream = useStream({
-        threadId: null,
+        threadId: threadId || undefined, // no thread => no stream session yet
         apiUrl: "http://127.0.0.1:2024",
         assistantId: "agent_gestalt",
-    });
+        onThreadId: async (id: string) => {
+            if (!user) return null
+            const token = await getToken()
+            // Create and set the thread id 
+            await createThread(token, id)
+            setThreadId(id)
+        },
+    })
 
     const handleSubmit = async (
         text: string,
@@ -51,8 +70,9 @@ export default function Chat() {
                 content: content,
             },
         ];
-
+        
         stream.submit({ messages: payload });
+        await ChatApi.createMessage(threadId, payload)
     };
 
     return (
