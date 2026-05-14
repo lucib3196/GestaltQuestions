@@ -1,9 +1,13 @@
-
 from typing import Annotated, Generator
 
 from fastapi import Depends
 from sqlmodel import SQLModel, Session, create_engine
 from src.core import get_settings, logger
+from src.core.exceptions import (
+    DatabaseConfigError,
+    DatabaseInitializationError,
+    MissingConfigError,
+)
 
 app_settings = get_settings()
 
@@ -12,29 +16,31 @@ app_settings = get_settings()
 if app_settings.ENV == "testing":
     DATABASE_URL = "sqlite:///:memory:"
 elif app_settings.ENV == "production":
-    DATABASE_URL = app_settings.POSTGRES_URL
-    if not DATABASE_URL:
-        raise RuntimeError("POSTGRES_URL must be set in production mode")
+    DATABASE_URL = app_settings.DATABASE_URL
 elif app_settings.ENV == "dev":
-    DATABASE_URL = app_settings.POSTGRES_URL
+    DATABASE_URL = app_settings.DATABASE_URL
 else:
-    raise ValueError(f"Unknown environment: {app_settings.ENV}")
+    raise DatabaseConfigError(f"Unknown environment: {app_settings.ENV}")
 
+if not DATABASE_URL:
+    raise MissingConfigError("DATABASE_URL must be set in production mode")
 
 logger.debug(f"[DATABASE Intialization]: Database path set to {DATABASE_URL}")
 
 try:
     connect_args = {}
     if not DATABASE_URL:
-        raise ValueError("DATABASE URL is set to None")
+        raise MissingConfigError("DATABASE URL is set to None")
     engine = create_engine(
         url=DATABASE_URL,
         echo=True,
         connect_args=connect_args,  # always a dict, never None
     )
     Base = SQLModel
+except MissingConfigError:
+    raise
 except Exception as e:
-    raise RuntimeError(f"Error initializing database engine {e}")
+    raise DatabaseInitializationError(f"Error initializing database engine {e}") from e
 
 
 def create_db_and_tables(engine=engine):
