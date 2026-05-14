@@ -69,3 +69,13 @@ export type CleanableContent = ContentBlock[] | string;
 // Payloads of interest
 
 export type UnknownRecord = Record<string, unknown>;
+
+// Context types
+export type ChatState = {
+  theadId: string | null;
+};
+export type ChatActions = {
+  onThreadId:  (val: string) => void;
+};
+
+export type ChatStore = ChatState & ChatActions;

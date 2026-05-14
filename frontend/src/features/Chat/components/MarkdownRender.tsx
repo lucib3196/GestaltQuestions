@@ -10,7 +10,7 @@ export default function Markdown({ children }: { children: ReactNode | null }) {
   }
 
   return (
-    <div className="markdown-content text-text">
+    <div className="markdown-content container text-text">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{children}</ReactMarkdown>
     </div>
   );

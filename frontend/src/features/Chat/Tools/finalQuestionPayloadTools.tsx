@@ -5,9 +5,10 @@ import type { ToolMessage } from "langchain";
 import { Container } from "../../../components/Container";
 import { useState, useMemo } from "react";
 import { Button } from "../../../components/Button";
+import QuestionBuilderAPI from "../../QuestionBuilder/questionBuilderApi";
 
 type QuestionPreviewPayload = {
-    files: string[];
+    files: File[]
     metadata: QuestionCreate;
 };
 
@@ -21,7 +22,21 @@ export function parseQuestionPayload(msg: ToolMessage): QuestionPreviewPayload {
     if (!qMeta) {
         throw new Error("Cannot parse the metadata for the question may not exist")
     }
-    return { files: Object.keys(qFiles), metadata: qMeta }
+    const filePayload = Object.entries(qFiles).map(
+        ([filename, content]) => {
+            console.log("File Content", content)
+            return new File(
+                [content],
+                filename,
+                { type: "text/plain" }
+            )
+        }
+    );
+
+    console.log("Filepaylod", filePayload)
+
+
+    return { files: filePayload, metadata: qMeta }
 }
 
 function applySubmissionMetadata(metadata: QuestionCreate): QuestionCreate {
@@ -34,7 +49,17 @@ export const submitFinalQuestionPayload: ToolExecute<QuestionPreviewPayload> = a
     const token = ctx?.token;
     if (!token) throw new Error("Missing auth token");
     const metadata = applySubmissionMetadata(payload.metadata);
-    console.log("Submitting:", { metadata, fileNames: payload.files });
+
+    try {
+        const qCreated = await QuestionBuilderAPI.createQuestion(token, metadata);
+        const qId = qCreated.id
+        console.log("Payload before sending:", payload.files)
+        if (payload.files) {
+            await QuestionBuilderAPI.uploadFiles(token, qId, payload.files);
+        }
+    } catch (error) {
+        console.log(error)
+    }
 };
 
 function MetadataRow({ label, value }: { label: string; value: React.ReactNode }) {

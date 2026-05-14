@@ -8,11 +8,9 @@ from alembic import context
 from dotenv import load_dotenv
 from src.model.question import (
     Question,
-    QuestionLanguageLink,
     QuestionTopicLink,
     QuestionQTypeLink,
     Topic,
-    Language,
     QuestionType,
 )
 from src.model.institution import Institution
@@ -26,7 +24,7 @@ import os
 # access to the values within the .ini file in use.
 config = context.config
 
-from src.data.database import DATABASE_URL
+from src.core.database_config import DATABASE_URL
 
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 

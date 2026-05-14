@@ -6,6 +6,7 @@ import { AuthProvider } from './features/Auth/AuthContext.tsx'
 import { MathJaxContext } from "better-react-mathjax";
 import { DevTableProvider, AllTableProvider } from "./features/QuestionTables/instance/context";
 import { ToastContainer } from "react-toastify";
+import { ChatProvider } from './features/Chat/instance/context.tsx'
 /* =========================
    MathJax Config
 ========================= */
@@ -29,16 +30,18 @@ const config = {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <MathJaxContext version={3} config={config}>
-      <AuthProvider>
-        <AllTableProvider>
-          <DevTableProvider>
-            <ToastContainer />
+    <ChatProvider>
+      <MathJaxContext version={3} config={config}>
+        <AuthProvider>
+          <AllTableProvider>
+            <DevTableProvider>
+              <ToastContainer />
 
-            <App />
-          </DevTableProvider>
-        </AllTableProvider>
-      </AuthProvider>
-    </MathJaxContext>
+              <App />
+            </DevTableProvider>
+          </AllTableProvider>
+        </AuthProvider>
+      </MathJaxContext>
+    </ChatProvider>
   </StrictMode>,
 )
