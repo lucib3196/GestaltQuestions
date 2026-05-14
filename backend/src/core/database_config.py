@@ -29,8 +29,6 @@ logger.debug(f"[DATABASE Intialization]: Database path set to {DATABASE_URL}")
 
 try:
     connect_args = {}
-    if not DATABASE_URL:
-        raise MissingConfigError("DATABASE URL is set to None")
     engine = create_engine(
         url=DATABASE_URL,
         echo=True,
@@ -58,4 +56,15 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 
 if __name__ == "__main__":
-    create_db_and_tables()
+    from sqlalchemy import text
+    engine = create_engine(DATABASE_URL)
+
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT 1"))
+            print("Database connection successful")
+            print(result.scalar())
+
+    except Exception as e:
+        print("Database connection failed")
+        print(e)
