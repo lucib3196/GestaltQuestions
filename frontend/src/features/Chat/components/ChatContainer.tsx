@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { MathJax } from "better-react-mathjax";
 import { RiChatNewLine } from "react-icons/ri";
+import { useEffect, useRef } from "react";
 type ChatContainerVariant = "demo" | "main";
 type Sizes = "sm" | "med" | "lg";
 
@@ -23,6 +24,7 @@ interface ChatContainerProps {
   variant?: ChatContainerVariant;
   size?: Sizes;
   onNewChat?: () => void;
+  scrollTrigger?: number;
 }
 
 export default function ChatContainer({
@@ -31,11 +33,19 @@ export default function ChatContainer({
   variant = "main",
   size = "med",
   onNewChat,
+  scrollTrigger = 0,
 }: ChatContainerProps) {
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [scrollTrigger]);
+
   return (
     <MathJax>
       <div className={clsx(Variants[variant], SizeClasses[size], "auto-scroll-y")}>
         <div className="mb-2 flex items-center justify-end">
+          {/* Tool Bar for Options */}
           {onNewChat ? (
             <button
               type="button"
@@ -47,9 +57,11 @@ export default function ChatContainer({
               <RiChatNewLine size={20} />
             </button>
           ) : null}
+          
         </div>
         <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1 auto-scroll-y">
           {children}
+          <div ref={bottomRef} />
         </div>
         <div className="mt-3 border-t border-border pt-3">{input}</div>
       </div>

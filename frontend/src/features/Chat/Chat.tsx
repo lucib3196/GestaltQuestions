@@ -6,34 +6,29 @@ import { useStream } from "@langchain/react";
 import RenderToolCalls from "./components/ToolCallRender";
 import { useChatContext } from "./instance/context";
 import { useAuth } from "../Auth";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import SideBar from "../../components/SideBar/SideBar";
 import { blobURLtoBase64 } from "./utils/imageUtils";
+import type { ThreadRead } from "./ChatApi";
+import { GiHamburgerMenu } from "react-icons/gi";
+import type { SideBarItem } from "../../components/SideBar";
+
 
 type ChatSessionProps = {
   onNewChat: () => void;
+  token: string;
 };
 
-function ChatSession({ onNewChat }: ChatSessionProps) {
-  const { user } = useAuth();
+function ChatSession({ onNewChat, token }: ChatSessionProps) {
   const threadId = useChatContext((s) => s.theadId);
   const createThread = useChatContext((state) => state.createdThread);
   const setThreadId = useChatContext((s) => s.setThreadId);
 
-  console.log("Current thread id", threadId)
-
-  const getToken = useCallback(async () => {
-    if (!user) throw new Error("User not authenticated");
-    return user.getIdToken();
-  }, [user]);
-
   const stream = useStream({
-    threadId: threadId || undefined,
+    threadId: threadId || null,
     apiUrl: "http://127.0.0.1:2024",
     assistantId: "agent_gestalt",
     onThreadId: async (id: string) => {
-      if (!user) return;
-
-      const token = await getToken();
       const created = await createThread(token, id);
       setThreadId(created.id);
     },
@@ -71,6 +66,7 @@ function ChatSession({ onNewChat }: ChatSessionProps) {
     <ChatContainer
       size="lg"
       onNewChat={onNewChat}
+      scrollTrigger={stream.messages.length}
       input={
         <ChatInput
           handleSubmit={handleSubmit}
@@ -97,13 +93,99 @@ function ChatSession({ onNewChat }: ChatSessionProps) {
 }
 
 export default function Chat() {
+  const { user } = useAuth();
   const setThreadId = useChatContext((s) => s.setThreadId);
+  const getUserThreads = useChatContext((s) => s.getUserThreads);
+  const [token, setToken] = useState<string>("");
+  const [showSideBar, setShowSideBar] = useState<boolean>(true);
   const [sessionKey, setSessionKey] = useState(0);
+  const [threads, setThreads] = useState<ThreadRead[]>([]);
+  const [selectedThreadId, setSelectedThreadId] = useState<string>("");
+
+  const loadUserThreads = useCallback(
+    async (authToken: string) => {
+      const res = await getUserThreads(authToken);
+      setThreads(res);
+    },
+    [getUserThreads],
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const bootstrap = async () => {
+      if (!user) return;
+      const authToken = await user.getIdToken();
+      if (!isMounted) return;
+
+      setToken(authToken);
+      await loadUserThreads(authToken);
+    };
+
+    void bootstrap();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user, loadUserThreads]);
+
+  const threadOptions: SideBarItem[] = useMemo(
+    () =>
+      threads.map((t) => ({
+        key: t.id,
+        label: t.id,
+
+      })),
+    [threads],
+  );
 
   const handleNewChat = () => {
+    setSelectedThreadId("");
     setThreadId(null);
     setSessionKey((k) => k + 1);
   };
 
-  return <ChatSession key={sessionKey} onNewChat={handleNewChat} />;
+  const handleSelectThread = (val: string) => {
+    const id = String(val).trim();
+    setSelectedThreadId(id);
+    setThreadId(id);
+    setSessionKey((k) => k + 1);
+  };
+
+  if (!token) {
+    return <div className="w-full p-4 text-sm text-text-muted">Loading chat...</div>;
+  }
+
+  return (
+    <div className="flex flex-row">
+      <div
+        className={`flex flex-col border-r border-border pr-3 transition-all duration-200 ease-in-out ${showSideBar ? "w-72 gap-2" : "w-10 gap-0"
+          }`}
+      >
+        <button
+          type="button"
+          aria-label={showSideBar ? "Close sidebar" : "Open sidebar"}
+          onClick={() => setShowSideBar((prev) => !prev)}
+          className="self-end rounded p-1 transition-colors duration-150 hover:bg-bg-secondary"
+        >
+          <GiHamburgerMenu />
+        </button>
+        <div
+          className={`overflow-hidden transition-opacity duration-150 ${showSideBar ? "opacity-100" : "pointer-events-none opacity-0"
+            }`}
+        >
+          <SideBar
+            selected={selectedThreadId}
+            setSelected={handleSelectThread}
+            options={threadOptions}
+            show={showSideBar}
+          />
+        </div>
+      </div>
+
+      <div className="w-full pl-3">
+        <ChatSession key={sessionKey} onNewChat={handleNewChat} token={token} />
+      </div>
+    </div>
+  );
 }

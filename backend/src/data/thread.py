@@ -12,6 +12,8 @@ from src.core.logging import logger
 from src.utils import convert_uuid
 from typing import Dict, Any
 from typing import List
+from fastapi import HTTPException
+from starlette import status
 
 
 class ThreadDB:
@@ -46,6 +48,27 @@ class ThreadDB:
         except SQLAlchemyError as e:
             self.session.rollback()
             message = f"[ThreadDB] failed to get thread {e}"
+            logger.error(message)
+            raise ValueError(message)
+
+    async def get_thread_for_user(self, user_id: UUID | str, thread_id: UUID | str) -> Thread:
+        try:
+            stmt = select(Thread).where(
+                Thread.id == convert_uuid(thread_id),
+                Thread.user_id == convert_uuid(user_id),
+            )
+            thread = self.session.exec(stmt).first()
+            if not thread:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Thread not found",
+                )
+            return thread
+        except HTTPException:
+            raise
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            message = f"[ThreadDB] failed to get user thread {e}"
             logger.error(message)
             raise ValueError(message)
 
@@ -131,5 +154,25 @@ class MessageDB:
         except SQLAlchemyError as e:
             self.session.rollback()
             message = f"[MessageDB] failed to list messages {e}"
+            logger.error(message)
+            raise ValueError(message)
+
+    async def list_messages_for_thread_for_user(
+        self, thread_id: UUID | str, user_id: UUID | str
+    ) -> list[Message]:
+        try:
+            stmt = (
+                select(Message)
+                .join(Thread, Message.thread_id == Thread.id)
+                .where(
+                    Message.thread_id == convert_uuid(thread_id),
+                    Thread.user_id == convert_uuid(user_id),
+                )
+                .order_by(Message.created_at.asc())  # type: ignore
+            )
+            return list(self.session.exec(stmt).all())
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            message = f"[MessageDB] failed to list user thread messages {e}"
             logger.error(message)
             raise ValueError(message)

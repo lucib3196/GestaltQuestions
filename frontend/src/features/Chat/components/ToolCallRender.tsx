@@ -46,7 +46,7 @@ export default function RenderToolCalls({ msg }: { msg: BaseMessage }) {
                 payload: approvedPayload,
                 ctx: { token: await user?.getIdToken() },
             });
-            setDismissed(true); // optional: hide after success
+            // setDismissed(true); // optional: hide after success
         } catch (e) {
             setError(e instanceof Error ? e.message : "Failed to execute tool");
         } finally {

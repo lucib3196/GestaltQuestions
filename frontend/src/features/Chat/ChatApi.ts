@@ -12,6 +12,18 @@ export type MessageCreate = {
   content: any;
 };
 
+export type ThreadMessageDetails = {
+  thread: ThreadRead;
+  db_messages: Array<{
+    id: string;
+    thread_id: string;
+    role: string;
+    content: any;
+    created_at: string;
+  }>;
+  langgraph_messages: any[];
+};
+
 export default class ChatApi {
   private static readonly base = "/threads";
 
@@ -34,6 +46,36 @@ export default class ChatApi {
       return response.data;
     } catch (error) {
       console.error("Failed to create thread id", error);
+      throw error;
+    }
+  }
+
+  static async getUserThreads(token: string): Promise<ThreadRead[]> {
+    try {
+      const response = await api.get<ThreadRead[]>(`${this.base}/`, {
+        headers: this.authHeaders(token),
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Failed to get user threads", error);
+      throw error;
+    }
+  }
+
+  static async getUserThreadMessages(
+    token: string,
+    threadId: string,
+  ): Promise<ThreadMessageDetails> {
+    try {
+      const response = await api.get<ThreadMessageDetails>(
+        `${this.base}/${threadId}/details`,
+        {
+          headers: this.authHeaders(token),
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Failed to get thread details/messages", error);
       throw error;
     }
   }

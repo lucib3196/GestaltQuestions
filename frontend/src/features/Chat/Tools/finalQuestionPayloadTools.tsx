@@ -6,36 +6,57 @@ import { Container } from "../../../components/Container";
 import { useState, useMemo } from "react";
 import { Button } from "../../../components/Button";
 import QuestionBuilderAPI from "../../QuestionBuilder/questionBuilderApi";
-
+import { toast } from "react-toastify"
 type QuestionPreviewPayload = {
     files: File[]
     metadata: QuestionCreate;
 };
 
 export function parseQuestionPayload(msg: ToolMessage): QuestionPreviewPayload {
-    const payload = extractToolPayload(msg)
-    if (!payload || typeof payload !== "object") throw new Error("Invalid tool payload for final_question_payload");
-    const obj = payload as UnknownRecord
-    const qFiles = "files" in obj && obj.files && typeof obj.files === "object" ? (obj.files as Record<string, string>) : {}
-    const qMeta = "metadata" in obj && obj.metadata && typeof obj.metadata === "object" ? (obj.metadata as QuestionCreate) : null
+    type PayloadFile = {
+        filename: string;
+        extension?: string;
+        content: string;
+    };
+
+    const payload = extractToolPayload(msg);
+    if (!payload || typeof payload !== "object") {
+        throw new Error("Invalid tool payload for final_question_payload");
+    }
+
+    const obj = payload as UnknownRecord;
+
+    const qMeta =
+        "metadata" in obj && obj.metadata && typeof obj.metadata === "object"
+            ? (obj.metadata as QuestionCreate)
+            : null;
 
     if (!qMeta) {
-        throw new Error("Cannot parse the metadata for the question may not exist")
+        throw new Error("Cannot parse metadata for the question");
     }
-    const filePayload = Object.entries(qFiles).map(
-        ([filename, content]) => {
-            console.log("File Content", content)
-            return new File(
-                [content],
-                filename,
-                { type: "text/plain" }
+
+    const rawFiles = "files" in obj ? obj.files : null;
+
+    const filePayload: File[] = Array.isArray(rawFiles)
+        ? rawFiles
+            .filter(
+                (f): f is PayloadFile =>
+                    !!f &&
+                    typeof f === "object" &&
+                    "filename" in f &&
+                    typeof (f as PayloadFile).filename === "string" &&
+                    "content" in f &&
+                    typeof (f as PayloadFile).content === "string",
             )
-        }
-    );
-
-
-
-    return { files: filePayload, metadata: qMeta }
+            .map((f) => new File([f.content], f.filename, { type: "text/plain" }))
+        : rawFiles && typeof rawFiles === "object"
+            ? Object.entries(rawFiles as Record<string, unknown>).map(([filename, content]) =>
+                new File([typeof content === "string" ? content : JSON.stringify(content)], filename, {
+                    type: "text/plain",
+                }),
+            )
+            : [];
+    return { files: filePayload, metadata: qMeta };
 }
 
 function applySubmissionMetadata(metadata: QuestionCreate): QuestionCreate {
@@ -52,12 +73,13 @@ export const submitFinalQuestionPayload: ToolExecute<QuestionPreviewPayload> = a
     try {
         const qCreated = await QuestionBuilderAPI.createQuestion(token, metadata);
         const qId = qCreated.id
-        console.log("Payload before sending:", payload.files)
         if (payload.files) {
             await QuestionBuilderAPI.uploadFiles(token, qId, payload.files);
         }
+        toast.success("Created question success")
     } catch (error) {
         console.log(error)
+        toast.error("Created question failed")
     }
 };
 
@@ -77,7 +99,6 @@ function renderValue(value: unknown): React.ReactNode {
     if (Array.isArray(value)) return value.length ? value.join(", ") : <span className="text-text-muted">[]</span>;
     return <code className="text-xs">{JSON.stringify(value)}</code>;
 }
-
 export function QuestionReviewCard({
     payload,
     onApprove,
@@ -86,10 +107,8 @@ export function QuestionReviewCard({
     error,
 }: RenderPreviewProps<QuestionPreviewPayload>) {
     const [isEditing, setIsEditing] = useState(false);
-
-    if (!onApprove) {
-        return
-    }
+    const [submitted, setSubmitted] = useState<boolean>(false);
+    const isReadOnly = submitted || !onApprove;
 
     // Local editable copy of metadata
     const [draftMetadata, setDraftMetadata] = useState<QuestionCreate>({
@@ -143,6 +162,12 @@ export function QuestionReviewCard({
         (draftMetadata ?? {}) as Record<string, unknown>,
     );
 
+    const handleApprove = async () => {
+        if (!onApprove || submitted || loading) return;
+        await onApprove(previewPayload);
+        setSubmitted(true);
+        setIsEditing(false);
+    };
 
     return (
         <Container header="Question Metadata Review">
@@ -155,7 +180,7 @@ export function QuestionReviewCard({
                         <Button
                             name={isEditing ? "Stop Editing" : "Edit"}
                             onClick={() => setIsEditing((v) => !v)}
-                            disabled={loading}
+                            disabled={loading || isReadOnly}
                             color="transparent"
                             size="sm"
                         />
@@ -169,6 +194,7 @@ export function QuestionReviewCard({
                                     value={title}
                                     onChange={(e) => updateTitle(e.target.value)}
                                     className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text"
+                                    disabled={isReadOnly}
                                 />
                             </div>
 
@@ -178,6 +204,7 @@ export function QuestionReviewCard({
                                     value={topicsInput}
                                     onChange={(e) => updateTopics(e.target.value)}
                                     className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text"
+                                    disabled={isReadOnly}
                                 />
                             </div>
                             <div className="space-y-1">
@@ -186,6 +213,7 @@ export function QuestionReviewCard({
                                     value={qTypeInput}
                                     onChange={(e) => updateQType(e.target.value)}
                                     className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text"
+                                    disabled={isReadOnly}
                                 />
                             </div>
                         </div>
@@ -202,13 +230,19 @@ export function QuestionReviewCard({
                 <div className="flex gap-2 pt-1">
                     <Button name="Cancel" onClick={onCancel} disabled={loading} color="transparent" size="sm" />
                     <Button
-                        name={loading ? "Submitting..." : "Looks Good, Create Question"}
-                        onClick={() => onApprove(previewPayload)}
-                        disabled={loading}
+                        name={submitted ? "Question Created" : loading ? "Submitting..." : "Looks Good, Create Question"}
+                        onClick={handleApprove}
+                        disabled={loading || isReadOnly}
                         color="primary"
                         size="sm"
                     />
                 </div>
+
+                {isReadOnly ? (
+                    <div className="text-xs text-text-muted">
+                        This question is approved and now read-only.
+                    </div>
+                ) : null}
             </div>
         </Container>
     );

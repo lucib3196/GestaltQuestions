@@ -4,7 +4,7 @@ import {
   HumanMessage,
   ToolMessageChunk,
 } from "@langchain/core/messages";
-import type { ThreadRead } from "../ChatApi";
+import type { ThreadRead, ThreadMessageDetails } from "../ChatApi";
 
 // ------------------------
 // TOOL Types
@@ -34,7 +34,7 @@ export type RenderPreviewProps<TPayload> = {
 export type ToolDefinition<TPayload> = {
   parse: (msg: ToolMessage) => TPayload;
   Preview: React.ComponentType<RenderPreviewProps<TPayload>>;
-  execute?: ToolExecute<TPayload>;
+  execute: ToolExecute<TPayload>;
 };
 
 export type ToolDefinitions = Record<ToolName, ToolDefinition<any>>;
@@ -78,6 +78,11 @@ export type ChatState = {
 export type ChatActions = {
   setThreadId: (threadId: string | null) => void;
   createdThread: (token: string, threadId: string) => Promise<ThreadRead>;
+  getUserThreads: (token: string) => Promise<ThreadRead[]>;
+  getUserThreadMessages: (
+    token: string,
+    threadId: string,
+  ) => Promise<ThreadMessageDetails>;
   onThreadId: (val: string) => void;
 };
 
