@@ -33,7 +33,6 @@ export function parseQuestionPayload(msg: ToolMessage): QuestionPreviewPayload {
         }
     );
 
-    console.log("Filepaylod", filePayload)
 
 
     return { files: filePayload, metadata: qMeta }
@@ -88,6 +87,10 @@ export function QuestionReviewCard({
 }: RenderPreviewProps<QuestionPreviewPayload>) {
     const [isEditing, setIsEditing] = useState(false);
 
+    if (!onApprove) {
+        return
+    }
+
     // Local editable copy of metadata
     const [draftMetadata, setDraftMetadata] = useState<QuestionCreate>({
         ...(payload.metadata ?? {}),
@@ -139,6 +142,7 @@ export function QuestionReviewCard({
     const metadataEntries = Object.entries(
         (draftMetadata ?? {}) as Record<string, unknown>,
     );
+
 
     return (
         <Container header="Question Metadata Review">

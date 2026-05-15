@@ -9,7 +9,7 @@ export type ThreadRead = {
 
 export type MessageCreate = {
   role: string;
-  content: string;
+  content: any;
 };
 
 export default class ChatApi {

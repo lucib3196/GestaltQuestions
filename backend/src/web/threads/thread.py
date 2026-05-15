@@ -23,14 +23,15 @@ async def create_thread(
     )
 
 
-@router.post("/{thread_id}/messages", response_model=Message)
+@router.post("/{thread_id}/messages", response_model=List[Message])
 async def create_message(
     thread_id: UUID | str,
     data: List[MessageCreate],
     mdb: MessageDBDependency,
     tdb: ThreadDBDependency,
-) -> None:
+) -> List[Message]:
     try:
+        created_messages = []
         for m in data:
             msg = await mdb.create_message(
                 thread_id=thread_id,
@@ -38,6 +39,8 @@ async def create_message(
                 content=m.content,
             )
             await tdb.touch_updated_at(thread_id)
+            created_messages.append(msg)
+        return created_messages
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import { useState } from "react";
-import ImageUploader from "./ImageUpload";
-
+import { useMemo, useState, useRef } from "react";
+import { UploadImagesChat } from "../../../components/UploadFile/UploadFileComponent";
+import { IoCloseCircle } from "react-icons/io5";
 type ChatInputVariant = "default" | "subtle";
 
 const VariantClasses: Record<
@@ -42,7 +42,6 @@ const VariantClasses: Record<
 export interface ChatInputProps {
   handleSubmit: (val: string, images?: string[]) => Promise<void>;
   disabled: boolean;
-  onNewThread?: () => void;
   multiModal?: boolean;
   variant?: ChatInputVariant;
 }
@@ -50,52 +49,81 @@ export interface ChatInputProps {
 export function ChatInput({
   handleSubmit,
   disabled,
-  onNewThread,
   multiModal = true,
   variant = "default",
 }: ChatInputProps) {
   const [message, setMessage] = useState("");
-  const [_, setFile] = useState<File | null>(null);
-  const [image, setImage] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const styles = VariantClasses[variant];
+  const previews = useMemo(
+    () => files.map((file) => ({ file, url: URL.createObjectURL(file) })),
+    [files],
+  );
+
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const onMessageChange = (val: string) => {
+    setMessage(val);
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "0px";
+    el.style.height = `${Math.min(el.scrollHeight, 220)}px`; // max height
+  };
 
   const submit = () => {
     const trimmed = message.trim();
     if (!trimmed || disabled) return;
-    handleSubmit(trimmed, image ? [image] : undefined);
-    setImage(null);
+    const images = previews.map((v) => v.url);
+    handleSubmit(trimmed, images.length > 0 ? images : undefined);
+    setFiles([]);
     setMessage("");
   };
 
-  function onFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setFile(file);
-    const url = URL.createObjectURL(file);
-    setImage(url);
+  function onFileSelect(files: File[]) {
+    setFiles((prev) => [...prev, ...files])
   }
 
   return (
     <div className={clsx("flex flex-col", styles.root)}>
-      {image && (
-        <div className={styles.preview}>
-          <img src={image} alt="Preview" className="max-h-52 w-full rounded-md object-contain" />
+      {previews.length > 0 ? (
+        <div className="mb-2 grid w-full grid-cols-2 gap-2 sm:grid-cols-3">
+          {previews.map(({ file: f, url }) => (
+            <div
+              key={`${f.name}-${f.lastModified}-${f.size}`}
+              className="group relative overflow-hidden rounded-xl border border-border/70 bg-surface-muted/70 p-1"
+            >
+              <button
+                type="button"
+                aria-label={`Remove ${f.name}`}
+                onClick={() => setFiles((prev) => prev.filter((v) => v !== f))}
+                className="absolute right-2 top-2 z-10 rounded-full bg-black/55 text-white opacity-90 transition hover:scale-105 hover:opacity-100"
+              >
+                <IoCloseCircle className="h-6 w-6" />
+              </button>
+              <img
+                src={url}
+                alt={f.name || "Preview"}
+                className="h-28 w-full rounded-lg object-cover sm:h-32"
+              />
+              <div className="truncate px-1 pt-1 text-xs text-text-soft">{f.name}</div>
+            </div>
+          ))}
         </div>
-      )}
+      ) : null}
+
       <div className={styles.toolbar}>
-        {onNewThread && (
-          <button type="button" onClick={onNewThread} className={styles.newButton}>
-            New
-          </button>
-        )}
-        <input
-          className={styles.input}
+        <textarea
+          ref={textareaRef}
+          className={clsx(styles.input, "min-h-10 max-h-55 resize-none overflow-y-auto")}
           placeholder="Type a message..."
           disabled={disabled}
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          rows={1}
+          onChange={(e) => onMessageChange(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") submit();
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              submit();
+            }
           }}
         />
         <button
@@ -106,7 +134,7 @@ export function ChatInput({
         >
           Send
         </button>
-        {multiModal && <ImageUploader onFileSelect={onFileSelect} />}
+        {multiModal && <UploadImagesChat onFilesSelected={onFileSelect} />}
       </div>
     </div>
   );

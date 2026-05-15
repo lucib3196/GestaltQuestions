@@ -2,8 +2,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional, List
 from uuid import UUID, uuid4
 from pydantic import BaseModel
-
+from sqlalchemy import Column
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import SQLModel, Field, Relationship
+from typing import Any,Dict
 
 if TYPE_CHECKING:
     from .users import User
@@ -15,7 +17,7 @@ class ThreadCreate(BaseModel):
 
 class MessageCreate(BaseModel):
     role: str
-    content: str
+    content: List[Dict[str,Any]]
 
 
 class Thread(SQLModel, table=True):
@@ -34,7 +36,7 @@ class Message(SQLModel, table=True):
 
     thread_id: UUID = Field(foreign_key="thread.id")
     role: str
-    content: str
+    content: list[dict[str, Any]] = Field(sa_column=Column(JSONB))
     created_at: datetime = Field(default_factory=datetime.now)
 
     thread: "Thread" = Relationship(back_populates="messages")

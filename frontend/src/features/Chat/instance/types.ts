@@ -21,12 +21,12 @@ export type ToolExecute<TPayload> = (
   args: ToolExecuteArgs<TPayload>,
 ) => Promise<void>;
 // Tools that are specific and we want to render and get some sorth of output from
-export type ToolName = "final_question_payload";
+export type ToolName = "final_question_payload"|"generate_image";
 
 export type RenderPreviewProps<TPayload> = {
   payload: TPayload;
-  onApprove: (payload: TPayload) => void;
-  onCancel: () => void;
+  onApprove?: (payload: TPayload) => void;
+  onCancel?: () => void;
   loading: boolean;
   error?: string;
 };
@@ -34,7 +34,7 @@ export type RenderPreviewProps<TPayload> = {
 export type ToolDefinition<TPayload> = {
   parse: (msg: ToolMessage) => TPayload;
   Preview: React.ComponentType<RenderPreviewProps<TPayload>>;
-  execute: ToolExecute<TPayload>;
+  execute?: ToolExecute<TPayload>;
 };
 
 export type ToolDefinitions = Record<ToolName, ToolDefinition<any>>;
@@ -76,7 +76,7 @@ export type ChatState = {
   theadId: string | null;
 };
 export type ChatActions = {
-  setThreadId: (threadId: string) => void;
+  setThreadId: (threadId: string | null) => void;
   createdThread: (token: string, threadId: string) => Promise<ThreadRead>;
   onThreadId: (val: string) => void;
 };

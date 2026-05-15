@@ -1,5 +1,6 @@
 import clsx from "clsx";
-
+import { MathJax } from "better-react-mathjax";
+import { RiChatNewLine } from "react-icons/ri";
 type ChatContainerVariant = "demo" | "main";
 type Sizes = "sm" | "med" | "lg";
 
@@ -21,6 +22,7 @@ interface ChatContainerProps {
   children: React.ReactNode;
   variant?: ChatContainerVariant;
   size?: Sizes;
+  onNewChat?: () => void;
 }
 
 export default function ChatContainer({
@@ -28,13 +30,29 @@ export default function ChatContainer({
   children,
   variant = "main",
   size = "med",
+  onNewChat,
 }: ChatContainerProps) {
   return (
-    <div className={clsx(Variants[variant], SizeClasses[size], "auto-scroll-y")}>
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
-        {children}
+    <MathJax>
+      <div className={clsx(Variants[variant], SizeClasses[size], "auto-scroll-y")}>
+        <div className="mb-2 flex items-center justify-end">
+          {onNewChat ? (
+            <button
+              type="button"
+              onClick={onNewChat}
+              aria-label="Start new chat"
+              title="New chat"
+              className="relative flex h-10 w-10 items-center justify-center rounded-md border border-border bg-surface text-text transition hover:bg-surface-strong"
+            >
+              <RiChatNewLine size={20} />
+            </button>
+          ) : null}
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1 auto-scroll-y">
+          {children}
+        </div>
+        <div className="mt-3 border-t border-border pt-3">{input}</div>
       </div>
-      <div className="mt-3 border-t border-border pt-3">{input}</div>
-    </div>
+    </MathJax>
   );
 }

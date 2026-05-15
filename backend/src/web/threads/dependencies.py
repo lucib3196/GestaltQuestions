@@ -25,4 +25,4 @@ def get_message_db(session: SessionDep) -> MessageDB:
     except Exception as e:
         raise ValueError("Failed to initialize Message DB")
 
-MessageDBDependency = Annotated[MessageDB, Depends(get_thread_db)]
+MessageDBDependency = Annotated[MessageDB, Depends(get_message_db)]

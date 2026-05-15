@@ -10,6 +10,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from src.model.thread import Thread, Message
 from src.core.logging import logger
 from src.utils import convert_uuid
+from typing import Dict, Any
+from typing import List
 
 
 class ThreadDB:
@@ -86,9 +88,10 @@ class MessageDB:
         self,
         thread_id: UUID | str,
         role: str,
-        content: str,
+        content: List[Dict[str, Any]],
     ) -> Message:
         try:
+
             msg_orm = Message(
                 thread_id=convert_uuid(thread_id),
                 role=role,
