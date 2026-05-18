@@ -14,6 +14,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import type { SideBarItem } from "../../components/SideBar";
 import { aiURL } from "../../config/apiConfig";
 
+
 type ChatSessionProps = {
   onNewChat: () => void;
   token: string;
@@ -26,7 +27,7 @@ function ChatSession({ onNewChat, token }: ChatSessionProps) {
 
   const stream = useStream({
     threadId: threadId || null,
-    apiUrl: "http://127.0.0.1:2024",
+    apiUrl: aiURL,
     assistantId: "agent_gestalt",
     onThreadId: async (id: string) => {
       const created = await createThread(token, id);

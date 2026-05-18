@@ -115,7 +115,7 @@ export function cleanChildren(
                 return (
                     <img
                         key={i}
-                        src={(item as MessagePayload).image_url.url}
+                        src={((item as unknown) as { image_url: ImageUrl }).image_url.url}
                         alt="message"
                         className="max-w-2/5 rounded-md"
                     />
