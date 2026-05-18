@@ -12,7 +12,7 @@ import { blobURLtoBase64 } from "./utils/imageUtils";
 import type { ThreadRead } from "./ChatApi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import type { SideBarItem } from "../../components/SideBar";
-
+import { aiURL } from "../../config/apiConfig";
 
 type ChatSessionProps = {
   onNewChat: () => void;

@@ -18,7 +18,7 @@ function App() {
             <Route path="/account" element={<AccountPage />} />
 
             <Route path="/questions" element={<Questions />} />
-            <Route path="/chat" element={<StreamChat />} />
+
             <Route path="*" element={<Navigate to="/" replace />} />
 
             {/* Non User Specific */}
@@ -33,6 +33,7 @@ function App() {
                 <Route path="questions/new" element={<CreateNewQuestion />} />
                 <Route path="questions/:qid/edit" element={<EditQuestionPage />} />
                 <Route path="playground" element={<QuestionBuilderPlaygroundPage />} />
+                <Route path="chat" element={<StreamChat />} />
               </Route>
             </Route>
           </Route>
