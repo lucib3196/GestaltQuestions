@@ -13,6 +13,7 @@ import type { ThreadRead } from "./ChatApi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import type { SideBarItem } from "../../components/SideBar";
 import { aiURL } from "../../config/apiConfig";
+import { MathJax } from "better-react-mathjax";
 
 
 type ChatSessionProps = {
@@ -77,6 +78,7 @@ function ChatSession({ onNewChat, token }: ChatSessionProps) {
         />
       }
     >
+      <MathJax dynamic>
       {stream.messages.map((msg) => {
         if (msg.type === "human") {
           return <HumanBubble key={msg.id} msg={msg as HumanMessage} />;
@@ -90,6 +92,7 @@ function ChatSession({ onNewChat, token }: ChatSessionProps) {
 
         return null;
       })}
+      </MathJax>
     </ChatContainer>
   );
 }

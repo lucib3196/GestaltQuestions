@@ -27,7 +27,7 @@ class Environment(str, Enum):
 
 # Check the env internally and attempts to resolve env file. Points to .env by default so this must always be set
 env = os.getenv("ENV", "dev")
-ENV_FILE = f".env.{env}" if env != "production" else ".env"
+ENV_FILE = f".env.{env}" if env != "production" else "dev.docker"
 load_dotenv(ENV_FILE)
 
 
