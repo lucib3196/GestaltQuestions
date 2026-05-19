@@ -29,6 +29,7 @@ function ChatSession({ onNewChat, token }: ChatSessionProps) {
     threadId: threadId || null,
     apiUrl: aiURL,
     assistantId: "agent_gestalt",
+    apiKey: import.meta.env.LANGSMITH_API_KEY,
     onThreadId: async (id: string) => {
       const created = await createThread(token, id);
       setThreadId(created.id);
