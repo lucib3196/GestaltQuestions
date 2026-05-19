@@ -162,7 +162,7 @@ export default class QuestionBuilderAPI {
 
   static async filterQuestions(
     token: string,
-    filter: QuestionFilter,
+    filter: Partial<QuestionFilter>,
   ): Promise<QuestionRead[]> {
     const response = await api.post<QuestionRead[]>(
       `${this.base}/filter`,

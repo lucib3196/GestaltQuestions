@@ -9,7 +9,7 @@ export type DropDownAdvanceOption = {
   label: string;
   icon?: IconType;
 };
-type DropDownAdvanceProps = DropDownBase & {
+type DropDownAdvanceProps = DropDownBase<string> & {
   options: DropDownAdvanceOption[];
   open?: boolean;
   onOpenChange?: (open: boolean) => void;

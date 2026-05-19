@@ -54,7 +54,7 @@ export function useMyQuestions() {
   return { questions, loading, error };
 }
 
-export function useFilterMyQuestions(filter: QuestionFilter) {
+export function useFilterMyQuestions(filter: Partial<QuestionFilter>) {
   const { user } = useAuth();
   const [questions, setQuestions] = useState<QuestionRead[]>([]);
   const [loading, setLoading] = useState(false);
