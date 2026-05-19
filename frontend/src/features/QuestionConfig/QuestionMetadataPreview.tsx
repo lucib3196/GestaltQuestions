@@ -2,48 +2,56 @@ import { Container } from "../../components/Container";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useQuestionMetadata, useUpdateQuestion } from "../QuestionBuilder";
+import type { QuestionStatus } from "../QuestionBuilder";
 import { Button } from "../../components/Button";
+import { DropDown } from "../../components/DropDown";
+import { normalizeList } from "./utils";
 
 type Props = {
-    qid: string | null;
+    qid: string; // Question ID
 };
-
-type RowProps = {
-    label: string;
-    value: React.ReactNode;
-};
-
-function MetadataRow({ label, value }: RowProps) {
-    return (
-        <div className="grid grid-cols-[140px_1fr] gap-3 py-2 border-b border-border last:border-b-0">
-            <div className="text-text-muted text-sm">{label}</div>
-            <div className="text-text text-sm">{value}</div>
-        </div>
-    );
-}
-
 export default function QuestionMetaDataPreview({ qid }: Props) {
     const { questionMetadata, loading } = useQuestionMetadata(qid);
-    const { updateQuestion, loading: saving, error: saveError } = useUpdateQuestion();
+    const {
+        updateQuestion,
+        loading: saving,
+        error: saveError,
+    } = useUpdateQuestion();
     const [title, setTitle] = useState("");
     const [aiGenerated, setAiGenerated] = useState(false);
     const [isAdaptive, setIsAdaptive] = useState(false);
     const [topicsText, setTopicsText] = useState("");
     const [qTypesText, setQTypesText] = useState("");
+    const [qStatus, setQStatus] = useState<QuestionStatus>("draft");
 
+    // Options for status dropdown
+    const statusOptions: Partial<QuestionStatus[]> = ["draft", "published"];
+
+    // Update the metadata on change
     useEffect(() => {
         if (!questionMetadata) return;
         setTitle(questionMetadata.title ?? "");
         setAiGenerated(Boolean(questionMetadata.ai_generated));
         setIsAdaptive(Boolean(questionMetadata.isAdaptive));
-        setTopicsText(Array.isArray(questionMetadata.topics) ? questionMetadata.topics.join(", ") : "");
-        setQTypesText(Array.isArray(questionMetadata.qTypes) ? questionMetadata.qTypes.join(", ") : "");
+        setTopicsText(
+            Array.isArray(questionMetadata.topics)
+                ? questionMetadata.topics.join(", ")
+                : "",
+        );
+        setQTypesText(
+            Array.isArray(questionMetadata.qTypes)
+                ? questionMetadata.qTypes.join(", ")
+                : "",
+        );
+        setQStatus(questionMetadata.status ?? "draft");
     }, [questionMetadata]);
 
     if (!qid) {
         return (
             <Container header="Question Metadata">
-                <div className="text-sm text-text-muted">Select a question to view metadata.</div>
+                <div className="text-sm text-text-muted">
+                    Select a question to view metadata.
+                </div>
             </Container>
         );
     }
@@ -64,13 +72,12 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
         );
     }
 
-    const normalizeList = (value: string) =>
-        value
-            .split(",")
-            .map((item) => item.trim())
-            .filter(Boolean);
-    const currentTopics = Array.isArray(questionMetadata.topics) ? questionMetadata.topics : [];
-    const currentQTypes = Array.isArray(questionMetadata.qTypes) ? questionMetadata.qTypes : [];
+    const currentTopics = Array.isArray(questionMetadata.topics)
+        ? questionMetadata.topics
+        : [];
+    const currentQTypes = Array.isArray(questionMetadata.qTypes)
+        ? questionMetadata.qTypes
+        : [];
     const nextTopics = normalizeList(topicsText);
     const nextQTypes = normalizeList(qTypesText);
     const hasChanges =
@@ -78,34 +85,28 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
         questionMetadata.ai_generated !== aiGenerated ||
         questionMetadata.isAdaptive !== isAdaptive ||
         currentTopics.join("|") !== nextTopics.join("|") ||
-        currentQTypes.join("|") !== nextQTypes.join("|");
+        currentQTypes.join("|") !== nextQTypes.join("|")||
+        (questionMetadata.status) !==qStatus;
 
     const onSubmit = async () => {
         if (!qid) return;
-        const normalizeList = (value: string) =>
-            value
-                .split(",")
-                .map((item) => item.trim())
-                .filter(Boolean);
-
         const updated = await updateQuestion(qid, {
             title: title.trim(),
             ai_generated: aiGenerated,
             isAdaptive,
             topics: normalizeList(topicsText),
             qTypes: normalizeList(qTypesText),
+            status: qStatus
+
         });
 
         if (updated) {
             toast.success("Question metadata updated.");
         }
     };
-
     return (
         <Container header="Question Metadata">
             <div className="rounded-md border border-border bg-surface p-3 space-y-3">
-                <MetadataRow label="Status" value={questionMetadata.status} />
-
                 <div className="space-y-1">
                     <label className="text-text-muted text-sm">Title</label>
                     <input
@@ -114,8 +115,19 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
                         className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text"
                     />
                 </div>
+                <DropDown
+                    label="Status"
+                    options={statusOptions as string[]}
+                    selected={qStatus}
+                    setSelected={setQStatus}
+                ></DropDown>
+                <span className="text-sm text-text-muted">
+                    {qStatus === "published"
+                        ? "Published questions are visible to everyone."
+                        : "Draft questions are personal and only visible to you."}
+                </span>
 
-                <label className="flex items-center gap-2 text-sm text-text">
+                <label className="flex items-center gap-2 text-sm text-text my-2">
                     <input
                         type="checkbox"
                         checked={aiGenerated}
@@ -136,7 +148,9 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
                 </label>
 
                 <div className="space-y-1">
-                    <label className="text-text-muted text-sm">Topics (comma-separated)</label>
+                    <label className="text-text-muted text-sm">
+                        Topics (comma-separated)
+                    </label>
                     <input
                         value={topicsText}
                         onChange={(e) => setTopicsText(e.target.value)}
@@ -145,7 +159,9 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-text-muted text-sm">Question Types (comma-separated)</label>
+                    <label className="text-text-muted text-sm">
+                        Question Types (comma-separated)
+                    </label>
                     <input
                         value={qTypesText}
                         onChange={(e) => setQTypesText(e.target.value)}

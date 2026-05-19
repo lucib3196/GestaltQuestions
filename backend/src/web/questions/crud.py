@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 from src.web.dependencies import QuestionDBDependency, QuestionQueryDependency
 from src.app_types.general import ID
 from src.model.question import QuestionRead, QuestionTableRow, QuestionFilter
-
+from src.core.logging import logger
 router = APIRouter(
     prefix="/questions",
     tags=[
@@ -55,12 +55,13 @@ async def get_all_questions(
         )
 
 
-@router.post("/filter/{offset:int}/{limit:int}")
+@router.post("/filter")
 async def filter_questions(
     qdb: QuestionDBDependency, filter: QuestionFilter, offset: int = 0, limit: int = 100
 ) -> Sequence[QuestionRead]:
     try:
-        return await qdb.filter_questions(filter.title)
+        logger.info("Raw filter crud %s", filter)
+        return await qdb.filter_questions(filter)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

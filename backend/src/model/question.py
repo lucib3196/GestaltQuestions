@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .users import DeveloperProfile
 
 
-class Status(Enum):
+class Status(str, Enum):
     ARCHIVED = "archived"
     DRAFT = "draft"
     PUBLISHED = "published"
@@ -36,6 +36,7 @@ class QuestionUpdate(BaseModel):
     isAdaptive: Optional[bool] = None
     topics: Optional[Sequence[str]] = None
     qTypes: Optional[Sequence[str]] = None
+    status: Optional[Status] = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -67,6 +68,7 @@ class UpdateFile(BaseModel):
 
 class QuestionFilter(BaseModel):
     title: str
+    status: Optional[Status] = None
 
 
 class QuestionTableRow(BaseModel):

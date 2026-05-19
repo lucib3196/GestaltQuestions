@@ -184,7 +184,7 @@ export default class QuestionBuilderAPI {
   static async filterAllQuestions(
     filter: QuestionFilter,
   ): Promise<QuestionAllRow[]> {
-    const response = await api.post<QuestionAllRow[]>("/questions/all", filter);
+    const response = await api.post<QuestionAllRow[]>("/questions/filter", filter);
     return response.data;
   }
 

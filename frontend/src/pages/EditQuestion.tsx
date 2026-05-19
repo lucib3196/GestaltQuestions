@@ -4,7 +4,7 @@
 import { useParams } from "react-router-dom";
 import { useQuestionFileData } from "../features/QuestionBuilder/hooks";
 import EditorPane from "../features/QuestionBuilder/sections/EditorPane";
-import QuestionMetaDataPreview from "../features/QuestionEditor/QuestionMetadataPreview";
+import QuestionMetaDataPreview from "../features/QuestionConfig/QuestionMetadataPreview";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { ServerSettings } from "../features/QuestionBuilder/components/ServerToggle";
 import type { FileData } from "../types/fileTypes";

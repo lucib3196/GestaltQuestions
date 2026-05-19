@@ -1,5 +1,5 @@
-export type DropDownBase = {
-  selected: string;
-  setSelected: (val: string) => void;
+export type DropDownBase<TValue> = {
+  selected: TValue;
+  setSelected: (val: TValue) => void;
   label: string;
 };

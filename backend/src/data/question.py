@@ -26,7 +26,9 @@ from src.model.question import (
     QuestionRelationships,
     QuestionType,
     QuestionUpdate,
+    QuestionFilter,
     Topic,
+    Status,
 )
 from src.utils import convert_uuid
 from sqlalchemy.sql.elements import ColumnElement
@@ -265,17 +267,29 @@ class QuestionDB:
 
     async def filter_questions(
         self,
-        title: str,
+        filter: QuestionFilter,
         *,
         additional_filters: Optional[Sequence[ColumnElement[bool] | bool]] = None,
     ) -> Sequence[QuestionRead]:
+
+        stmt = select(Question)
+        # Where to store all the filters
+        filters = []
+
+        title = filter.title
+        status = filter.status
+
+        if title:
+            filters.append(func.lower(Question.title).like(f"%{title.lower()}%"))
+        if status:
+            filters.append(Question.status == Status(status))
+        if additional_filters:
+            filters.extend(additional_filters)
+
         try:
-            stmt = select(Question).where(
-                func.lower(Question.title).like(f"%{title.lower()}%"),
-                *(additional_filters or []),
-            )
-            logger.debug("The stmt %s", stmt)
-            questions = self.session.exec(stmt).all()
+            statement = stmt.where(*filters)
+            logger.debug("The stmt %s", statement)
+            questions = self.session.exec(statement).all()
             return await asyncio.gather(
                 *[self.get_question_data(q.id) for q in questions]
             )
