@@ -25,7 +25,10 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
     const [qStatus, setQStatus] = useState<QuestionStatus>("draft");
 
     // Options for status dropdown
-    const statusOptions: Partial<QuestionStatus[]> = ["draft", "published"];
+    const statusOptions: QuestionStatus[] = [
+        "draft",
+        "published",
+    ];
 
     // Update the metadata on change
     useEffect(() => {
@@ -85,8 +88,8 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
         questionMetadata.ai_generated !== aiGenerated ||
         questionMetadata.isAdaptive !== isAdaptive ||
         currentTopics.join("|") !== nextTopics.join("|") ||
-        currentQTypes.join("|") !== nextQTypes.join("|")||
-        (questionMetadata.status) !==qStatus;
+        currentQTypes.join("|") !== nextQTypes.join("|") ||
+        (questionMetadata.status) !== qStatus;
 
     const onSubmit = async () => {
         if (!qid) return;
@@ -117,9 +120,9 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
                 </div>
                 <DropDown
                     label="Status"
-                    options={statusOptions as string[]}
+                    options={statusOptions}
                     selected={qStatus}
-                    setSelected={setQStatus}
+                    setSelected={(val) => setQStatus(val)}
                 ></DropDown>
                 <span className="text-sm text-text-muted">
                     {qStatus === "published"

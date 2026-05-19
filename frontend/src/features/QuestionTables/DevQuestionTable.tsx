@@ -65,7 +65,6 @@ export default function DevQuestionTable({
     const setQuestionIds = useDevTableContext((state) => state.setSelectedIDs)
     const selectedIDs = useDevTableContext((state) => state.selectedIDs)
     const multiSelectedEnabled = useDevTableContext((state) => state.multiselect)
-    console.log(questions, "Inside table")
     const QuestionSummaryColumns: TableColumn[] = [
         {
             key: "select",
