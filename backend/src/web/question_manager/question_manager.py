@@ -66,7 +66,7 @@ async def filter(
     question_manager: DeveloperQuestionManagerDependency,
 ) -> Sequence[QuestionRead]:
     try:
-        return await question_manager.filter_questions(current_user, filter.title)
+        return await question_manager.filter_questions(current_user, filter)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

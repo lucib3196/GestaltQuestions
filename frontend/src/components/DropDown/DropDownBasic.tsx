@@ -1,21 +1,21 @@
 import { useCallback, useId } from "react";
 import { type DropDownBase } from "./types";
 
-type DropDownProps = DropDownBase & {
-    options: string[];
+type DropDownProps<TValue extends string> = DropDownBase<TValue> & {
+    options: TValue[];
 };
 
-export default function DropDown({
+export default function DropDown<TValue extends string>({
     options,
     selected,
     setSelected,
     label = "Drop Down",
-}: DropDownProps) {
+}: DropDownProps<TValue>) {
     const selectId = useId();
 
     const handleDropDownChange = useCallback(
         (event: React.ChangeEvent<HTMLSelectElement>) => {
-            setSelected(event.target.value);
+            setSelected(event.target.value as TValue);
         },
         [setSelected],
     );
@@ -33,7 +33,7 @@ export default function DropDown({
                 <select
                     id={selectId}
                     name={selectId}
-                    value={selected}
+                    value={selected as string}
                     onChange={handleDropDownChange}
                     className="
                         w-full appearance-none rounded-md

@@ -30,7 +30,7 @@ function TableActions() {
             name="Download"
             color="primary"
             size="sm"
-            className="min-w-[110px]"
+            className="min-w-27.5"
         />
         <Button
             disabled={enabled}
@@ -38,7 +38,7 @@ function TableActions() {
             name="Copy"
             color="secondary"
             size="sm"
-            className="min-w-[110px]"
+            className="min-w-27.5"
         />
         <Button
             disabled={enabled}
@@ -46,7 +46,7 @@ function TableActions() {
             name="Delete"
             color="danger"
             size="sm"
-            className="min-w-[110px]"
+            className="min-w-27.5"
         />
     </div>
 }
@@ -107,6 +107,10 @@ export default function DevQuestionTable({
                     ? (q as QuestionRead).qTypes.join(", ")
                     : "—",
         },
+        {
+            key: "status",
+            render: (q) => <span >{(q as QuestionRead).status}</span>
+        }
     ];
 
     return (

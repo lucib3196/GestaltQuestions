@@ -9,7 +9,7 @@ from src.model.files import FileData
 from src.model.question import Question, QuestionCreate, QuestionUpdate
 from src.service.user.exceptions import DeveloperAccessDenied, DeveloperProfileError
 from src.utils.database_utils import convert_uuid
-from src.model.question import QuestionRead
+from src.model.question import QuestionRead, QuestionFilter
 from .exceptions import (
     DeveloperQuestionControlError,
     DeveloperQuestionServiceError,
@@ -209,13 +209,13 @@ class DeveloperQuestionService:
         return await self.qmng.delete_question(qid)
 
     # Filtering
-    async def filter_questions(self, user_id: ID, title: str) -> Sequence[QuestionRead]:
+    async def filter_questions(self, user_id: ID, filter: QuestionFilter) -> Sequence[QuestionRead]:
         try:
             profile = await self.developer_access.get_developer_data(user_id)
             assert profile
             add_filter = Question.created_by_id == profile.id
             return await self.qmng.qdb.filter_questions(
-                title, additional_filters=[add_filter]
+                filter, additional_filters=[add_filter]
             )
         except Exception as e:
             raise ValueError(f"Failed to filer question {e}")

@@ -1,4 +1,4 @@
-import { type QuestionAllRow, useFilterGeneralQuestions } from "../QuestionBuilder";
+import { type QuestionAllRow, type QuestionStatus, useFilterGeneralQuestions } from "../QuestionBuilder";
 import { QuestionTableBase } from "./components";
 import { Container } from "../../components/Container";
 import { SearchBar } from "../../components/SearchBar";
@@ -29,7 +29,7 @@ function TableActions() {
             name="Copy"
             color="secondary"
             size="sm"
-            className="min-w-[110px]"
+            className="min-w-27.5"
         />
 
     </div>
@@ -39,7 +39,7 @@ export default function AllQuestionTable({
     selectedQuestionId,
 }: AllQTableProps) {
     const [debouncedSearchTitle, setDebouncedSearchTitle] = useState("");
-    const filter = useMemo(() => ({ title: debouncedSearchTitle }), [debouncedSearchTitle]);
+    const filter = useMemo(() => ({ title: debouncedSearchTitle, status: "published" as QuestionStatus }), [debouncedSearchTitle]);
 
     const { questions } = useFilterGeneralQuestions(filter);
     const setQuestionIds = useAllTableContext((state) => state.setSelectedIDs);

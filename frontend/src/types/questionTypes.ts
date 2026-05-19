@@ -45,10 +45,12 @@ export type QuestionUpdate = {
   isAdaptive?: boolean;
   topics?: string[];
   qTypes?: string[];
+  status?: QuestionStatus;
 };
 
 export type QuestionFilter = {
   title?: string;
+  status: QuestionStatus;
 };
 
 export type QuestionFileList = string[];

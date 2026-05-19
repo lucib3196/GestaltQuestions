@@ -162,7 +162,7 @@ export default class QuestionBuilderAPI {
 
   static async filterQuestions(
     token: string,
-    filter: QuestionFilter,
+    filter: Partial<QuestionFilter>,
   ): Promise<QuestionRead[]> {
     const response = await api.post<QuestionRead[]>(
       `${this.base}/filter`,
@@ -184,7 +184,7 @@ export default class QuestionBuilderAPI {
   static async filterAllQuestions(
     filter: QuestionFilter,
   ): Promise<QuestionAllRow[]> {
-    const response = await api.post<QuestionAllRow[]>("/questions/all", filter);
+    const response = await api.post<QuestionAllRow[]>("/questions/filter", filter);
     return response.data;
   }
 
