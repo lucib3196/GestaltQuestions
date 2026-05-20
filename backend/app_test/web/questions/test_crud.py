@@ -79,9 +79,9 @@ def test_qet_all_questions(api_client, make_question_web, multiple_question_payl
     assert response.status_code == 200, response.text
     questions = response.json()
     assert isinstance(questions, list), "Expected response to be a list"
-    assert len(questions) == len(
-        multiple_question_payloads
-    ), f"Expected {len(multiple_question_payloads)} questions, got {len(questions)}"
+    assert len(questions) == len(multiple_question_payloads), (
+        f"Expected {len(multiple_question_payloads)} questions, got {len(questions)}"
+    )
     logger.info("these are the questions %s", questions)
 
 

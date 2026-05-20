@@ -99,7 +99,9 @@ class QuestionStorageService:
             Sequence[str]: List of file paths in the directory
         """
         normalized_path = self._norm_path(dir_path)
-        files = [str(p) for p in self.storage.list(normalized_path, recursive=recursive)]
+        files = [
+            str(p) for p in self.storage.list(normalized_path, recursive=recursive)
+        ]
         logger.debug("Listed %s question files under %s", len(files), normalized_path)
         return files
 

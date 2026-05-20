@@ -57,6 +57,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 if __name__ == "__main__":
     from sqlalchemy import text
+
     engine = create_engine(DATABASE_URL)
 
     try:

@@ -18,7 +18,7 @@ def emulator_login(
             "email": "user@example.com",
             "password": "string",
         }
-    )
+    ),
 ):
     """Testing endpoint for login using password and email
 

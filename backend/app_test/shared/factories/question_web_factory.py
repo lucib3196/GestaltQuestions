@@ -61,7 +61,7 @@ def make_question_with_files(api_client):
                 data={"question_data": data.model_dump_json()},
             )
 
-            return response,file_paths
+            return response, file_paths
 
         finally:
             for f in opened_files:

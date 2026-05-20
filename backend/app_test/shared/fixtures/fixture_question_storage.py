@@ -8,6 +8,7 @@ from pathlib import Path
 
 settings = get_settings()
 
+
 @pytest.fixture
 def set_testing_directory(tmp_path: Path):
     """

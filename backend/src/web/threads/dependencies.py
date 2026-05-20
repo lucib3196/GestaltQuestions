@@ -15,11 +15,13 @@ def get_thread_db(session: SessionDep) -> ThreadDB:
 
 ThreadDBDependency = Annotated[ThreadDB, Depends(get_thread_db)]
 
+
 def get_message_db(session: SessionDep) -> MessageDB:
     try:
         logger.debug("Initialized Message DB")
         return MessageDB(session)
     except Exception:
         raise ValueError("Failed to initialize Message DB")
+
 
 MessageDBDependency = Annotated[MessageDB, Depends(get_message_db)]

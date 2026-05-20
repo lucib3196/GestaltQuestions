@@ -252,7 +252,7 @@ async def test_read_question_file(
 
     for f in question_file_payload:
         content = await question_manager.read_question_file(q.id, f.filename)
-        
+
         assert content
 
         if f.filename.endswith(".json"):

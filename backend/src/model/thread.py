@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import SQLModel, Field, Relationship
-from typing import Any,Dict
+from typing import Any, Dict
 
 if TYPE_CHECKING:
     from .users import User
@@ -17,7 +17,7 @@ class ThreadCreate(BaseModel):
 
 class MessageCreate(BaseModel):
     role: str
-    content: List[Dict[str,Any]]
+    content: List[Dict[str, Any]]
 
 
 class Thread(SQLModel, table=True):

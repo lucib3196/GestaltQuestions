@@ -80,22 +80,17 @@ async def test_create_user_assigns_default_student_role(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_data", USERS)
 async def test_create_user_auth_failed(
-    make_user,user_mng: UserManager, user_data, seed_roles, monkeypatch
+    make_user, user_mng: UserManager, user_data, seed_roles, monkeypatch
 ):
     def fake_auth(*args, **kwargs):
         return False  # triggers assert response failure
 
-    monkeypatch.setattr(
-        user_manager_module.auth,
-        "create_user",
-        fake_auth
-    )
+    monkeypatch.setattr(user_manager_module.auth, "create_user", fake_auth)
 
     with pytest.raises(ValueError) as exc_info:
         await make_user(**user_data)
 
     assert "Failed to create user" in str(exc_info.value)
-
 
 
 @pytest.mark.asyncio

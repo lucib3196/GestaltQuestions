@@ -197,7 +197,6 @@ class RuntimePreparer:
     def _validate_entry(self, entry: str, files: Dict[str, str]) -> None:
         """Validate that the selected entry file exists and has usable content."""
         if entry not in files:
-
             raise InvalidEntryError(
                 f"Configured entry file '{entry}' was not found in the payload. "
                 f"Available files: {list(files.keys())}"

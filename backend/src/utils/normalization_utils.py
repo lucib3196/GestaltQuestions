@@ -86,8 +86,5 @@ def normalize_content(content: Any) -> str:
         return str(content)
 
 
-
-
-
 def normalize_newlines(b: bytes) -> bytes:
     return b.replace(b"\r\n", b"\n")

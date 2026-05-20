@@ -33,7 +33,7 @@ async def get_developer_profile(dev_access: DeveloperAccess, current_user: Curre
 
 @router.post("/{user_id}")
 async def set_developer_profile(dev_access: DeveloperAccess, user_id: str):
-    try: 
+    try:
         profile = await dev_access.get_developer_data(user_id)
         if not profile:
             return await dev_access.set_developer_data(user_id)

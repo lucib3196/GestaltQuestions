@@ -8,19 +8,9 @@ from src.data import (
 )
 
 
-
 @pytest.fixture
 def combined_payload():
     return [QuestionData(**q) for q in QUESTIONS]
-
-
-
-
-
-
-
-
-
 
 
 @pytest.fixture

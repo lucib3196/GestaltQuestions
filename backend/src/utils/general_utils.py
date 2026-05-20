@@ -1,6 +1,7 @@
 # --- Standard Library ---
 from typing import Any
 
+
 def pick(obj: Any, *keys: str, default: Any = None) -> Any:
     """
     Get the first present key/attr from `keys` on either a dict or an object.

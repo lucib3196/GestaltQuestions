@@ -8,6 +8,8 @@ from src.core import SessionDep, logger
 from src.utils import convert_uuid
 
 from src.model.institution import Institution, ValidInstitutions
+
+
 class InstitutionDB:
     def __init__(self, session: SessionDep):
         self.session = session

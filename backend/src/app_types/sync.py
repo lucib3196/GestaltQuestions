@@ -28,9 +28,6 @@ class SyncMetrics(BaseModel):
     failed: int
 
 
-
-
-
 class FolderCheckMetrics(BaseModel):
     total_checked: int
     deleted_from_db: int

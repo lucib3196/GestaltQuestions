@@ -65,7 +65,6 @@ class PreparedStaticQuestion(PreparedQuestionBase):
 
 
 class PreparedAdaptiveQuestion(PreparedQuestionBase):
-
     runtime: RuntimeExecutionConfig
 
 

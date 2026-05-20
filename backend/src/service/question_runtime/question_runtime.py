@@ -21,7 +21,6 @@ class QuestionRunTimeException(BaseException):
 
 
 class QuestionRunTime:
-
     def __init__(self, base_url: str | None = None):
         if not base_url:
             raise QuestionRunTimeException(
