@@ -1,5 +1,6 @@
 import pytest
 from sqlmodel import Session
+
 from app_test.unit.shared import USERS
 from src.model.institution import ValidInstitutions
 from src.model.users import Role, User, UserCreate, UserRoles

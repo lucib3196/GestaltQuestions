@@ -1,9 +1,10 @@
-from .dependencies import CurrentUser, DeveloperAccess
 from fastapi import APIRouter, HTTPException
 from starlette import status
 
 from src.core.logging import logger
 from src.service.user.exceptions import DeveloperProfileNotSet
+
+from .dependencies import CurrentUser, DeveloperAccess
 
 router = APIRouter(prefix="/users/dev", tags=["users", "developer"])
 
@@ -28,7 +29,7 @@ async def get_developer_profile(dev_access: DeveloperAccess, current_user: Curre
         )
         return await dev_access.set_developer_data(current_user)
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
 
 
 @router.post("/{user_id}")
@@ -43,4 +44,4 @@ async def set_developer_profile(dev_access: DeveloperAccess, user_id: str):
         )
         return await dev_access.set_developer_data(user_id)
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e

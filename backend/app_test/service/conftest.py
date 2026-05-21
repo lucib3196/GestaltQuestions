@@ -1,11 +1,11 @@
 import os
-from typing import List
 
 import firebase_admin
 import pytest
+
 from app_test import FbStorage, LocalStorage, QuestionManager, initialize_firebase_app
-from src.model.files import FileData
 from src.core import get_settings
+from src.model.files import FileData
 
 # Keep these imports for the factory
 
@@ -56,7 +56,7 @@ def question_manager(storage, question_db):
 
 
 @pytest.fixture
-def question_file_payload() -> List[FileData]:
+def question_file_payload() -> list[FileData]:
     files_data = [
         ("question.html", "Some question text"),
         ("solution.html", "Some solution"),

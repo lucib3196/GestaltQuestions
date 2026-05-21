@@ -1,12 +1,12 @@
-from src.utils import validate_response_payload
-from src.model.question import Question
-from src.model.question import QuestionData
-from src.core import logger
-from uuid import uuid4
-import pytest
-from app_test.shared.mock_data import QUESTION_FIELDS
-from app_test.shared.mock_data import QUESTIONS
 import pprint
+from uuid import uuid4
+
+import pytest
+
+from app_test.shared.mock_data import QUESTION_FIELDS, QUESTIONS
+from src.core import logger
+from src.model.question import Question, QuestionData
+from src.utils import validate_response_payload
 
 
 @pytest.mark.parametrize("payload", [q for q in QUESTIONS])

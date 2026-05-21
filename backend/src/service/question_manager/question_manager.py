@@ -1,4 +1,5 @@
-from typing import Any, List, Optional, Sequence, Literal, overload
+from collections.abc import Sequence
+from typing import Any, Literal, overload
 
 from src.app_types.general import ID
 from src.core.logging import logger
@@ -9,18 +10,18 @@ from src.service.file_service.utils import safe_dir_name
 from src.service.storage.base import Storage
 
 from .exceptions import (
-    StoragePathNotFoundError,
-    QuestionManagerException,
     FileListError,
-    QuestionCopyFailure,
     FileOperationError,
-    QuestionDeletionError,
-    MissingQuestionDataError,
     FileSaveError,
-    QuestionCreationError,
-    QuestionUpdateError,
-    QuestionNotFoundError,
     InvalidQuestionDataError,
+    MissingQuestionDataError,
+    QuestionCopyFailure,
+    QuestionCreationError,
+    QuestionDeletionError,
+    QuestionManagerException,
+    QuestionNotFoundError,
+    QuestionUpdateError,
+    StoragePathNotFoundError,
 )
 from .question_storage_service import QuestionStorageService
 
@@ -38,7 +39,7 @@ class QuestionManager:
         self,
         qdata: QuestionCreate,
         storage_base_path: str,
-        files: Optional[List[FileData]] = None,
+        files: list[FileData] | None = None,
     ) -> Question:
         """Create a question record and optionally save its initial files.
 
@@ -89,7 +90,7 @@ class QuestionManager:
                     question.id,
                 )
                 await self._rollback_created_question(question, saved_files)
-            raise QuestionCreationError("database or storage error", str(e))
+            raise QuestionCreationError("database or storage error", str(e)) from e
 
     @overload
     async def get_question(
@@ -136,7 +137,7 @@ class QuestionManager:
         except QuestionManagerException:
             raise
         except Exception as e:
-            raise QuestionCopyFailure(reason="Failed to copy question ", details=str(e))
+            raise QuestionCopyFailure(reason="Failed to copy question ", details=str(e)) from e
 
     async def update_question_meta(
         self, id: ID, update: QuestionUpdate
@@ -148,7 +149,7 @@ class QuestionManager:
         except QuestionManagerException:
             raise
         except Exception as e:
-            raise QuestionUpdateError(question_id=str(id), reason=str(e))
+            raise QuestionUpdateError(question_id=str(id), reason=str(e)) from e
 
     async def delete_question(self, qid: ID) -> bool:
         """Delete a question record and its storage directory.
@@ -181,7 +182,7 @@ class QuestionManager:
                 question_id=str(qid),
                 reason="database or storage error",
                 details=str(e),
-            )
+            ) from e
 
     async def get_question_files(self, qid: ID) -> Sequence[str]:
         """Return storage paths for files attached to a question."""
@@ -191,7 +192,7 @@ class QuestionManager:
         except QuestionManagerException:
             raise
         except Exception as e:
-            raise FileListError(str(qid), str(e))
+            raise FileListError(str(qid), str(e)) from e
 
     async def read_file(self, qid: ID, filename: str) -> bytes | None:
         """Read one file from a question's storage directory."""
@@ -201,7 +202,7 @@ class QuestionManager:
         except QuestionManagerException:
             raise
         except Exception as e:
-            raise FileOperationError("read", filename, str(e))
+            raise FileOperationError("read", filename, str(e)) from e
 
     async def write_file(self, qid: ID, filename: str, data: Any):
         """Write or replace one file in a question's storage directory."""
@@ -211,7 +212,7 @@ class QuestionManager:
         except QuestionManagerException:
             raise
         except Exception as e:
-            raise FileOperationError("write", filename, str(e))
+            raise FileOperationError("write", filename, str(e)) from e
 
     async def delete_file(self, qid: ID, filename: str):
         """Delete one file from a question's storage directory."""
@@ -221,9 +222,9 @@ class QuestionManager:
         except QuestionManagerException:
             raise
         except Exception as e:
-            raise FileOperationError("delete", filename, str(e))
+            raise FileOperationError("delete", filename, str(e)) from e
 
-    async def get_question_filedata(self, qid: ID) -> List[FileData]:
+    async def get_question_filedata(self, qid: ID) -> list[FileData]:
         """Return every question file as FileData objects."""
         try:
             storage_path = await self.get_storage_path(qid)
@@ -231,9 +232,9 @@ class QuestionManager:
         except QuestionManagerException:
             raise
         except Exception as e:
-            raise FileOperationError("read", str(qid), str(e))
+            raise FileOperationError("read", str(qid), str(e)) from e
 
-    async def upload_files(self, qid: ID, files: List[FileData]):
+    async def upload_files(self, qid: ID, files: list[FileData]):
         """Save additional files to an existing question.
 
         If one file fails after earlier files were saved, the files saved during
@@ -249,7 +250,7 @@ class QuestionManager:
             raise
         except Exception as e:
             self._rollback_saved_files(saved_files)
-            raise FileOperationError("upload", str(qid), str(e))
+            raise FileOperationError("upload", str(qid), str(e)) from e
 
     async def get_storage_path(self, qid: ID) -> str:
         """Resolve the persisted storage path for a question."""
@@ -274,10 +275,10 @@ class QuestionManager:
         except QuestionManagerException:
             raise
         except Exception as e:
-            raise InvalidQuestionDataError("question_data", str(e))
+            raise InvalidQuestionDataError("question_data", str(e)) from e
 
     def _save_files(
-        self, storage_path: str, files: List[FileData], question_id: ID
+        self, storage_path: str, files: list[FileData], question_id: ID
     ) -> list[str]:
         """Save files one at a time and roll back partial saves on failure."""
         saved_files: list[str] = []
@@ -299,7 +300,7 @@ class QuestionManager:
                     question_id,
                 )
                 self._rollback_saved_files(saved_files)
-                raise FileSaveError(file.filename, str(question_id), str(e))
+                raise FileSaveError(file.filename, str(question_id), str(e)) from e
         return saved_files
 
     async def _rollback_created_question(

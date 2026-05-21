@@ -1,11 +1,10 @@
 # Standard library
-from uuid import UUID, uuid4
 from enum import Enum
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
+from uuid import UUID, uuid4
 
 # Third-party libraries
-from sqlmodel import Field, SQLModel, Relationship
-
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .users import User
@@ -22,4 +21,4 @@ class Institution(SQLModel, table=True):
     name: ValidInstitutions
     description: str | None = None
 
-    users: List["User"] = Relationship(back_populates="institution")
+    users: list["User"] = Relationship(back_populates="institution")

@@ -1,13 +1,15 @@
-from typing import Annotated, Generator
+from collections.abc import Generator
+from typing import Annotated
 
 from fastapi import Depends
-from sqlmodel import SQLModel, Session, create_engine
-from src.core import get_settings, logger
+from sqlmodel import Session, SQLModel, create_engine
+
 from src.core.exceptions import (
     DatabaseConfigError,
     DatabaseInitializationError,
     MissingConfigError,
 )
+from src.core.logging import get_settings, logger
 
 app_settings = get_settings()
 
@@ -15,9 +17,7 @@ app_settings = get_settings()
 # Define choosing the settings
 if app_settings.ENV == "testing":
     DATABASE_URL = "sqlite:///:memory:"
-elif app_settings.ENV == "production":
-    DATABASE_URL = app_settings.DATABASE_URL
-elif app_settings.ENV == "dev":
+elif app_settings.ENV == "production" or app_settings.ENV == "dev":
     DATABASE_URL = app_settings.DATABASE_URL
 else:
     raise DatabaseConfigError(f"Unknown environment: {app_settings.ENV}")

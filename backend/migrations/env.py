@@ -1,22 +1,21 @@
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from sqlmodel import SQLModel
-from alembic import context
 
+from alembic import context
+from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
+
+from src.core.config import get_settings
 from src.model.institution import Institution
 from src.model.question import (
     Question,
-    Topic,
-    QuestionType,
-    QuestionTopicLink,
     QuestionQTypeLink,
+    QuestionTopicLink,
+    QuestionType,
+    Topic,
 )
 from src.model.question_attempt import QuestionAttempt
-from src.model.thread import Thread, Message
-from src.model.users import User, DeveloperProfile, UserRoleLink
-from src.core.config import get_settings
-
+from src.model.thread import Message, Thread
+from src.model.users import DeveloperProfile, User, UserRoleLink
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

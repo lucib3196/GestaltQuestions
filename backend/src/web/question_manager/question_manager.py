@@ -1,8 +1,9 @@
 import asyncio
-from typing import Sequence, List
-from pydantic import BaseModel
-from fastapi.responses import Response
+from collections.abc import Sequence
+
 from fastapi import APIRouter, HTTPException, UploadFile
+from fastapi.responses import Response
+from pydantic import BaseModel
 from starlette import status
 
 from src.app_types.general import ID
@@ -10,13 +11,14 @@ from src.model.files import FileData
 from src.model.question import (
     Question,
     QuestionCreate,
+    QuestionFilter,
     QuestionRead,
     QuestionUpdate,
-    QuestionFilter,
 )
 from src.service import FileConverter
-from src.web.user.dependencies import CurrentUser
 from src.service.file_service.zip_files import download_zip
+from src.web.user.dependencies import CurrentUser
+
 from .dependencies import DeveloperQuestionManagerDependency
 
 router = APIRouter(
@@ -41,21 +43,21 @@ async def create_question(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to create question: {e}",
-        )
+        ) from e
 
 
 @router.get("/")
 async def list_my_questions(
     current_user: CurrentUser,
     question_manager: DeveloperQuestionManagerDependency,
-) -> List[Question] | List[QuestionRead]:
+) -> list[Question] | list[QuestionRead]:
     try:
         return await question_manager.list_my_questions(current_user, method="full")
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to list questions: {e}",
-        )
+        ) from e
 
 
 @router.post("/filter")
@@ -70,7 +72,7 @@ async def filter(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to delete question file: {e}",
-        )
+        ) from e
 
 
 @router.get("/{question_id}")
@@ -87,7 +89,7 @@ async def get_question(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Failed to get question: {e}",
-        )
+        ) from e
 
 
 @router.patch("/{question_id}")
@@ -103,7 +105,7 @@ async def update_question(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to update question: {e}",
-        )
+        ) from e
 
 
 @router.delete("/{question_id}")
@@ -118,7 +120,7 @@ async def delete_question(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to delete question: {e}",
-        )
+        ) from e
 
 
 @router.post("/{question_id}/copy")
@@ -133,7 +135,7 @@ async def copy_question(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
-        )
+        ) from e
 
 
 @router.post("/{question_id}/download")
@@ -156,7 +158,7 @@ async def download_question_as_zip(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
-        )
+        ) from e
 
 
 @router.post("/{question_id}/{filename}/download")
@@ -179,7 +181,7 @@ async def donwload_question_file(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
-        )
+        ) from e
 
 
 @router.get("/{question_id}/files")
@@ -194,7 +196,7 @@ async def get_question_files(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to list question files: {e}",
-        )
+        ) from e
 
 
 @router.get("/{question_id}/filedata")
@@ -209,7 +211,7 @@ async def get_question_filedata(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to list question files: {e}",
-        )
+        ) from e
 
 
 @router.post("/{question_id}/files", status_code=status.HTTP_201_CREATED)
@@ -229,7 +231,7 @@ async def upload_files(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to upload question files: {e}",
-        )
+        ) from e
 
 
 @router.get("/{question_id}/files/{filename}")
@@ -245,7 +247,7 @@ async def read_file(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Failed to read question file: {e}",
-        )
+        ) from e
 
 
 @router.put("/{question_id}/files/{filename}")
@@ -264,7 +266,7 @@ async def write_file(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to write question file: {e}",
-        )
+        ) from e
 
 
 @router.delete("/{question_id}/files/{filename}")
@@ -280,4 +282,4 @@ async def delete_file(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to delete question file: {e}",
-        )
+        ) from e

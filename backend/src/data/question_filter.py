@@ -1,5 +1,5 @@
 import asyncio
-from typing import Sequence
+from collections.abc import Sequence
 
 from sqlalchemy import or_
 from sqlmodel import Session, select
@@ -7,9 +7,11 @@ from sqlmodel import Session, select
 from src.data import generic as gdb
 from src.model.question import (
     Question,
-    QuestionRead as QuestionData,
     QuestionType,
     Topic,
+)
+from src.model.question import (
+    QuestionRead as QuestionData,
 )
 from src.utils import convert_uuid
 

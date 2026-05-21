@@ -1,5 +1,7 @@
-import pytest
 from uuid import UUID, uuid4
+
+import pytest
+
 from src.utils.database_utils import convert_uuid
 
 

@@ -1,15 +1,13 @@
 # Stdlib
-from typing import Union
+# Local
+from datetime import datetime
 from uuid import UUID
 
 # Third-party
 from sqlalchemy import String, cast, func
 
-# Local
-from datetime import datetime
 
-
-def convert_uuid(value: Union[str, UUID, None]) -> UUID:
+def convert_uuid(value: str | UUID | None) -> UUID:
     if isinstance(value, UUID):
         return value
 
@@ -19,7 +17,7 @@ def convert_uuid(value: Union[str, UUID, None]) -> UUID:
     try:
         return UUID(str(value).strip())  # 🔥 FIX HERE
     except (ValueError, TypeError):
-        raise ValueError(f"Invalid UUID: {value!r}")
+        raise ValueError(f"Invalid UUID: {value!r}") from None
 
 
 def pick_related_label_col(target_cls):
@@ -28,9 +26,9 @@ def pick_related_label_col(target_cls):
     Preference: .name -> .title -> first String column -> primary key.
     """
     if hasattr(target_cls, "name"):
-        return getattr(target_cls, "name")
+        return target_cls.name
     if hasattr(target_cls, "title"):
-        return getattr(target_cls, "title")
+        return target_cls.title
 
 
 def string_condition(col, raw_val: str, partial: bool = True):

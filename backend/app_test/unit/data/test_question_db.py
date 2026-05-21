@@ -1,9 +1,11 @@
-import pytest
 from typing import Any
-from src.data.exceptions.question_exceptions import QuestionValidationError
-from src.model.question import Question, QuestionCreate, QuestionRead, QuestionUpdate
-from src.data.question import QuestionDB
 from uuid import uuid4
+
+import pytest
+
+from src.data.exceptions.question_exceptions import QuestionValidationError
+from src.data.question import QuestionDB
+from src.model.question import Question, QuestionCreate, QuestionRead, QuestionUpdate
 
 PayloadMap = dict[str, QuestionCreate]
 

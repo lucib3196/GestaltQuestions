@@ -1,6 +1,7 @@
-from src.core import logger
 import pytest
-from app_test.shared.mock_data.question_submission import SCENARIOS, ATTEMPTS
+
+from app_test.shared.mock_data.question_submission import ATTEMPTS, SCENARIOS
+from src.core import logger
 
 
 @pytest.mark.asyncio

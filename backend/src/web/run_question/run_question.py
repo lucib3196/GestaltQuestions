@@ -1,24 +1,22 @@
+from typing import Annotated, Literal
+from uuid import UUID, uuid4
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
-from src.service.question_rendering.parser import TemplateParser
-from fastapi import APIRouter, HTTPException, Query
 from starlette import status
-from typing import List
-from uuid import uuid4, UUID
-from typing import Union, Optional, Dict
-from src.model.question_attempt import QuizData
+
 from src.core.logging import logger
+from src.model.files import FileData
+from src.model.question import QuestionRead
+from src.model.question_attempt import QuizData
+from src.service.question_rendering.parser import TemplateParser
 from src.service.question_runtime.exceptions import MissingQuestionFileError
 from src.service.question_runtime.models import PreparedQuestion
 from src.service.question_runtime.question_runtime import (
     QuestionRunTime,
 )
-from fastapi import Depends
-from typing import Annotated
-from src.model.question import QuestionRead
 from src.web.dependencies import SettingDependency
 from src.web.question_manager.dependencies import QuestionManagerDependency
-from typing import Literal
-from src.model.files import FileData
 
 
 def get_runtime(app_settings: SettingDependency) -> QuestionRunTime:
@@ -38,9 +36,9 @@ class RenderedQuestionBundle(BaseModel):
     question_meta: QuestionRead
     question_html: str
     solution_html: str | None = None
-    files: List[FileData]
-    logs: List[str] | None = None
-    quiz_data: Optional[Union[QuizData, Dict]] = None
+    files: list[FileData]
+    logs: list[str] | None = None
+    quiz_data: QuizData | dict | None = None
 
 
 @router.get("/{qid}", response_model=PreparedQuestion)
@@ -67,9 +65,9 @@ async def get_question_configuration(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Question does not contain question.html file",
-        )
+        ) from None
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed {e}")
+        raise HTTPException(status_code=500, detail=f"Failed {e}") from e
 
 
 @router.post("/{qid}")
@@ -92,7 +90,7 @@ async def run_question(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Question does not contain question.html file",
-        )
+        ) from None
     except Exception as e:
         logger.exception("Failed to prepare question runtime bundle.")
         raise HTTPException(
@@ -109,23 +107,22 @@ async def run_question(
             solution_html=bundle.question_files.solution_html,
             files=question_files,
         )
-    else:
-        payload = bundle.runtime.model_dump(mode="json")  # type: ignore
-        raw_output = await qrun.execute(payload)
-        output = raw_output.get("output", None)
-        logs = raw_output.get("logs", None)
+    payload = bundle.runtime.model_dump(mode="json")  # type: ignore
+    raw_output = await qrun.execute(payload)
+    output = raw_output.get("output", None)
+    logs = raw_output.get("logs", None)
 
-        formatted_question = TemplateParser().render(
-            bundle.question_files.question_html, output or {}
-        )
-        formatted_solution = TemplateParser().render(
-            bundle.question_files.solution_html or "", output or {}
-        )
-        return RenderedQuestionBundle(
-            question_meta=question_metadata,
-            question_html=formatted_question,
-            solution_html=formatted_solution,
-            files=question_files,
-            logs=logs,
-            quiz_data=output,
-        )
+    formatted_question = TemplateParser().render(
+        bundle.question_files.question_html, output or {}
+    )
+    formatted_solution = TemplateParser().render(
+        bundle.question_files.solution_html or "", output or {}
+    )
+    return RenderedQuestionBundle(
+        question_meta=question_metadata,
+        question_html=formatted_question,
+        solution_html=formatted_solution,
+        files=question_files,
+        logs=logs,
+        quiz_data=output,
+    )

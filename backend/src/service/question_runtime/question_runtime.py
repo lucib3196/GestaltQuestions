@@ -1,19 +1,19 @@
-from typing import List
 import httpx
+from fastapi import HTTPException
+from starlette import status
+
+from src.core.logging import logger
 from src.model.files import FileData
+from src.utils.normalization_utils import normalize_content
+
 from .models import (
+    Language,
     PreparedAdaptiveQuestion,
     PreparedQuestion,
     PreparedStaticQuestion,
     QuestionFiles,
-    Language,
 )
-
-from src.utils.normalization_utils import normalize_content
 from .runtime_preparer import RuntimePreparer
-from src.core.logging import logger
-from fastapi import HTTPException
-from starlette import status
 
 
 class QuestionRunTimeException(BaseException):
@@ -79,7 +79,7 @@ class QuestionRunTime:
 
     def build(
         self,
-        question_files: List[FileData],
+        question_files: list[FileData],
         is_adaptive: bool,
         language: Language | None = None,
     ) -> PreparedQuestion:

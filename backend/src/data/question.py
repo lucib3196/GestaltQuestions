@@ -1,14 +1,18 @@
 import asyncio
+from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
-from typing import Any, Dict, Literal, Sequence, Optional
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import ValidationError
-from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import Session, delete, select
 from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.sql.elements import ColumnElement
+from sqlmodel import Session, delete, select
+
 from src.app_types.general import ID
-from src.core import logger
+from src.core.logging import logger
+from src.data import generic as gdb
 from src.data.exceptions.question_exceptions import (
     QuestionCreateError,
     QuestionDeleteError,
@@ -18,20 +22,18 @@ from src.data.exceptions.question_exceptions import (
     QuestionUpdateError,
     QuestionValidationError,
 )
-from src.data import generic as gdb
 from src.model.question import (
     Question,
     QuestionCreate,
+    QuestionFilter,
     QuestionRead,
     QuestionRelationships,
     QuestionType,
     QuestionUpdate,
-    QuestionFilter,
-    Topic,
     Status,
+    Topic,
 )
 from src.utils import convert_uuid
-from sqlalchemy.sql.elements import ColumnElement
 
 
 class QuestionDB:
@@ -269,7 +271,7 @@ class QuestionDB:
         self,
         filter: QuestionFilter,
         *,
-        additional_filters: Optional[Sequence[ColumnElement[bool] | bool]] = None,
+        additional_filters: Sequence[ColumnElement[bool] | bool] | None = None,
     ) -> Sequence[QuestionRead]:
 
         stmt = select(Question)
@@ -358,7 +360,7 @@ class QuestionDB:
         )
         return question
 
-    async def get_question_relationship_data(self, q: Question) -> Dict[str, Any]:
+    async def get_question_relationship_data(self, q: Question) -> dict[str, Any]:
         """
         Read relationship names from a stored question.
 
@@ -374,7 +376,7 @@ class QuestionDB:
         relationship_data = {"topics": topics, "qtypes": qtypes}
         return relationship_data
 
-    def validate_data(self, question: QuestionCreate | Dict) -> QuestionCreate:
+    def validate_data(self, question: QuestionCreate | dict) -> QuestionCreate:
         """
         Validate and normalize raw question input.
 

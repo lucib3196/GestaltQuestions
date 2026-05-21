@@ -1,5 +1,5 @@
-from typing import Tuple
 import pytest
+
 from src.model.question import Question
 from src.model.question_attempt import QuestionAttempt
 from src.model.users import User
@@ -12,7 +12,7 @@ def make_submission_attempt(make_user, make_question, qa_attempt_db):
         submission,
         user=None,
         question=None,
-    ) -> Tuple[QuestionAttempt, User, Question]:
+    ) -> tuple[QuestionAttempt, User, Question]:
 
         if user is None:
             user = await make_user()

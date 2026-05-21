@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import List, Literal, Sequence, cast
+from typing import Literal, cast
 
 from firebase_admin import storage
 from google.cloud.storage.blob import Blob
@@ -50,7 +51,7 @@ class FbStorage(Storage):
     def write(
         self,
         target: str,
-        data: str | dict | List | bytes | bytearray,
+        data: str | dict | list | bytes | bytearray,
         *,
         overwrite: bool = True,
     ) -> str:
@@ -68,8 +69,7 @@ class FbStorage(Storage):
         key = self._to_blob_key(target).rstrip("/")
         if self._exists_file(key):
             return self.bucket.blob(key).download_as_bytes()
-        else:
-            logger.warn(f"Cannot read blob. {key} is not file")
+        logger.warn(f"Cannot read blob. {key} is not file")
 
     def delete(self, target: str | Path | Blob) -> None:
         key = self._to_blob_key(target)
@@ -173,7 +173,7 @@ class FbStorage(Storage):
             return dest_prefix
 
         except Exception as e:
-            raise ValueError(f"Failed to move directory: {e}")
+            raise ValueError(f"Failed to move directory: {e}") from e
 
     def _hard_delete(self):
         blobs = self.bucket.list_blobs()

@@ -8,7 +8,6 @@ from app_test.unit.shared import MOCK_FILES, RENAME_TARGETS, TARGETS
 from src.core import get_settings
 from src.utils import normalize, normalize_newlines
 
-
 settings = get_settings()
 
 

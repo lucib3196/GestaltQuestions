@@ -1,6 +1,6 @@
+import contextvars
 import logging
 import os
-import contextvars
 
 in_test_ctx = contextvars.ContextVar("in_test", default=False)
 

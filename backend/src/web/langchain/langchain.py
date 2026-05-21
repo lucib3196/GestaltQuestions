@@ -1,10 +1,11 @@
+import json
+from typing import Literal
+
+from fastapi import Request
 from fastapi.responses import StreamingResponse
 from fastapi.routing import APIRouter
 from langgraph_sdk import get_client
-import json
-from fastapi import Request
 from pydantic import BaseModel
-from typing import List, Literal
 
 router = APIRouter(prefix="/agents", tags=["ai"])
 
@@ -18,7 +19,7 @@ class BaseMessage(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    messages: List[BaseMessage] = []
+    messages: list[BaseMessage] = []
     thread_id: str | None = None
 
 

@@ -1,7 +1,8 @@
 import base64
 import mimetypes
+from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
-from typing import Any, List, Sequence
+from typing import Any
 
 from google.cloud.storage.blob import Blob
 
@@ -105,7 +106,7 @@ class QuestionStorageService:
         logger.debug("Listed %s question files under %s", len(files), normalized_path)
         return files
 
-    def batch_save_files(self, dir_path: str, files: List[FileData]) -> List[str]:
+    def batch_save_files(self, dir_path: str, files: list[FileData]) -> list[str]:
         """Save multiple files to storage in batch.
 
         Args:
@@ -162,7 +163,7 @@ class QuestionStorageService:
             mime_type=mime_type or "application/octet-stream",
         )
 
-    def get_all_filedata(self, dir_path: str) -> List[FileData]:
+    def get_all_filedata(self, dir_path: str) -> list[FileData]:
         """Return FileData for every file directly listed in a directory.
 
         Args:
@@ -188,8 +189,7 @@ class QuestionStorageService:
         """
         if not filename:
             return dir_path.rstrip("/")
-        else:
-            return f"{dir_path.rstrip('/')}/{filename}"
+        return f"{dir_path.rstrip('/')}/{filename}"
 
     def _norm_path(self, val: str | Path | Blob) -> str:
         """Normalizes path to standardized format with trailing slash.
@@ -205,16 +205,15 @@ class QuestionStorageService:
         """
         if isinstance(val, str):
             return val.rstrip("/") + "/"
-        elif isinstance(val, Path):
+        if isinstance(val, Path):
             return val.as_posix().rstrip("/") + "/"
-        elif isinstance(val, Blob):
+        if isinstance(val, Blob):
             if not val.name:
                 raise ValueError(f"Cannot determine blob: {val}")
             return val.name.rstrip("/") + "/"
-        else:
-            logger.warning(
-                "Cannot normalize unsupported question file path type %s", type(val)
-            )
-            raise InvalidQuestionFile(
-                f"Cannot normalize path: unsupported type {type(val)}"
-            )
+        logger.warning(
+            "Cannot normalize unsupported question file path type %s", type(val)
+        )
+        raise InvalidQuestionFile(
+            f"Cannot normalize path: unsupported type {type(val)}"
+        )

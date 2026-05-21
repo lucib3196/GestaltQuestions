@@ -5,9 +5,9 @@ from fastapi import Depends
 from src.service.question_manager.developer_question_service import (
     DeveloperQuestionService,
 )
-from src.web.user.dependencies import DeveloperAccess
-from src.web.dependencies import StorageDependency, SessionDep, QuestionDBDependency
 from src.service.question_manager.question_manager import QuestionManager
+from src.web.dependencies import QuestionDBDependency, SessionDep, StorageDependency
+from src.web.user.dependencies import DeveloperAccess
 
 
 def get_question_manager(

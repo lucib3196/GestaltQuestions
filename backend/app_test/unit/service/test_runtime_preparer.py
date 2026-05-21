@@ -1,13 +1,14 @@
-from src.service.runtime_preparer.runtime_preparer import RuntimePreparer
-import pytest
 import json
-from src.service.runtime_preparer.models import Language
+
+import pytest
 from src.service.runtime_preparer.exceptions import (
     ConfigurationError,
     InvalidEntryError,
     InvalidFilePayloadError,
     RuntimeResolutionError,
 )
+from src.service.runtime_preparer.models import Language
+from src.service.runtime_preparer.runtime_preparer import RuntimePreparer
 
 
 @pytest.fixture

@@ -1,27 +1,29 @@
 # --- Standard Library ---
 import asyncio
+import base64
 import io
 import mimetypes
 import shutil
 import zipfile
+from collections.abc import Sequence
 from pathlib import Path
-from typing import List, Optional, Sequence, Union, cast
-import base64
+from typing import cast
 
 # --- Third-Party ---
 from fastapi import HTTPException, UploadFile
 from starlette import status
+
 from src.core.logging import logger
 from src.model.files import SuccessFileServiceResponse
 
 from . import (
-    MAX_FILE_SIZE_MB,
     ALLOWED_EXTENSIONS,
-    ALLOWED_MIME_TYPES,
     ALLOWED_IMAGE_EXTENSIONS,
+    ALLOWED_MIME_TYPES,
     CONTENT_TYPE_MAPPING,
-    FileData,
     FILE,
+    MAX_FILE_SIZE_MB,
+    FileData,
 )
 
 
@@ -60,8 +62,7 @@ class FileConverter:
                 content=content,
                 mime_type=mime_type or "application/octet-stream",
             )
-        else:
-            raise ValueError("FileConverter: Failed to convert file to filedata")
+        raise ValueError("FileConverter: Failed to convert file to filedata")
 
     async def _validate_upload_file(self, file: UploadFile) -> UploadFile:
         if not file.filename:
@@ -132,9 +133,7 @@ class FileService:
             logger.exception("Error saving file %s: %s", file.filename, e)
             raise
 
-    async def convert_to_uploadfile(
-        self, path: Union[Path, str, UploadFile]
-    ) -> UploadFile:
+    async def convert_to_uploadfile(self, path: Path | str | UploadFile) -> UploadFile:
         try:
             if isinstance(path, UploadFile):
                 return path
@@ -149,9 +148,9 @@ class FileService:
             raise HTTPException(
                 status_code=500,
                 detail=f"Could not convert to UploadFile path {path} Error: {e}",
-            )
+            ) from e
 
-    async def convert_to_filedata(self, path: Union[Path, str, UploadFile]) -> FileData:
+    async def convert_to_filedata(self, path: Path | str | UploadFile) -> FileData:
         try:
             if isinstance(path, UploadFile) or hasattr(path, "file"):
                 upload = cast(UploadFile, path)
@@ -160,26 +159,25 @@ class FileService:
                 filename = upload.filename or "untitled.txt"
                 mimetype = self.get_content_type(filename)
                 return FileData(filename=filename, content=content, mime_type=mimetype)
-            else:
-                path = Path(path).resolve()
-                if not path.exists() or not path.is_file():
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"The uploaded file {path} either does not exist or is not a file",
-                    )
-                return FileData(
-                    filename=path.name,
-                    content=path.read_text(),
-                    mime_type=self.get_content_type(path.name),
+            path = Path(path).resolve()
+            if not path.exists() or not path.is_file():
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"The uploaded file {path} either does not exist or is not a file",
                 )
+            return FileData(
+                filename=path.name,
+                content=path.read_text(),
+                mime_type=self.get_content_type(path.name),
+            )
         except Exception as e:
             raise HTTPException(
                 status_code=500,
                 detail=f"Could not convert to filedata. File {path} Error: {e}",
-            )
+            ) from e
 
     async def save_files(
-        self, files: List[UploadFile], destination: str | Path
+        self, files: list[UploadFile], destination: str | Path
     ) -> SuccessFileServiceResponse:
         try:
             await asyncio.gather(*[self.save_file(f, destination) for f in files])
@@ -191,13 +189,13 @@ class FileService:
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Could not process file uploads {str(e)}",
-            )
+                detail=f"Could not process file uploads {e!s}",
+            ) from e
 
     async def download_zip(
         self,
-        files: Sequence[Union[Path, str]],
-        folder_name: Optional[str],
+        files: Sequence[Path | str],
+        folder_name: str | None,
     ) -> bytes:
         """Bundle multiple files into a zip and return as StreamingResponse."""
         buffer = io.BytesIO()
@@ -242,8 +240,8 @@ class FileService:
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Could not read file contents {str(e)}",
-            )
+                detail=f"Could not read file contents {e!s}",
+            ) from e
 
     async def validate_file_contents(self, file: UploadFile) -> bool:
         try:
@@ -269,8 +267,8 @@ class FileService:
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Could not validate file contents {str(e)}",
-            )
+                detail=f"Could not validate file contents {e!s}",
+            ) from e
 
     def get_content_type(self, filename: str) -> str:
         """Return MIME type based on file extension, defaults to octet-stream."""

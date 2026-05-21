@@ -1,25 +1,34 @@
-from dataclasses import dataclass
-from typing import Any, List, Optional, Sequence, Literal, Dict
 import asyncio
+import json
+from collections.abc import Sequence
+from dataclasses import dataclass
+from typing import Any, Literal
+
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
+
 from src.app_types.general import ID
 from src.core.logging import logger
 from src.model.files import FileData
-from src.model.question import Question, QuestionCreate, QuestionUpdate
+from src.model.question import (
+    Question,
+    QuestionCreate,
+    QuestionFilter,
+    QuestionRead,
+    QuestionUpdate,
+)
+from src.service.user.developer_access import (
+    DeveloperAccessService,
+)
 from src.service.user.exceptions import DeveloperAccessDenied, DeveloperProfileError
 from src.utils.database_utils import convert_uuid
-from src.model.question import QuestionRead, QuestionFilter
+
 from .exceptions import (
     DeveloperQuestionControlError,
     DeveloperQuestionServiceError,
     QuestionNotFoundError,
 )
 from .question_manager import QuestionManager
-from src.service.user.developer_access import (
-    DeveloperAccessService,
-)
-import json
 
 
 @dataclass
@@ -90,7 +99,7 @@ class DeveloperQuestionService:
         self,
         user_id: ID,
         payload: QuestionCreate,
-        files: Optional[List[FileData]] = None,
+        files: list[FileData] | None = None,
     ) -> Question:
         """Create a question under the developer profile and assign ownership."""
         profile = await self.developer_access.get_developer_data(user_id)
@@ -158,7 +167,7 @@ class DeveloperQuestionService:
 
     async def list_my_questions(
         self, user_id: ID, method: Literal["default", "full"] = "default"
-    ) -> List[Question] | List[QuestionRead]:
+    ) -> list[Question] | list[QuestionRead]:
         """List questions created by the developer profile for the user."""
         await self.developer_access.require_developer_access(user_id)
         try:
@@ -170,14 +179,10 @@ class DeveloperQuestionService:
             logger.debug("Listing questions for developer user %s", user_id)
             if method == "default":
                 return user.created_questions
-            else:
-                results = await asyncio.gather(
-                    *(
-                        self.qmng.qdb.get_question_data(q.id)
-                        for q in user.created_questions
-                    )
-                )
-                return results
+            results = await asyncio.gather(
+                *(self.qmng.qdb.get_question_data(q.id) for q in user.created_questions)
+            )
+            return results
         except DeveloperQuestionServiceError:
             raise
         except SQLAlchemyError as e:
@@ -218,14 +223,14 @@ class DeveloperQuestionService:
                 filter, additional_filters=[add_filter]
             )
         except Exception as e:
-            raise ValueError(f"Failed to filer question {e}")
+            raise ValueError(f"Failed to filer question {e}") from e
 
     async def prepare_question_download(
         self, user_id: ID, qid: ID
-    ) -> Dict[str, bytes | bytearray]:
+    ) -> dict[str, bytes | bytearray]:
         try:
             qfiles = await self.get_question_filedata(user_id, qid)
-            file_payload: Dict[str, bytes | bytearray] = dict()
+            file_payload: dict[str, bytes | bytearray] = dict()
             for f in qfiles:
                 content = f.content
                 if isinstance(content, str):
@@ -241,7 +246,7 @@ class DeveloperQuestionService:
         except DeveloperAccessDenied:
             raise
         except Exception as e:
-            raise ValueError(f"Failed to donwload Question {e}")
+            raise ValueError(f"Failed to donwload Question {e}") from e
 
     # ------------------------------------------------------------------
     # Question Files
@@ -271,7 +276,7 @@ class DeveloperQuestionService:
         await self.has_question_control(user_id, qid)
         return await self.qmng.delete_file(qid, filename)
 
-    async def upload_files(self, user_id: ID, qid: ID, files: List[FileData]):
+    async def upload_files(self, user_id: ID, qid: ID, files: list[FileData]):
         """Upload files to a question after checking developer question control."""
         await self.has_question_control(user_id, qid)
         return await self.qmng.upload_files(qid, files)

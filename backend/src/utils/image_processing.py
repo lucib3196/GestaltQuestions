@@ -12,10 +12,9 @@ def handle_image_data(data) -> bytes:
         if isinstance(data, list):
             image_data = data[0]
             return base64.b64decode(image_data)
-        else:
-            raise NotImplementedError
-    except Exception as e:
-        raise e
+        raise NotImplementedError
+    except Exception:
+        raise
 
 
 def write_image_data(image_bytes: bytes, folder_path: str | Path, filename: str) -> str:
@@ -31,4 +30,4 @@ def write_image_data(image_bytes: bytes, folder_path: str | Path, filename: str)
         save_path.write_bytes(image_bytes)
         return save_path.as_posix()
     except Exception as e:
-        raise ValueError(f"Could not save image {str(e)}")
+        raise ValueError(f"Could not save image {e!s}") from e

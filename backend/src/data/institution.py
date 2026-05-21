@@ -1,13 +1,12 @@
-from typing import Dict, Union, overload
+from typing import overload
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
 from src.app_types.general import ID
 from src.core import SessionDep, logger
-from src.utils import convert_uuid
-
 from src.model.institution import Institution, ValidInstitutions
+from src.utils import convert_uuid
 
 
 class InstitutionDB:
@@ -48,7 +47,7 @@ class InstitutionDB:
     # ---------- REAL IMPLEMENTATION ----------
     async def get_institution(
         self,
-        identifier: Union[ID, ValidInstitutions],
+        identifier: ID | ValidInstitutions,
     ) -> Institution | None:
         try:
             if isinstance(identifier, ValidInstitutions):
@@ -67,7 +66,7 @@ class InstitutionDB:
             raise
 
     async def seed_institution(self):
-        institutions: Dict[ValidInstitutions, str] = {
+        institutions: dict[ValidInstitutions, str] = {
             ValidInstitutions.UCR: (
                 "University of California, Riverside. A public research university "
                 "focused on undergraduate and graduate education, research, and innovation."

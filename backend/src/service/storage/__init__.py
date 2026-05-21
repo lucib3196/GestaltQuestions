@@ -1,6 +1,5 @@
 from src.app_types.general import STORAGE_TYPE
 
-
 from .base import Storage
 
 __all__ = [

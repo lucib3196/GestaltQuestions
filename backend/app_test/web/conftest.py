@@ -4,22 +4,20 @@ from pathlib import Path
 
 import firebase_admin
 import pytest
-from app_test import FbStorage, LocalStorage, QuestionManager, initialize_firebase_app
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from app_test import FbStorage, LocalStorage, QuestionManager, initialize_firebase_app
 from app_test.shared.mock_data import QUESTIONS
-
 from src.core import get_session, get_settings
 from src.main import get_application
 from src.model.files import FileData
 from src.web.dependencies import (
+    get_local_base_path,
     get_question_manager,
     get_storage_manager,
     get_storage_type,
-    get_local_base_path,
 )
-
 
 settings = get_settings()
 

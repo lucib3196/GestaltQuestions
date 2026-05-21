@@ -1,8 +1,10 @@
 from enum import Enum
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
+
 from pydantic import BaseModel, EmailStr
 from sqlmodel import Field, Relationship, SQLModel
+
 from .institution import Institution, ValidInstitutions
 
 if TYPE_CHECKING:
@@ -38,7 +40,7 @@ class UserUpdate(UserBase):
 
 class UserRead(UserBase):
     email: str | None = None
-    roles: List[UserRoles | str] = Field(..., default_factory=list)
+    roles: list[UserRoles | str] = Field(..., default_factory=list)
     institution: ValidInstitutions | None = None
 
 
@@ -58,7 +60,7 @@ class UpdateUserInstitution(BaseModel):
 
 class UserRoleResponse(BaseModel):
     user: "User"
-    roles: List["Role"] = []
+    roles: list["Role"] = []
 
 
 class UserInstResponse(BaseModel):
@@ -80,7 +82,7 @@ class Role(SQLModel, table=True):
     name: str = Field(index=True)
     description: str | None = None
 
-    users: List["User"] = Relationship(back_populates="roles", link_model=UserRoleLink)
+    users: list["User"] = Relationship(back_populates="roles", link_model=UserRoleLink)
 
 
 # Base class for our user, this is to faciliate stuff such as reading from our database
@@ -91,15 +93,15 @@ class User(SQLModel, table=True):
     username: str | None = Field(default=None, unique=True)
     email: str = Field(index=True)
 
-    roles: List["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
+    roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
 
-    institution_id: Optional[UUID] = Field(default=None, foreign_key="institution.id")
+    institution_id: UUID | None = Field(default=None, foreign_key="institution.id")
     institution: Optional["Institution"] = Relationship(back_populates="users")
 
     developer_profile: Optional["DeveloperProfile"] = Relationship(
         back_populates="user"
     )
-    threads: List["Thread"] = Relationship(back_populates="user")
+    threads: list["Thread"] = Relationship(back_populates="user")
 
 
 class DeveloperProfile(SQLModel, table=True):
@@ -109,8 +111,8 @@ class DeveloperProfile(SQLModel, table=True):
     user_id: UUID = Field(foreign_key="user.id", unique=True)
 
     user: Optional["User"] = Relationship(back_populates="developer_profile")
-    storage_path: Optional[str] = None
-    created_questions: List["Question"] = Relationship(back_populates="created_by")
+    storage_path: str | None = None
+    created_questions: list["Question"] = Relationship(back_populates="created_by")
 
 
 UserRoleResponse.model_rebuild()

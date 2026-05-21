@@ -1,15 +1,15 @@
 import json
 from pathlib import Path, PurePosixPath
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
-from src.core import logger
-from src.model.question import Question
-from src.service.file_service.utils import safe_dir_name
 from app_test import QuestionManager
 from app_test.shared.factories.question_manager_factory import MakeQuestionFactory
 from app_test.shared.mock_data import QUESTIONS
+from src.core import logger
+from src.model.question import Question
+from src.service.file_service.utils import safe_dir_name
 
 
 # Test question creation
@@ -17,7 +17,7 @@ from app_test.shared.mock_data import QUESTIONS
 @pytest.mark.parametrize("qdata", QUESTIONS[:3])
 async def test_create_question_no_files(
     question_manager: QuestionManager,
-    qdata: Dict[str, Any],
+    qdata: dict[str, Any],
     make_question_qm: MakeQuestionFactory,
 ):
     # Arrange
@@ -105,7 +105,7 @@ async def test_create_question_with_files_expected_path_exists(
 @pytest.mark.parametrize("qdata", QUESTIONS[:3])
 async def test_delete_question(
     question_manager: QuestionManager,
-    qdata: Dict[str, Any],
+    qdata: dict[str, Any],
     make_question_qm: MakeQuestionFactory,
 ):
     # Arrange
@@ -137,7 +137,7 @@ async def test_delete_question(
 )
 async def test_handle_storage_update(
     question_manager: QuestionManager,
-    qdata: Dict[str, Any],
+    qdata: dict[str, Any],
     make_question_qm: MakeQuestionFactory,
     destination: str,
     tmp_path,
@@ -182,7 +182,7 @@ async def test_handle_storage_update(
 )
 async def test_handle_storage_update_with_files(
     question_manager: QuestionManager,
-    qdata: Dict[str, Any],
+    qdata: dict[str, Any],
     make_question_qm: MakeQuestionFactory,
     question_file_payload,
     destination: str,

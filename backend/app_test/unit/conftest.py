@@ -1,7 +1,8 @@
 import pytest
+
+from src.data.institution import InstitutionDB
 from src.data.role import RoleDB
 from src.data.user import UserDB
-from src.data.institution import InstitutionDB
 
 
 # Create the database session

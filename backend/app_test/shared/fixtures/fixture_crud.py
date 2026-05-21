@@ -1,7 +1,9 @@
-from typing import Literal
-import pytest
 import json
-from src.utils.normalization_utils import to_serializable, normalize_content
+from typing import Literal
+
+import pytest
+
+from src.utils.normalization_utils import normalize_content, to_serializable
 
 
 @pytest.fixture

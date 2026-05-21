@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from starlette import status
+
 from src.web.dependencies import SettingDependency
 
 router = APIRouter(tags=["health"])

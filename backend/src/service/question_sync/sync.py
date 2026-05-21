@@ -2,26 +2,26 @@
 import asyncio
 import json
 from collections import defaultdict
+from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
-from typing import Literal, Sequence, Tuple, Optional, List
+from typing import Literal
 
 from pydantic import ValidationError
 
-
+from src.app_types.general import STORAGE_TYPE
 from src.core.logging import logger
 from src.data.question import QuestionDB
 from src.model.question import Question, QuestionRead
 from src.service.question_sync.models import (
-    SyncMetrics,
-    SyncSetup,
     DEFAULT_SYNC_FLAGS,
-    UnsyncedQuestion,
     FolderCheckMetrics,
     QuestionSyncMinimal,
+    SyncMetrics,
     SyncResponse,
+    SyncSetup,
+    UnsyncedQuestion,
 )
 from src.service.storage.local_storage import Storage
-from src.app_types.general import STORAGE_TYPE
 from src.utils import to_serializable
 
 
@@ -59,14 +59,14 @@ class QuestionSyncNew(SyncBase):
 
     async def check_unsync(
         self, target: str, recursive: bool = False
-    ) -> List[UnsyncedQuestion]:
+    ) -> list[UnsyncedQuestion]:
         """Collect sync status for all question directories found under `target`."""
         if recursive:
             raise NotImplementedError("Recursive for syncing not yet resolved")
 
         try:
             data = self.storage.list(target, recursive=True)
-            valid_questions: List[Tuple[str, str]] = []
+            valid_questions: list[tuple[str, str]] = []
             append_valid_question = valid_questions.append
             resolve_metadata = self._resolve_metadata
             is_dir = self.storage.is_dir
@@ -87,7 +87,7 @@ class QuestionSyncNew(SyncBase):
             return results
 
         except Exception as e:
-            raise ValueError(f"[QSync] Failed to check question {e}")
+            raise ValueError(f"[QSync] Failed to check question {e}") from e
 
     async def sync_all_questions(
         self, target: str, storage_type: STORAGE_TYPE, recursive: bool = False
@@ -284,7 +284,7 @@ class QuestionSyncNew(SyncBase):
         try:
             all_questions = await self.qdb.get_all_questions(offset=0, limit=1000)
         except Exception as e:
-            raise ValueError(f"[QSync] Failed to fetch questions for prune: {e}")
+            raise ValueError(f"[QSync] Failed to fetch questions for prune: {e}") from e
 
         if not all_questions:
             return FolderCheckMetrics(
@@ -349,19 +349,16 @@ class QuestionSyncNew(SyncBase):
             )
             return "bug"
 
-    def _normalize_content(
-        self, content: str | bytes | dict | bytearray
-    ) -> Optional[str]:
+    def _normalize_content(self, content: str | bytes | dict | bytearray) -> str | None:
         """Normalize storage-read metadata into a JSON string when possible."""
         try:
             if isinstance(content, str):
                 return content
-            elif isinstance(content, (bytes, bytearray)):
+            if isinstance(content, (bytes, bytearray)):
                 return content.decode()
-            elif isinstance(content, (dict)):
+            if isinstance(content, (dict)):
                 return json.dumps(content)
-            else:
-                raise TypeError(f"[QSync] Content is invalid type {type(content)}")
+            raise TypeError(f"[QSync] Content is invalid type {type(content)}")
         except Exception as e:
             logger.error(
                 f"[QSync] Failed to normalize content in  metadata in {content}: {e}"

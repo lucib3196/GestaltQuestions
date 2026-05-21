@@ -1,8 +1,7 @@
 import pytest
 
-
-from src.model.institution import ValidInstitutions
 from src.data.institution import InstitutionDB
+from src.model.institution import ValidInstitutions
 
 
 @pytest.fixture

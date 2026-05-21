@@ -1,6 +1,7 @@
 import shutil
+from collections.abc import Sequence
 from pathlib import Path
-from typing import List, Literal, Sequence, cast
+from typing import Literal, cast
 
 from google.cloud.storage.blob import Blob
 
@@ -47,7 +48,7 @@ class LocalStorage(Storage):
     def write(
         self,
         target: str,
-        data: str | dict | List | bytes | bytearray,
+        data: str | dict | list | bytes | bytearray,
         *,
         overwrite: bool = True,
     ) -> str:

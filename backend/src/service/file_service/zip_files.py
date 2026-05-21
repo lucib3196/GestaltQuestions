@@ -1,16 +1,15 @@
-import zipfile
 import io
-from typing import Dict
-from pathlib import PurePosixPath, Path
-from typing import Optional
-from .utils import safe_dir_name
+import zipfile
+from pathlib import Path, PurePosixPath
 
 from fastapi import UploadFile
 
 from src.service.storage.base import Storage
 
+from .utils import safe_dir_name
 
-def extract_zip_files(content: bytes) -> Dict[str, bytes]:
+
+def extract_zip_files(content: bytes) -> dict[str, bytes]:
     """Extract non-directory files from a ZIP archive payload.
 
     Args:
@@ -35,7 +34,7 @@ def extract_zip_files(content: bytes) -> Dict[str, bytes]:
 
 
 def download_zip(
-    files: Dict[str, bytes | bytearray], folder_name: Optional[str] = None
+    files: dict[str, bytes | bytearray], folder_name: str | None = None
 ) -> bytes:
 
     buffer = io.BytesIO()

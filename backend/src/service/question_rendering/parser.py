@@ -1,6 +1,7 @@
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Dict, Any, Tuple, Optional
+from typing import Any
 
 
 @dataclass
@@ -14,14 +15,14 @@ class TemplateParserConfig:
 class TemplateParser:
     def __init__(
         self,
-        config: Optional[TemplateParserConfig] = None,
+        config: TemplateParserConfig | None = None,
     ):
         if not config:
             config = TemplateParserConfig()
         self.config = config
         self.regex = re.compile(self.config.pattern)
 
-    def render(self, template: str, data: Dict[str, Any]):
+    def render(self, template: str, data: dict[str, Any]):
         def replacer(match: re.Match) -> str:
             path: str = match.group(1)  # captured path, e.g. "params.name"
             found, value = self._get_nested(data, path)
@@ -36,7 +37,7 @@ class TemplateParser:
 
         return self.regex.sub(replacer, template)
 
-    def _get_nested(self, data: Dict[str, str], path: str) -> Tuple[bool, Any]:
+    def _get_nested(self, data: dict[str, str], path: str) -> tuple[bool, Any]:
         cur = data
         for part in path.split("."):
             if isinstance(cur, dict) and part in cur:

@@ -1,5 +1,6 @@
-from src.model.files import FileData
 from fastapi import UploadFile
+
+from src.model.files import FileData
 
 FILE = str | UploadFile | FileData
 

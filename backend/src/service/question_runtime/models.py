@@ -1,8 +1,11 @@
-from pydantic import BaseModel, Field
-from typing import Literal, Dict, List, Union
 import json
-from src.utils.normalization_utils import normalize_content
+from typing import Literal, Union
+
+from pydantic import BaseModel, Field
+
 from src.model.files import FileData
+from src.utils.normalization_utils import normalize_content
+
 from .exceptions import MissingQuestionFileError
 
 Language = Literal["javascript", "python"]
@@ -25,7 +28,7 @@ class RunTimeConfigBase(BaseModel):
 
 
 class RuntimeExecutionConfig(RunTimeConfigBase):
-    files: Dict[str, str] = Field(
+    files: dict[str, str] = Field(
         default_factory=dict, description="The content of the files"
     )
 
@@ -34,23 +37,23 @@ class RuntimePackageConfig(BaseModel):
     default_language: Language | None = Field(
         description="The default language for runtimes", default=None
     )
-    runtimes: Dict[Language, RunTimeConfigBase]
+    runtimes: dict[Language, RunTimeConfigBase]
 
 
 class QuestionFiles(BaseModel):
     question_html: str
     solution_html: str | None = None
-    files: Dict[str, str]
+    files: dict[str, str]
 
     @classmethod
-    def from_file_data(cls, question_files: List[FileData]):
+    def from_file_data(cls, question_files: list[FileData]):
         files = {fd.filename: normalize_content(fd.content) for fd in question_files}
 
         if "question.html" not in files:
             raise MissingQuestionFileError("Question must include question.html")
         return cls(
             question_html=files["question.html"],
-            solution_html=files.get("solution.html", None),
+            solution_html=files.get("solution.html"),
             files=files,
         )
 

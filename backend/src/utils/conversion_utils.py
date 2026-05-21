@@ -1,6 +1,7 @@
 # --- Standard Library ---
 import json
-from typing import Any, Iterable, Optional, Type
+from collections.abc import Iterable
+from typing import Any
 
 # --- Third-Party ---
 from pydantic import BaseModel
@@ -11,7 +12,7 @@ _FALSE = {"false", "0", "no", "n", "off", "f"}
 
 
 # --- Conversion Utilities ---
-def to_bool(v: Any, *, default: Optional[bool] = None) -> bool:
+def to_bool(v: Any, *, default: bool | None = None) -> bool:
     """
     Convert a value to boolean.
 
@@ -61,7 +62,7 @@ def normalize_json_content(value: Any) -> Any:
     return value
 
 
-def serialized_to_dict(data: Any, obj: Type[BaseModel]) -> dict:
+def serialized_to_dict(data: Any, obj: type[BaseModel]) -> dict:
     """
     Normalize arbitrary input into a dictionary.
 

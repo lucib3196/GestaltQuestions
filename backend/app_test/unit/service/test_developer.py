@@ -1,13 +1,15 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
+from uuid import uuid4
+
 import pytest
+
 from src.model.users import DeveloperProfile, UserRoles
 from src.service.question_manager.developer_question_service import (
     AccessDecision,
     DeveloperAccessDenied,
     DeveloperAccessService,
 )
-from uuid import uuid4
 
 
 @pytest.fixture

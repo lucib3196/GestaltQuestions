@@ -10,12 +10,12 @@ from src.model.users import DeveloperProfile, UserRoles
 from src.service.storage.base import Storage
 from src.utils.database_utils import convert_uuid
 
-from .user_manager import UserManager
 from .exceptions import (
     DeveloperAccessDenied,
     DeveloperProfileError,
     DeveloperProfileNotSet,
 )
+from .user_manager import UserManager
 
 
 @dataclass

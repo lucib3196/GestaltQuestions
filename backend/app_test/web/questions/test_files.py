@@ -1,7 +1,8 @@
-from src.core import logger
-from app_test.shared.mock_data import QUESTIONS
-from src.model.question import Question
 import pytest
+
+from app_test.shared.mock_data import QUESTIONS
+from src.core import logger
+from src.model.question import Question
 
 
 @pytest.mark.parametrize("payload", QUESTIONS)
@@ -34,7 +35,7 @@ def test_upload_files_to_question(payload, make_upload_files_to_question):
 def test_get_filedata(make_question_with_files, payload, api_client):
     response, _ = make_question_with_files(overrides=payload)
     question = Question.model_validate(response.json())
-    res = api_client.get(f"/questions/files/filedata/{str(question.id)}")
+    res = api_client.get(f"/questions/files/filedata/{question.id!s}")
     rfiles = res.json()
     logger.info(f"Retrieved files {rfiles}")
     assert res.status_code == 200
