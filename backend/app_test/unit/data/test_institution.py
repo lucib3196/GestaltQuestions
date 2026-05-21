@@ -14,7 +14,7 @@ def institution_db(db_session) -> InstitutionDB:
     [ValidInstitutions.CPP, ValidInstitutions.NORCO, ValidInstitutions.UCR],
 )
 @pytest.mark.asyncio
-async def test_create_institution(institution_db, institution):
+async def test_create_institution(institution_db, institution) -> None:
     inst = await institution_db.create_institution(institution)
 
     assert inst.id is not None
@@ -23,7 +23,7 @@ async def test_create_institution(institution_db, institution):
 
 
 @pytest.mark.asyncio
-async def test_get_institution_by_id(institution_db):
+async def test_get_institution_by_id(institution_db) -> None:
     created = await institution_db.create_institution(ValidInstitutions.CPP)
 
     found = await institution_db.get_institution(created.id)
@@ -34,13 +34,13 @@ async def test_get_institution_by_id(institution_db):
 
 
 @pytest.mark.asyncio
-async def test_get_institution_with_none_identifier_raises_value_error(institution_db):
+async def test_get_institution_with_none_identifier_raises_value_error(institution_db) -> None:
     with pytest.raises(ValueError, match="Identifier cannot be None"):
         await institution_db.get_institution(None)
 
 
 @pytest.mark.asyncio
-async def test_seed_institution_creates_all_once(institution_db):
+async def test_seed_institution_creates_all_once(institution_db) -> None:
     await institution_db.seed_institution()
     # Hard coded 3
     assert len(await institution_db.get_all_institutions()) == 3

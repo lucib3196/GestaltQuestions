@@ -34,7 +34,7 @@ class FileConverter:
         self,
         max_file_size_mb: int = MAX_FILE_SIZE_MB,
         content_type_mapping: dict[str, str] = CONTENT_TYPE_MAPPING,
-    ):
+    ) -> None:
         self.max_file_size = max_file_size_mb * 1024 * 1024
         self.content_type_mapping = content_type_mapping
 
@@ -83,8 +83,7 @@ class FileService:
     async def validate_file(self, file: UploadFile) -> UploadFile:
         if not file.filename:
             raise HTTPException(status_code=400, detail="There is no file")
-        file = await self.validate_file_size(file)
-        return file
+        return await self.validate_file_size(file)
 
     async def save_file(self, file: UploadFile, destination: str | Path) -> str:
         """
@@ -222,9 +221,7 @@ class FileService:
 
     async def is_image(self, filename: str) -> bool:
         mime_type, _ = mimetypes.guess_type(filename)
-        if mime_type and (mime_type in ALLOWED_IMAGE_EXTENSIONS):
-            return True
-        return False
+        return bool(mime_type and mime_type in ALLOWED_IMAGE_EXTENSIONS)
 
     # Helpers
     async def validate_file_size(self, file: UploadFile) -> UploadFile:

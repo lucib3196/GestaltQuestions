@@ -37,7 +37,7 @@ from src.utils import convert_uuid
 
 
 class QuestionDB:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         """
         Initialize the question data access layer.
 
@@ -94,12 +94,11 @@ class QuestionDB:
             A sequence of Question ORM instances owned by the creator.
         """
         try:
-            questions = self.session.exec(
+            return self.session.exec(
                 select(Question).where(
                     Question.created_by_id == convert_uuid(created_by_id)
                 )
             ).all()
-            return questions
         except SQLAlchemyError as e:
             self.session.rollback()
             logger.exception("[QuestionDB] Failed to retrieve questions by creator")
@@ -181,8 +180,7 @@ class QuestionDB:
             raise QuestionNotFoundError(f"Question '{qid}' was not found.")
         question_data = q.model_dump(exclude=set(self.metadata_rel))
         relationship_data = await self.get_question_relationship_data(q)
-        q = QuestionRead(**question_data, **relationship_data)
-        return q
+        return QuestionRead(**question_data, **relationship_data)
 
     async def update_question(
         self,
@@ -373,8 +371,7 @@ class QuestionDB:
         # Get the topics,languages and qtypes
         topics = await gdb.get_relationship_data(q, "topics", mode="list")
         qtypes = await gdb.get_relationship_data(q, "qTypes", mode="list")
-        relationship_data = {"topics": topics, "qtypes": qtypes}
-        return relationship_data
+        return {"topics": topics, "qtypes": qtypes}
 
     def validate_data(self, question: QuestionCreate | dict) -> QuestionCreate:
         """
@@ -416,8 +413,7 @@ class QuestionDB:
                 if isinstance(update, QuestionUpdate)
                 else update
             )
-            update = QuestionUpdate.model_validate(data)
+            return QuestionUpdate.model_validate(data)
 
-            return update
         except ValidationError as e:
             raise QuestionValidationError(f"Question payload is invalid: {e}") from e

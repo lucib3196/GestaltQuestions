@@ -10,7 +10,7 @@ router = APIRouter(prefix="/users/dev", tags=["users", "developer"])
 
 
 @router.post("/")
-async def check_status(dev_access: DeveloperAccess, current_user: CurrentUser):
+async def check_status(dev_access: DeveloperAccess, current_user: CurrentUser) -> None:
     access = await dev_access.has_developer_role(current_user)
     if not access.allowed:
         raise HTTPException(

@@ -7,7 +7,7 @@ from src.model.users import DeveloperProfile, User
 
 
 class QuestionQueryService:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         self.session = session
 
     async def get_table(self) -> list[QuestionTableRow]:
@@ -50,7 +50,7 @@ class QuestionQueryService:
         return self._parse_results(results)
 
     def _parse_results(self, results) -> list[QuestionTableRow]:
-        parsed = [
+        return [
             QuestionTableRow(
                 **{
                     "title": r[0],
@@ -65,4 +65,3 @@ class QuestionQueryService:
             )
             for r in results
         ]
-        return parsed

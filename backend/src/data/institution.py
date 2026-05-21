@@ -10,7 +10,7 @@ from src.utils import convert_uuid
 
 
 class InstitutionDB:
-    def __init__(self, session: SessionDep):
+    def __init__(self, session: SessionDep) -> None:
         self.session = session
 
     async def create_institution(
@@ -65,7 +65,7 @@ class InstitutionDB:
             logger.error(f"[DB] Could not get institution: {e}")
             raise
 
-    async def seed_institution(self):
+    async def seed_institution(self) -> None:
         institutions: dict[ValidInstitutions, str] = {
             ValidInstitutions.UCR: (
                 "University of California, Riverside. A public research university "

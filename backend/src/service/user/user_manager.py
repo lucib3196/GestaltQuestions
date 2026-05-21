@@ -17,7 +17,7 @@ class UserNotFound(Exception):
 
 
 class UserManager:
-    def __init__(self, udb: UserDB, rm: RoleDB, inst: InstitutionDB, session: Session):
+    def __init__(self, udb: UserDB, rm: RoleDB, inst: InstitutionDB, session: Session) -> None:
         """Initialize user and role repositories for the provided session."""
         self.udb = udb
         self.rm = rm

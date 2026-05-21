@@ -23,7 +23,7 @@ class QuestionStorageService:
     for reading, writing, deleting, and batch saving files.
     """
 
-    def __init__(self, storage: Storage):
+    def __init__(self, storage: Storage) -> None:
         """Initialize the storage service.
 
         Args:

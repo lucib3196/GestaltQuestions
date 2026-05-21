@@ -15,7 +15,7 @@ class FbStorage(Storage):
     def __init__(
         self,
         bucket,
-    ):
+    ) -> None:
         logger.info("[Firebase]: Intializing firebase storage ")
         self.bucket = storage.bucket(bucket)
         self.set_storage_type()
@@ -70,6 +70,7 @@ class FbStorage(Storage):
         if self._exists_file(key):
             return self.bucket.blob(key).download_as_bytes()
         logger.warn(f"Cannot read blob. {key} is not file")
+        return None
 
     def delete(self, target: str | Path | Blob) -> None:
         key = self._to_blob_key(target)
@@ -175,7 +176,7 @@ class FbStorage(Storage):
         except Exception as e:
             raise ValueError(f"Failed to move directory: {e}") from e
 
-    def _hard_delete(self):
+    def _hard_delete(self) -> None:
         blobs = self.bucket.list_blobs()
         for blob in blobs:
             blob.delete()

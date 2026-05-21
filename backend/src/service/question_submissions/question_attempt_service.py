@@ -1,15 +1,15 @@
 class QuestionAttemptService:
-    def start(self):
+    def start(self) -> None:
         pass
 
-    def submit(self):
+    def submit(self) -> None:
         pass
 
-    def evalutate(self):
+    def evalutate(self) -> None:
         pass
 
-    def get_attempt(self):
+    def get_attempt(self) -> None:
         pass
 
-    def get_attemps_for_user(self):
+    def get_attemps_for_user(self) -> None:
         pass

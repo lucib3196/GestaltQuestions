@@ -40,7 +40,7 @@ async def on_startup(app: FastAPI):
         raise ValueError(f"Failed to initialize app {e}") from e
 
 
-def add_routes(app: FastAPI, routes: list[APIRouter] = ALL_ROUTES):
+def add_routes(app: FastAPI, routes: list[APIRouter] = ALL_ROUTES) -> None:
     for r in routes:
         app.include_router(r)
 
@@ -66,7 +66,7 @@ def get_application(test_mode: bool = False):
 app = get_application()
 
 
-def main():
+def main() -> None:
     uvicorn.run(
         "src.main:app",
         host=os.getenv("HOST", "0.0.0.0"),

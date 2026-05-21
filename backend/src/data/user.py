@@ -15,7 +15,7 @@ from src.utils import convert_uuid
 
 
 class UserDB:
-    def __init__(self, session: SessionDep):
+    def __init__(self, session: SessionDep) -> None:
         self.session = session
 
     async def create_user(self, data: UserCreate | dict) -> User:
@@ -43,8 +43,7 @@ class UserDB:
         id = convert_uuid(id)
         try:
             stmt = select(User).where(User.id == id)
-            user = self.session.exec(stmt).first()
-            return user
+            return self.session.exec(stmt).first()
         except Exception as e:
             self.session.rollback()
             error_message = f"[DB] Failed to get user: {e}"
@@ -53,8 +52,7 @@ class UserDB:
     async def get_user_by_email(self, email: str) -> User | None:
         try:
             stmt = select(User).where(User.email == email.strip())
-            user = self.session.exec(stmt).first()
-            return user
+            return self.session.exec(stmt).first()
         except Exception as e:
             self.session.rollback()
             error_message = f"[DB] Failed to get user: {e}"

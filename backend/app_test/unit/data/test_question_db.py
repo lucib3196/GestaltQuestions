@@ -204,7 +204,7 @@ async def test_update_question_updates_scalar_and_relationship_fields(
     assert updated is not None
     assert isinstance(updated, QuestionRead)
     assert updated.title == "new title"
-    assert set(updated.topics) == set(["history", "math", "science"])
+    assert set(updated.topics) == {"history", "math", "science"}
 
 
 @pytest.mark.asyncio

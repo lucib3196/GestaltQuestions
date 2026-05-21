@@ -70,7 +70,7 @@ def make_user(user_mng: UserManager):
 @pytest.mark.parametrize("user_data", USERS)
 async def test_create_user_assigns_default_student_role(
     make_user, user_data, seed_roles
-):
+) -> None:
     user = await make_user(**user_data)
 
     assert user
@@ -82,8 +82,8 @@ async def test_create_user_assigns_default_student_role(
 @pytest.mark.parametrize("user_data", USERS)
 async def test_create_user_auth_failed(
     make_user, user_mng: UserManager, user_data, seed_roles, monkeypatch
-):
-    def fake_auth(*args, **kwargs):
+) -> None:
+    def fake_auth(*args, **kwargs) -> bool:
         return False  # triggers assert response failure
 
     monkeypatch.setattr(user_manager_module.auth, "create_user", fake_auth)
@@ -97,7 +97,7 @@ async def test_create_user_auth_failed(
 @pytest.mark.asyncio
 async def test_add_role_to_user_does_not_duplicate_role(
     make_user, seed_roles, user_mng
-):
+) -> None:
     user = await make_user()
 
     updated = await user_mng.add_role_to_user(UserRoles.STUDENT, user)
@@ -109,7 +109,7 @@ async def test_add_role_to_user_does_not_duplicate_role(
 @pytest.mark.asyncio
 async def test_set_user_institution_by_id(
     make_user, seed_roles, seed_institution, user_mng
-):
+) -> None:
     await seed_institution(ValidInstitutions.CPP)
     user = await make_user()
 
@@ -122,10 +122,10 @@ async def test_set_user_institution_by_id(
 @pytest.mark.asyncio
 async def test_delete_user_removes_db_user_and_calls_firebase(
     make_user, seed_roles, user_mng, monkeypatch
-):
+) -> None:
     deleted = {}
 
-    def fake_delete_user(uid):
+    def fake_delete_user(uid) -> None:
         deleted["uid"] = uid
 
     monkeypatch.setattr(user_manager_module.auth, "delete_user", fake_delete_user)

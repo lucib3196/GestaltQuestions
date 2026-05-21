@@ -1,5 +1,5 @@
 import os
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 
 import firebase_admin
@@ -32,10 +32,8 @@ def firebase_app_for_tests():
     app = initialize_firebase_app()
     yield app
 
-    try:
+    with suppress(Exception):
         firebase_admin.delete_app(app)
-    except Exception:
-        pass
     initialize_firebase_app.cache_clear()
 
 
@@ -54,7 +52,7 @@ def storage(request, firebase_app_for_tests):
 
 
 @pytest.fixture(autouse=True)
-def clean_cloud(storage):
+def clean_cloud(storage) -> None:
     if storage.get_storage_type() == "cloud":
         storage._hard_delete()
 

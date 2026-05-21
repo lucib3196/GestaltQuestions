@@ -6,7 +6,7 @@ from src.model.users import Role, UserRoles
 
 
 class RoleDB:
-    def __init__(self, session: SessionDep):
+    def __init__(self, session: SessionDep) -> None:
         self.session = session
 
     async def create_role(
@@ -41,10 +41,9 @@ class RoleDB:
         self,
         role: str,
     ) -> Role | None:
-        r = self.session.exec(select(Role).where(Role.name == role)).first()
-        return r
+        return self.session.exec(select(Role).where(Role.name == role)).first()
 
-    async def seed_roles(self):
+    async def seed_roles(self) -> None:
         roles: dict[UserRoles, str] = {
             UserRoles.ADMIN: (
                 "Full system access. Can manage users, roles, institutions, "

@@ -41,7 +41,7 @@ def developer_service(db_session, mocked_user_manager, mocked_storage):
 async def test_has_developer_role_returns_false_when_user_missing(
     developer_service: DeveloperAccessService,
     mocked_user_manager,
-):
+) -> None:
     mocked_user_manager.get_user.return_value = None
     result = await developer_service.has_developer_role("user-123")
     assert result == AccessDecision(False, "User 'user-123' not found")
@@ -55,7 +55,7 @@ async def test_has_developer_role_allows_developer_and_admin(
     developer_service: DeveloperAccessService,
     mocked_user_manager,
     role_name: str,
-):
+) -> None:
     mocked_user_manager.get_user.return_value = SimpleNamespace(id="user-123")
     mocked_user_manager.get_user_role.return_value = [SimpleNamespace(name=role_name)]
 
@@ -69,7 +69,7 @@ async def test_has_developer_role_allows_developer_and_admin(
 async def test_require_developer_access_raises_when_role_missing(
     developer_service: DeveloperAccessService,
     mocked_user_manager,
-):
+) -> None:
     mocked_user_manager.get_user.return_value = SimpleNamespace(id="user-123")
     mocked_user_manager.get_user_role.return_value = [
         SimpleNamespace(name=UserRoles.STUDENT.value)
@@ -83,7 +83,7 @@ async def test_require_developer_access_raises_when_role_missing(
 async def test_generate_storage_path_uses_institution_slug(
     developer_service: DeveloperAccessService,
     mocked_user_manager,
-):
+) -> None:
     mocked_user_manager.get_user.return_value = SimpleNamespace(id="abc-123")
     mocked_user_manager.get_user_inst.return_value = SimpleNamespace(
         name="Cool School @ West"
@@ -97,7 +97,7 @@ async def test_generate_storage_path_uses_institution_slug(
 async def test_generate_storage_path_falls_back_when_institution_missing(
     developer_service: DeveloperAccessService,
     mocked_user_manager,
-):
+) -> None:
     mocked_user_manager.get_user.return_value = SimpleNamespace(id="abc-123")
     mocked_user_manager.get_user_inst.return_value = None
 
@@ -111,7 +111,7 @@ async def test_set_developer_data_creates_profile_with_storage_path(
     developer_service: DeveloperAccessService,
     mocked_user_manager,
     db_session,
-):
+) -> None:
     user_id = uuid4()
     mocked_user_manager.get_user.return_value = SimpleNamespace(id=user_id)
     mocked_user_manager.get_user_role.return_value = [
@@ -131,7 +131,7 @@ async def test_get_developer_data_returns_existing_profile(
     developer_service: DeveloperAccessService,
     mocked_user_manager,
     db_session,
-):
+) -> None:
     user_id = uuid4()
     mocked_user_manager.get_user.return_value = SimpleNamespace(id=user_id)
     mocked_user_manager.get_user_role.return_value = [

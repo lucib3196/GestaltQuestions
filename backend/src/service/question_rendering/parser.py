@@ -16,7 +16,7 @@ class TemplateParser:
     def __init__(
         self,
         config: TemplateParserConfig | None = None,
-    ):
+    ) -> None:
         if not config:
             config = TemplateParserConfig()
         self.config = config

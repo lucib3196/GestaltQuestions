@@ -13,7 +13,7 @@ from src.utils import convert_uuid
 
 
 class ThreadDB:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         self.session = session
 
     async def create_thread(self, user_id: UUID | str, thread_id: UUID | str) -> Thread:
@@ -102,7 +102,7 @@ class ThreadDB:
 
 
 class MessageDB:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         self.session = session
 
     async def create_message(

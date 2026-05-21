@@ -1,7 +1,7 @@
 import json
 import os
 from collections.abc import Sequence
-from enum import Enum
+from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -22,7 +22,7 @@ from src.core.exceptions import (
 ROOT_PATH = Path(__file__).parents[2]
 
 
-class Environment(str, Enum):
+class Environment(StrEnum):
     TESTING = "testing"
     DEV = "dev"
     PRODUCTION = "production"
@@ -68,10 +68,7 @@ class AppSettings(BaseSettings):
         if v is None:
             return []
 
-        if isinstance(v, str):
-            raw_cors = [i.strip() for i in v.split(",")]
-        else:
-            raw_cors = v
+        raw_cors = [i.strip() for i in v.split(",")] if isinstance(v, str) else v
 
         normalized = []
         for r in raw_cors:
@@ -139,10 +136,9 @@ class AppSettings(BaseSettings):
 
 @lru_cache
 def get_settings() -> AppSettings:
-    app_settings = AppSettings(
+    return AppSettings(
         PROJECT_ROOT=ROOT_PATH,
     )
-    return app_settings
 
 
 @lru_cache

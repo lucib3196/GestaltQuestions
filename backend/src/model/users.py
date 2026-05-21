@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from .thread import Thread
 
 
-class UserRoles(str, Enum):
+class UserRoles(StrEnum):
     ADMIN = "admin"
     TEACHER = "teacher"
     DEVELOPER = "developer"

@@ -14,7 +14,7 @@ from src.core.logging import logger
 T = TypeVar("T", bound=SQLModel)
 
 
-async def get_or_create_many(
+async def get_or_create_many[T: SQLModel](
     session: SessionDep, model: type[T], names: Sequence[str], lookup_field="name"
 ) -> list[T]:
     if model is None:
@@ -108,8 +108,10 @@ def get_all_model_relationships(model: type[SQLModel]) -> dict[str, type[SQLMode
 
 
 def get_all_model_relationship_data(
-    model: SQLModel, base_model: type[SQLModel], excluded_relationship: list[str] = []
+    model: SQLModel, base_model: type[SQLModel], excluded_relationship: list[str] | None = None
 ) -> dict[str, Any]:
+    if excluded_relationship is None:
+        excluded_relationship = []
     all_relationships = get_all_model_relationships(base_model)
     data = {}
     for r in all_relationships:

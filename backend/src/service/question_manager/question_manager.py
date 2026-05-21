@@ -29,7 +29,7 @@ from .question_storage_service import QuestionStorageService
 class QuestionManager:
     """Coordinate question database records with their backing storage files."""
 
-    def __init__(self, storage: Storage, qdb: QuestionDB):
+    def __init__(self, storage: Storage, qdb: QuestionDB) -> None:
         """Create a manager backed by a storage implementation and question DB."""
         self.qdb = qdb
         self.storage = QuestionStorageService(storage)
@@ -130,10 +130,9 @@ class QuestionManager:
                 isAdaptive=question.isAdaptive,
             )
             qfiles = await self.get_question_filedata(qid)
-            q = await self.create_question(
+            return await self.create_question(
                 qdata, storage_base_path=storage_base_path, files=qfiles
             )
-            return q
         except QuestionManagerException:
             raise
         except Exception as e:
@@ -243,8 +242,7 @@ class QuestionManager:
         saved_files: list[str] = []
         try:
             storage_path = await self.get_storage_path(qid)
-            saved_files = self._save_files(storage_path, files, qid)
-            return saved_files
+            return self._save_files(storage_path, files, qid)
         except QuestionManagerException:
             self._rollback_saved_files(saved_files)
             raise

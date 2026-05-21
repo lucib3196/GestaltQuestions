@@ -70,10 +70,9 @@ async def get_user(
 @router.post("/login")
 async def login(payload: LoginRequest):
     decoded = auth.verify_id_token(payload.id_token)
-    user_read = UserRead(
+    return UserRead(
         email=decoded.get("email", None),
     )
-    return user_read
 
 
 @router.post("/get_current_user")
@@ -81,8 +80,7 @@ def get_current_user(
     token: FireBaseToken,
 ) -> UserRead:
     decoded = token
-    user_read = UserRead(email=decoded.get("email", None))
-    return user_read
+    return UserRead(email=decoded.get("email", None))
 
 
 # ---------- ID-based user management

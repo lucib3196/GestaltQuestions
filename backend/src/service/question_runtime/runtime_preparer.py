@@ -115,10 +115,7 @@ class RuntimePreparer:
 
         logger.debug("Building runtime without config. language=%s", language)
 
-        if language == "javascript":
-            entry = "server.js"
-        else:
-            entry = "server.py"
+        entry = "server.js" if language == "javascript" else "server.py"
 
         if entry not in files:
             raise InvalidFilePayloadError(

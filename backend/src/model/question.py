@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from .users import DeveloperProfile
 
 
-class Status(str, Enum):
+class Status(StrEnum):
     ARCHIVED = "archived"
     DRAFT = "draft"
     PUBLISHED = "published"

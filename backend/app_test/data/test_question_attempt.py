@@ -10,7 +10,7 @@ from src.core import logger
     ATTEMPTS,
     ids=lambda x: f"quiz={x['quiz_data']}-n={len(x['submissions'])}",
 )
-async def test_create_attempt(make_submission_attempt, attempt_case):
+async def test_create_attempt(make_submission_attempt, attempt_case) -> None:
     quiz_data = attempt_case["quiz_data"]
     submissions = attempt_case["submissions"]
     user = None
@@ -32,7 +32,7 @@ async def test_create_attempt(make_submission_attempt, attempt_case):
     ATTEMPTS,
     ids=lambda x: f"quiz={x['quiz_data']}-n={len(x['submissions'])}",
 )
-async def test_multiple_attempts(make_submission_attempt, attempt_case):
+async def test_multiple_attempts(make_submission_attempt, attempt_case) -> None:
     quiz_data = attempt_case["quiz_data"]
     submissions = attempt_case["submissions"]
     user = None
@@ -66,7 +66,7 @@ async def test_multiple_attempts(make_submission_attempt, attempt_case):
 )
 async def test_get_attempts_by_user(
     make_submission_attempt, attempt_case, qa_attempt_db
-):
+) -> None:
     quiz_data = attempt_case["quiz_data"]
     submissions = attempt_case["submissions"]
     user = None
@@ -83,7 +83,7 @@ async def test_get_attempts_by_user(
         results.append(attempt)
     attempts = await qa_attempt_db.get_attempts_by_user(user.id)  # type: ignore
     assert len(attempts) == len(submissions)
-    assert all([a.user_id == user.id for a in attempts])  # type: ignore
+    assert all(a.user_id == user.id for a in attempts)  # type: ignore
 
 
 @pytest.mark.asyncio
@@ -94,7 +94,7 @@ async def test_get_attempts_by_user(
 )
 async def test_get_attempts_by_question(
     make_submission_attempt, attempt_case, qa_attempt_db
-):
+) -> None:
     user = None
     question = None
     results = []
@@ -117,7 +117,7 @@ async def test_get_attempts_by_question(
 @pytest.mark.parametrize("scenario", SCENARIOS)
 async def test_student_question_scenarios(
     scenario, make_user, make_question, make_submission_attempt, qa_attempt_db
-):
+) -> None:
     logger.debug(f"\n{'*' * 25}\n")
     logger.debug("This is the scenario\n %s", scenario)
 

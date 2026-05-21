@@ -12,7 +12,7 @@ from src.utils import convert_uuid
 
 
 class QuestionAttemptDB:
-    def __init__(self, session: SessionDep):
+    def __init__(self, session: SessionDep) -> None:
         self.session = session
 
     async def create_attempt(

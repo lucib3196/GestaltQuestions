@@ -1,5 +1,5 @@
 # Standard library
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .users import User
 
 
-class ValidInstitutions(str, Enum):
+class ValidInstitutions(StrEnum):
     UCR = "University of California, Riverside"
     CPP = "California State Polytechnic University, Pomona"
     NORCO = "Norco College"

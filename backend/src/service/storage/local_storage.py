@@ -12,7 +12,7 @@ from .base import Storage
 
 
 class LocalStorage(Storage):
-    def __init__(self):
+    def __init__(self) -> None:
         self.set_storage_type()
 
     def set_storage_type(self) -> Literal["cloud"] | Literal["local"]:

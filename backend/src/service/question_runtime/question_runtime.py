@@ -21,7 +21,7 @@ class QuestionRunTimeException(BaseException):
 
 
 class QuestionRunTime:
-    def __init__(self, base_url: str | None = None):
+    def __init__(self, base_url: str | None = None) -> None:
         if not base_url:
             raise QuestionRunTimeException(
                 "Sandbox url must be set for runtime excecution"

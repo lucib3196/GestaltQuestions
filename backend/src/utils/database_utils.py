@@ -29,6 +29,7 @@ def pick_related_label_col(target_cls):
         return target_cls.name
     if hasattr(target_cls, "title"):
         return target_cls.title
+    return None
 
 
 def string_condition(col, raw_val: str, partial: bool = True):
@@ -46,10 +47,7 @@ def normalize_kwargs(kwargs: dict):
     for key, value in kwargs.items():
         if isinstance(value, list):
             for v in value:
-                if isinstance(v, dict):
-                    f = [v.get("name")]
-                else:
-                    f = [v]
+                f = [v.get("name")] if isinstance(v, dict) else [v]
 
                 normalized[key] = f
 

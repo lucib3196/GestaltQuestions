@@ -45,7 +45,7 @@ class DeveloperQuestionService:
         session: Session,
         developer_access: DeveloperAccessService,
         question_manager: QuestionManager,
-    ):
+    ) -> None:
 
         self.developer_access = developer_access
         self.session = session
@@ -179,10 +179,9 @@ class DeveloperQuestionService:
             logger.debug("Listing questions for developer user %s", user_id)
             if method == "default":
                 return user.created_questions
-            results = await asyncio.gather(
+            return await asyncio.gather(
                 *(self.qmng.qdb.get_question_data(q.id) for q in user.created_questions)
             )
-            return results
         except DeveloperQuestionServiceError:
             raise
         except SQLAlchemyError as e:
@@ -230,7 +229,7 @@ class DeveloperQuestionService:
     ) -> dict[str, bytes | bytearray]:
         try:
             qfiles = await self.get_question_filedata(user_id, qid)
-            file_payload: dict[str, bytes | bytearray] = dict()
+            file_payload: dict[str, bytes | bytearray] = {}
             for f in qfiles:
                 content = f.content
                 if isinstance(content, str):

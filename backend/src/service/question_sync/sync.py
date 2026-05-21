@@ -32,7 +32,7 @@ class SyncBase:
         qdb: QuestionDB,
         setup: SyncSetup | None = None,
         flags: Sequence[str] | None = None,
-    ):
+    ) -> None:
         self.storage = storage
         self.qdb = qdb
         if setup is not None:
@@ -53,7 +53,7 @@ class QuestionSyncNew(SyncBase):
         qdb: QuestionDB,
         flags: Sequence[str] | None = None,
         setup: SyncSetup | None = None,
-    ):
+    ) -> None:
         """Initialize sync service with storage, database, and metadata filename flags."""
         super().__init__(storage=storage, qdb=qdb, setup=setup, flags=flags)
 
@@ -81,10 +81,9 @@ class QuestionSyncNew(SyncBase):
                     append_valid_question(meta)
             logger.debug(f"These are the valid questions {valid_questions}")
 
-            results = await asyncio.gather(
+            return await asyncio.gather(
                 *[self.get_question_status(q, m) for q, m in valid_questions]
             )
-            return results
 
         except Exception as e:
             raise ValueError(f"[QSync] Failed to check question {e}") from e
@@ -100,7 +99,7 @@ class QuestionSyncNew(SyncBase):
         )
 
         categorized = defaultdict(list)
-        for original, result in zip(unsynced, synced_results):
+        for original, result in zip(unsynced, synced_results, strict=False):
             categorized[result.status].append(original.question_name)
         success_count = len(categorized.get("success", []))
         failed_count = sum(len(v) for k, v in categorized.items() if k != "success")
@@ -299,7 +298,7 @@ class QuestionSyncNew(SyncBase):
         )
 
         categorized = defaultdict(list)
-        for question, status in zip(all_questions, prune_status):
+        for question, status in zip(all_questions, prune_status, strict=False):
             categorized[status].append(getattr(question, "title", "unknown"))
 
         deleted_count = len(categorized.get("deleted", []))
