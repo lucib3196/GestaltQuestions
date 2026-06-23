@@ -20,12 +20,9 @@ function App() {
             <Route path="/account" element={<AccountPage />} />
 
             <Route path="/questions" element={<Questions />} />
-
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/questions/:qid" element={<GeneralQuestionRender />} />
 
             {/* Non User Specific */}
-
-            <Route path="questions/:qid" element={<GeneralQuestionRender />} />
 
             {/* Developer Only Routes */}
             <Route element={<RequireRole allow={["admin", "developer"]} />}>
@@ -38,6 +35,8 @@ function App() {
                 <Route path="chat" element={<StreamChat />} />
               </Route>
             </Route>
+
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>
