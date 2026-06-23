@@ -10,12 +10,12 @@ from src.model.users import DeveloperProfile, UserRoles
 from src.service.storage.base import Storage
 from src.utils.database_utils import convert_uuid
 
-from .user_manager import UserManager
 from .exceptions import (
     DeveloperAccessDenied,
     DeveloperProfileError,
     DeveloperProfileNotSet,
 )
+from .user_manager import UserManager
 
 
 @dataclass
@@ -25,7 +25,9 @@ class AccessDecision:
 
 
 class DeveloperAccessService:
-    def __init__(self, user_manager: UserManager, storage: Storage, session: Session):
+    def __init__(
+        self, user_manager: UserManager, storage: Storage, session: Session
+    ) -> None:
         self.user_mng = user_manager
         self.session = session
 

@@ -2,27 +2,26 @@
 import asyncio
 import json
 from collections import defaultdict
+from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
-from typing import Literal, Sequence, Tuple, Optional, List
+from typing import Literal
 
 from pydantic import ValidationError
 
-
-from src.core import logger
+from src.app_types.general import STORAGE_TYPE
 from src.core.logging import logger
-from src.data.question import QuestionDB, QuestionData
-from src.model.question import Question
+from src.data.question import QuestionDB
+from src.model.question import Question, QuestionRead
 from src.service.question_sync.models import (
-    SyncMetrics,
-    SyncSetup,
     DEFAULT_SYNC_FLAGS,
-    UnsyncedQuestion,
     FolderCheckMetrics,
     QuestionSyncMinimal,
+    SyncMetrics,
     SyncResponse,
+    SyncSetup,
+    UnsyncedQuestion,
 )
 from src.service.storage.local_storage import Storage
-from src.app_types.general import STORAGE_TYPE
 from src.utils import to_serializable
 
 
@@ -33,7 +32,7 @@ class SyncBase:
         qdb: QuestionDB,
         setup: SyncSetup | None = None,
         flags: Sequence[str] | None = None,
-    ):
+    ) -> None:
         self.storage = storage
         self.qdb = qdb
         if setup is not None:
@@ -54,20 +53,20 @@ class QuestionSyncNew(SyncBase):
         qdb: QuestionDB,
         flags: Sequence[str] | None = None,
         setup: SyncSetup | None = None,
-    ):
+    ) -> None:
         """Initialize sync service with storage, database, and metadata filename flags."""
         super().__init__(storage=storage, qdb=qdb, setup=setup, flags=flags)
 
     async def check_unsync(
         self, target: str, recursive: bool = False
-    ) -> List[UnsyncedQuestion]:
+    ) -> list[UnsyncedQuestion]:
         """Collect sync status for all question directories found under `target`."""
         if recursive:
             raise NotImplementedError("Recursive for syncing not yet resolved")
 
         try:
             data = self.storage.list(target, recursive=True)
-            valid_questions: List[Tuple[str, str]] = []
+            valid_questions: list[tuple[str, str]] = []
             append_valid_question = valid_questions.append
             resolve_metadata = self._resolve_metadata
             is_dir = self.storage.is_dir
@@ -82,13 +81,12 @@ class QuestionSyncNew(SyncBase):
                     append_valid_question(meta)
             logger.debug(f"These are the valid questions {valid_questions}")
 
-            results = await asyncio.gather(
+            return await asyncio.gather(
                 *[self.get_question_status(q, m) for q, m in valid_questions]
             )
-            return results
 
         except Exception as e:
-            raise ValueError(f"[QSync] Failed to check question {e}")
+            raise ValueError(f"[QSync] Failed to check question {e}") from e
 
     async def sync_all_questions(
         self, target: str, storage_type: STORAGE_TYPE, recursive: bool = False
@@ -101,7 +99,7 @@ class QuestionSyncNew(SyncBase):
         )
 
         categorized = defaultdict(list)
-        for original, result in zip(unsynced, synced_results):
+        for original, result in zip(unsynced, synced_results, strict=False):
             categorized[result.status].append(original.question_name)
         success_count = len(categorized.get("success", []))
         failed_count = sum(len(v) for k, v in categorized.items() if k != "success")
@@ -129,7 +127,7 @@ class QuestionSyncNew(SyncBase):
         # Try to validate the data with the question data
         try:
             metadata = json.loads(uq.metadata)
-            validated = QuestionData.model_validate(metadata)
+            validated = QuestionRead.model_validate(metadata)
         except json.JSONDecodeError as e:
             detail = f"Invalid metadata JSON for `{uq.question_name or 'unknown question'}`: {e}"
             logger.error(detail)
@@ -285,7 +283,7 @@ class QuestionSyncNew(SyncBase):
         try:
             all_questions = await self.qdb.get_all_questions(offset=0, limit=1000)
         except Exception as e:
-            raise ValueError(f"[QSync] Failed to fetch questions for prune: {e}")
+            raise ValueError(f"[QSync] Failed to fetch questions for prune: {e}") from e
 
         if not all_questions:
             return FolderCheckMetrics(
@@ -293,11 +291,14 @@ class QuestionSyncNew(SyncBase):
             )
 
         prune_status = await asyncio.gather(
-            *[self.prune_single(q, storage_mode=storage_mode, target=target) for q in all_questions]  # type: ignore[arg-type]
+            *[
+                self.prune_single(q, storage_mode=storage_mode, target=target)
+                for q in all_questions
+            ]  # type: ignore[arg-type]
         )
 
         categorized = defaultdict(list)
-        for question, status in zip(all_questions, prune_status):
+        for question, status in zip(all_questions, prune_status, strict=False):
             categorized[status].append(getattr(question, "title", "unknown"))
 
         deleted_count = len(categorized.get("deleted", []))
@@ -347,19 +348,16 @@ class QuestionSyncNew(SyncBase):
             )
             return "bug"
 
-    def _normalize_content(
-        self, content: str | bytes | dict | bytearray
-    ) -> Optional[str]:
+    def _normalize_content(self, content: str | bytes | dict | bytearray) -> str | None:
         """Normalize storage-read metadata into a JSON string when possible."""
         try:
             if isinstance(content, str):
                 return content
-            elif isinstance(content, (bytes, bytearray)):
+            if isinstance(content, (bytes, bytearray)):
                 return content.decode()
-            elif isinstance(content, (dict)):
+            if isinstance(content, (dict)):
                 return json.dumps(content)
-            else:
-                raise TypeError(f"[QSync] Content is invalid type {type(content)}")
+            raise TypeError(f"[QSync] Content is invalid type {type(content)}")
         except Exception as e:
             logger.error(
                 f"[QSync] Failed to normalize content in  metadata in {content}: {e}"

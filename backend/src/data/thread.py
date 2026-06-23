@@ -1,23 +1,19 @@
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
-from sqlmodel import Session, select
-from sqlalchemy.exc import SQLAlchemyError
-from uuid import UUID
-
-from sqlmodel import Session, select
-from sqlalchemy.exc import SQLAlchemyError
-from src.model.thread import Thread, Message
-from src.core.logging import logger
-from src.utils import convert_uuid
-from typing import Dict, Any
-from typing import List
 from fastapi import HTTPException
+from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import Session, select
 from starlette import status
+
+from src.core.logging import logger
+from src.model.thread import Message, Thread
+from src.utils import convert_uuid
 
 
 class ThreadDB:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         self.session = session
 
     async def create_thread(self, user_id: UUID | str, thread_id: UUID | str) -> Thread:
@@ -35,7 +31,7 @@ class ThreadDB:
             self.session.rollback()
             message = f"[ThreadDB] failed to create thread {e}"
             logger.error(message)
-            raise ValueError(message)
+            raise ValueError(message) from e
 
     async def get_thread(self, id: UUID) -> Thread:
         try:
@@ -49,9 +45,11 @@ class ThreadDB:
             self.session.rollback()
             message = f"[ThreadDB] failed to get thread {e}"
             logger.error(message)
-            raise ValueError(message)
+            raise ValueError(message) from e
 
-    async def get_thread_for_user(self, user_id: UUID | str, thread_id: UUID | str) -> Thread:
+    async def get_thread_for_user(
+        self, user_id: UUID | str, thread_id: UUID | str
+    ) -> Thread:
         try:
             stmt = select(Thread).where(
                 Thread.id == convert_uuid(thread_id),
@@ -70,7 +68,7 @@ class ThreadDB:
             self.session.rollback()
             message = f"[ThreadDB] failed to get user thread {e}"
             logger.error(message)
-            raise ValueError(message)
+            raise ValueError(message) from e
 
     async def list_threads_for_user(
         self,
@@ -84,7 +82,7 @@ class ThreadDB:
             self.session.rollback()
             message = f"[ThreadDB] failed to list threads {e}"
             logger.error(message)
-            raise ValueError(message)
+            raise ValueError(message) from e
 
     async def touch_updated_at(self, id: UUID | str) -> Thread:
         """Bump updated_at so this thread sorts as 'most recent'."""
@@ -100,21 +98,20 @@ class ThreadDB:
             self.session.rollback()
             message = f"[ThreadDB] failed to update thread timestamp {e}"
             logger.error(message)
-            raise ValueError(message)
+            raise ValueError(message) from e
 
 
 class MessageDB:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         self.session = session
 
     async def create_message(
         self,
         thread_id: UUID | str,
         role: str,
-        content: List[Dict[str, Any]],
+        content: list[dict[str, Any]],
     ) -> Message:
         try:
-
             msg_orm = Message(
                 thread_id=convert_uuid(thread_id),
                 role=role,
@@ -129,7 +126,7 @@ class MessageDB:
             self.session.rollback()
             message = f"[MessageDB] failed to create message {e}"
             logger.error(message)
-            raise ValueError(message)
+            raise ValueError(message) from e
 
     async def get_message(self, id: UUID) -> Message:
         try:
@@ -141,7 +138,7 @@ class MessageDB:
             self.session.rollback()
             message = f"[MessageDB] failed to get message {e}"
             logger.error(message)
-            raise ValueError(message)
+            raise ValueError(message) from e
 
     async def list_messages(self, thread_id: UUID) -> list[Message]:
         try:
@@ -155,7 +152,7 @@ class MessageDB:
             self.session.rollback()
             message = f"[MessageDB] failed to list messages {e}"
             logger.error(message)
-            raise ValueError(message)
+            raise ValueError(message) from e
 
     async def list_messages_for_thread_for_user(
         self, thread_id: UUID | str, user_id: UUID | str
@@ -175,4 +172,4 @@ class MessageDB:
             self.session.rollback()
             message = f"[MessageDB] failed to list user thread messages {e}"
             logger.error(message)
-            raise ValueError(message)
+            raise ValueError(message) from e

@@ -1,12 +1,13 @@
+from collections.abc import Sequence
+
 from fastapi import APIRouter, HTTPException
 from starlette import status
-from typing import Sequence
-from src.model.question import Question, QuestionFilter
-from fastapi import APIRouter, HTTPException
-from src.web.dependencies import QuestionDBDependency, QuestionQueryDependency
+
 from src.app_types.general import ID
-from src.model.question import QuestionRead, QuestionTableRow, QuestionFilter
 from src.core.logging import logger
+from src.model.question import Question, QuestionFilter, QuestionRead, QuestionTableRow
+from src.web.dependencies import QuestionDBDependency, QuestionQueryDependency
+
 router = APIRouter(
     prefix="/questions",
     tags=[
@@ -39,7 +40,9 @@ async def get_question(qid: ID, qdb: QuestionDBDependency) -> Question:
             )
         return question
     except Exception as e:
-        raise HTTPException(status_code=404, detail=f"Failed to get question {e}")
+        raise HTTPException(
+            status_code=404, detail=f"Failed to get question {e}"
+        ) from e
 
 
 @router.get("/{offset:int}/{limit:int}")
@@ -52,7 +55,7 @@ async def get_all_questions(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to get all questions {e}",
-        )
+        ) from e
 
 
 @router.post("/filter")
@@ -66,4 +69,4 @@ async def filter_questions(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to filter questions {e}",
-        )
+        ) from e

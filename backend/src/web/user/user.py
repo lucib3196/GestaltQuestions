@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from firebase_admin import auth
 from pydantic import BaseModel
-
 from starlette import status
 
 from src.app_types.general import ID
@@ -15,8 +14,9 @@ from src.model.users import (
     UserRead,
     UserRoleResponse,
 )
-from .dependencies import UserManagerDependeny, FireBaseToken, CurrentUser
 from src.service.user.user_manager import UserNotFound
+
+from .dependencies import CurrentUser, FireBaseToken, UserManagerDependeny
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -47,7 +47,7 @@ async def create_user(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occured while creating the user {e}",
-        )
+        ) from e
 
 
 @router.get("/")
@@ -59,21 +59,20 @@ async def get_user(
     except UserNotFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
-    except Exception as e:
+        ) from None
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve user information",
-        )
+        ) from None
 
 
 @router.post("/login")
 async def login(payload: LoginRequest):
     decoded = auth.verify_id_token(payload.id_token)
-    user_read = UserRead(
+    return UserRead(
         email=decoded.get("email", None),
     )
-    return user_read
 
 
 @router.post("/get_current_user")
@@ -81,8 +80,7 @@ def get_current_user(
     token: FireBaseToken,
 ) -> UserRead:
     decoded = token
-    user_read = UserRead(email=decoded.get("email", None))
-    return user_read
+    return UserRead(email=decoded.get("email", None))
 
 
 # ---------- ID-based user management
@@ -113,7 +111,7 @@ async def get_user_by_id(user_manager: UserManagerDependeny, id: ID) -> User | N
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve user '{id}': {e}",
-        )
+        ) from e
 
 
 @router.delete("/{id}")
@@ -139,7 +137,7 @@ async def delete_user_by_id(user_manager: UserManagerDependeny, id: ID):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to delete user '{id}': {e}",
-        )
+        ) from e
 
 
 @router.get("/{id}/roles")
@@ -167,7 +165,7 @@ async def get_user_roles_by_id(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve roles for user '{id}': {e}",
-        )
+        ) from e
 
 
 @router.post("/{id}/roles")
@@ -195,13 +193,13 @@ async def add_user_role(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid role update for user '{id}': {e}",
-        )
+        ) from e
     except Exception as e:
         logger.exception("Failed to add role '%s' to user id='%s'", payload.role, id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to add role for user '{id}': {e}",
-        )
+        ) from e
 
 
 @router.get("/{id}/institution")
@@ -229,7 +227,7 @@ async def get_institution_by_id(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve institution for user '{id}': {e}",
-        )
+        ) from e
 
 
 @router.post("/{id}/institution")
@@ -259,7 +257,7 @@ async def add_user_inst(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid institution update for user '{id}': {e}",
-        )
+        ) from e
     except Exception as e:
         logger.exception(
             "Failed to set institution '%s' for user id='%s'",
@@ -269,4 +267,4 @@ async def add_user_inst(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to set institution for user '{id}': {e}",
-        )
+        ) from e

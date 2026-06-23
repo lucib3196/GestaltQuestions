@@ -1,11 +1,9 @@
+import json
 from typing import Literal
+
 import pytest
 
-
-from src.core import logger
-from src.utils import *
-
-
+from src.utils.normalization_utils import normalize_content, to_serializable
 
 
 @pytest.fixture
@@ -23,14 +21,13 @@ def retrieve_single_file(client, qid, filename):
     resp = client.get(f"/questions/{qid}/files/{filename}")
     assert resp.status_code == 200, resp.text
     response_data = resp.json()
-    
+
     return normalize_content(response_data)
 
 
-def retrieve_files(client, qid, route_arg: Literal["files", "files_data"]):
+def retrieve_files(client, qid, route_arg: Literal["files", "files_data"]) -> None:
     resp = client.get(f"/questions/{qid}/{route_arg}")
     assert resp.status_code == 200, resp.text
-    body = resp.json()
 
 
 # ----------------------------------------------------------------------
@@ -39,7 +36,7 @@ def retrieve_files(client, qid, route_arg: Literal["files", "files_data"]):
 
 
 @pytest.fixture
-def create_multiple_question(test_client, all_question_payloads):
+def create_multiple_question(test_client, all_question_payloads) -> None:
     """Ensure multiple question payloads can be created sequentially."""
     for p in all_question_payloads:
         serializable = to_serializable(p)

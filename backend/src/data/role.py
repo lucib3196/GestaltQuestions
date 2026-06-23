@@ -1,21 +1,19 @@
-from typing import Dict, Optional
-
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
-from src.core import logger, SessionDep
+from src.core import SessionDep, logger
 from src.model.users import Role, UserRoles
 
 
 class RoleDB:
-    def __init__(self, session: SessionDep):
+    def __init__(self, session: SessionDep) -> None:
         self.session = session
 
     async def create_role(
         self,
         role: UserRoles,
         description: str | None = "",
-    ) -> Optional[Role]:
+    ) -> Role | None:
         try:
             r = Role(name=role.value, description=description)
             self.session.add(r)
@@ -43,11 +41,10 @@ class RoleDB:
         self,
         role: str,
     ) -> Role | None:
-        r = self.session.exec(select(Role).where(Role.name == role)).first()
-        return r
+        return self.session.exec(select(Role).where(Role.name == role)).first()
 
-    async def seed_roles(self):
-        roles: Dict[UserRoles, str] = {
+    async def seed_roles(self) -> None:
+        roles: dict[UserRoles, str] = {
             UserRoles.ADMIN: (
                 "Full system access. Can manage users, roles, institutions, "
                 "questions, grading, and all platform settings."

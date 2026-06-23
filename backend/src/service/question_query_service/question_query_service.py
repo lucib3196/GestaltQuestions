@@ -1,4 +1,5 @@
-from typing import List
+from sqlalchemy import func
+from sqlmodel import Session, select
 
 from src.model.institution import Institution
 from src.model.users import DeveloperProfile, User
@@ -8,10 +9,10 @@ from sqlalchemy import func
 
 
 class QuestionQueryService:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         self.session = session
 
-    async def get_table(self) -> List[QuestionTableRow]:
+    async def get_table(self) -> list[QuestionTableRow]:
         stmt = (
             select(
                 Question.title,
@@ -54,8 +55,8 @@ class QuestionQueryService:
         results = self.session.exec(stmt).all()
         return self._parse_results(results)
 
-    def _parse_results(self, results) -> List[QuestionTableRow]:
-        parsed = [
+    def _parse_results(self, results) -> list[QuestionTableRow]:
+        return [
             QuestionTableRow(
                 **{
                     "title": r[0],
@@ -70,4 +71,3 @@ class QuestionQueryService:
             )
             for r in results
         ]
-        return parsed

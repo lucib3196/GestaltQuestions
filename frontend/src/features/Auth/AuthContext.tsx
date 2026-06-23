@@ -12,8 +12,6 @@ export function useStateAuth() {
     const [userData, setUserData] = useState<UserRead | null>(null)
     const [loading, setLoading] = useState<boolean>(true);
 
-
-
     useEffect(() => {
         const unSubscribe = onAuthStateChanged(auth, (fbUser) => {
             async function handleUser() {

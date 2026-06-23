@@ -1,20 +1,17 @@
 from functools import lru_cache
 from typing import Annotated
+
 from fastapi import Depends
 
-
+from src.app_types.general import STORAGE_TYPE
 from src.core import SessionDep, logger
 from src.core.config import AppSettings, get_settings
 from src.data.question import QuestionDB
-from src.service.storage.firebase_storage import FbStorage
-from src.service.storage.local_storage import LocalStorage
-from src.service.question_manager.question_manager import QuestionManager
-from src.service.storage.local_storage import Storage
-from src.app_types.general import STORAGE_TYPE
-from src.data.institution import InstitutionDB
 from src.service.question_query_service.question_query_service import (
     QuestionQueryService,
 )
+from src.service.storage.firebase_storage import FbStorage
+from src.service.storage.local_storage import LocalStorage, Storage
 
 
 def get_app_settings() -> AppSettings:
@@ -33,9 +30,10 @@ def get_storage_type(
 StorageTypeDep = Annotated[STORAGE_TYPE, Depends(get_storage_type)]
 
 
-def get_local_base_path(settings: SettingDependency):
+def get_local_base_path(settings: SettingDependency) -> str | None:
     if settings == "local":
         return "questions"
+    return None
 
 
 LocalBaseDep = Annotated[str, Depends(get_local_base_path)]

@@ -1,6 +1,7 @@
 import shutil
+from collections.abc import Sequence
 from pathlib import Path
-from typing import List, Literal, Sequence, cast
+from typing import Literal, cast
 
 from google.cloud.storage.blob import Blob
 
@@ -9,9 +10,9 @@ from src.core.logging import logger
 
 from .base import Storage
 
-class LocalStorage(Storage):
 
-    def __init__(self):
+class LocalStorage(Storage):
+    def __init__(self) -> None:
         self.set_storage_type()
 
     def set_storage_type(self) -> Literal["cloud"] | Literal["local"]:
@@ -47,7 +48,7 @@ class LocalStorage(Storage):
     def write(
         self,
         target: str,
-        data: str | dict | List | bytes | bytearray,
+        data: str | dict | list | bytes | bytearray,
         *,
         overwrite: bool = True,
     ) -> str:
@@ -59,7 +60,7 @@ class LocalStorage(Storage):
         return storage_path
 
     def download(self, target: str) -> bytes:
-        raise NotImplemented("Cannot download question not implemented")
+        raise NotImplementedError("Cannot download question not implemented")
 
     def delete(self, target: str | Path | Blob) -> None:
         storage_path = self._to_storage_path(target)

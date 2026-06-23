@@ -1,0 +1,47 @@
+name: Backend Unit Test
+
+# Only triggers if there is a backend change
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.11, 3.12, 3.13]
+
+    env:
+      MODE: "testing"
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{matrix.python-version}}
+
+      # Install python dependencies
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+
+      - name: Install dependencies
+        run: poetry install
+        working-directory: ./backend
+
+      - name: Decode Firebase credentials
+        working-directory: ./backend
+        run: |
+          mkdir -p secrets
+          echo '${{ secrets.FIREBASE_JSON }}' > ${{vars.FIREBASE_JSON_PATH}}
+          cd secrets
+          ls -l
+
+      - name: Run Test
+        run: |
+          poetry run pytest app_test/unit
+        working-directory: ./backend

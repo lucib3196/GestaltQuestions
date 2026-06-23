@@ -1,5 +1,6 @@
+from collections.abc import Iterable, Sequence
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Literal, Sequence, Type, TypeVar
+from typing import Any, Literal, TypeVar
 
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
@@ -7,14 +8,15 @@ from sqlalchemy.inspection import inspect
 from sqlalchemy.orm.properties import RelationshipProperty
 from sqlmodel import SQLModel, select
 
-from src.core import SessionDep, logger
+from src.core.database_config import SessionDep
+from src.core.logging import logger
 
 T = TypeVar("T", bound=SQLModel)
 
 
 async def get_or_create_many(
-    session: SessionDep, model: Type[T], names: Sequence[str], lookup_field="name"
-) -> List[T]:
+    session: SessionDep, model: type[T], names: Sequence[str], lookup_field="name"
+) -> list[T]:
     if model is None:
         logger.error(f"MODEL PASSED: {model=} ({type(model)=})")
         raise RuntimeError("get_or_create_many received model=None")
@@ -39,7 +41,7 @@ async def get_or_create_many(
         logger.error(f"[DB] could not create {model} {e}")
         raise ValueError(
             f"[DB] failed to create or get many relationship {model} an error occured {e}"
-        )
+        ) from e
 
 
 NormalizeMode = Literal["auto", "list", "scalar"]
@@ -97,7 +99,7 @@ async def get_relationship_data(
     return value
 
 
-def get_all_model_relationships(model: Type[SQLModel]) -> Dict[str, Type[SQLModel]]:
+def get_all_model_relationships(model: type[SQLModel]) -> dict[str, type[SQLModel]]:
     mapper = inspect(model)
     relationships = {}
     for name, rel in mapper.relationships.items():
@@ -106,8 +108,12 @@ def get_all_model_relationships(model: Type[SQLModel]) -> Dict[str, Type[SQLMode
 
 
 def get_all_model_relationship_data(
-    model: SQLModel, base_model: Type[SQLModel], excluded_relationship: List[str] = []
-) -> Dict[str, Any]:
+    model: SQLModel,
+    base_model: type[SQLModel],
+    excluded_relationship: list[str] | None = None,
+) -> dict[str, Any]:
+    if excluded_relationship is None:
+        excluded_relationship = []
     all_relationships = get_all_model_relationships(base_model)
     data = {}
     for r in all_relationships:
@@ -119,17 +125,17 @@ def get_all_model_relationship_data(
     return data
 
 
-def is_relationship(model: Type[SQLModel], attr_name: str) -> bool:
+def is_relationship(model: type[SQLModel], attr_name: str) -> bool:
     """True if model.attr_name is a relationship."""
     try:
         prop = inspect(model).get_property(attr_name)
         return isinstance(prop, RelationshipProperty)
-    except Exception as e:
+    except Exception:
         return False
 
 
 def filter_conditional(
-    model: Type[SQLModel], col_key: str, value: Any, partial: bool = True
+    model: type[SQLModel], col_key: str, value: Any, partial: bool = True
 ):
     column = getattr(model, col_key)
 
@@ -145,6 +151,5 @@ def filter_conditional(
     if partial:
         # Case-insensitive partial match
         return func.lower(column).like(f"%{value.lower()}%")
-    else:
-        # Case-insensitive exact match
-        return func.lower(column) == value.lower()
+    # Case-insensitive exact match
+    return func.lower(column) == value.lower()

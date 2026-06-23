@@ -8,7 +8,6 @@ import type {
 export function toQuestionInstanceState(
   res: QuestionRunTimeResponse,
 ): Partial<QuestionInstanceState> {
-  console.log("Raw res", res.files)
   return {
     runInstanceId: String(res.instance),
     questionMeta: res.question_meta ?? null,

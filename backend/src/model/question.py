@@ -1,16 +1,19 @@
-from enum import Enum
-from typing import List, Optional, Sequence, TYPE_CHECKING
-from uuid import UUID, uuid4
+from collections.abc import Sequence
 from datetime import datetime
+from enum import StrEnum
+from typing import TYPE_CHECKING, Optional
+from uuid import UUID, uuid4
+
 from pydantic import BaseModel, ConfigDict, Field
-from sqlmodel import Field as SQLField, Relationship, SQLModel
+from sqlmodel import Field as SQLField
+from sqlmodel import Relationship, SQLModel
 
 # Base Models
 if TYPE_CHECKING:
     from .users import DeveloperProfile
 
 
-class Status(str, Enum):
+class Status(StrEnum):
     ARCHIVED = "archived"
     DRAFT = "draft"
     PUBLISHED = "published"
@@ -31,33 +34,33 @@ class QuestionCreate(QuestionRelationships):
 
 
 class QuestionUpdate(BaseModel):
-    title: Optional[str] = None
-    ai_generated: Optional[bool] = None
-    isAdaptive: Optional[bool] = None
-    topics: Optional[Sequence[str]] = None
-    qTypes: Optional[Sequence[str]] = None
-    status: Optional[Status] = None
+    title: str | None = None
+    ai_generated: bool | None = None
+    isAdaptive: bool | None = None
+    topics: Sequence[str] | None = None
+    qTypes: Sequence[str] | None = None
+    status: Status | None = None
 
     model_config = ConfigDict(extra="forbid")
 
 
 class QuestionRead(QuestionRelationships):
     id: UUID
-    title: Optional[str] = None
+    title: str | None = None
     ai_generated: bool
     isAdaptive: bool
-    storage_path: Optional[str] = None
+    storage_path: str | None = None
     storage_type: str
     status: Status
-    created_by_id: Optional[UUID] = None
+    created_by_id: UUID | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class QuestionInternalCreate(QuestionCreate):
-    storage_path: Optional[str] = None
+    storage_path: str | None = None
     storage_type: str = "cloud"
-    created_by_id: Optional[UUID] = None
+    created_by_id: UUID | None = None
 
 
 class UpdateFile(BaseModel):
@@ -68,7 +71,7 @@ class UpdateFile(BaseModel):
 
 class QuestionFilter(BaseModel):
     title: str
-    status: Optional[Status] = None
+    status: Status | None = None
 
 
 class QuestionTableRow(BaseModel):
@@ -110,26 +113,26 @@ class QuestionQTypeLink(SQLModel, table=True):
 
 class Question(SQLModel, table=True):
     id: UUID | None = SQLField(default_factory=uuid4, primary_key=True, index=True)
-    title: Optional[str] = SQLField(default=None, index=True)
+    title: str | None = SQLField(default=None, index=True)
 
     isAdaptive: bool = SQLField(default=False)
     ai_generated: bool = SQLField(default=False)
 
     storage_type: str = SQLField(default="cloud")
-    storage_path: Optional[str] = None
+    storage_path: str | None = None
 
     status: Status = SQLField(
         default=Status.DRAFT.name,
         sa_column_kwargs={"server_default": Status.DRAFT.name.upper()},
     )
 
-    created_by_id: Optional[UUID] = SQLField(
+    created_by_id: UUID | None = SQLField(
         default=None, foreign_key="developer_profile.id"
     )
-    topics: List["Topic"] = Relationship(
+    topics: list["Topic"] = Relationship(
         back_populates="questions", link_model=QuestionTopicLink
     )
-    qTypes: List["QuestionType"] = Relationship(
+    qTypes: list["QuestionType"] = Relationship(
         back_populates="questions",
         link_model=QuestionQTypeLink,
     )
@@ -137,8 +140,8 @@ class Question(SQLModel, table=True):
         back_populates="created_questions"
     )
 
-    created_at: Optional[datetime] = Field(default_factory=datetime.now)
-    updated_at: Optional[datetime] = Field(default_factory=datetime.now)
+    created_at: datetime | None = Field(default_factory=datetime.now)
+    updated_at: datetime | None = Field(default_factory=datetime.now)
 
 
 class Topic(SQLModel, table=True):
@@ -148,7 +151,7 @@ class Topic(SQLModel, table=True):
     name: str = SQLField(index=True, unique=True)
     description: str | None = SQLField(default=None)
 
-    questions: List[Question] = Relationship(
+    questions: list[Question] = Relationship(
         back_populates="topics",
         link_model=QuestionTopicLink,
     )
@@ -159,7 +162,7 @@ class QuestionType(SQLModel, table=True):
     id: UUID = SQLField(default_factory=uuid4, primary_key=True)
     name: str = SQLField(index=True, unique=True)
 
-    questions: List[Question] = Relationship(
+    questions: list[Question] = Relationship(
         back_populates="qTypes",
         link_model=QuestionQTypeLink,
     )

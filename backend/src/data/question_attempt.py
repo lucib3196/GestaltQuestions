@@ -1,4 +1,5 @@
-from typing import Any, Dict, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from sqlalchemy import desc
 from sqlalchemy.exc import SQLAlchemyError
@@ -11,15 +12,15 @@ from src.utils import convert_uuid
 
 
 class QuestionAttemptDB:
-    def __init__(self, session: SessionDep):
+    def __init__(self, session: SessionDep) -> None:
         self.session = session
 
     async def create_attempt(
         self,
         question_id: ID,
         user_id: ID,
-        quiz_data: Dict[str, Any],
-        submitted_answer: Dict[str, Any],
+        quiz_data: dict[str, Any],
+        submitted_answer: dict[str, Any],
     ) -> QuestionAttempt:
         attempt = QuestionAttempt(
             question_id=convert_uuid(question_id),

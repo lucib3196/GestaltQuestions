@@ -1,6 +1,7 @@
 import requests
 from fastapi import APIRouter, Body
 from pydantic import BaseModel
+
 from src.core.config import get_settings
 
 router = APIRouter(prefix="/users", tags=["health"])
@@ -18,7 +19,7 @@ def emulator_login(
             "email": "user@example.com",
             "password": "string",
         }
-    )
+    ),
 ):
     """Testing endpoint for login using password and email
 

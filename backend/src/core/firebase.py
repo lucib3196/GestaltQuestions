@@ -1,13 +1,15 @@
-from firebase_admin import credentials
-import firebase_admin
+import os
 from functools import lru_cache
-from src.core import get_settings
-from src.core import logger
+
+import firebase_admin
+from firebase_admin import credentials
+
+from .config import get_settings
+from .logging import logger
 from src.core.exceptions import FirebaseInitializationError, MissingConfigError
 
-import os
-
 app_settings = get_settings()
+
 if app_settings.FIREBASE_AUTH_EMULATOR_HOST:
     os.environ["FIREBASE_AUTH_EMULATOR_HOST"] = app_settings.FIREBASE_AUTH_EMULATOR_HOST
 if app_settings.STORAGE_EMULATOR_HOST:

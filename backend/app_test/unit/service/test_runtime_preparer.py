@@ -1,13 +1,15 @@
-from src.service.runtime_preparer.runtime_preparer import RuntimePreparer
-import pytest
 import json
-from src.service.runtime_preparer.models import Language
-from src.service.runtime_preparer.exceptions import (
+
+import pytest
+
+from src.service.question_runtime.exceptions import (
     ConfigurationError,
     InvalidEntryError,
     InvalidFilePayloadError,
     RuntimeResolutionError,
 )
+from src.service.question_runtime.models import Language
+from src.service.question_runtime.runtime_preparer import RuntimePreparer
 
 
 @pytest.fixture
@@ -186,7 +188,7 @@ def test_prepare_runtime_with_config_uses_requested_language(
     config_fixture: str,
     requested_language: Language,
     expected_entry: str,
-):
+) -> None:
     multi_runtime_files = request.getfixturevalue(config_fixture)
     runtime = runtime_preparer.prepare_runtime(
         multi_runtime_files, language=requested_language
@@ -201,7 +203,7 @@ def test_prepare_runtime_with_config_uses_requested_language(
 def test_prepare_runtime_with_config_uses_default_language(
     runtime_preparer: RuntimePreparer,
     multi_runtime_files: dict[str, str],
-):
+) -> None:
     runtime = runtime_preparer.prepare_runtime(multi_runtime_files)
 
     assert runtime.language == "python"
@@ -212,7 +214,7 @@ def test_prepare_runtime_with_config_uses_default_language(
 
 def test_prepare_runtime_with_config_raises_for_ambiguous_runtime_without_default(
     runtime_preparer: RuntimePreparer, multi_runtime_files_no_default
-):
+) -> None:
     with pytest.raises(RuntimeResolutionError, match="ambiguous"):
         runtime_preparer.prepare_runtime(multi_runtime_files_no_default)
 
@@ -229,7 +231,7 @@ def test_prepare_runtime_raises_for_missing_entry_file(
     runtime_preparer: RuntimePreparer,
     payload_fixture: str,
     expected_entry: str,
-):
+) -> None:
     files = request.getfixturevalue(payload_fixture)
 
     with pytest.raises(InvalidEntryError, match=expected_entry):
@@ -248,7 +250,7 @@ def test_prepare_runtime_with_config_raises_for_invalid_config_shape(
     request,
     runtime_preparer: RuntimePreparer,
     payload_fixture: str,
-):
+) -> None:
     files = request.getfixturevalue(payload_fixture)
 
     with pytest.raises(ConfigurationError, match="config.json"):
@@ -269,7 +271,7 @@ def test_prepare_runtime_without_config_uses_requested_language(
     requested_language: Language,
     expected_entry: str,
     payload_fixture: str,
-):
+) -> None:
     payload = request.getfixturevalue(payload_fixture)
 
     runtime = runtime_preparer.prepare_runtime(
@@ -294,7 +296,7 @@ def test_prepare_runtime_without_config_requires_language(
     request,
     runtime_preparer: RuntimePreparer,
     payload_fixture: str,
-):
+) -> None:
     payload = request.getfixturevalue(payload_fixture)
     with pytest.raises(
         RuntimeResolutionError, match="runtime language must be specified"
@@ -304,6 +306,6 @@ def test_prepare_runtime_without_config_requires_language(
 
 def test_prepare_runtime_raises_for_empty_file_payload(
     runtime_preparer: RuntimePreparer,
-):
+) -> None:
     with pytest.raises(InvalidFilePayloadError, match="File payload is empty"):
         runtime_preparer.prepare_runtime({}, language="python")

@@ -1,7 +1,7 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 
-def generate() -> Dict[str, Any]:
+def generate() -> dict[str, Any]:
     a = 1
     b = 2
     sum_val = a + b

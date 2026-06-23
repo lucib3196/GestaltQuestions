@@ -1,5 +1,5 @@
+import contextlib
 import os
-from pathlib import Path
 
 import firebase_admin
 import pytest
@@ -9,24 +9,21 @@ from app_test.unit.shared import MOCK_FILES, RENAME_TARGETS, TARGETS
 from src.core import get_settings
 from src.utils import normalize, normalize_newlines
 
-
 settings = get_settings()
 
 
 @pytest.fixture(scope="session")
 def firebase_app_for_tests():
-    assert os.environ.get(
-        "FIREBASE_AUTH_EMULATOR_HOST"
-    ), "Missing FIREBASE_AUTH_EMULATOR_HOST"
+    assert os.environ.get("FIREBASE_AUTH_EMULATOR_HOST"), (
+        "Missing FIREBASE_AUTH_EMULATOR_HOST"
+    )
     assert os.environ.get("STORAGE_EMULATOR_HOST"), "Missing STORAGE_EMULATOR_HOST"
 
     app = initialize_firebase_app()
     yield app
 
-    try:
+    with contextlib.suppress(Exception):
         firebase_admin.delete_app(app)
-    except Exception:
-        pass
     initialize_firebase_app.cache_clear()
 
 
@@ -45,7 +42,7 @@ def storage(request, firebase_app_for_tests):
 
 
 @pytest.fixture(autouse=True)
-def clean_cloud(storage):
+def clean_cloud(storage) -> None:
     if storage.get_storage_type() == "cloud":
         storage._hard_delete()
 
@@ -57,7 +54,7 @@ def _path_for_storage(storage, tmp_path, relative_path: str) -> str:
 
 
 @pytest.mark.parametrize("target", TARGETS)
-def test_create_dir_and_exists(storage, tmp_path, target):
+def test_create_dir_and_exists(storage, tmp_path, target) -> None:
     target_path = _path_for_storage(storage, tmp_path, target)
     created = storage.create_dir(target_path)
 
@@ -66,13 +63,13 @@ def test_create_dir_and_exists(storage, tmp_path, target):
 
 
 @pytest.mark.parametrize("target", TARGETS)
-def test_exists_false_for_missing_target(storage, tmp_path, target):
+def test_exists_false_for_missing_target(storage, tmp_path, target) -> None:
     target_path = _path_for_storage(storage, tmp_path, target)
     assert not storage.exists(target_path)
 
 
 @pytest.mark.parametrize("filename,content", MOCK_FILES)
-def test_write_and_read(storage, tmp_path, filename, content):
+def test_write_and_read(storage, tmp_path, filename, content) -> None:
     target = _path_for_storage(storage, tmp_path, f"questions/test/{filename}")
 
     storage.write(target, content, overwrite=True)
@@ -84,7 +81,7 @@ def test_write_and_read(storage, tmp_path, filename, content):
 
 
 @pytest.mark.parametrize("filename,content", MOCK_FILES)
-def test_delete(storage, tmp_path, filename, content):
+def test_delete(storage, tmp_path, filename, content) -> None:
     target = _path_for_storage(storage, tmp_path, f"questions/delete/{filename}")
 
     storage.write(target, content, overwrite=True)
@@ -102,7 +99,7 @@ FILE_RENAME_CASES = [
 
 
 @pytest.mark.parametrize("source,destination", FILE_RENAME_CASES)
-def test_copy_file(source, destination, storage, tmp_path):
+def test_copy_file(source, destination, storage, tmp_path) -> None:
     source_path = _path_for_storage(storage, tmp_path, source)
     destination_path = _path_for_storage(storage, tmp_path, destination)
 
@@ -114,7 +111,7 @@ def test_copy_file(source, destination, storage, tmp_path):
 
 
 @pytest.mark.parametrize("source,destination", FILE_RENAME_CASES)
-def test_move_file_local_only(source, destination, storage, tmp_path):
+def test_move_file_local_only(source, destination, storage, tmp_path) -> None:
     if storage.get_storage_type() == "cloud":
         pytest.skip("Cloud move is directory-oriented in current implementation.")
 

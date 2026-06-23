@@ -1,7 +1,9 @@
-from typing import Sequence, Literal
-from pydantic import BaseModel
-from src.model.question import Question
+from collections.abc import Sequence
+from typing import Literal
 
+from pydantic import BaseModel
+
+from src.model.question import Question
 
 SyncStatus = Literal[
     "missing_metadata",  # metadata.json not found
@@ -26,9 +28,6 @@ class SyncMetrics(BaseModel):
     total_found: int
     synced: int
     failed: int
-
-
-
 
 
 class FolderCheckMetrics(BaseModel):

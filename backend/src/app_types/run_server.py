@@ -1,11 +1,13 @@
-from pydantic import BaseModel, Field
-from typing import Literal, Sequence, Annotated, Dict
-from src.model.question_attempt import QuizData
+from collections.abc import Sequence
+from typing import Annotated, Literal
 
+from pydantic import BaseModel, Field
+
+from src.model.question_attempt import QuizData
 
 AllowedServer = Literal["server.js", "server.py"]
 AllowedLanguages = Literal["python", "javascript"]
-MappingServer: Dict[AllowedLanguages, AllowedServer] = {
+MappingServer: dict[AllowedLanguages, AllowedServer] = {
     "python": "server.py",
     "javascript": "server.js",
 }

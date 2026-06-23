@@ -1,14 +1,13 @@
+import contextvars
 import logging
 import os
-import contextvars
-from dotenv import load_dotenv
 
 in_test_ctx = contextvars.ContextVar("in_test", default=False)
 
 
 # Define a class for Capturing Test Logs
 class TestFilter(logging.Filter):
-    def filter(self, record):
+    def filter(self, record) -> bool:
         record.in_test = in_test_ctx.get()
         return True
 

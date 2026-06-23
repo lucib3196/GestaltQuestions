@@ -1,15 +1,16 @@
-from typing import Dict, Union, overload
+from typing import overload
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select
 
 from src.app_types.general import ID
 from src.core import SessionDep, logger
+from src.model.institution import Institution, ValidInstitutions
 from src.utils import convert_uuid
 
-from src.model.institution import Institution, ValidInstitutions
+
 class InstitutionDB:
-    def __init__(self, session: SessionDep):
+    def __init__(self, session: SessionDep) -> None:
         self.session = session
 
     async def create_institution(
@@ -46,7 +47,7 @@ class InstitutionDB:
     # ---------- REAL IMPLEMENTATION ----------
     async def get_institution(
         self,
-        identifier: Union[ID, ValidInstitutions],
+        identifier: ID | ValidInstitutions,
     ) -> Institution | None:
         try:
             if isinstance(identifier, ValidInstitutions):
@@ -64,8 +65,8 @@ class InstitutionDB:
             logger.error(f"[DB] Could not get institution: {e}")
             raise
 
-    async def seed_institution(self):
-        institutions: Dict[ValidInstitutions, str] = {
+    async def seed_institution(self) -> None:
+        institutions: dict[ValidInstitutions, str] = {
             ValidInstitutions.UCR: (
                 "University of California, Riverside. A public research university "
                 "focused on undergraduate and graduate education, research, and innovation."

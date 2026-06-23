@@ -1,12 +1,15 @@
-import pytest
-import pytest_asyncio
-from src.model.question import Question
-from src.web.service import refactor_question_storage_service as qs
-from src.types import FileData
-from src.core.config import get_settings
 from pathlib import Path
 
+import pytest
+import pytest_asyncio
+from src.types import FileData
+from src.web.service import refactor_question_storage_service as qs
+
+from src.core.config import get_settings
+from src.model.question import Question
+
 settings = get_settings()
+
 
 @pytest.fixture
 def set_testing_directory(tmp_path: Path):

@@ -1,3 +1,5 @@
+from src.service.file_service.utils import safe_dir_name
+
 from .conversion_utils import (
     normalize_json_content,
     serialized_to_dict,
@@ -25,7 +27,6 @@ from .normalization_utils import (
     to_serializable,
 )
 from .test_utils import prepare_file_uploads
-from src.service.file_service.utils import safe_dir_name
 
 __all__ = [
     "convert_uuid",

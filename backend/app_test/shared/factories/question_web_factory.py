@@ -1,9 +1,10 @@
-import pytest
-from src.model.question import QuestionData
-from uuid import UUID
-from pathlib import Path
 import mimetypes
-from src.model.question import Question
+from pathlib import Path
+from uuid import UUID
+
+import pytest
+
+from src.model.question import Question, QuestionData
 
 ASSETS_DIR = Path("app_test/shared/test_assets/uploads")
 
@@ -61,7 +62,7 @@ def make_question_with_files(api_client):
                 data={"question_data": data.model_dump_json()},
             )
 
-            return response,file_paths
+            return response, file_paths
 
         finally:
             for f in opened_files:
@@ -104,11 +105,10 @@ def make_upload_files_to_question(
                     )
                 )
 
-            response = api_client.post(
-                f"/questions/files/{str(question.id)}?auto_handle_images={str(auto_handle_images).lower()}",
+            return api_client.post(
+                f"/questions/files/{question.id!s}?auto_handle_images={str(auto_handle_images).lower()}",
                 files=multipart_files,
             )
-            return response
 
         finally:
             for f in opened_files:

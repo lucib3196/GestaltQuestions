@@ -1,16 +1,16 @@
-from src.utils import validate_response_payload
-from src.model.question import Question
-from src.model.question import QuestionData
-from src.core import logger
-from uuid import uuid4
-import pytest
-from app_test.shared.mock_data import QUESTION_FIELDS
-from app_test.shared.mock_data import QUESTIONS
 import pprint
+from uuid import uuid4
+
+import pytest
+
+from app_test.shared.mock_data import QUESTION_FIELDS, QUESTIONS
+from src.core import logger
+from src.model.question import Question, QuestionData
+from src.utils import validate_response_payload
 
 
-@pytest.mark.parametrize("payload", [q for q in QUESTIONS])
-def test_create_question(make_question_web, payload):
+@pytest.mark.parametrize("payload", list(QUESTIONS))
+def test_create_question(make_question_web, payload) -> None:
     """Ensure a valid question payload creates a question successfully."""
     resp = make_question_web(**payload)
     # Check the body
@@ -28,7 +28,7 @@ def test_create_question(make_question_web, payload):
         validate_response_payload(payload, qcreated.model_dump(), key)
 
 
-def test_create_question_bad_response(make_bad_question_web):
+def test_create_question_bad_response(make_bad_question_web) -> None:
     """Ensure an invalid payload returns a 400 error with proper message."""
     resp = make_bad_question_web()
     body = resp.json()
@@ -37,8 +37,8 @@ def test_create_question_bad_response(make_bad_question_web):
 
 
 # Retrieval
-@pytest.mark.parametrize("payload", [q for q in QUESTIONS])
-def test_get_question(make_question_web, payload, make_retrieve_question):
+@pytest.mark.parametrize("payload", list(QUESTIONS))
+def test_get_question(make_question_web, payload, make_retrieve_question) -> None:
     resp = make_question_web(**payload)
     qid = Question.model_validate(resp.json()).id
     # Act: retrieve the question
@@ -48,20 +48,22 @@ def test_get_question(make_question_web, payload, make_retrieve_question):
     assert qretrieved
 
 
-def test_get_question_bad_id(api_client):
+def test_get_question_bad_id(api_client) -> None:
     bad_id = uuid4()
     r = api_client.get(f"/questions/{bad_id}")
     assert r.status_code == 404
 
 
-def test_get_question_data_all_not_found(api_client):
+def test_get_question_data_all_not_found(api_client) -> None:
     bad_id = uuid4()
     r = api_client.get(f"/questions/{bad_id}/all_data")
     assert r.status_code == 404
 
 
-@pytest.mark.parametrize("payload", [q for q in QUESTIONS])
-def test_get_question_all_data(make_question_web, payload, make_retrieve_question_full):
+@pytest.mark.parametrize("payload", list(QUESTIONS))
+def test_get_question_all_data(
+    make_question_web, payload, make_retrieve_question_full
+) -> None:
     resp = make_question_web(**payload)
     qid = Question.model_validate(resp.json()).id
     retrieved = make_retrieve_question_full(qid)
@@ -70,7 +72,9 @@ def test_get_question_all_data(make_question_web, payload, make_retrieve_questio
     assert qretrieved
 
 
-def test_qet_all_questions(api_client, make_question_web, multiple_question_payloads):
+def test_qet_all_questions(
+    api_client, make_question_web, multiple_question_payloads
+) -> None:
     for q in multiple_question_payloads:
         make_question_web(**q)
     offset, limit = 0, 100
@@ -79,16 +83,16 @@ def test_qet_all_questions(api_client, make_question_web, multiple_question_payl
     assert response.status_code == 200, response.text
     questions = response.json()
     assert isinstance(questions, list), "Expected response to be a list"
-    assert len(questions) == len(
-        multiple_question_payloads
-    ), f"Expected {len(multiple_question_payloads)} questions, got {len(questions)}"
+    assert len(questions) == len(multiple_question_payloads), (
+        f"Expected {len(multiple_question_payloads)} questions, got {len(questions)}"
+    )
     logger.info("these are the questions %s", questions)
 
 
-@pytest.mark.parametrize("payload", [q for q in QUESTIONS])
+@pytest.mark.parametrize("payload", list(QUESTIONS))
 def test_delete_question(
     payload, make_question_web, make_delete_question, make_retrieve_question
-):
+) -> None:
     resp = make_question_web(**payload)
     qid = Question.model_validate(resp.json()).id
     dresp = make_delete_question(qid)
@@ -99,7 +103,7 @@ def test_delete_question(
     assert "not find question" in rresp.json()["detail"].lower()
 
 
-def test_delete_question_not_valid_id(api_client):
+def test_delete_question_not_valid_id(api_client) -> None:
     bad_id = uuid4()
     response = api_client.delete(f"/questions/{bad_id}")
     assert response.status_code == 200
@@ -108,7 +112,7 @@ def test_delete_question_not_valid_id(api_client):
 
 # Filter Test
 @pytest.mark.asyncio
-async def test_filter_questions_no_match(api_client):
+async def test_filter_questions_no_match(api_client) -> None:
     """
     Filtering with values that should not match anything.
     Expect an empty list.
@@ -128,7 +132,7 @@ async def test_filter_questions_no_match(api_client):
 @pytest.mark.asyncio
 async def test_question_filter_by_title(
     api_client, make_question_web, multiple_question_payloads
-):
+) -> None:
     """
     Filter questions by a substring in the title.
     Expects at least one match from create_multiple_questions fixture.
@@ -147,9 +151,9 @@ async def test_question_filter_by_title(
     assert len(data) > 0
 
 
-@pytest.mark.parametrize("payload", [q for q in QUESTIONS])
+@pytest.mark.parametrize("payload", list(QUESTIONS))
 @pytest.mark.asyncio
-async def test_update_question(api_client, make_question_web, payload):
+async def test_update_question(api_client, make_question_web, payload) -> None:
     resp = make_question_web(**payload)
     qid = Question.model_validate(resp.json()).id
     updates = QuestionData(title="Updated Title", isAdaptive=True)

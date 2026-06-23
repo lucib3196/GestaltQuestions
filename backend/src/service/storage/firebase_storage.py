@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from pathlib import Path
-from typing import List, Literal, Sequence, cast
+from typing import Literal, cast
 
 from firebase_admin import storage
 from google.cloud.storage.blob import Blob
@@ -11,11 +12,10 @@ from .base import Storage
 
 
 class FbStorage(Storage):
-
     def __init__(
         self,
         bucket,
-    ):
+    ) -> None:
         logger.info("[Firebase]: Intializing firebase storage ")
         self.bucket = storage.bucket(bucket)
         self.set_storage_type()
@@ -51,7 +51,7 @@ class FbStorage(Storage):
     def write(
         self,
         target: str,
-        data: str | dict | List | bytes | bytearray,
+        data: str | dict | list | bytes | bytearray,
         *,
         overwrite: bool = True,
     ) -> str:
@@ -69,8 +69,8 @@ class FbStorage(Storage):
         key = self._to_blob_key(target).rstrip("/")
         if self._exists_file(key):
             return self.bucket.blob(key).download_as_bytes()
-        else:
-            logger.warn(f"Cannot read blob. {key} is not file")
+        logger.warn(f"Cannot read blob. {key} is not file")
+        return None
 
     def delete(self, target: str | Path | Blob) -> None:
         key = self._to_blob_key(target)
@@ -113,7 +113,7 @@ class FbStorage(Storage):
         return results
 
     def download(self, target) -> bytes:
-        raise NotImplemented("Download for firebase not implemented")
+        raise NotImplementedError("Download for firebase not implemented")
         key = self._to_blob_key(target)
         blob = self.bucket.blob(key)
         if not blob.exists():
@@ -167,18 +167,16 @@ class FbStorage(Storage):
 
                 # Use native GCS copy (faster, server-side)
                 # new_blob = self.bucket.cop(blob, self.bucket, new_name)
-                new_blob = self.bucket.blob(new_name).upload_from_string(
-                    blob.download_as_bytes()
-                )
+                self.bucket.blob(new_name).upload_from_string(blob.download_as_bytes())
                 # Delete original
                 blob.delete()
 
             return dest_prefix
 
         except Exception as e:
-            raise ValueError(f"Failed to move directory: {e}")
+            raise ValueError(f"Failed to move directory: {e}") from e
 
-    def _hard_delete(self):
+    def _hard_delete(self) -> None:
         blobs = self.bucket.list_blobs()
         for blob in blobs:
             blob.delete()

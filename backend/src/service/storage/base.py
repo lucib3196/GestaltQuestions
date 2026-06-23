@@ -1,7 +1,8 @@
+import builtins
 import json
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from pathlib import Path
-from typing import List, Sequence, Union
 
 from google.cloud.storage.blob import Blob
 
@@ -112,7 +113,7 @@ class Storage(ABC):
     def write(
         self,
         target: str,
-        data: str | dict | List | bytes | bytearray,
+        data: str | dict | list | bytes | bytearray,
         *,
         overwrite: bool = True,
     ) -> str:
@@ -214,7 +215,7 @@ class Storage(ABC):
         """
         ...
 
-    def _to_storage_path(self, value: Union[str, Path, Blob]) -> str:
+    def _to_storage_path(self, value: str | Path | Blob) -> str:
         """
         Normalize input into a StoragePath.
 
@@ -238,7 +239,7 @@ class Storage(ABC):
         raise TypeError(f"Unsupported path type: {type(value)}")
 
     def _normalize_content(
-        self, content: str | dict | List | bytes | bytearray
+        self, content: str | dict | builtins.list | bytes | bytearray
     ) -> bytes:
         # Normalize content
         if isinstance(content, (dict, list)):

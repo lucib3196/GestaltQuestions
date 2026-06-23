@@ -1,6 +1,6 @@
 import pytest
-from src.model.question import Question
-from src.model.question import QuestionData
+
+from src.model.question import Question, QuestionData
 
 
 @pytest.fixture

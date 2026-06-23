@@ -1,14 +1,16 @@
-import pytest
 from uuid import UUID, uuid4
-from src.utils import *
+
+import pytest
+
+from src.utils.database_utils import convert_uuid
 
 
-def test_convert_uuid_passes_uuid():
+def test_convert_uuid_passes_uuid() -> None:
     random_uuid = uuid4()
     assert convert_uuid(random_uuid) == random_uuid
 
 
-def test_conver_valid_uuid():
+def test_conver_valid_uuid() -> None:
     s = "12345678-1234-5678-1234-567812345678"
     result = convert_uuid(s)
     assert isinstance(result, UUID)
@@ -25,7 +27,7 @@ def test_conver_valid_uuid():
         {"id": "1234"},  # wrong type
     ],
 )
-def test_bad_uuid_input(bad_input):
+def test_bad_uuid_input(bad_input) -> None:
     with pytest.raises(ValueError) as exec:
         convert_uuid(bad_input)
     assert "Could not convert" in str(exec.value)

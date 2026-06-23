@@ -1,52 +1,39 @@
 import os
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 
 import firebase_admin
 import pytest
-from app_test import FbStorage, LocalStorage, QuestionManager, initialize_firebase_app
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app_test.shared.factories import (
-    make_bad_question_web,
-    make_delete_question,
-    make_question_web,
-    make_retrieve_question,
-    make_retrieve_question_full,
-    make_question_with_files,
-    make_upload_files_to_question,
-)
-from app_test.shared.mock_data import QUESTIONS
-
-from src.core import get_session, get_settings
+from src.core import get_session, get_settings, initialize_firebase_app
 from src.main import get_application
 from src.model.files import FileData
+from src.service.question_manager import QuestionManager
+from src.service.storage import FbStorage, LocalStorage
 from src.web.dependencies import (
-    get_question_manager,
+    get_local_base_path,
     get_storage_manager,
     get_storage_type,
-    get_local_base_path
 )
-
+from src.web.question_manager.dependencies import get_question_manager
 
 settings = get_settings()
 
 
 @pytest.fixture(scope="session")
 def firebase_app_for_tests():
-    assert os.environ.get(
-        "FIREBASE_AUTH_EMULATOR_HOST"
-    ), "Missing FIREBASE_AUTH_EMULATOR_HOST"
+    assert os.environ.get("FIREBASE_AUTH_EMULATOR_HOST"), (
+        "Missing FIREBASE_AUTH_EMULATOR_HOST"
+    )
     assert os.environ.get("STORAGE_EMULATOR_HOST"), "Missing STORAGE_EMULATOR_HOST"
 
     app = initialize_firebase_app()
     yield app
 
-    try:
+    with suppress(Exception):
         firebase_admin.delete_app(app)
-    except Exception:
-        pass
     initialize_firebase_app.cache_clear()
 
 
@@ -65,7 +52,7 @@ def storage(request, firebase_app_for_tests):
 
 
 @pytest.fixture(autouse=True)
-def clean_cloud(storage):
+def clean_cloud(storage) -> None:
     if storage.get_storage_type() == "cloud":
         storage._hard_delete()
 
@@ -75,16 +62,6 @@ def question_manager(storage, question_db):
     return QuestionManager(question_db, storage)
 
 
-@pytest.fixture
-def question_payload():
-    return QUESTIONS
-
-
-@pytest.fixture
-def multiple_question_payloads():
-    return QUESTIONS
-
-
 @asynccontextmanager
 async def on_startup_test(app: FastAPI):
     """Async startup context for tests (skips DB initialization)."""
@@ -92,12 +69,7 @@ async def on_startup_test(app: FastAPI):
 
 
 @pytest.fixture(scope="function")
-def api_client(
-    db_session,
-    question_manager,
-    storage,
-    tmp_path
-):
+def api_client(db_session, question_manager, storage, tmp_path):
     """
     Provides a FastAPI TestClient with dependency overrides for DB, storage,
     question manager, and resource service.
@@ -117,9 +89,9 @@ def api_client(
 
     async def override_storage_mode():
         yield storage.get_storage_type()
-        
+
     async def override_local_base_path():
-        yield (tmp_path/"test_questions").as_posix()
+        yield (tmp_path / "test_questions").as_posix()
 
     app.dependency_overrides[get_session] = override_get_db
     app.dependency_overrides[get_question_manager] = override_get_question_manager
