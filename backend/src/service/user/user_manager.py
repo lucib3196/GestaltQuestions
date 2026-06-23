@@ -11,11 +11,8 @@ from src.data.user import UserDB
 from src.model.institution import Institution, ValidInstitutions
 from src.model.users import Role, User, UserCreate, UserRead, UserRoles
 
-
 class UserNotFound(Exception):
-    pass
-
-
+    """Exceptions for user not found"""
 class UserManager:
     def __init__(
         self, udb: UserDB, rm: RoleDB, inst: InstitutionDB, session: Session

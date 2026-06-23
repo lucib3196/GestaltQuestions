@@ -78,7 +78,6 @@ export function canAccessRoute(
     if (!userRole) return false;
     return nav.allowedRoles.some((role) => userRole.includes(role));
   }
-
   // Public OR only requires login
   return true;
 }

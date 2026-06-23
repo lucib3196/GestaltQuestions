@@ -89,8 +89,8 @@ class AppSettings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_database(self):
-        # if not self.DATABASE_URL:
-        #     raise ValueError("Database URL is not set")
+        if not self.DATABASE_URL:
+            raise ValueError("Database URL is not set")
         return self
 
     # Firebase set up
