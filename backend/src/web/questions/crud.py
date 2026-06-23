@@ -17,7 +17,7 @@ router = APIRouter(
 
 
 @router.get("/all")
-async def get_all(service: QuestionQueryDependency) -> Sequence[QuestionTableRow]:
+async def get_all(service: QuestionQueryDependency, filter: QuestionFilter) -> Sequence[QuestionTableRow]:
     return await service.get_table()
 
 

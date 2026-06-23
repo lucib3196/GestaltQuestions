@@ -14,7 +14,7 @@ jobs:
         python-version: [3.11, 3.12, 3.13]
 
     env:
-      MODE: "dev"
+      MODE: "testing"
 
     steps:
       - uses: actions/checkout@v5
@@ -33,6 +33,13 @@ jobs:
         run: poetry install
         working-directory: ./backend
 
+      - name: Decode Firebase credentials
+        working-directory: ./backend
+        run: |
+          mkdir -p secrets
+          echo '${{ secrets.FIREBASE_JSON }}' > ${{vars.FIREBASE_JSON_PATH}}
+          cd secrets
+          ls -l
 
       - name: Run Test
         run: |

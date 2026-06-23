@@ -2,7 +2,7 @@ from sqlalchemy import func
 from sqlmodel import Session, select
 
 from src.model.institution import Institution
-from src.model.question import Question, QuestionTableRow
+from src.model.question import Question, QuestionTableRow, Status
 from src.model.users import DeveloperProfile, User
 
 
@@ -21,7 +21,7 @@ class QuestionQueryService:
                 DeveloperProfile.user_id,
                 User.email,
                 Institution.name,
-            )  # type: ignore
+            )  # type: ignore  # type: ignore
             .join(DeveloperProfile, DeveloperProfile.id == Question.created_by_id)
             .join(User, User.id == DeveloperProfile.user_id)
             .join(Institution, Institution.id == User.institution_id)
@@ -30,7 +30,10 @@ class QuestionQueryService:
 
         return self._parse_results(results)
 
-    async def filter_questions(self, title: str) -> list[QuestionTableRow]:
+    async def filter_questions(
+        self,
+        title: str,
+    ) -> list[QuestionTableRow]:
         stmt = (
             select(
                 Question.title,
@@ -42,6 +45,7 @@ class QuestionQueryService:
                 User.email,
                 Institution.name,
             )  # type: ignore
+            .where(Question.status == "published")
             .join(DeveloperProfile, DeveloperProfile.id == Question.created_by_id)
             .join(User, User.id == DeveloperProfile.user_id)
             .join(Institution, Institution.id == User.institution_id)

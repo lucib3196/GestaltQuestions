@@ -14,7 +14,7 @@ from src.core.logging import logger
 T = TypeVar("T", bound=SQLModel)
 
 
-async def get_or_create_many[T: SQLModel](
+async def get_or_create_many(
     session: SessionDep, model: type[T], names: Sequence[str], lookup_field="name"
 ) -> list[T]:
     if model is None:
