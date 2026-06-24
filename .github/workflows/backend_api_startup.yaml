@@ -25,6 +25,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - uses: ./.github/actions/firebase-credentials
+        with:
+          firebase-json: ${{ secrets.FIREBASE_JSON }}
+          credentials-path: ${{ vars.FIREBASE_JSON_PATH }}
+
       - name: Run Test
         run: |
           uv run pytest app_test/unit
