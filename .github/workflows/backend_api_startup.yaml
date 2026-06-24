@@ -8,32 +8,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        python-version: [3.11, 3.12, 3.13]
-
-    env:
-      MODE: "dev"
-
     steps:
-      - uses: actions/checkout@v5
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{matrix.python-version}}
+      - uses: actions/checkout@v4
+      - uses: ./github/actions/setup-backend
 
-      # Install python dependencies
-      - name: Install Poetry
+      - name: Run Test
         run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-
-      - name: Install dependencies
-        run: poetry install
+          uv run pytest app_test/unit
         working-directory: ./backend
-
-
-      # - name: Run Test
-      #   run: |
-      #     poetry run pytest app_test/unit
-      #   working-directory: ./backend
