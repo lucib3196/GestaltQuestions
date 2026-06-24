@@ -4,6 +4,7 @@ import {
   HumanMessage,
   ToolMessageChunk,
 } from "@langchain/core/messages";
+
 import type { ThreadRead, ThreadMessageDetails } from "../ChatApi";
 
 // ------------------------
@@ -21,7 +22,7 @@ export type ToolExecute<TPayload> = (
   args: ToolExecuteArgs<TPayload>,
 ) => Promise<void>;
 // Tools that are specific and we want to render and get some sorth of output from
-export type ToolName = "final_question_payload"|"generate_image";
+export type ToolName = "final_question_payload" | "generate_image";
 
 export type RenderPreviewProps<TPayload> = {
   payload: TPayload;
@@ -71,19 +72,50 @@ export type CleanableContent = ContentBlock[] | string;
 
 export type UnknownRecord = Record<string, unknown>;
 
-// Context types
-export type ChatState = {
-  theadId: string | null;
-};
-export type ChatActions = {
-  setThreadId: (threadId: string | null) => void;
-  createdThread: (token: string, threadId: string) => Promise<ThreadRead>;
-  getUserThreads: (token: string) => Promise<ThreadRead[]>;
-  getUserThreadMessages: (
-    token: string,
-    threadId: string,
-  ) => Promise<ThreadMessageDetails>;
-  onThreadId: (val: string) => void;
+type Thread = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
 };
 
-export type ChatStore = ChatState & ChatActions;
+// Thread Management
+export type ThreadState = {
+  threadId: string | null;
+  thread: Thread | null;
+  threads: Thread[];
+};
+export type ThreadActions  = {
+  setThreadId: (threadId: string|null)=>void;
+  setThread: (thread: Thread|null)=>void;
+  setThreads: (threads: Thread[])=>void;
+  updateThread: (update: Thread)=>void;
+  clearThread: ()=>void;
+}
+export type ThreadStore = ThreadState & ThreadActions;
+
+// Chat Options 
+
+export type ValidAgents = "agent"
+export type ChatState = {
+  assistantId: ValidAgents
+  externalMessage?: string|null
+}
+export type ChatActions = {
+  setAssistant: (agent:ValidAgents)=>void;
+  setExternalMessage: (val: string|null)=>void;
+}
+export type ChatStore = ChatState & ChatActions
+
+// export type ChatActions = {
+//   setThreadId: (threadId: string | null) => void;
+//   createdThread: (token: string, threadId: string) => Promise<ThreadRead>;
+//   getUserThreads: (token: string) => Promise<ThreadRead[]>;
+//   getUserThreadMessages: (
+//     token: string,
+//     threadId: string,
+//   ) => Promise<ThreadMessageDetails>;
+//   onThreadId: (val: string) => void;
+// };
+
+

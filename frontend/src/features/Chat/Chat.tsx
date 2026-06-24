@@ -4,7 +4,6 @@ import { HumanBubble, AIBubble } from "./components/ChatBubble";
 import { ChatInput } from "./components/ChatInput";
 import { useStream } from "@langchain/react";
 import RenderToolCalls from "./components/ToolCallRender";
-import { useChatContext } from "./instance/context";
 import { useAuth } from "../Auth";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import SideBar from "../../components/SideBar/SideBar";
@@ -29,7 +28,7 @@ function ChatSession({ onNewChat, token }: ChatSessionProps) {
   const stream = useStream({
     threadId: threadId || null,
     apiUrl: aiURL,
-    assistantId: "agent_gestalt",
+    assistantId: "agent",
     apiKey: import.meta.env.VITE_LANGSMITH_API_KEY,
     onThreadId: async (id: string) => {
       const created = await createThread(token, id);
