@@ -16,6 +16,7 @@ runs:
   steps:
     - name: Write credentials
       shell: bash
+      working-directory: ./backend
       run: |
         mkdir -p secrets
           echo '${{ inputs.firebase-json }}' > ${{inputs.credentials-path}}
