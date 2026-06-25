@@ -1,7 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { RequireRole } from "./features/Auth";
-import ChatPage from "./pages/ChatPage";
 import AppLayout from "./layouts/AppLayout";
 import {
   AccountPage,
@@ -11,6 +10,7 @@ import {
   QuestionBuilder,
   Questions,
 } from "./pages";
+import ChatPage from "./pages/ChatPage";
 import {
   CreateNewQuestion,
   QuestionBuilderPlaygroundPage,

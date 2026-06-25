@@ -14,6 +14,7 @@ import { prepareMessage } from "./utils";
 export function ChatSession() {
   const { user } = useAuth();
   const createThread = useThreadStore((state) => state.createThread);
+
   const threadId = useThreadStore((s) => s.threadId);
 
   const stream = useStream({
@@ -68,96 +69,3 @@ export function ChatSession() {
     </ChatContainer>
   );
 }
-
-// export default function Chat() {
-//   const { user } = useAuth();
-//   const setThreadId = useThreadStore((s) => s.setThreadId);
-//   const getUserThreads = useThreadStore((s) => s.threads);
-//   const [token, setToken] = useState<string>("");
-//   const [showSideBar, setShowSideBar] = useState<boolean>(true);
-//   const [sessionKey, setSessionKey] = useState(0);
-//   const [threads, setThreads] = useState<ThreadRead[]>([]);
-//   const [selectedThreadId, setSelectedThreadId] = useState<string>("");
-
-//   useEffect(() => {
-//     let isMounted = true;
-
-//     const bootstrap = async () => {
-//       if (!user) return;
-//       const authToken = await user.getIdToken();
-//       if (!isMounted) return;
-
-//       setToken(authToken);
-//       await loadUserThreads(authToken);
-//     };
-
-//     void bootstrap();
-
-//     return () => {
-//       isMounted = false;
-//     };
-//   }, [user, loadUserThreads]);
-
-//   const threadOptions: SideBarItem[] = useMemo(
-//     () =>
-//       threads.map((t) => ({
-//         key: t.id,
-//         label: t.id,
-//       })),
-//     [threads],
-//   );
-
-//   const handleNewChat = () => {
-//     setSelectedThreadId("");
-//     setThreadId(null);
-//     setSessionKey((k) => k + 1);
-//   };
-
-//   const handleSelectThread = (val: string) => {
-//     const id = String(val).trim();
-//     setSelectedThreadId(id);
-//     setThreadId(id);
-//     setSessionKey((k) => k + 1);
-//   };
-
-//   if (!token) {
-//     return (
-//       <div className="w-full p-4 text-sm text-text-muted">Loading chat...</div>
-//     );
-//   }
-
-//   return (
-//     <div className="flex flex-row">
-//       <div
-//         className={`flex flex-col border-r border-border pr-3 transition-all duration-200 ease-in-out ${
-//           showSideBar ? "w-72 gap-2" : "w-10 gap-0"
-//         }`}
-//       >
-//         <button
-//           type="button"
-//           aria-label={showSideBar ? "Close sidebar" : "Open sidebar"}
-//           onClick={() => setShowSideBar((prev) => !prev)}
-//           className="self-end rounded p-1 transition-colors duration-150 hover:bg-bg-secondary"
-//         >
-//           <GiHamburgerMenu />
-//         </button>
-//         <div
-//           className={`overflow-hidden transition-opacity duration-150 ${
-//             showSideBar ? "opacity-100" : "pointer-events-none opacity-0"
-//           }`}
-//         >
-//           <SideBar
-//             selected={selectedThreadId}
-//             setSelected={handleSelectThread}
-//             options={threadOptions}
-//             show={showSideBar}
-//           />
-//         </div>
-//       </div>
-
-//       <div className="w-full pl-3">
-//         <ChatSession key={sessionKey} onNewChat={handleNewChat} token={token} />
-//       </div>
-//     </div>
-//   );
-// }

@@ -3,10 +3,10 @@ import React, { useMemo, useState } from "react";
 import type { IconType } from "react-icons";
 import { GiHamburgerMenu } from "react-icons/gi";
 
-import SideBarHeader from "./SideBarHeader";
 import SideBarContent from "./SideBarContent";
 import { SidebarContext, type SidebarContextValue } from "./SideBarContext";
 import SidebarFooter from "./SidebarFooter";
+import SideBarHeader from "./SideBarHeader";
 import SidebarMenuItem from "./SidebarMenuItem";
 
 type SidebarSize = "sm" | "md" | "lg" | "xl";
