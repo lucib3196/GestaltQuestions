@@ -8,7 +8,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-bg text-text">
       <NavBar items={navigationItems} />
 
-      <main className="mx-auto w-full px-4 py-6 ">
+      <main className="w-full px-4 py-6 ">
         <Outlet />
       </main>
     </div>

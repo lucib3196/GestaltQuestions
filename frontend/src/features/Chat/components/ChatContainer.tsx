@@ -6,13 +6,13 @@ type Sizes = "sm" | "med" | "lg";
 
 const Variants: Record<ChatContainerVariant, string> = {
   demo: "flex flex-col rounded-lg border border-border bg-surface text-text shadow-soft backdrop-blur",
-  main: "mx-auto flex flex-col rounded-xl border border-border bg-surface-strong p-4 text-text shadow-soft backdrop-blur",
+  main: "flex flex-col rounded-xl border border-border bg-surface-strong p-4 text-text shadow-soft backdrop-blur m-auto",
 };
 
 const SizeClasses: Record<Sizes, string> = {
-  sm: "h-[320px] w-full max-w-md",
-  med: "h-[520px] w-full max-w-2xl",
-  lg: "h-[720px] w-full max-w-4xl",
+  sm: "h-[320px] w-full",
+  med: "h-[520px] w-full ",
+  lg: "h-full  w-full",
 };
 
 interface ChatContainerProps {

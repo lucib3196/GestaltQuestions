@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { RequireRole } from "./features/Auth";
-import StreamChat from "./features/Chat/Chat";
+import ChatPage from "./pages/ChatPage";
 import AppLayout from "./layouts/AppLayout";
 import {
   AccountPage,
@@ -47,7 +47,7 @@ function App() {
                   path="playground"
                   element={<QuestionBuilderPlaygroundPage />}
                 />
-                <Route path="chat" element={<StreamChat />} />
+                <Route path="chat" element={<ChatPage />} />
               </Route>
             </Route>
 

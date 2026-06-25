@@ -10,7 +10,6 @@ export type SidebarMenuItemProps<T = string> = {
   className?: string;
   onSelect?: (item: T) => void;
 };
-
 export default function SidebarMenuItem<T = string>({
   item,
   label,
@@ -32,7 +31,7 @@ export default function SidebarMenuItem<T = string>({
       title={!isOpen ? label : undefined}
       onClick={handleSelect}
       className={clsx(
-        "group relative mx-3 flex h-10 items-center rounded-md border text-left transition-colors",
+        "group relative mx-3 flex h-[50px] shrink-0 items-center rounded-md border text-left transition-colors",
         isOpen ? "gap-3 px-3" : "justify-center px-0",
         "focus:outline-none focus:ring-2 focus:ring-accent/60",
         selected
@@ -56,7 +55,7 @@ export default function SidebarMenuItem<T = string>({
         />
       )}
 
-      {isOpen && <span className="truncate text-sm font-medium">{label}</span>}
+      {isOpen && <span className="truncate text-base font-medium">{label}</span>}
     </button>
   );
 }

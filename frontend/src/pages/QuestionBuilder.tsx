@@ -64,7 +64,7 @@ export default function QuestionBuilderPage() {
         </nav>
       </header>
 
-      <main className="rounded-lg border border-border bg-surface p-4">
+      <main className="bg-surface p-4">
         <Outlet />
       </main>
     </div>

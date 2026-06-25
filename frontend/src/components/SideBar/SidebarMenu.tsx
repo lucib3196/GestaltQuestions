@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 import type { IconType } from "react-icons";
 import { GiHamburgerMenu } from "react-icons/gi";
 
+import SideBarHeader from "./SideBarHeader";
 import SideBarContent from "./SideBarContent";
 import { SidebarContext, type SidebarContextValue } from "./SideBarContext";
 import SidebarFooter from "./SidebarFooter";
@@ -30,6 +31,8 @@ type SidebarProps<T = string> = {
   height?: SidebarHeight;
   defaultOpen?: boolean;
   defaultSelectedItem?: T | null;
+  headerName?: string;
+  header?: React.ReactNode;
 };
 
 function SideBarMenuRoot<T = string>({
@@ -39,6 +42,8 @@ function SideBarMenuRoot<T = string>({
   defaultOpen = false,
   defaultSelectedItem = null,
   children,
+  headerName,
+  header,
 }: SidebarProps<T>) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [selectedItem, setSelectedItem] = useState<T | null>(
@@ -57,6 +62,15 @@ function SideBarMenuRoot<T = string>({
     [isOpen, selectedItem],
   );
 
+  const defaultHeader = (
+    <SideBarHeader
+      title={headerName ?? ""}
+      Icon={Icon}
+      isOpen={value.isOpen}
+      toggle={value.toggle}
+    />
+  );
+
   return (
     <SidebarContext.Provider value={value as SidebarContextValue<unknown>}>
       <aside
@@ -66,30 +80,8 @@ function SideBarMenuRoot<T = string>({
           "flex flex-col shrink-0 self-stretch border-l border-border bg-surface text-text shadow-soft transition-all duration-200 ease-in-out",
         )}
       >
-        {Icon && (
-          <button
-            type="button"
-            aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
-            aria-expanded={isOpen}
-            onClick={value.toggle}
-            className={clsx(
-              "m-3 flex h-10 w-10 items-center justify-center rounded-md border transition-colors duration-150",
-              "focus:outline-none focus:ring-2 focus:ring-accent/60",
-              isOpen
-                ? "border-border-strong bg-surface-strong text-text hover:bg-surface-muted"
-                : "border-transparent bg-accent text-bg hover:bg-accent-strong",
-            )}
-          >
-            <Icon
-              size={22}
-              className={clsx(
-                "transition-transform duration-200",
-                isOpen && "rotate-90",
-              )}
-            />
-          </button>
-        )}
-        {children}
+        {header ?? defaultHeader}
+        {isOpen && children}
       </aside>
     </SidebarContext.Provider>
   );
@@ -99,6 +91,7 @@ const SideBarMenu = Object.assign(SideBarMenuRoot, {
   Content: SideBarContent,
   Footer: SidebarFooter,
   Item: SidebarMenuItem,
+  Header: SideBarHeader,
 });
 
 export default SideBarMenu;
