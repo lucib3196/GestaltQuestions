@@ -1,6 +1,7 @@
 name: Deploy to Railway
 
 on:
+  pull_request:
   push:
     branches: [main]
 

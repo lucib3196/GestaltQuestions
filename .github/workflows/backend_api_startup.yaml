@@ -1,8 +1,17 @@
 name: Backend API Startup
 # Only triggers if there is a backend change
 on:
+  # Run on all changes to backend or this file
   push:
+    paths: 
+      - 'backend/**'
+      - '.github/workflows/backend_api_startup.yml'
+    branches: ["main", "dev"]
   pull_request:
+    paths: 
+      - 'backend/**'
+      - '.github/workflows/backend_api_startup.yml'
+    branches: ["main", "dev"]
 
 jobs:
   test:
@@ -21,15 +30,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: ./.github/actions/setup-backend
+      # Uses custom action to install uv and install dependencies
+      - uses: ./.github/actions/setup-python-project
         with:
           python-version: ${{ matrix.python-version }}
-
+          working-dir: "./backend"
+      
+      # Decore the firebase credentials and saves to file
+      # Probably not needed for this test. It just throws an error in our pydantic settings
       - uses: ./.github/actions/firebase-credentials
         with:
           firebase-json: ${{ secrets.FIREBASE_JSON }}
           credentials-path: ${{ vars.FIREBASE_JSON_PATH }}
-
+      # Actually run the test
+      # Current just running the unit test but should be moved to actual api test
       - name: Run Test
         run: |
           uv run pytest app_test/unit
