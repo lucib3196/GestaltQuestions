@@ -1,29 +1,25 @@
-import ChatContainer from "./components/ChatContainer";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
-import { HumanBubble, AIBubble } from "./components/ChatBubble";
-import { ChatInput } from "./components/ChatInput";
 import { useStream } from "@langchain/react";
-import RenderToolCalls from "./components/ToolCallRender";
-import { useAuth } from "../Auth";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import SideBar from "../../components/SideBar/SideBar";
-import { blobURLtoBase64 } from "./utils/imageUtils";
-import type { ThreadRead } from "./ChatApi";
-import { GiHamburgerMenu } from "react-icons/gi";
-import type { SideBarItem } from "../../components/SideBar";
-import { aiURL } from "../../config/apiConfig";
 import { MathJax } from "better-react-mathjax";
+import { useEffect, useMemo, useState } from "react";
+import { GiHamburgerMenu } from "react-icons/gi";
 
+import type { SideBarItem } from "../../components/SideBar";
+import SideBar from "../../components/SideBar/SideBar";
+import { aiURL } from "../../config/apiConfig";
+import { type ThreadRead } from "../../services/Chat";
+import { useAuth } from "../Auth";
+import { AIBubble, HumanBubble } from "./components/ChatBubble";
+import ChatContainer from "./components/ChatContainer";
+import { ChatInput } from "./components/ChatInput";
+import RenderToolCalls from "./components/ToolCallRender";
+import { useThreadStore } from "./instance/store";
+import { prepareMessage } from "./utils";
 
-type ChatSessionProps = {
-  onNewChat: () => void;
-  token: string;
-};
-
-function ChatSession({ onNewChat, token }: ChatSessionProps) {
-  const threadId = useChatContext((s) => s.theadId);
-  const createThread = useChatContext((state) => state.createdThread);
-  const setThreadId = useChatContext((s) => s.setThreadId);
+function ChatSession() {
+  const { user } = useAuth();
+  const createThread = useThreadStore((state) => state.createThread);
+  const threadId = useThreadStore((s) => s.threadId);
 
   const stream = useStream({
     threadId: threadId || null,
@@ -31,29 +27,12 @@ function ChatSession({ onNewChat, token }: ChatSessionProps) {
     assistantId: "agent",
     apiKey: import.meta.env.VITE_LANGSMITH_API_KEY,
     onThreadId: async (id: string) => {
-      const created = await createThread(token, id);
-      setThreadId(created.id);
+      await createThread(id, await user?.getIdToken());
     },
   });
 
-  const handleSubmit = async (
-    text: string,
-    images?: string[] | null | undefined,
-  ) => {
-    type ContentItem =
-      | { type: "text"; text: string }
-      | { type: "image_url"; image_url: { url: string } };
-
-    const content: ContentItem[] = [{ type: "text", text }];
-
-    if (images && images.length > 0) {
-      const b64 = await blobURLtoBase64(images[0]);
-      content.push({
-        type: "image_url",
-        image_url: { url: b64 },
-      });
-    }
-
+  const handleSubmit = async (text: string, images?: string[]) => {
+    const content = await prepareMessage(text, images);
     stream.submit({
       messages: [
         {
@@ -67,7 +46,6 @@ function ChatSession({ onNewChat, token }: ChatSessionProps) {
   return (
     <ChatContainer
       size="lg"
-      onNewChat={onNewChat}
       scrollTrigger={stream.messages.length}
       input={
         <ChatInput
@@ -78,19 +56,19 @@ function ChatSession({ onNewChat, token }: ChatSessionProps) {
       }
     >
       <MathJax dynamic>
-      {stream.messages.map((msg) => {
-        if (msg.type === "human") {
-          return <HumanBubble key={msg.id} msg={msg as HumanMessage} />;
-        }
-        if (msg.type === "ai") {
-          return <AIBubble key={msg.id} msg={msg as AIMessage}></AIBubble>;
-        }
-        if (msg.type === "tool") {
-          return <RenderToolCalls key={msg.id} msg={msg} />;
-        }
+        {stream.messages.map((msg) => {
+          if (msg.type === "human") {
+            return <HumanBubble key={msg.id} msg={msg as HumanMessage} />;
+          }
+          if (msg.type === "ai") {
+            return <AIBubble key={msg.id} msg={msg as AIMessage}></AIBubble>;
+          }
+          if (msg.type === "tool") {
+            return <RenderToolCalls key={msg.id} msg={msg} />;
+          }
 
-        return null;
-      })}
+          return null;
+        })}
       </MathJax>
     </ChatContainer>
   );
@@ -98,21 +76,13 @@ function ChatSession({ onNewChat, token }: ChatSessionProps) {
 
 export default function Chat() {
   const { user } = useAuth();
-  const setThreadId = useChatContext((s) => s.setThreadId);
-  const getUserThreads = useChatContext((s) => s.getUserThreads);
+  const setThreadId = useThreadStore((s) => s.setThreadId);
+  const getUserThreads = useThreadStore((s) => s.threads);
   const [token, setToken] = useState<string>("");
   const [showSideBar, setShowSideBar] = useState<boolean>(true);
   const [sessionKey, setSessionKey] = useState(0);
   const [threads, setThreads] = useState<ThreadRead[]>([]);
   const [selectedThreadId, setSelectedThreadId] = useState<string>("");
-
-  const loadUserThreads = useCallback(
-    async (authToken: string) => {
-      const res = await getUserThreads(authToken);
-      setThreads(res);
-    },
-    [getUserThreads],
-  );
 
   useEffect(() => {
     let isMounted = true;
@@ -138,7 +108,6 @@ export default function Chat() {
       threads.map((t) => ({
         key: t.id,
         label: t.id,
-
       })),
     [threads],
   );
@@ -157,14 +126,17 @@ export default function Chat() {
   };
 
   if (!token) {
-    return <div className="w-full p-4 text-sm text-text-muted">Loading chat...</div>;
+    return (
+      <div className="w-full p-4 text-sm text-text-muted">Loading chat...</div>
+    );
   }
 
   return (
     <div className="flex flex-row">
       <div
-        className={`flex flex-col border-r border-border pr-3 transition-all duration-200 ease-in-out ${showSideBar ? "w-72 gap-2" : "w-10 gap-0"
-          }`}
+        className={`flex flex-col border-r border-border pr-3 transition-all duration-200 ease-in-out ${
+          showSideBar ? "w-72 gap-2" : "w-10 gap-0"
+        }`}
       >
         <button
           type="button"
@@ -175,8 +147,9 @@ export default function Chat() {
           <GiHamburgerMenu />
         </button>
         <div
-          className={`overflow-hidden transition-opacity duration-150 ${showSideBar ? "opacity-100" : "pointer-events-none opacity-0"
-            }`}
+          className={`overflow-hidden transition-opacity duration-150 ${
+            showSideBar ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
         >
           <SideBar
             selected={selectedThreadId}

@@ -1,11 +1,11 @@
-import type { ToolMessage, ContentBlock } from "langchain";
 import {
   AIMessage,
   HumanMessage,
   ToolMessageChunk,
 } from "@langchain/core/messages";
+import type { ContentBlock, ToolMessage } from "langchain";
 
-import type { ThreadRead, ThreadMessageDetails } from "../ChatApi";
+import { type ThreadRead as Thread } from "../../../services/Chat";
 
 // ------------------------
 // TOOL Types
@@ -72,40 +72,41 @@ export type CleanableContent = ContentBlock[] | string;
 
 export type UnknownRecord = Record<string, unknown>;
 
-type Thread = {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  user_id: string;
-};
-
 // Thread Management
 export type ThreadState = {
   threadId: string | null;
   thread: Thread | null;
   threads: Thread[];
+  isLoading: boolean;
+  error: string | null;
 };
-export type ThreadActions  = {
-  setThreadId: (threadId: string|null)=>void;
-  setThread: (thread: Thread|null)=>void;
-  setThreads: (threads: Thread[])=>void;
-  updateThread: (update: Thread)=>void;
-  clearThread: ()=>void;
-}
+export type ThreadActions = {
+  setThreadId: (threadId: string | null) => void;
+  setThread: (thread: Thread | null) => void;
+  // Used for getting all of the users threads
+  setThreads: (threads: Thread[]) => void;
+  updateThread: (update: Thread) => void;
+
+  createThread: (
+    threadId: string,
+    token?: string | undefined | null,
+  ) => Promise<void>;
+  clearThread: () => void;
+};
 export type ThreadStore = ThreadState & ThreadActions;
 
-// Chat Options 
+// Chat Options
 
-export type ValidAgents = "agent"
+export type ValidAgents = "agent";
 export type ChatState = {
-  assistantId: ValidAgents
-  externalMessage?: string|null
-}
+  assistantId: ValidAgents;
+  externalMessage?: string | null;
+};
 export type ChatActions = {
-  setAssistant: (agent:ValidAgents)=>void;
-  setExternalMessage: (val: string|null)=>void;
-}
-export type ChatStore = ChatState & ChatActions
+  setAssistant: (agent: ValidAgents) => void;
+  setExternalMessage: (val: string | null) => void;
+};
+export type ChatStore = ChatState & ChatActions;
 
 // export type ChatActions = {
 //   setThreadId: (threadId: string | null) => void;
@@ -117,5 +118,3 @@ export type ChatStore = ChatState & ChatActions
 //   ) => Promise<ThreadMessageDetails>;
 //   onThreadId: (val: string) => void;
 // };
-
-

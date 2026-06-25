@@ -1,14 +1,12 @@
 import clsx from "clsx";
-import { RiChatNewLine } from "react-icons/ri";
 import { useEffect, useRef } from "react";
+import { RiChatNewLine } from "react-icons/ri";
 type ChatContainerVariant = "demo" | "main";
 type Sizes = "sm" | "med" | "lg";
 
 const Variants: Record<ChatContainerVariant, string> = {
-  demo:
-    "flex flex-col rounded-lg border border-border bg-surface text-text shadow-soft backdrop-blur",
-  main:
-    "mx-auto flex flex-col rounded-xl border border-border bg-surface-strong p-4 text-text shadow-soft backdrop-blur",
+  demo: "flex flex-col rounded-lg border border-border bg-surface text-text shadow-soft backdrop-blur",
+  main: "mx-auto flex flex-col rounded-xl border border-border bg-surface-strong p-4 text-text shadow-soft backdrop-blur",
 };
 
 const SizeClasses: Record<Sizes, string> = {
@@ -64,9 +62,7 @@ export default function ChatContainer({
         <div ref={bottomRef} />
       </div>
 
-      <div className="mt-3 border-t border-border pt-3">
-        {input}
-      </div>
+      <div className="mt-3 border-t border-border pt-3">{input}</div>
     </div>
   );
 }

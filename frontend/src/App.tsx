@@ -1,13 +1,22 @@
-import { BrowserRouter, Routes, Navigate, Route, } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import AppLayout from "./layouts/AppLayout";
-import { Home, QuestionBuilder, Questions, LoginPage, AccountPage, EditQuestionPage } from "./pages";
 import { RequireRole } from "./features/Auth";
-import { QuestionsListPage, CreateNewQuestion, QuestionBuilderPlaygroundPage } from "./pages/QuestionBuilder";
-import { GeneralQuestionRender } from "./pages/Questions";
 import StreamChat from "./features/Chat/Chat";
-
-
+import AppLayout from "./layouts/AppLayout";
+import {
+  AccountPage,
+  EditQuestionPage,
+  Home,
+  LoginPage,
+  QuestionBuilder,
+  Questions,
+} from "./pages";
+import {
+  CreateNewQuestion,
+  QuestionBuilderPlaygroundPage,
+  QuestionsListPage,
+} from "./pages/QuestionBuilder";
+import { GeneralQuestionRender } from "./pages/Questions";
 
 function App() {
   return (
@@ -30,8 +39,14 @@ function App() {
                 <Route path="questions" element={<QuestionsListPage />} />
                 <Route index element={<QuestionsListPage />} />
                 <Route path="questions/new" element={<CreateNewQuestion />} />
-                <Route path="questions/:qid/edit" element={<EditQuestionPage />} />
-                <Route path="playground" element={<QuestionBuilderPlaygroundPage />} />
+                <Route
+                  path="questions/:qid/edit"
+                  element={<EditQuestionPage />}
+                />
+                <Route
+                  path="playground"
+                  element={<QuestionBuilderPlaygroundPage />}
+                />
                 <Route path="chat" element={<StreamChat />} />
               </Route>
             </Route>

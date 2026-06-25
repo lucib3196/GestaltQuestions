@@ -1,11 +1,16 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import { AuthProvider } from './features/Auth/AuthContext.tsx'
+import "./index.css";
+
 import { MathJaxContext } from "better-react-mathjax";
-import { DevTableProvider, AllTableProvider } from "./features/QuestionTables/instance/context";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import { ToastContainer } from "react-toastify";
+
+import App from "./App.tsx";
+import { AuthProvider } from "./features/Auth/AuthContext.tsx";
+import {
+  AllTableProvider,
+  DevTableProvider,
+} from "./features/QuestionTables/instance/context";
 
 /* =========================
    MathJax Config
@@ -28,12 +33,10 @@ const config = {
   },
 };
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-
     <MathJaxContext version={3} config={config}>
       <AuthProvider>
-
         <AllTableProvider>
           <DevTableProvider>
             <ToastContainer />
@@ -41,9 +44,7 @@ createRoot(document.getElementById('root')!).render(
             <App />
           </DevTableProvider>
         </AllTableProvider>
-
       </AuthProvider>
     </MathJaxContext>
-
   </StrictMode>,
-)
+);

@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { ComponentType } from "react";
+
 import { useSideBar } from "./SideBarContext";
 
 export type SidebarMenuItemProps<T = string> = {
@@ -37,7 +38,7 @@ export default function SidebarMenuItem<T = string>({
         selected
           ? "border-border-strong bg-surface-strong text-text shadow-soft"
           : "border-transparent bg-transparent text-text-muted hover:border-border hover:bg-surface-muted hover:text-text",
-        className
+        className,
       )}
     >
       {selected && (
@@ -48,7 +49,9 @@ export default function SidebarMenuItem<T = string>({
         <Icon
           className={clsx(
             "h-5 w-5 shrink-0 transition-colors",
-            selected ? "text-accent" : "text-text-soft group-hover:text-text-muted"
+            selected
+              ? "text-accent"
+              : "text-text-soft group-hover:text-text-muted",
           )}
         />
       )}
