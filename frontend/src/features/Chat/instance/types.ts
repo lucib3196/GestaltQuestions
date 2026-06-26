@@ -5,8 +5,6 @@ import {
 } from "@langchain/core/messages";
 import type { ContentBlock, ToolMessage } from "langchain";
 
-import { type ThreadRead as Thread } from "../../../services/Chat";
-
 // ------------------------
 // TOOL Types
 // ------------------------
@@ -71,50 +69,3 @@ export type CleanableContent = ContentBlock[] | string;
 // Payloads of interest
 
 export type UnknownRecord = Record<string, unknown>;
-
-// Thread Management
-export type ThreadState = {
-  threadId: string | null;
-  thread: Thread | null;
-  threads: Thread[];
-  isLoading: boolean;
-  error: string | null;
-};
-export type ThreadActions = {
-  setThreadId: (threadId: string | null) => void;
-  setThread: (thread: Thread | null) => void;
-  // Used for getting all of the users threads
-  setThreads: (threads: Thread[]) => void;
-  updateThread: (update: Thread) => void;
-
-  createThread: (
-    threadId: string,
-    token?: string | undefined | null,
-  ) => Promise<void>;
-  clearThread: () => void;
-};
-export type ThreadStore = ThreadState & ThreadActions;
-
-// Chat Options
-
-export type ValidAgents = "agent";
-export type ChatState = {
-  assistantId: ValidAgents;
-  externalMessage?: string | null;
-};
-export type ChatActions = {
-  setAssistant: (agent: ValidAgents) => void;
-  setExternalMessage: (val: string | null) => void;
-};
-export type ChatStore = ChatState & ChatActions;
-
-// export type ChatActions = {
-//   setThreadId: (threadId: string | null) => void;
-//   createdThread: (token: string, threadId: string) => Promise<ThreadRead>;
-//   getUserThreads: (token: string) => Promise<ThreadRead[]>;
-//   getUserThreadMessages: (
-//     token: string,
-//     threadId: string,
-//   ) => Promise<ThreadMessageDetails>;
-//   onThreadId: (val: string) => void;
-// };

@@ -6,6 +6,7 @@ import { ChatSession } from "../features/Chat/Chat";
 import ThreadMenuItem from "../features/Chat/components/ThreadMenuItem";
 import { useLoadUserThreads } from "../features/Chat/hooks";
 import { useThreadStore } from "../features/Chat/instance/store";
+import ChatConfig from "../features/Chat/components/ChatConfig";
 
 export default function ChatPage() {
     const previousChats = useThreadStore((s) => s.threads);
@@ -29,9 +30,11 @@ export default function ChatPage() {
                         <FaRegPenToSquare aria-hidden="true" />
                         New chat
                     </button>
+
+                    <ChatConfig />
                 </SideBarMenu.Content>
 
-                <div className="flex flex-2 flex-col overflow-y-auto overflow-x-hidden">
+                <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
                     <div className="mx-5 my-3 flex justify-start border-b text-base">
                         Chats
                     </div>
