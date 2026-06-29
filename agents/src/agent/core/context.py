@@ -61,13 +61,13 @@ def get_model(model_name: str) -> BaseChatModel:
 class ModelRoutingMiddleware(AgentMiddleware):
     """Route model calls to the model selected in runtime context."""
 
-    def wrap_tool_call(
-        self,
-        request: ToolCallRequest,
-        handler: Callable[[ToolCallRequest], ToolMessage | Command[Any]],
-    ) -> ToolMessage | Command[Any]:
-        """Delegate tool calls without modification."""
-        return handler(request)
+    # def wrap_tool_call(
+    #     self,
+    #     request: ToolCallRequest,
+    #     handler: Callable[[ToolCallRequest], ToolMessage | Command[Any]],
+    # ) -> ToolMessage | Command[Any]:
+    #     """Delegate tool calls without modification."""
+    #     return handler(request)
 
     def wrap_model_call(  # type: ignore
         self,
