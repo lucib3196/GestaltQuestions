@@ -1,15 +1,15 @@
 import clsx from "clsx";
 import type { ComponentType } from "react";
 import type { IconType } from "react-icons";
-import { useSideBar } from "./SideBarContext";
 
+import { useSideBar } from "./SideBarContext";
 
 // Actions for extending functionality
 export type SidebarMenuItemAction<T> = {
   label: string;
   icon: IconType;
   onClick: (item: T) => void;
-}
+};
 export type SidebarMenuItemProps<T = string> = {
   item: T;
   label: string;

@@ -13,8 +13,7 @@ export const ASSISTANTS = [
   {
     assistant_id: "core",
     label: "Core Assistant",
-    description:
-      "The core agent",
+    description: "The core agent",
   },
 ] as const satisfies readonly Assistant[];
 

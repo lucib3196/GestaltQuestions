@@ -1,5 +1,6 @@
-import { useState } from "react";
 import type { ActionRequest, ReviewConfig } from "langchain";
+import { useState } from "react";
+
 import { ApprovalActions } from "./ApprovalActions";
 import { ApprovalCardContainer } from "./ApprovalCardContainer";
 import { ApprovalCardDescription } from "./ApprovalCardDescription";
@@ -28,9 +29,10 @@ export function ApprovalCard({
   const [editedArgs, setEditedArgs] = useState<Record<string, unknown>>(
     actionRequest.args,
   );
-  const [originalArgs, setOriginalArgs] = useState<Record<string, unknown> | null>(
-    null,
-  );
+  const [originalArgs, setOriginalArgs] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
   const [showRejectInput, setShowRejectInput] = useState(false);
 
   const allowed = reviewConfig?.allowedDecisions ?? ["approve", "reject"];
@@ -49,7 +51,6 @@ export function ApprovalCard({
     setIsEditing(false);
   }
 
-
   const approvalHeaderMode = isEditing
     ? "editing"
     : showRejectInput
@@ -66,13 +67,15 @@ export function ApprovalCard({
         isEditing={isEditing}
         onArgsChange={setEditedArgs}
       />
-      {(!showRejectInput && !isEditing) ? <ApprovalActions
-        allowed={allowed}
-        onApprove={onApprove}
-        isProcessing={isProcessing}
-        setIsEditing={startEditing}
-        setIsRejected={() => setShowRejectInput((prev) => !prev)}
-      /> : null}
+      {!showRejectInput && !isEditing ? (
+        <ApprovalActions
+          allowed={allowed}
+          onApprove={onApprove}
+          isProcessing={isProcessing}
+          setIsEditing={startEditing}
+          setIsRejected={() => setShowRejectInput((prev) => !prev)}
+        />
+      ) : null}
       {showRejectInput && (
         <RejectReasonInput
           onReject={onReject}

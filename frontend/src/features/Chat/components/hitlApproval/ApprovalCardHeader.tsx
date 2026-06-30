@@ -1,7 +1,7 @@
+import type { IconType } from "react-icons";
 import { BsShieldFillCheck } from "react-icons/bs";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-import type { IconType } from "react-icons";
 
 type ApprovalCardHeaderMode = "editing" | "rejection" | "review";
 

@@ -1,19 +1,19 @@
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { useStream } from "@langchain/react";
 import { MathJax } from "better-react-mathjax";
+import type { HITLResponse } from "langchain";
+import { useCallback } from "react";
 
 import { aiURL } from "../../config/apiConfig";
 import { useAuth } from "../Auth";
 import { AIBubble, HumanBubble } from "./components/ChatBubble";
 import ChatContainer from "./components/ChatContainer";
 import { ChatInput } from "./components/ChatInput";
-import { useThreadStore } from "./instance/store";
-import { prepareMessage } from "./utils";
-import { useChatStore } from "./instance/store";
-import type { HITLResponse } from "langchain";
 import { ApprovalCard } from "./components/hitlApproval";
 import { useHITLReview } from "./hooks";
-import { useCallback } from "react";
+import { useThreadStore } from "./instance/store";
+import { useChatStore } from "./instance/store";
+import { prepareMessage } from "./utils";
 
 export function ChatSession() {
   // User
@@ -35,7 +35,7 @@ export function ChatSession() {
     },
   });
 
-  const { messages,  interrupt } = stream;
+  const { messages, interrupt } = stream;
 
   const submitHITLResume = useCallback(
     (resume: HITLResponse) => {

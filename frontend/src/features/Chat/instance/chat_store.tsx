@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import type { AssistantId } from "../constants/assistants";
-import { DEFAULT_CHAT_MODEL, type ChatModel } from "../constants/models";
+import { type ChatModel, DEFAULT_CHAT_MODEL } from "../constants/models";
 
 export type ChatState = {
   assistantId: AssistantId;

@@ -1,10 +1,9 @@
+import { useState } from "react";
+
 import {
   approvalActionButtonStyles,
   approvalActionGroupClassName,
 } from "./ApprovalActions";
-import {
-  useState
-} from "react";
 export function RejectReasonInput({
   isProcessing,
   onReject,
@@ -14,7 +13,7 @@ export function RejectReasonInput({
   onReject: (reason: string) => void;
   setIsRejected: () => void;
 }) {
-  const [rejectReason, setRejectReason] = useState<string>("")
+  const [rejectReason, setRejectReason] = useState<string>("");
   return (
     <div className="border-t border-border bg-surface-secondary px-4 py-3 space-y-3">
       <label

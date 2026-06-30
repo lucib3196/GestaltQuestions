@@ -1,0 +1,46 @@
+{
+  "question": {
+    "text": "A car is traveling along a straight rode at a constant speed of 100mph for 5 hours what is the total distance covered",
+    "is_adaptive": true,
+    "solution_guide": null,
+    "final_answer": null
+  },
+  "prompt": "Generate a question.html file for the following",
+  "source_example_col": "question",
+  "target_example_col": "question.html",
+  "formatted_examples": "Input Example: a car travels at a speed of 60 km/h for 2 hours, at a speed of 40 km/h for 3 hours, at a speed of 50 km/h for 1 hour.\n what is average speed (in km/h)?\n                Output Example: <pl-question-panel>\n  <p> A car travels at a speed of {{params.v1}} {{params.unitsSpeed}} for {{params.t1}} {{params.unitsTime}}, at a speed of {{params.v2}} {{params.unitsSpeed}} for {{params.t2}} {{params.unitsTime}}, at a speed of {{params.v3}} {{params.unitsSpeed}} for {{params.t3}} {{params.unitsTime}}.</p>\n  <p> What is average speed (in {{params.unitsSpeed}})?</p>\n</pl-question-panel>\n\n<pl-number-input answers-name=\"va\" comparison=\"sigfig\" digits=\"3\" label=\"Average speed ({{params.unitsSpeed}})\"></pl-number-input>\n\n                \nInput Example: a 60 km/h - 0 km/h braking distance for a car is 20 meters. how far (in meters) will the car travel in 4 seconds?\n\ndistance (in meters): [input box]\n                Output Example: <pl-question-panel>\n  <p> A {{params.v1}} {{params.unitsSpeed}} - 0 {{params.unitsSpeed}} braking distance for a car is {{params.d1}} {{params.unitsDist}}. How far (in {{params.unitsDist}}) will the car travel in {{params.t1}} {{params.unitsTime}}?</p>\n</pl-question-panel>\n\n<pl-number-input answers-name=\"d\" comparison=\"sigfig\" digits=\"3\" label=\"Distance (in {{params.unitsDist}})\"></pl-number-input>\n                ",
+  "retrieved_documents": [
+    {
+      "id": "QuestionDataV2_06122025_classified:112:question->question.html",
+      "metadata": {
+        "source": "QuestionDataV2_06122025_classified",
+        "index": 112,
+        "isAdaptive": true,
+        "output_is_nan": false,
+        "input_col": "question",
+        "output_col": "question.html"
+      },
+      "page_content": "Input Example: a car travels at a speed of 60 km/h for 2 hours, at a speed of 40 km/h for 3 hours, at a speed of 50 km/h for 1 hour.\n what is average speed (in km/h)?\n                Output Example: <pl-question-panel>\n  <p> A car travels at a speed of {{params.v1}} {{params.unitsSpeed}} for {{params.t1}} {{params.unitsTime}}, at a speed of {{params.v2}} {{params.unitsSpeed}} for {{params.t2}} {{params.unitsTime}}, at a speed of {{params.v3}} {{params.unitsSpeed}} for {{params.t3}} {{params.unitsTime}}.</p>\n  <p> What is average speed (in {{params.unitsSpeed}})?</p>\n</pl-question-panel>\n\n<pl-number-input answers-name=\"va\" comparison=\"sigfig\" digits=\"3\" label=\"Average speed ({{params.unitsSpeed}})\"></pl-number-input>\n\n                ",
+      "type": "Document"
+    },
+    {
+      "id": "QuestionDataV2_06122025_classified:248:question->question.html",
+      "metadata": {
+        "source": "QuestionDataV2_06122025_classified",
+        "index": 248,
+        "isAdaptive": true,
+        "output_is_nan": false,
+        "input_col": "question",
+        "output_col": "question.html"
+      },
+      "page_content": "Input Example: a 60 km/h - 0 km/h braking distance for a car is 20 meters. how far (in meters) will the car travel in 4 seconds?\n\ndistance (in meters): [input box]\n                Output Example: <pl-question-panel>\n  <p> A {{params.v1}} {{params.unitsSpeed}} - 0 {{params.unitsSpeed}} braking distance for a car is {{params.d1}} {{params.unitsDist}}. How far (in {{params.unitsDist}}) will the car travel in {{params.t1}} {{params.unitsTime}}?</p>\n</pl-question-panel>\n\n<pl-number-input answers-name=\"d\" comparison=\"sigfig\" digits=\"3\" label=\"Distance (in {{params.unitsDist}})\"></pl-number-input>\n                ",
+      "type": "Document"
+    }
+  ],
+  "code": {
+    "filename": "question.html",
+    "content": "<pl-question-panel>\n  <p> A car is traveling along a straight road at a constant speed of {{params.v1}} {{params.unitsSpeed}} for {{params.t1}} {{params.unitsTime}}. What is the total distance covered?</p>\n</pl-question-panel>\n\n<pl-number-input answers-name=\"d\" comparison=\"sigfig\" digits=\"3\" label=\"Total distance (in {{params.unitsDist}})\"></pl-number-input>"
+  },
+  "k": 2,
+  "testing": true
+}

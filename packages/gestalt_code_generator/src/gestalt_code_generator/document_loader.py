@@ -1,12 +1,14 @@
-from langchain_core.document_loaders import BaseLoader
-from langchain_core.documents import Document
 from pathlib import Path
 from typing import Iterator
+
 import pandas as pd
+from langchain_core.document_loaders import BaseLoader
+from langchain_core.documents import Document
 
 
 class QuestionDocumentLoaderError(Exception):
     """Raised when QuestionDocumentLoader cannot load or validate input data."""
+
 
 class QuestionDocumentLoader(BaseLoader):
     """Load question examples from a CSV file as LangChain documents.
@@ -20,7 +22,6 @@ class QuestionDocumentLoader(BaseLoader):
 
     def __init__(self, input_col: str, output_col: str, csv_path: str | Path):
         """Initialize the loader with CSV path and example column names."""
-
         self._file_path = csv_path
         self._input_example = input_col
         self._ouput_example = output_col
@@ -121,8 +122,6 @@ if __name__ == "__main__":
     )
     loader._export_csv("src/gestalt_code_generator/data/questionDataProcessed.csv")
     docs = list(loader.lazy_load())
-    print(f"Loaded {len(docs)} documents.\n")
     # for doc in docs:
     #     print(type(doc))
     #     print(doc)
-    print(docs[0])

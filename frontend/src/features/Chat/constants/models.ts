@@ -1,10 +1,8 @@
-
-
 export type CHAT_INFO = {
-  provider: string,
-  value: string,
-  label:string
-}
+  provider: string;
+  value: string;
+  label: string;
+};
 export const CHAT_MODELS = [
   {
     provider: "google_genai",

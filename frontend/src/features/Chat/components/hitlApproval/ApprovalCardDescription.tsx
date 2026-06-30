@@ -1,4 +1,3 @@
-
 function formatValue(value: unknown): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "string") return value;
@@ -21,9 +20,6 @@ export function ApprovalCardDescription({
   isEditing: boolean;
   onArgsChange: (args: Record<string, unknown>) => void;
 }) {
-
-
-
   function handleArgChange(key: string, value: string) {
     onArgsChange({
       ...args,
