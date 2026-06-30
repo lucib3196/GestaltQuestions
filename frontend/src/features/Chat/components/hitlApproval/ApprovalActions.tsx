@@ -1,7 +1,12 @@
+import clsx from "clsx";
 import type { ReviewConfig } from "langchain";
 
 type AllowedDecisions = NonNullable<ReviewConfig["allowedDecisions"]>;
 type ApprovalActionButtonVariant = AllowedDecisions[number] | "cancel";
+type HITLButtonProps = React.ComponentPropsWithoutRef<"button"> & {
+  label: string
+  variant: ApprovalActionButtonVariant;
+}
 
 const approvalActionButtonBase =
   "inline-flex items-center justify-center gap-1.5 rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors " +
@@ -28,6 +33,21 @@ export const approvalActionButtonStyles = {
     " border-border bg-button-secondary text-text-muted hover:border-border-strong hover:bg-surface-muted hover:text-text",
 } satisfies Record<ApprovalActionButtonVariant, string>;
 
+
+
+export function HITLButton({
+  label,
+  variant,
+  ...rest
+}: HITLButtonProps) {
+  return (
+    <button className={clsx(approvalActionButtonStyles[variant])} {...rest}>
+      {label}
+    </button>
+  );
+}
+
+
 export function ApprovalActions({
   allowed,
   isProcessing,
@@ -37,7 +57,7 @@ export function ApprovalActions({
 }: {
   allowed: AllowedDecisions;
   isProcessing: boolean;
-  onApprove: ()=>void;
+  onApprove: () => void;
   setIsRejected: () => void;
   setIsEditing: () => void;
 }) {

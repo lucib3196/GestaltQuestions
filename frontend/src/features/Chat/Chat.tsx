@@ -7,15 +7,13 @@ import { useAuth } from "../Auth";
 import { AIBubble, HumanBubble } from "./components/ChatBubble";
 import ChatContainer from "./components/ChatContainer";
 import { ChatInput } from "./components/ChatInput";
-import RenderToolCalls from "./components/ToolCallRender";
 import { useThreadStore } from "./instance/store";
 import { prepareMessage } from "./utils";
 import { useChatStore } from "./instance/store";
-import { type InterruptOnConfig } from "langchain";
-import { BaseMessage } from "@langchain/core/messages";
-import type { HITLRequest, HITLResponse } from "langchain";
+import type { HITLResponse } from "langchain";
 import { ApprovalCard } from "./components/hitlApproval";
-import { useState } from "react";
+import { useHITLReview } from "./hooks";
+import { useCallback } from "react";
 
 export function ChatSession() {
   // User
@@ -37,8 +35,26 @@ export function ChatSession() {
     },
   });
 
-  const { messages, isLoading, interrupt } = stream;
-  const [isProcessing, setIsProcessing] = useState(false);
+  const { messages,  interrupt } = stream;
+
+  const submitHITLResume = useCallback(
+    (resume: HITLResponse) => {
+      return stream.submit(null, { command: { resume } });
+    },
+    [stream],
+  );
+  const {
+    hitlRequest,
+    actionRequests,
+    reviewConfigs,
+    isProcessing,
+    handleApprove,
+    handleReject,
+    handleEdit,
+  } = useHITLReview({
+    interruptValue: interrupt?.value,
+    submitResume: submitHITLResume,
+  });
 
   const handleSubmit = async (text: string, images?: string[]) => {
     const content = await prepareMessage(text, images);
@@ -58,78 +74,6 @@ export function ChatSession() {
       },
     );
   };
-
-  // Unpack human in the loop validation.
-  const hitlRequest = interrupt?.value as HITLRequest | undefined;
-  const actionRequests = hitlRequest?.actionRequests ?? [];
-  const reviewConfigs = hitlRequest?.reviewConfigs ?? [];
-
-  console.log("Interrupt", reviewConfigs);
-
-  // Handle approve for HITL
-  const handleApprove = async () => {
-    if (!hitlRequest) return;
-    setIsProcessing(true);
-    try {
-      const resume: HITLResponse = {
-        decisions: actionRequests.map(() => ({
-          type: "approve",
-        })),
-      };
-      await stream.submit(null, { command: { resume: resume } });
-      console.log("Sent request")
-      // await stream.respond(resume);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleReject = async (index: number, reason: string) => {
-    if (!hitlRequest) return;
-    setIsProcessing(true);
-    try {
-      const resume: HITLResponse = {
-        decisions: actionRequests.map((_, i) =>
-          i === index
-            ? { type: "reject" as const, message: reason || "User rejected" }
-            : {
-                type: "reject" as const,
-                message: "Rejected along with other actions",
-              },
-        ),
-      };
-      await stream.submit(null, { command: { resume: resume } });
-      
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-  const handleEdit = async (
-    index: number,
-    editedArgs: Record<string, unknown>,
-  ) => {
-    if (!hitlRequest) return;
-    setIsProcessing(true);
-    try {
-      const originalAction = actionRequests[index];
-      const resume: HITLResponse = {
-        decisions: actionRequests.map((_, i) =>
-          i === index
-            ? {
-                type: "edit" as const,
-                editedAction: { name: originalAction.name, args: editedArgs },
-              }
-            : { type: "approve" as const },
-        ),
-      };
-      await stream.submit(null, { command: { resume: resume } });
-      // await stream.respond(resume);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const hasMessages = messages.length > 0;
 
   return (
     <ChatContainer
@@ -167,7 +111,7 @@ export function ChatSession() {
                 key={idx}
                 actionRequest={actionRequest}
                 reviewConfig={reviewConfigs[idx]}
-                onApprove={() => handleApprove()}
+                onApprove={() => handleApprove(idx)}
                 onReject={(reason) => handleReject(idx, reason)}
                 onEdit={(editedArgs) => handleEdit(idx, editedArgs)}
                 isProcessing={isProcessing}
