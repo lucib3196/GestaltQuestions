@@ -110,7 +110,6 @@ def build_prompt(state: State, runtime: Runtime[GeneratorContext]):
 
 def generate_code(state: State, runtime: Runtime[GeneratorContext]):
     prompt = state.modified_prompt
-    print("Got prompt", prompt)
     if not prompt:
         raise ValueError("Cannot determine prompt")
     model = init_chat_model(
@@ -143,8 +142,7 @@ if __name__ == "__main__":
     from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
     from gestalt_code_generator.document_loader import QuestionDocumentLoader
-    from gestalt_code_generator.utils import to_serializable
-    from gestalt_code_generator.utils import save_graph
+    from gestalt_code_generator.utils import save_graph, to_serializable
 
     save_graph(graph, "./base_Generator.png")
 

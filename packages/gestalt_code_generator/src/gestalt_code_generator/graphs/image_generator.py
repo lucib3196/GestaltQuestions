@@ -124,6 +124,6 @@ if __name__ == "__main__":
     png_data = graph.get_graph().draw_mermaid_png()
     with open("graph.png", "wb") as f:
         f.write(png_data)
-    image_bytes = base64.b64decode(result.image) # type: ignore
+    image_bytes = base64.b64decode(result.image)  # type: ignore
     with open("generated_image.png", "wb") as f:
         f.write(image_bytes)
