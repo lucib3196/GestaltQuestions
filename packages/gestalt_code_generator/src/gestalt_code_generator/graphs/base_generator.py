@@ -4,7 +4,6 @@ from typing import Annotated, List
 
 from langchain.chat_models import init_chat_model
 from langchain_core.documents import Document
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langgraph.graph import END, START, StateGraph
 from langgraph.runtime import Runtime
 from langgraph.types import Command
@@ -13,31 +12,32 @@ from pydantic import BaseModel
 from gestalt_code_generator.model import (
     CodeArtifact,
     CodeResponse,
-    ContextSchema,
     ExampleColumn,
     Question,
+    GeneratorContext,
 )
-from gestalt_code_generator.utils import to_serializable
 
 
-class State(BaseModel):
-    # Required fields
+class InputState(BaseModel):
     question: Question
     prompt: str
+    # examples
     source_example_col: ExampleColumn
     target_example_col: ExampleColumn
 
+    # Number of examples to retrieve
+    k: int = 2
+    testing: bool = False
+
+
+class State(InputState):
     # Storing the retrieved examples and formatted
     formatted_examples: str | None = None
     retrieved_documents: Annotated[List[Document], operator.add] = []
     code: CodeArtifact | None = None
 
-    # Additional Configuration
-    k: int = 2
-    testing: bool = False
 
-
-def retrieve_examples(state: State, runtime: Runtime[ContextSchema]):
+def retrieve_examples(state: InputState, runtime: Runtime[GeneratorContext]):
     source_question = state.question.text
     # Construct filter
     filter = {
@@ -74,7 +74,7 @@ def retrieve_examples(state: State, runtime: Runtime[ContextSchema]):
     )
 
 
-def generate_code(state: State, runtime: Runtime[ContextSchema]):
+def generate_code(state: State, runtime: Runtime[GeneratorContext]):
     original_question = state.question.text
     examples = state.formatted_examples
     base_prompt = state.prompt
@@ -91,7 +91,7 @@ def generate_code(state: State, runtime: Runtime[ContextSchema]):
     return {"code": CodeArtifact(filename=state.target_example_col, content=code)}
 
 
-builder = StateGraph(State, context_schema=ContextSchema)
+builder = StateGraph(State, input_schema=InputState, context_schema=GeneratorContext)
 builder.add_node("retriever", retrieve_examples)
 builder.add_node("generate_code", generate_code)
 builder.add_edge(START, "retriever")
@@ -105,8 +105,10 @@ if __name__ == "__main__":
 
     from dotenv import load_dotenv
     from langchain_core.vectorstores import InMemoryVectorStore
+    from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
     from gestalt_code_generator.document_loader import QuestionDocumentLoader
+    from gestalt_code_generator.utils import to_serializable
 
     load_dotenv()
     csv_path = Path(
@@ -132,7 +134,7 @@ if __name__ == "__main__":
             target_example_col="question.html",
             testing=True,
         ),
-        context=ContextSchema(
+        context=GeneratorContext(
             model="gemini-2.5-flash",
             model_provider="google_genai",
             vectorstore=vector_store,

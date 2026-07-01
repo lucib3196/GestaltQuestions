@@ -26,3 +26,9 @@ def to_serializable(obj: Any) -> Any:
         return obj.as_posix()
 
     return obj
+
+
+def save_graph(graph, save_path: Path | str):
+    png_data = graph.get_graph().draw_mermaid_png()
+    with open(save_path, "wb") as f:
+        f.write(png_data)
