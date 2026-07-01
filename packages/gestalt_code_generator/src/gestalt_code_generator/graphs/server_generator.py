@@ -1,138 +1,23 @@
-from pydantic import BaseModel
-from gestalt_code_generator.model.models import CodeArtifact
-from .base_generator import InputState, State, graph as subgraph
-from gestalt_code_generator.model import GeneratorContext
-
-
 import json
-import operator
-from typing import Annotated, List
-from gestalt_code_generator.utils import save_graph
+
 from langchain.chat_models import init_chat_model
-from langchain_core.documents import Document
 from langgraph.graph import END, START, StateGraph
 from langgraph.runtime import Runtime
-from langgraph.types import Command
-from pydantic import BaseModel
 
 from gestalt_code_generator.model import (
     CodeArtifact,
     CodeResponse,
-    ExampleColumn,
-    Question,
     GeneratorContext,
+    Question,
 )
+from gestalt_code_generator.model.models import CodeArtifact
+from gestalt_code_generator.utils import load_prompt, save_graph
 
-PREDEFINED_PARAMETERS_PROMPT = """
-You are modifying generated server code for a PrairieLearn-style question.
+from .base_generator import InputState, State
+from .base_generator import graph as subgraph
 
-Goal:
-Update the existing `generate` function so it supports both random and deterministic generation.
-
-Required structure:
-1. The `generate` function must accept one optional positional parameter.
-2. The parameter must default to `0`.
-3. A value of `0` means: preserve the original random generation behavior.
-4. A value of `1` means: use deterministic predefined values extracted from the original question text.
-5. Extract deterministic values from the original question text below, not from the randomized code.
-6. Keep the existing return shape, output keys, helper functions, imports, and surrounding code unless a change is required for this feature.
-7. Preserve all existing randomized behavior when the parameter is omitted or set to `0`.
-8. Return only the complete updated code. Do not include explanation or markdown.
-
-Expected signatures:
-Python:
-```py
-def generate(predefined: int = 0):
-```
-
-JavaScript:
-```js
-function generate(predefined = 0) {
-```
-
-Python examples:
-```py
-def generate(predefined: int = 0):
-    if predefined == 1:
-        speed = 100
-        time = 5
-        distance = 500
-    else:
-        speed = random.randint(40, 120)
-        time = random.randint(1, 8)
-        distance = speed * time
-
-    return {
-        "params": {"speed": speed, "time": time},
-        "correct_answers": {"distance": distance},
-    }
-```
-
-```py
-def generate(predefined: int = 0):
-    if predefined == 1:
-        a = 3
-        b = 7
-    else:
-        a = random.randint(1, 9)
-        b = random.randint(1, 9)
-
-    return {
-        "params": {"a": a, "b": b},
-        "correct_answers": {"sum": a + b},
-    }
-```
-
-JavaScript examples:
-```js
-function generate(predefined = 0) {
-    let speed;
-    let time;
-    let distance;
-
-    if (predefined === 1) {
-        speed = 100;
-        time = 5;
-        distance = 500;
-    } else {
-        speed = Math.floor(Math.random() * 81) + 40;
-        time = Math.floor(Math.random() * 8) + 1;
-        distance = speed * time;
-    }
-
-    return {
-        params: { speed, time },
-        correct_answers: { distance },
-    };
-}
-```
-
-```js
-function generate(predefined = 0) {
-    let a;
-    let b;
-
-    if (predefined === 1) {
-        a = 3;
-        b = 7;
-    } else {
-        a = Math.floor(Math.random() * 9) + 1;
-        b = Math.floor(Math.random() * 9) + 1;
-    }
-
-    return {
-        params: { a, b },
-        correct_answers: { sum: a + b },
-    };
-}
-```
-
-Original question:
-__ORIGINAL_QUESTION__
-
-Code to modify:
-__CODE__
-"""
+PREDEFINED_PARAMETERS_PROMPT = load_prompt("predefined_parameters_prompt.txt")
+FINAL_ANSWERS_PROMPT = load_prompt("final_answers_prompt.txt")
 
 
 def add_predefined_parameters(state: State, runtime: Runtime[GeneratorContext]):
@@ -151,6 +36,36 @@ def add_predefined_parameters(state: State, runtime: Runtime[GeneratorContext]):
     return {"code": CodeArtifact(filename=state.code.filename, content=code)}
 
 
+def router(state: State, runtime: Runtime[GeneratorContext]):
+    if state.question.final_answer:
+        return "add_final_answers"
+    else:
+        return "stop"
+
+
+def add_final_answers(state: State, runtime: Runtime[GeneratorContext]):
+    if state.code is None:
+        raise ValueError("add_final_answers requires state.code to be present.")
+
+    final_answers = state.question.final_answer
+    if not final_answers:
+        return {"code": state.code}
+
+    original_question = state.question.text
+    code = state.code.content
+    prompt = (
+        FINAL_ANSWERS_PROMPT.replace("__ORIGINAL_QUESTION__", original_question)
+        .replace("__FINAL_ANSWERS__", final_answers)
+        .replace("__CODE__", code)
+    )
+    model = init_chat_model(
+        model=runtime.context.model, model_provider=runtime.context.model_provider
+    ).with_structured_output(CodeResponse)
+    response = model.invoke(prompt)
+    code = CodeResponse.model_validate(response).code
+    return {"code": CodeArtifact(filename=state.code.filename, content=code)}
+
+
 builder = StateGraph(
     State,
     input_schema=InputState,
@@ -158,10 +73,17 @@ builder = StateGraph(
 )
 builder.add_node("generate_base_code", subgraph)
 builder.add_node("add_predefined_parameters", add_predefined_parameters)
+builder.add_node("add_final_answers", add_final_answers)
 
 builder.add_edge(START, "generate_base_code")
 builder.add_edge("generate_base_code", "add_predefined_parameters")
-builder.add_edge("add_predefined_parameters", END)
+
+builder.add_conditional_edges(
+    "add_predefined_parameters",
+    router,
+    {"add_final_answers": "add_final_answers", "stop": END},
+)
+builder.add_edge("add_final_answers", END)
 
 
 graph = builder.compile()
@@ -208,5 +130,5 @@ if __name__ == "__main__":
         ),
     )
     Path("./output").write_text(json.dumps(to_serializable(result), indent=2))
-    
+
     save_graph(graph, "./server_generator.png")

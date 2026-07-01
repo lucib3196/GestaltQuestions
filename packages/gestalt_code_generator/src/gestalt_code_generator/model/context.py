@@ -1,5 +1,6 @@
-from langchain_core.vectorstores import VectorStore
 from dataclasses import dataclass
+
+from langchain_core.vectorstores import VectorStore
 
 
 # Context for the vectorstore to use

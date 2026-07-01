@@ -13,8 +13,8 @@ from gestalt_code_generator.model import (
     CodeArtifact,
     CodeResponse,
     ExampleColumn,
-    Question,
     GeneratorContext,
+    Question,
 )
 
 
