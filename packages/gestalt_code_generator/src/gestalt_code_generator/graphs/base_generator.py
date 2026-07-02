@@ -1,20 +1,23 @@
-import json
-import operator
-from typing import Annotated, List
+
 
 from langchain.chat_models import init_chat_model
 from langchain_core.documents import Document
 from langgraph.graph import END, START, StateGraph
 from langgraph.runtime import Runtime
 from langgraph.types import Command
-from pydantic import BaseModel
 
 from gestalt_code_generator.model import (
     CodeArtifact,
     CodeResponse,
-    ExampleColumn,
     GeneratorContext,
     Question,
+)
+from gestalt_code_generator.model.graph_models import (
+    BaseGeneratorInput,
+    BaseGeneratorState,
+)
+from gestalt_code_generator.vectorstore.vectorstore import (
+    vector_store,
 )
 
 SOLUTION_GUIDE_PROMPT = """
@@ -26,28 +29,7 @@ matches the intended solution approach.
 """
 
 
-class InputState(BaseModel):
-    question: Question
-    prompt: str
-    question_html: str | None = None
-    # examples
-    source_example_col: ExampleColumn
-    target_example_col: ExampleColumn
-
-    # Number of examples to retrieve
-    k: int = 2
-    testing: bool = False
-
-
-class State(InputState):
-    # Storing the retrieved examples and formatted
-    modified_prompt: str | None = None
-    formatted_examples: str | None = None
-    retrieved_documents: Annotated[List[Document], operator.add] = []
-    code: CodeArtifact | None = None
-
-
-def retrieve_examples(state: InputState, runtime: Runtime[GeneratorContext]):
+def retrieve_examples(state: BaseGeneratorInput, runtime: Runtime[GeneratorContext]):
     source_question = state.question.text
     # Construct filter
     filter = {
@@ -84,7 +66,7 @@ def retrieve_examples(state: InputState, runtime: Runtime[GeneratorContext]):
     )
 
 
-def build_prompt(state: State, runtime: Runtime[GeneratorContext]):
+def build_prompt(state: BaseGeneratorState, runtime: Runtime[GeneratorContext]):
     original_question = state.question.text
     question_html = state.question_html
     solution_guide = state.question.solution_guide
@@ -108,7 +90,7 @@ def build_prompt(state: State, runtime: Runtime[GeneratorContext]):
     )
 
 
-def generate_code(state: State, runtime: Runtime[GeneratorContext]):
+def generate_code(state: BaseGeneratorState, runtime: Runtime[GeneratorContext]):
     prompt = state.modified_prompt
     if not prompt:
         raise ValueError("Cannot determine prompt")
@@ -120,7 +102,9 @@ def generate_code(state: State, runtime: Runtime[GeneratorContext]):
     return {"code": CodeArtifact(filename=state.target_example_col, content=code)}
 
 
-builder = StateGraph(State, input_schema=InputState, context_schema=GeneratorContext)
+builder = StateGraph(
+    BaseGeneratorState, input_schema=BaseGeneratorInput, context_schema=GeneratorContext
+)
 builder.add_node("retriever", retrieve_examples)
 builder.add_node("generate_code", generate_code)
 builder.add_node("build_prompt", build_prompt)
@@ -135,31 +119,13 @@ builder.add_edge("generate_code", END)
 graph = builder.compile()
 
 if __name__ == "__main__":
+    from gestalt_code_generator.utils import to_serializable
     from pathlib import Path
-
-    from dotenv import load_dotenv
-    from langchain_core.vectorstores import InMemoryVectorStore
-    from langchain_google_genai import GoogleGenerativeAIEmbeddings
-
-    from gestalt_code_generator.document_loader import QuestionDocumentLoader
-    from gestalt_code_generator.utils import save_graph, to_serializable
-
-    save_graph(graph, "./base_Generator.png")
-
-    load_dotenv()
-    csv_path = Path(r"./data/QuestionDataV2_06122025_classified.csv").resolve()
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
-    vector_store = InMemoryVectorStore(embeddings)
-    loader = QuestionDocumentLoader(
-        input_col="question.html", output_col="server.js", csv_path=csv_path
-    )
-    docs = list(loader.lazy_load())
-    vector_store.add_documents(docs)
-    results = vector_store.as_retriever().invoke(
-        "A car is traveling along a straight rode"
-    )
+    from gestalt_code_generator.vectorstore import build_vectorstore_from_csv
+    import json
+    vector_store = build_vectorstore_from_csv()
     result = graph.invoke(
-        State(
+        BaseGeneratorState(
             question=Question(
                 text="A car is traveling along a straight rode at a constant speed of 100mph for 5 hours what is the total distance covered",
                 solution_guide=(

@@ -10,17 +10,22 @@ from gestalt_code_generator.model import (
     GeneratorContext,
     Question,
 )
+from gestalt_code_generator.model.graph_models import (
+    BaseGeneratorInput,
+    BaseGeneratorState,
+)
 from gestalt_code_generator.model.models import CodeArtifact
 from gestalt_code_generator.utils import load_prompt, save_graph
 
-from .base_generator import InputState, State
 from .base_generator import graph as subgraph
 
 PREDEFINED_PARAMETERS_PROMPT = load_prompt("predefined_parameters_prompt.txt")
 FINAL_ANSWERS_PROMPT = load_prompt("final_answers_prompt.txt")
 
 
-def add_predefined_parameters(state: State, runtime: Runtime[GeneratorContext]):
+def add_predefined_parameters(
+    state: BaseGeneratorState, runtime: Runtime[GeneratorContext]
+):
     if state.code is None:
         raise ValueError("add_predefined_parameters requires state.code to be present.")
     original_question = state.question.text
@@ -36,14 +41,14 @@ def add_predefined_parameters(state: State, runtime: Runtime[GeneratorContext]):
     return {"code": CodeArtifact(filename=state.code.filename, content=code)}
 
 
-def router(state: State, runtime: Runtime[GeneratorContext]):
+def router(state: BaseGeneratorState, runtime: Runtime[GeneratorContext]):
     if state.question.final_answer:
         return "add_final_answers"
     else:
         return "stop"
 
 
-def add_final_answers(state: State, runtime: Runtime[GeneratorContext]):
+def add_final_answers(state: BaseGeneratorState, runtime: Runtime[GeneratorContext]):
     if state.code is None:
         raise ValueError("add_final_answers requires state.code to be present.")
 
@@ -67,8 +72,8 @@ def add_final_answers(state: State, runtime: Runtime[GeneratorContext]):
 
 
 builder = StateGraph(
-    State,
-    input_schema=InputState,
+    BaseGeneratorState,
+    input_schema=BaseGeneratorInput,
     context_schema=GeneratorContext,
 )
 builder.add_node("generate_base_code", subgraph)
@@ -88,33 +93,18 @@ builder.add_edge("add_final_answers", END)
 
 graph = builder.compile()
 
+# Define the specific graphs for server.js and server.py
+
 
 if __name__ == "__main__":
-    from pathlib import Path
-
-    from dotenv import load_dotenv
-    from langchain_core.vectorstores import InMemoryVectorStore
-    from langchain_google_genai import GoogleGenerativeAIEmbeddings
-
-    from gestalt_code_generator.document_loader import QuestionDocumentLoader
     from gestalt_code_generator.utils import to_serializable
+    from pathlib import Path
+    from gestalt_code_generator.vectorstore import build_vectorstore_from_csv
+    import json
 
-    load_dotenv()
-    csv_path = Path(
-        r"gestalt_code_generator/data/QuestionDataV2_06122025_classified.csv"
-    ).resolve()
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
-    vector_store = InMemoryVectorStore(embeddings)
-    loader = QuestionDocumentLoader(
-        input_col="question.html", output_col="server.js", csv_path=csv_path
-    )
-    docs = list(loader.lazy_load())
-    vector_store.add_documents(docs)
-    results = vector_store.as_retriever().invoke(
-        "A car is traveling along a straight rode"
-    )
+    vector_store = build_vectorstore_from_csv()
     result = graph.invoke(
-        State(
+        BaseGeneratorState(
             question=Question(
                 text="A car is traveling along a straight rode at a constant speed of 100mph for 5 hours what is the total distance covered"
             ),

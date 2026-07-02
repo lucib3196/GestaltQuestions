@@ -14,6 +14,7 @@ import { useHITLReview } from "./hooks";
 import { useThreadStore } from "./instance/store";
 import { useChatStore } from "./instance/store";
 import { prepareMessage } from "./utils";
+import RenderToolCalls from "./components/ToolCallRender";
 
 export function ChatSession() {
   // User
@@ -96,9 +97,9 @@ export function ChatSession() {
           if (msg.type === "ai") {
             return <AIBubble key={msg.id} msg={msg as AIMessage}></AIBubble>;
           }
-          // if (msg.type === "tool") {
-          //   return <RenderToolCalls key={msg.id} msg={msg} />;
-          // }
+          if (msg.type === "tool") {
+            return <RenderToolCalls key={msg.id} msg={msg} />;
+          }
 
           return null;
         })}

@@ -18,7 +18,7 @@ export type ChatActions = {
 export type ChatStore = ChatState & ChatActions;
 
 const initialChatState: ChatState = {
-  assistantId: "agent",
+  assistantId: "agent_gestalt",
   model: DEFAULT_CHAT_MODEL,
 };
 

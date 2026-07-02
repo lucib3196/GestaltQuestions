@@ -6,6 +6,8 @@ CodeFilename = Literal["server.js", "server.py", "solution.html", "question.html
 ExampleColumn = Literal[
     "question", "server.js", "server.py", "solution.html", "question.html"
 ]
+ServerExampleColumn = Literal["server.js", "server.py"]
+QuestionExampleColumn = Literal["question.html"]
 
 
 class Question(BaseModel):
