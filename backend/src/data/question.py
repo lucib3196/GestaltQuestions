@@ -1,14 +1,18 @@
 import asyncio
+from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
-from typing import Any, Dict, Literal, Sequence, Optional
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import ValidationError
-from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import Session, delete, select
 from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.sql.elements import ColumnElement
+from sqlmodel import Session, delete, select
+
 from src.app_types.general import ID
-from src.core import logger
+from src.core.logging import logger
+from src.data import generic as gdb
 from src.data.exceptions.question_exceptions import (
     QuestionCreateError,
     QuestionDeleteError,
@@ -18,24 +22,22 @@ from src.data.exceptions.question_exceptions import (
     QuestionUpdateError,
     QuestionValidationError,
 )
-from src.data import generic as gdb
 from src.model.question import (
     Question,
     QuestionCreate,
+    QuestionFilter,
     QuestionRead,
     QuestionRelationships,
     QuestionType,
     QuestionUpdate,
-    QuestionFilter,
-    Topic,
     Status,
+    Topic,
 )
 from src.utils import convert_uuid
-from sqlalchemy.sql.elements import ColumnElement
 
 
 class QuestionDB:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         """
         Initialize the question data access layer.
 
@@ -92,12 +94,11 @@ class QuestionDB:
             A sequence of Question ORM instances owned by the creator.
         """
         try:
-            questions = self.session.exec(
+            return self.session.exec(
                 select(Question).where(
                     Question.created_by_id == convert_uuid(created_by_id)
                 )
             ).all()
-            return questions
         except SQLAlchemyError as e:
             self.session.rollback()
             logger.exception("[QuestionDB] Failed to retrieve questions by creator")
@@ -179,8 +180,7 @@ class QuestionDB:
             raise QuestionNotFoundError(f"Question '{qid}' was not found.")
         question_data = q.model_dump(exclude=set(self.metadata_rel))
         relationship_data = await self.get_question_relationship_data(q)
-        q = QuestionRead(**question_data, **relationship_data)
-        return q
+        return QuestionRead(**question_data, **relationship_data)
 
     async def update_question(
         self,
@@ -269,7 +269,7 @@ class QuestionDB:
         self,
         filter: QuestionFilter,
         *,
-        additional_filters: Optional[Sequence[ColumnElement[bool] | bool]] = None,
+        additional_filters: Sequence[ColumnElement[bool] | bool] | None = None,
     ) -> Sequence[QuestionRead]:
 
         stmt = select(Question)
@@ -358,7 +358,7 @@ class QuestionDB:
         )
         return question
 
-    async def get_question_relationship_data(self, q: Question) -> Dict[str, Any]:
+    async def get_question_relationship_data(self, q: Question) -> dict[str, Any]:
         """
         Read relationship names from a stored question.
 
@@ -371,10 +371,9 @@ class QuestionDB:
         # Get the topics,languages and qtypes
         topics = await gdb.get_relationship_data(q, "topics", mode="list")
         qtypes = await gdb.get_relationship_data(q, "qTypes", mode="list")
-        relationship_data = {"topics": topics, "qtypes": qtypes}
-        return relationship_data
+        return {"topics": topics, "qtypes": qtypes}
 
-    def validate_data(self, question: QuestionCreate | Dict) -> QuestionCreate:
+    def validate_data(self, question: QuestionCreate | dict) -> QuestionCreate:
         """
         Validate and normalize raw question input.
 
@@ -414,8 +413,7 @@ class QuestionDB:
                 if isinstance(update, QuestionUpdate)
                 else update
             )
-            update = QuestionUpdate.model_validate(data)
+            return QuestionUpdate.model_validate(data)
 
-            return update
         except ValidationError as e:
             raise QuestionValidationError(f"Question payload is invalid: {e}") from e

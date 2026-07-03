@@ -1,17 +1,13 @@
 import pytest
 
-from src.data.role import RoleDB
 from src.model.users import Role, UserRoles
-
 
 TEST_ROLES = [UserRoles.ADMIN, UserRoles.STUDENT, UserRoles.DEVELOPER]
 
 
-
-
 @pytest.mark.asyncio
 @pytest.mark.parametrize("role", TEST_ROLES)
-async def test_create_role(role_manager, role):
+async def test_create_role(role_manager, role) -> None:
     created = await role_manager.create_role(role)
 
     assert created is not None
@@ -21,7 +17,7 @@ async def test_create_role(role_manager, role):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("role", TEST_ROLES)
-async def test_does_role_exist(role_manager, role):
+async def test_does_role_exist(role_manager, role) -> None:
     assert await role_manager.does_role_exist(role) is False
 
     await role_manager.create_role(role)
@@ -31,7 +27,7 @@ async def test_does_role_exist(role_manager, role):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("role", TEST_ROLES)
-async def test_get_role(role_manager, role):
+async def test_get_role(role_manager, role) -> None:
     await role_manager.create_role(role)
 
     found = await role_manager.get_role(role)
@@ -42,7 +38,7 @@ async def test_get_role(role_manager, role):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("role", TEST_ROLES)
-async def test_get_role_data(role_manager, role):
+async def test_get_role_data(role_manager, role) -> None:
     await role_manager.create_role(role)
 
     found = await role_manager.get_role_data(role.value)
@@ -52,7 +48,7 @@ async def test_get_role_data(role_manager, role):
 
 
 @pytest.mark.asyncio
-async def test_seed_roles(role_manager):
+async def test_seed_roles(role_manager) -> None:
     await role_manager.seed_roles()
 
     for role in UserRoles:

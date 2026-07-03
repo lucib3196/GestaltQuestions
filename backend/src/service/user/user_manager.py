@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Union
 
 from firebase_admin import auth
 from sqlmodel import Session
@@ -9,15 +9,14 @@ from src.data.institution import InstitutionDB
 from src.data.role import RoleDB
 from src.data.user import UserDB
 from src.model.institution import Institution, ValidInstitutions
-from src.model.users import Role, User, UserCreate, UserRoles, UserRead
-
+from src.model.users import Role, User, UserCreate, UserRead, UserRoles
 
 class UserNotFound(Exception):
-    pass
-
-
+    """Exceptions for user not found"""
 class UserManager:
-    def __init__(self, udb: UserDB, rm: RoleDB, inst: InstitutionDB, session: Session):
+    def __init__(
+        self, udb: UserDB, rm: RoleDB, inst: InstitutionDB, session: Session
+    ) -> None:
         """Initialize user and role repositories for the provided session."""
         self.udb = udb
         self.rm = rm
@@ -27,7 +26,7 @@ class UserManager:
     async def create_user(
         self,
         data: UserCreate,
-        role: UserRoles | None = UserRoles.DEVELOPER,
+        role: UserRoles | None = UserRoles.STUDENT,
         institution: ValidInstitutions | None = None,
     ) -> User:
         """Create a user and optionally attach a role."""
@@ -55,9 +54,9 @@ class UserManager:
             # Try best to role back
             if user_orm is not None:
                 logger.warning(f"Failed to create user {e} attempting to rollback")
-                failed_id = getattr(user_orm, "id")
+                failed_id = user_orm.id
                 await self.udb.delete_user(failed_id)
-            raise ValueError(f"[UserManager] Failed to create user {e}")
+            raise ValueError(f"[UserManager] Failed to create user {e}") from e
 
     async def add_role_to_user(self, role: UserRoles, user: Union["User", ID]) -> User:
         """Attach a role to a user if it is not already assigned."""
@@ -104,9 +103,9 @@ class UserManager:
             logger.debug("Deleted user %s from database", id)
             auth.delete_user(uid=id)
             logger.debug("Deleted user %s from Firebase auth", id)
-            return None
+            return
         except Exception as e:
-            raise ValueError(f"[UserManager] Failed to delete user '{id}': {e}")
+            raise ValueError(f"[UserManager] Failed to delete user '{id}': {e}") from e
 
     async def get_user(self, id: ID) -> User | None:
         """Return a user by UUID or string ID."""
@@ -127,10 +126,10 @@ class UserManager:
                 roles=[r.name for r in user_roles],
                 institution=institution.name if institution else None,
             )
-        except Exception as e:
-            raise ValueError("Failed to get user data")
+        except Exception:
+            raise ValueError("Failed to get user data") from None
 
-    async def get_user_role(self, id: ID) -> List[Role]:
+    async def get_user_role(self, id: ID) -> list[Role]:
         """Return all roles assigned to a user."""
         try:
             user = await self.get_user(id)
@@ -138,8 +137,8 @@ class UserManager:
                 raise ValueError("Failed to get user. User does not exist")
             logger.debug(f"Getting user roles {user.roles}")
             return user.roles
-        except Exception as e:
-            raise e
+        except Exception:
+            raise
 
     async def get_user_inst(self, id: ID) -> Institution | None:
         """Return a user's institution if one is assigned."""
@@ -149,8 +148,8 @@ class UserManager:
                 raise ValueError("Failed to get user. User does not exist")
             logger.debug("Getting user institution %s", user.institution)
             return user.institution
-        except Exception as e:
-            raise e
+        except Exception:
+            raise
 
     async def _resolve_user(self, user: ID | User) -> User:
         """Resolve a user model from either a user object or user ID."""

@@ -1,9 +1,11 @@
-import pytest
 from typing import Any
-from src.data.exceptions.question_exceptions import QuestionValidationError
-from src.model.question import Question, QuestionCreate, QuestionRead, QuestionUpdate
-from src.data.question import QuestionDB
 from uuid import uuid4
+
+import pytest
+
+from src.data.exceptions.question_exceptions import QuestionValidationError
+from src.data.question import QuestionDB
+from src.model.question import Question, QuestionCreate, QuestionRead, QuestionUpdate
 
 PayloadMap = dict[str, QuestionCreate]
 
@@ -202,7 +204,7 @@ async def test_update_question_updates_scalar_and_relationship_fields(
     assert updated is not None
     assert isinstance(updated, QuestionRead)
     assert updated.title == "new title"
-    assert set(updated.topics) == set(["history", "math", "science"])
+    assert set(updated.topics) == {"history", "math", "science"}
 
 
 @pytest.mark.asyncio

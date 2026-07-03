@@ -4,6 +4,8 @@ trap 'echo "❌ Script failed at line $LINENO"; read -p "Press enter to exit..."
 cleanup_ports() {
   echo "Cleaning up old Firebase processes..."
 
+  firebase emulators:export ./emulator-data --force || true
+
   # Kill ALL firebase processes
   pkill -f "firebase" 2>/dev/null || true
 
@@ -37,9 +39,12 @@ cleanup_ports
 
 echo "Starting Firebase emulators..."
 
-# Start in new process group
-setsid firebase emulators:start --import=./emulator-data --export-on-exit &
+# Starts a new process group
+setsid firebase emulators:start \
+  --import=./emulator-data \
+  --export-on-exit &
 FIREBASE_PID=$!
+
 
 # Wait a bit for Firebase to bind ports
 sleep 10

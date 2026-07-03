@@ -6,7 +6,7 @@ class DeveloperAccessDenied(PermissionError):
         reason: str,
         user_id: str | None = None,
         question_id: str | None = None,
-    ):
+    ) -> None:
         message = "Developer access denied"
         if user_id:
             message += f" for user {user_id}"
@@ -20,7 +20,7 @@ class DeveloperAccessDenied(PermissionError):
 class DeveloperProfileError(DeveloperAccessDenied):
     """Raised when developer profile data cannot be retrieved or prepared."""
 
-    def __init__(self, action: str, user_id: str, details: str = ""):
+    def __init__(self, action: str, user_id: str, details: str = "") -> None:
         message = f"Failed to {action} developer profile for user {user_id}"
         if details:
             message += f": {details}"
@@ -28,7 +28,7 @@ class DeveloperProfileError(DeveloperAccessDenied):
 
 
 class DeveloperProfileNotSet(DeveloperAccessDenied):
-    def __init__(self, action: str, user_id: str, details: str = ""):
+    def __init__(self, action: str, user_id: str, details: str = "") -> None:
         message = f"Failed to {action} developer profile for user {user_id}"
         if details:
             message += f": {details}"

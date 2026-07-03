@@ -1,6 +1,13 @@
-from .logging import logger, in_test_ctx
 from .config import get_settings
-from dotenv import load_dotenv
-from .database_config import create_db_and_tables, get_session, SessionDep, Base
+from .database_config import SessionDep, create_db_and_tables, get_session
+from .firebase import initialize_firebase_app
+from .logging import logger
 
-load_dotenv()
+__all__ = [
+    "SessionDep",
+    "create_db_and_tables",
+    "get_session",
+    "get_settings",
+    "initialize_firebase_app",
+    "logger",
+]

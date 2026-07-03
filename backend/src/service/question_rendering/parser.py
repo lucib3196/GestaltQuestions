@@ -1,14 +1,12 @@
 import re
-from dataclasses import dataclass, field
-from typing import Any, Callable, Mapping, Pattern, Dict, Any, Tuple, Optional
-from typing import List
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
 class TemplateParserConfig:
-    pattern: str = (
-        r"\{\{\s*((?:params|correct_answers)\.[a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)*)\s*\}\}"  ## Finds any {{params.value}} or {{correct_answers.value}} and even nested {{params.value.nested}}
-    )
+    pattern: str = r"\{\{\s*((?:params|correct_answers)\.[a-zA-Z_]\w*(?:\.[a-zA-Z_]\w*)*)\s*\}\}"  ## Finds any {{params.value}} or {{correct_answers.value}} and even nested {{params.value.nested}}
     strict: bool = False  # raise on missing key
     keep_unknown: bool = True  # keep token if missing (if not strict)
     stringify: Callable[[Any], str] = str  # custom value formatter
@@ -17,14 +15,14 @@ class TemplateParserConfig:
 class TemplateParser:
     def __init__(
         self,
-        config: Optional[TemplateParserConfig] = None,
-    ):
+        config: TemplateParserConfig | None = None,
+    ) -> None:
         if not config:
             config = TemplateParserConfig()
         self.config = config
         self.regex = re.compile(self.config.pattern)
 
-    def render(self, template: str, data: Dict[str, Any]):
+    def render(self, template: str, data: dict[str, Any]):
         def replacer(match: re.Match) -> str:
             path: str = match.group(1)  # captured path, e.g. "params.name"
             found, value = self._get_nested(data, path)
@@ -39,7 +37,7 @@ class TemplateParser:
 
         return self.regex.sub(replacer, template)
 
-    def _get_nested(self, data: Dict[str, str], path: str) -> Tuple[bool, Any]:
+    def _get_nested(self, data: dict[str, str], path: str) -> tuple[bool, Any]:
         cur = data
         for part in path.split("."):
             if isinstance(cur, dict) and part in cur:

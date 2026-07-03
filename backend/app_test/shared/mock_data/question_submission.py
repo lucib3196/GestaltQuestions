@@ -1,6 +1,7 @@
 import itertools
-from .users import USER_GROUPS
+
 from .questions import QUESTION_GROUPS
+from .users import USER_GROUPS
 
 ATTEMPTS = [
     {"quiz_data": {"a": 1}, "submissions": [{"a": 0}, {"a": 20}]},

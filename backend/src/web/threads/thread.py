@@ -1,14 +1,17 @@
-from fastapi.routing import APIRouter
+from typing import Any
 from uuid import UUID
-from .dependencies import ThreadDBDependency, MessageDBDependency
-from src.model.thread import Thread, Message, MessageCreate
-from fastapi.exceptions import HTTPException
-from starlette import status
-from src.web.user.dependencies import CurrentUser
-from typing import List, Any
-from langgraph_sdk import get_client
-from src.core.config import get_settings
+
 from dotenv import load_dotenv
+from fastapi.exceptions import HTTPException
+from fastapi.routing import APIRouter
+from langgraph_sdk import get_client
+from starlette import status
+
+from src.core.config import get_settings
+from src.model.thread import Message, MessageCreate, Thread
+from src.web.user.dependencies import CurrentUser
+
+from .dependencies import MessageDBDependency, ThreadDBDependency
 
 load_dotenv()
 router = APIRouter(prefix="/threads", tags=["threads"])
@@ -31,11 +34,11 @@ async def create_thread(
     )
 
 
-@router.get("/", response_model=List[Thread])
+@router.get("/", response_model=list[Thread])
 async def list_my_threads(
     tdb: ThreadDBDependency,
     user: CurrentUser,
-) -> List[Thread]:
+) -> list[Thread]:
     return await tdb.list_threads_for_user(user_id=user)
 
 
@@ -53,7 +56,7 @@ async def get_thread(
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"Failed to retrieve thread data from stream service: {e}",
-        )
+        ) from e
 
     values = data.get("values", {}) if isinstance(data, dict) else {}
     messages = values.get("messages", [])
@@ -90,13 +93,13 @@ async def get_user_thread_details(
     }
 
 
-@router.post("/{thread_id}/messages", response_model=List[Message])
+@router.post("/{thread_id}/messages", response_model=list[Message])
 async def create_message(
     thread_id: UUID | str,
-    data: List[MessageCreate],
+    data: list[MessageCreate],
     mdb: MessageDBDependency,
     tdb: ThreadDBDependency,
-) -> List[Message]:
+) -> list[Message]:
     try:
         created_messages = []
         for m in data:
@@ -112,7 +115,7 @@ async def create_message(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create the message {e}",
-        )
+        ) from e
 
 
 # @router.get("/", response_model=list[Thread])

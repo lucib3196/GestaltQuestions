@@ -1,7 +1,7 @@
 import pytest
-from sqlmodel import SQLModel, Session, create_engine
+from sqlmodel import Session, SQLModel, create_engine
 
-from src.core import (
+from src.core.logging import (
     in_test_ctx,
     logger,
 )
@@ -39,7 +39,7 @@ def db_session(test_engine):
 
 
 @pytest.fixture(autouse=True)
-def _clean_db(db_session, test_engine):
+def _clean_db(db_session, test_engine) -> None:
     """Automatically reset database tables between tests."""
     logger.debug("Cleaning Database")
     SQLModel.metadata.drop_all(test_engine)

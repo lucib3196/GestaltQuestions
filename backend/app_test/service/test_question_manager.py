@@ -1,15 +1,15 @@
 import json
 from pathlib import Path, PurePosixPath
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
-from src.core import logger
-from src.model.question import Question
-from src.service.file_service.utils import safe_dir_name
 from app_test import QuestionManager
 from app_test.shared.factories.question_manager_factory import MakeQuestionFactory
 from app_test.shared.mock_data import QUESTIONS
+from src.core import logger
+from src.model.question import Question
+from src.service.file_service.utils import safe_dir_name
 
 
 # Test question creation
@@ -17,9 +17,9 @@ from app_test.shared.mock_data import QUESTIONS
 @pytest.mark.parametrize("qdata", QUESTIONS[:3])
 async def test_create_question_no_files(
     question_manager: QuestionManager,
-    qdata: Dict[str, Any],
+    qdata: dict[str, Any],
     make_question_qm: MakeQuestionFactory,
-):
+) -> None:
     # Arrange
     q, d = await make_question_qm(qdata)
 
@@ -31,10 +31,7 @@ async def test_create_question_no_files(
     # Check the actual path is expected
     storage_type = question_manager.storage.get_storage_type()
 
-    if storage_type == "cloud":
-        actual_path = q.blob_path
-    else:
-        actual_path = q.local_path
+    actual_path = q.blob_path if storage_type == "cloud" else q.local_path
 
     # Assert stored path correctness
     assert actual_path == expected_path
@@ -51,7 +48,7 @@ async def test_create_question_with_files_added_ok(
     make_question_qm: MakeQuestionFactory,
     question_file_payload,
     qdata,
-):
+) -> None:
     q, d = await make_question_qm(
         qdata,
         files=question_file_payload,
@@ -63,7 +60,7 @@ async def test_create_question_with_files_added_ok(
     assert q
     assert d
     assert len(rfiles) == len(question_file_payload)
-    assert set(rfiles) == set([f.filename for f in question_file_payload])
+    assert set(rfiles) == {f.filename for f in question_file_payload}
 
 
 @pytest.mark.asyncio
@@ -74,7 +71,7 @@ async def test_create_question_with_files_expected_path_exists(
     make_question_qm: MakeQuestionFactory,
     question_file_payload,
     qdata,
-):
+) -> None:
     q, d = await make_question_qm(
         qdata,
         files=question_file_payload,
@@ -86,10 +83,7 @@ async def test_create_question_with_files_expected_path_exists(
 
     storage_type = question_manager.storage.get_storage_type()
 
-    if storage_type == "cloud":
-        actual_path = q.blob_path
-    else:
-        actual_path = q.local_path
+    actual_path = q.blob_path if storage_type == "cloud" else q.local_path
 
     assert actual_path == expected_path
     assert question_manager.storage.exists(expected_path)
@@ -105,18 +99,15 @@ async def test_create_question_with_files_expected_path_exists(
 @pytest.mark.parametrize("qdata", QUESTIONS[:3])
 async def test_delete_question(
     question_manager: QuestionManager,
-    qdata: Dict[str, Any],
+    qdata: dict[str, Any],
     make_question_qm: MakeQuestionFactory,
-):
+) -> None:
     # Arrange
     q, _ = await make_question_qm(qdata)
 
     # Get storage location
     storage_type = question_manager.storage.get_storage_type()
-    if storage_type == "cloud":
-        actual_path = q.blob_path
-    else:
-        actual_path = q.local_path
+    actual_path = q.blob_path if storage_type == "cloud" else q.local_path
 
     await question_manager.delete_question(q.id)
 
@@ -137,11 +128,11 @@ async def test_delete_question(
 )
 async def test_handle_storage_update(
     question_manager: QuestionManager,
-    qdata: Dict[str, Any],
+    qdata: dict[str, Any],
     make_question_qm: MakeQuestionFactory,
     destination: str,
     tmp_path,
-):
+) -> None:
     # Arrange
     q, _ = await make_question_qm(qdata)
 
@@ -182,12 +173,12 @@ async def test_handle_storage_update(
 )
 async def test_handle_storage_update_with_files(
     question_manager: QuestionManager,
-    qdata: Dict[str, Any],
+    qdata: dict[str, Any],
     make_question_qm: MakeQuestionFactory,
     question_file_payload,
     destination: str,
     tmp_path,
-):
+) -> None:
     # Arrange
     q, _ = await make_question_qm(
         qdata,
@@ -247,12 +238,12 @@ async def test_read_question_file(
     make_question_qm: MakeQuestionFactory,
     question_file_payload,
     qdata,
-):
+) -> None:
     q, _ = await make_question_qm(qdata, files=question_file_payload)
 
     for f in question_file_payload:
         content = await question_manager.read_question_file(q.id, f.filename)
-        
+
         assert content
 
         if f.filename.endswith(".json"):
@@ -268,7 +259,7 @@ async def test_update_question_file(
     make_question_qm: MakeQuestionFactory,
     question_file_payload,
     qdata,
-):
+) -> None:
     q, _ = await make_question_qm(qdata, files=question_file_payload)
 
     for f in question_file_payload:
@@ -291,7 +282,7 @@ async def test_delete_question_file(
     make_question_qm: MakeQuestionFactory,
     question_file_payload,
     qdata,
-):
+) -> None:
     q, _ = await make_question_qm(qdata, files=question_file_payload)
 
     for f in question_file_payload:

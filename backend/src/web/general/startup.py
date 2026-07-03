@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 from starlette import status
+
 from src.web.dependencies import SettingDependency
 
-router = APIRouter(tags = ["health"])
+router = APIRouter(tags=["health"])
 
 
 @router.get("/startup", status_code=status.HTTP_200_OK)

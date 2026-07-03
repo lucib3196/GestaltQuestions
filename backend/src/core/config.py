@@ -1,17 +1,22 @@
+import json
 import os
+from collections.abc import Sequence
+from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal, Sequence
-from enum import Enum
-from pydantic import field_validator, Field, AliasChoices, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Literal
+
 from dotenv import load_dotenv
-import json
+from pydantic import AliasChoices, Field, field_validator, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from src.core.exceptions import (
     CredentialConfigError,
     EmulatorConfigError,
     InvalidConfigError,
     MissingConfigError,
+    MissingLangchainAPIKey,
+    MissingStreamURl,
 )
 
 # General Settings
@@ -19,16 +24,23 @@ from src.core.exceptions import (
 ROOT_PATH = Path(__file__).parents[2]
 
 
-class Environment(str, Enum):
+class Environment(StrEnum):
     TESTING = "testing"
     DEV = "dev"
     PRODUCTION = "production"
 
 
+APP_ENV = os.getenv("ENV", "dev").lower()
+ENV_FILES: dict[str, str] = {
+    "dev": ".env.dev",
+    "testing": ".env.test",
+    "production": ".env.production",
+    "docker": ".env.docker",
+}
+
 # Check the env internally and attempts to resolve env file. Points to .env by default so this must always be set
-env = os.getenv("ENV", "dev")
-ENV_FILE = f".env.{env}" if env != "production" else "dev.docker"
-load_dotenv(ENV_FILE)
+env_file = ENV_FILES.get("ENV", ".env.dev")
+load_dotenv(env_file, override=False)
 
 
 class AppSettings(BaseSettings):
@@ -65,10 +77,7 @@ class AppSettings(BaseSettings):
         if v is None:
             return []
 
-        if isinstance(v, str):
-            raw_cors = [i.strip() for i in v.split(",")]
-        else:
-            raw_cors = v
+        raw_cors = [i.strip() for i in v.split(",")] if isinstance(v, str) else v
 
         normalized = []
         for r in raw_cors:
@@ -80,8 +89,8 @@ class AppSettings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_database(self):
-        # if not self.DATABASE_URL:
-        #     raise ValueError("Database URL is not set")
+        if not self.DATABASE_URL:
+            raise ValueError("Database URL is not set")
         return self
 
     # Firebase set up
@@ -121,25 +130,30 @@ class AppSettings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_langchain_deployment(self):
-
-        if not (self.LANGGRAPH_STREAM_URL or self.LANGSMITH_API_KEY):
-            raise EmulatorConfigError(f"Missing langchain config ")
+        # Checks based on production
+        if self.ENV == "production" and not self.LANGSMITH_API_KEY:
+            raise MissingLangchainAPIKey(
+                "LANGSMITH_API_KEY is required when ENV=production."
+            )
+        if not self.LANGGRAPH_STREAM_URL:
+            raise MissingStreamURl(
+                f"LANGGRAPH_STREAM_URL is required but missing (ENV={self.ENV})."
+            )
 
         return self
 
     # Determines which env file to use
     model_config = SettingsConfigDict(
-        env_file=ENV_FILE,
+        env_file=env_file,
         extra="ignore",
     )
 
 
 @lru_cache
 def get_settings() -> AppSettings:
-    app_settings = AppSettings(
+    return AppSettings(
         PROJECT_ROOT=ROOT_PATH,
     )
-    return app_settings
 
 
 @lru_cache
@@ -172,7 +186,7 @@ def get_settings_pretty_print(mode: Literal["str", "json"] = "json") -> str:
     if mode == "str":
         message = ""
         for key, value in safe_settings.items():
-            message += f"{key.upper()}\n{value}\n{'*'*50}\n"
+            message += f"{key.upper()}\n{value}\n{'*' * 50}\n"
     elif mode == "json":
         message = json.dumps(safe_settings, indent=2)
 

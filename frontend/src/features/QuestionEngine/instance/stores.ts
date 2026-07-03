@@ -1,14 +1,14 @@
 import { createStore } from "zustand";
+
 import type {
   QuestionInstanceState,
-  QuestionRunTimeResponse,
   QuestionInstanceStore,
+  QuestionRunTimeResponse,
 } from "./types";
 
 export function toQuestionInstanceState(
   res: QuestionRunTimeResponse,
 ): Partial<QuestionInstanceState> {
-  console.log("Raw res", res.files)
   return {
     runInstanceId: String(res.instance),
     questionMeta: res.question_meta ?? null,

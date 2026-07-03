@@ -1,15 +1,16 @@
 import json
+from collections.abc import Iterable
 from datetime import date, datetime, time
-from typing import Any, List, Iterable
-from uuid import UUID
 from enum import Enum
+from typing import Any
+from uuid import UUID
 
 # --- Third-Party ---
 from pydantic import BaseModel
 
 
 # --- Normalization Utilities ---
-def normalize_values(vals: Iterable) -> List[Any]:
+def normalize_values(vals: Iterable) -> list[Any]:
     """Normalize values by stripping whitespace from strings and removing Nones."""
     out = []
     for v in vals:
@@ -32,7 +33,7 @@ def normalize_name(name: str) -> str:
     return str(name).lower().strip()
 
 
-def normalize_names(items: Iterable[str]) -> List[str]:
+def normalize_names(items: Iterable[str]) -> list[str]:
     """Normalize a list of names to lowercase and strip whitespace."""
     return [s.strip().lower() for s in items if isinstance(s, str) and s.strip()]
 
@@ -84,9 +85,6 @@ def normalize_content(content: Any) -> str:
         return json.dumps(to_serializable(content), default=str, separators=(",", ":"))
     except (TypeError, ValueError):
         return str(content)
-
-
-
 
 
 def normalize_newlines(b: bytes) -> bytes:

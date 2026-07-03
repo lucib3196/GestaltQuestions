@@ -1,18 +1,20 @@
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from datetime import UTC, datetime
+from typing import Any
 from uuid import UUID, uuid4
+
 from pydantic import BaseModel, Field
 from sqlalchemy import Column, DateTime, func
-from sqlmodel import SQLModel, Field as SQLField
 from sqlalchemy.types import JSON
+from sqlmodel import Field as SQLField
+from sqlmodel import SQLModel
 
 
 class QuizData(BaseModel):
-    params: Dict[str, Any]
-    correct_answers: Dict[str, Any]
-    logs: List[Any] = Field(default_factory=list)
-    nDigits: Optional[int] = 3
-    sigfigs: Optional[int] = 3
+    params: dict[str, Any]
+    correct_answers: dict[str, Any]
+    logs: list[Any] = Field(default_factory=list)
+    nDigits: int | None = 3
+    sigfigs: int | None = 3
 
     model_config = {"extra": "allow"}
 
@@ -27,14 +29,14 @@ class QuestionAttempt(SQLModel, table=True):
     user_id: UUID | None = SQLField(
         default=None, foreign_key="user.id", primary_key=True
     )
-    quiz_data: QuizData | Dict[str, Any] = SQLField(
+    quiz_data: QuizData | dict[str, Any] = SQLField(
         sa_column=Column(JSON, nullable=False)
     )
-    submitted_answer: Dict[str, Any] = SQLField(sa_column=Column(JSON, nullable=False))
+    submitted_answer: dict[str, Any] = SQLField(sa_column=Column(JSON, nullable=False))
     is_correct: bool = False
     attemption_time: datetime = SQLField(
         sa_column=Column(
             DateTime(timezone=True), server_default=func.now(), nullable=False
         ),
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
     )

@@ -1,10 +1,10 @@
-
 from fastapi import APIRouter, HTTPException, UploadFile
 
-from src.web.dependencies import StorageDependency
 from src.service.file_service.zip_files import upload_zip_and_extract
+from src.web.dependencies import StorageDependency
 
 router = APIRouter()
+
 
 @router.post("/upload_zip")
 async def upload_zip(
@@ -13,5 +13,4 @@ async def upload_zip(
     try:
         return await upload_zip_and_extract(file, storage, path)
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
-
+        raise HTTPException(status_code=400, detail=str(exc)) from exc

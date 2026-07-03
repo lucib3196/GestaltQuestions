@@ -1,15 +1,16 @@
-from typing import Dict
 import json
 
 from pydantic import ValidationError
+
 from src.core.logging import logger
-from .models import Language, RuntimeExecutionConfig, RuntimePackageConfig
+
 from .exceptions import (
-    InvalidFilePayloadError,
     ConfigurationError,
     InvalidEntryError,
+    InvalidFilePayloadError,
     RuntimeResolutionError,
 )
+from .models import Language, RuntimeExecutionConfig, RuntimePackageConfig
 
 
 class RuntimePreparer:
@@ -21,7 +22,7 @@ class RuntimePreparer:
     _CONFIG_KEY = "config.json"
 
     def prepare_runtime(
-        self, files: Dict[str, str], *, language: Language | None = None
+        self, files: dict[str, str], *, language: Language | None = None
     ) -> RuntimeExecutionConfig:
         """Build a runtime execution config from files and an optional language."""
         logger.debug(
@@ -102,7 +103,7 @@ class RuntimePreparer:
 
     def _build_runtime_without_config(
         self,
-        files: Dict[str, str],
+        files: dict[str, str],
         *,
         language: Language | None,
     ) -> RuntimeExecutionConfig:
@@ -114,10 +115,7 @@ class RuntimePreparer:
 
         logger.debug("Building runtime without config. language=%s", language)
 
-        if language == "javascript":
-            entry = "server.js"
-        else:
-            entry = "server.py"
+        entry = "server.js" if language == "javascript" else "server.py"
 
         if entry not in files:
             raise InvalidFilePayloadError(
@@ -139,7 +137,7 @@ class RuntimePreparer:
         package_config: RuntimePackageConfig,
         language: Language,
         *,
-        files: Dict[str, str],
+        files: dict[str, str],
     ) -> RuntimeExecutionConfig:
         """Build a runtime config from a validated package config."""
         logger.debug("Building runtime from package config. language=%s", language)
@@ -156,7 +154,7 @@ class RuntimePreparer:
     # Validation
     # ============================================================
 
-    def _validate_files(self, files: Dict[str, str]) -> None:
+    def _validate_files(self, files: dict[str, str]) -> None:
         """Validate the uploaded file payload before resolving a runtime."""
         if not files:
             raise InvalidFilePayloadError(
@@ -194,10 +192,9 @@ class RuntimePreparer:
 
         logger.debug("Validated file payload successfully.")
 
-    def _validate_entry(self, entry: str, files: Dict[str, str]) -> None:
+    def _validate_entry(self, entry: str, files: dict[str, str]) -> None:
         """Validate that the selected entry file exists and has usable content."""
         if entry not in files:
-
             raise InvalidEntryError(
                 f"Configured entry file '{entry}' was not found in the payload. "
                 f"Available files: {list(files.keys())}"

@@ -1,22 +1,21 @@
 # Standard library imports
 import os
-import uvicorn
 from contextlib import asynccontextmanager
+
+import uvicorn
 
 # Third-party imports
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRouter
-from src.core import logger
 from sqlmodel import Session
 
-# Local application imports
-import src.data
-from src.web import ALL_ROUTES
-from src.core import get_settings, create_db_and_tables
-from src.service.user.user_manager import RoleDB
+from src.core import create_db_and_tables, get_settings, initialize_firebase_app, logger
 from src.data.institution import InstitutionDB
-from src.core.firebase import initialize_firebase_app
+from src.service.user.user_manager import RoleDB
+
+# Local application imports
+from src.web import ALL_ROUTES
 
 settings = get_settings()
 
@@ -37,9 +36,10 @@ async def on_startup(app: FastAPI):
             logger.info("[Initialization]: Institution Created/Verified Succesfully")
         yield
     except Exception as e:
-        raise ValueError(f"Failed to initialize app {e}")
+        raise ValueError(f"Failed to initialize app {e}") from e
 
-def add_routes(app: FastAPI, routes: list[APIRouter] = ALL_ROUTES):
+
+def add_routes(app: FastAPI, routes: list[APIRouter] = ALL_ROUTES) -> None:
     for r in routes:
         app.include_router(r)
 
@@ -65,7 +65,7 @@ def get_application(test_mode: bool = False):
 app = get_application()
 
 
-def main():
+def main() -> None:
     uvicorn.run(
         "src.main:app",
         host=os.getenv("HOST", "0.0.0.0"),

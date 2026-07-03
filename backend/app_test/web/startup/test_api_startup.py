@@ -1,7 +1,7 @@
 from src.core import logger
 
 
-def test_startup_connection(api_client):
+def test_startup_connection(api_client) -> None:
     response = api_client.get("/startup")
     body = response.json()
     logger.info("This is the startup response %s", body)

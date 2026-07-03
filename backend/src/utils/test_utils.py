@@ -1,9 +1,9 @@
 import json
-from typing import List
+
 from src.model.files import FileData
 
 
-def prepare_file_uploads(file_data: List[FileData]):
+def prepare_file_uploads(file_data: list[FileData]):
     """
     Convert a list of FileData objects into tuples compatible with FastAPI's
     `files` parameter in `TestClient.post`.

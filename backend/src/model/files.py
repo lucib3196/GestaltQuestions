@@ -1,12 +1,12 @@
-from typing import List, Any, Optional
-from pydantic import BaseModel
 from pathlib import Path
-from sqlmodel import SQLModel, Field
+from typing import TYPE_CHECKING, Any
 from uuid import UUID, uuid4
-from typing import TYPE_CHECKING
+
+from pydantic import BaseModel
+from sqlmodel import Field, SQLModel
 
 if TYPE_CHECKING:
-    from .users import User
+    pass
 
 
 class FileData(BaseModel):
@@ -16,12 +16,12 @@ class FileData(BaseModel):
 
 
 class FilesData(BaseModel):
-    files: List[FileData]
+    files: list[FileData]
 
 
 class SuccessFileServiceResponse(BaseModel):
     status: int
-    detail: Optional[str | Path] = None
+    detail: str | Path | None = None
     path: str
 
 

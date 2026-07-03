@@ -1,6 +1,7 @@
-import pytest
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any, Protocol
+
+import pytest
 
 from app_test import (
     FileData,
@@ -13,9 +14,9 @@ from app_test import (
 class MakeQuestionFactory(Protocol):
     async def __call__(
         self,
-        data: Dict[str, Any] | QuestionData,
-        files: Optional[List[FileData]] = None,
-    ) -> Tuple[Question, QuestionData]: ...
+        data: dict[str, Any] | QuestionData,
+        files: list[FileData] | None = None,
+    ) -> tuple[Question, QuestionData]: ...
 
 
 @pytest.fixture
@@ -24,8 +25,8 @@ def make_question_qm(
 ) -> MakeQuestionFactory:
 
     async def make(
-        data: Dict[str, Any] | QuestionData, files: Optional[List[FileData]] = None
-    ) -> Tuple[Question, QuestionData]:
+        data: dict[str, Any] | QuestionData, files: list[FileData] | None = None
+    ) -> tuple[Question, QuestionData]:
 
         try:
             # Normalize input
@@ -51,6 +52,6 @@ def make_question_qm(
             return qcreated, d
 
         except Exception as e:
-            raise ValueError(f"Failed to use question_manager factory {e}")
+            raise ValueError(f"Failed to use question_manager factory {e}") from e
 
     return make

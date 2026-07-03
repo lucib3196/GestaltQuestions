@@ -1,10 +1,10 @@
 import pytest
 from pydantic import ValidationError
-from src.model.users import User, UserCreate, UserUpdate
-from src.data.user import UserDB
+
+from app_test.unit.shared import INVALID_USERS, USERS
 from src.core.logging import logger
-from typing import Dict
-from app_test.unit.shared import USERS, INVALID_USERS
+from src.data.user import UserDB
+from src.model.users import User, UserCreate, UserUpdate
 
 
 @pytest.fixture
@@ -15,7 +15,6 @@ def make_user(user_db: UserDB):
             "last_name": "Bermudez",
             "username": "luci123",
             "email": "luci123@email.com",
-            "username": None,
             "password": "1234",
         }
 
@@ -30,7 +29,7 @@ def make_user(user_db: UserDB):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_data", USERS)
-async def test_user_create(make_user, user_data: Dict[str, str]):
+async def test_user_create(make_user, user_data: dict[str, str]) -> None:
     user = await make_user(**user_data)
     logger.info("Created user %s", user)
     assert user
@@ -38,14 +37,16 @@ async def test_user_create(make_user, user_data: Dict[str, str]):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_data", INVALID_USERS)
-async def test_user_create_invalid_data_raises(make_user, user_data: Dict[str, str]):
+async def test_user_create_invalid_data_raises(
+    make_user, user_data: dict[str, str]
+) -> None:
     with pytest.raises(ValidationError):
         await make_user(**user_data)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_data", USERS)
-async def test_get_user(user_db, make_user, user_data: Dict[str, str]):
+async def test_get_user(user_db, make_user, user_data: dict[str, str]) -> None:
     cuser = await make_user(**user_data)
     ruser = await user_db.get_user(cuser.id)
     assert ruser
@@ -54,7 +55,7 @@ async def test_get_user(user_db, make_user, user_data: Dict[str, str]):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_data", USERS)
-async def test_get_user_by_email(make_user, user_db, user_data: Dict[str, str]):
+async def test_get_user_by_email(make_user, user_db, user_data: dict[str, str]) -> None:
     cuser = await make_user(**user_data)
     ruser = await user_db.get_user_by_email(cuser.email)
     assert cuser == ruser
@@ -62,7 +63,7 @@ async def test_get_user_by_email(make_user, user_db, user_data: Dict[str, str]):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_data", USERS)
-async def test_delete_user(make_user, user_db, user_data: Dict[str, str]):
+async def test_delete_user(make_user, user_db, user_data: dict[str, str]) -> None:
     cuser = await make_user(**user_data)
     await user_db.delete_user(cuser.id)
     ruser = await user_db.get_user(cuser.id)
@@ -71,7 +72,7 @@ async def test_delete_user(make_user, user_db, user_data: Dict[str, str]):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_data", USERS)
-async def test_update_user(make_user, user_db, user_data: Dict[str, str]):
+async def test_update_user(make_user, user_db, user_data: dict[str, str]) -> None:
     update_data = UserUpdate(
         username="My new username",
         email="newEmail@gmail.com",

@@ -1,17 +1,16 @@
 # Standard library
+from enum import StrEnum
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
-from enum import Enum
-from typing import List, TYPE_CHECKING
 
 # Third-party libraries
-from sqlmodel import Field, SQLModel, Relationship
-
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from .users import User
 
 
-class ValidInstitutions(str, Enum):
+class ValidInstitutions(StrEnum):
     UCR = "University of California, Riverside"
     CPP = "California State Polytechnic University, Pomona"
     NORCO = "Norco College"
@@ -22,4 +21,4 @@ class Institution(SQLModel, table=True):
     name: ValidInstitutions
     description: str | None = None
 
-    users: List["User"] = Relationship(back_populates="institution")
+    users: list["User"] = Relationship(back_populates="institution")

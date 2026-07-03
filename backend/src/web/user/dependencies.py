@@ -25,9 +25,9 @@ def get_firebase_token(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Not logged in or Invalid credentials {str(e)}",
+            detail=f"Not logged in or Invalid credentials {e!s}",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from e
 
 
 FireBaseToken = Annotated[dict, Depends(get_firebase_token)]
@@ -59,7 +59,7 @@ def get_current_user_id(
         raise HTTPException(
             detail=f"Failed to retrieve signed in user {e}",
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+        ) from e
 
 
 UserManagerDependeny = Annotated[UserManager, Depends(get_user_mng)]

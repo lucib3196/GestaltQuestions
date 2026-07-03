@@ -1,13 +1,17 @@
-from typing import Annotated, Generator
+from collections.abc import Generator
+from typing import Annotated
 
 from fastapi import Depends
-from sqlmodel import SQLModel, Session, create_engine
-from src.core import get_settings, logger
+from sqlmodel import Session, SQLModel, create_engine
+
 from src.core.exceptions import (
     DatabaseConfigError,
     DatabaseInitializationError,
     MissingConfigError,
 )
+
+from .config import get_settings
+from .logging import logger
 
 app_settings = get_settings()
 
@@ -15,9 +19,7 @@ app_settings = get_settings()
 # Define choosing the settings
 if app_settings.ENV == "testing":
     DATABASE_URL = "sqlite:///:memory:"
-elif app_settings.ENV == "production":
-    DATABASE_URL = app_settings.DATABASE_URL
-elif app_settings.ENV == "dev":
+elif app_settings.ENV == "production" or app_settings.ENV == "dev":
     DATABASE_URL = app_settings.DATABASE_URL
 else:
     raise DatabaseConfigError(f"Unknown environment: {app_settings.ENV}")
@@ -57,6 +59,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 if __name__ == "__main__":
     from sqlalchemy import text
+
     engine = create_engine(DATABASE_URL)
 
     try:
