@@ -3,10 +3,10 @@ import os
 
 import firebase_admin
 import pytest
-
-from app_test import FbStorage, LocalStorage, QuestionManager, initialize_firebase_app
 from src.core import get_settings
 from src.model.files import FileData
+
+from app_test import FbStorage, LocalStorage, QuestionManager, initialize_firebase_app
 
 # Keep these imports for the factory
 

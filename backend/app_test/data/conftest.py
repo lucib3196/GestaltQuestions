@@ -1,4 +1,5 @@
 import pytest
+from src.model.question import QuestionData
 
 from app_test.shared.mock_data import (
     QUESTIONS,
@@ -6,7 +7,6 @@ from app_test.shared.mock_data import (
 from src.data import (
     QuestionAttemptDB,
 )
-from src.model.question import QuestionData
 
 
 @pytest.fixture

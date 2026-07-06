@@ -1,8 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from starlette import status
-
 from src.core.logging import logger
 from src.service.user.exceptions import DeveloperProfileNotSet
+from starlette import status
 
 from .dependencies import CurrentUser, DeveloperAccess
 

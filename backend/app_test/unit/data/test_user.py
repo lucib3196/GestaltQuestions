@@ -1,10 +1,10 @@
 import pytest
 from pydantic import ValidationError
-
-from app_test.unit.shared import INVALID_USERS, USERS
 from src.core.logging import logger
 from src.data.user import UserDB
 from src.model.users import User, UserCreate, UserUpdate
+
+from app_test.unit.shared import INVALID_USERS, USERS
 
 
 @pytest.fixture

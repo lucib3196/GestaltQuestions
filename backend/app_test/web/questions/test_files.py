@@ -1,8 +1,8 @@
 import pytest
-
-from app_test.shared.mock_data import QUESTIONS
 from src.core import logger
 from src.model.question import Question
+
+from app_test.shared.mock_data import QUESTIONS
 
 
 @pytest.mark.parametrize("payload", QUESTIONS)

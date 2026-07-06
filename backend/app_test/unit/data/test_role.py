@@ -1,5 +1,4 @@
 import pytest
-
 from src.model.users import Role, UserRoles
 
 TEST_ROLES = [UserRoles.ADMIN, UserRoles.STUDENT, UserRoles.DEVELOPER]

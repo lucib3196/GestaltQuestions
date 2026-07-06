@@ -7,11 +7,13 @@ from pathlib import Path, PurePosixPath
 from typing import Literal
 
 from pydantic import ValidationError
-
 from src.app_types.general import STORAGE_TYPE
 from src.core.logging import logger
 from src.data.question import QuestionDB
 from src.model.question import Question, QuestionRead
+from src.service.storage.local_storage import Storage
+from src.utils import to_serializable
+
 from src.service.question_sync.models import (
     DEFAULT_SYNC_FLAGS,
     FolderCheckMetrics,
@@ -21,8 +23,6 @@ from src.service.question_sync.models import (
     SyncSetup,
     UnsyncedQuestion,
 )
-from src.service.storage.local_storage import Storage
-from src.utils import to_serializable
 
 
 class SyncBase:

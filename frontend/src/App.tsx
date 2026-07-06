@@ -17,6 +17,15 @@ import {
   QuestionsListPage,
 } from "./pages/QuestionBuilder";
 import { GeneralQuestionRender } from "./pages/Questions";
+import RunTimeConfig from "./features/QuestionConfig/RunTimeConfig";
+
+
+function Test() {
+  return <RunTimeConfig />
+}
+
+
+
 
 function App() {
   return (
@@ -50,7 +59,7 @@ function App() {
                 <Route path="chat" element={<ChatPage />} />
               </Route>
             </Route>
-
+            <Route path="test" element={<Test />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

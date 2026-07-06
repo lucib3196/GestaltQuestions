@@ -1,6 +1,5 @@
 import pytest
 from sqlmodel import Session
-
 from src.data.institution import InstitutionDB
 from src.data.role import RoleDB
 from src.data.user import UserDB

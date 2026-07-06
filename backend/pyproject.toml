@@ -1,5 +1,5 @@
 [project]
-name = "src"
+name = "backend"
 version = "0.1.0"
 description = "Project focused on generating content for mechanical engineering students"
 authors = [
@@ -38,6 +38,8 @@ dependencies = [
     "ruff (>=0.15.13,<0.16.0)"
 ]
 
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -1,5 +1,4 @@
 import pytest
-
 from src.data.institution import InstitutionDB
 from src.model.institution import ValidInstitutions
 

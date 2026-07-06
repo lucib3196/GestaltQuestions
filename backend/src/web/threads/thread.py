@@ -5,10 +5,10 @@ from dotenv import load_dotenv
 from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRouter
 from langgraph_sdk import get_client
-from starlette import status
-
 from src.core.config import get_settings
 from src.model.thread import Message, MessageCreate, Thread
+from starlette import status
+
 from src.web.user.dependencies import CurrentUser
 
 from .dependencies import MessageDBDependency, ThreadDBDependency

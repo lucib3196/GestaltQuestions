@@ -1,6 +1,5 @@
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
-
 from src.core.logging import (
     in_test_ctx,
     logger,

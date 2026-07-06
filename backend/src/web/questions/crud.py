@@ -1,11 +1,11 @@
 from collections.abc import Sequence
 
 from fastapi import APIRouter, HTTPException
-from starlette import status
-
 from src.app_types.general import ID
 from src.core.logging import logger
 from src.model.question import Question, QuestionFilter, QuestionRead, QuestionTableRow
+from starlette import status
+
 from src.web.dependencies import QuestionDBDependency, QuestionQueryDependency
 
 router = APIRouter(
@@ -17,7 +17,9 @@ router = APIRouter(
 
 
 @router.get("/all")
-async def get_all(service: QuestionQueryDependency, filter: QuestionFilter) -> Sequence[QuestionTableRow]:
+async def get_all(
+    service: QuestionQueryDependency, filter: QuestionFilter
+) -> Sequence[QuestionTableRow]:
     return await service.get_table()
 
 

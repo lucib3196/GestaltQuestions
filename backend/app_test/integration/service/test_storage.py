@@ -3,11 +3,11 @@ import os
 
 import firebase_admin
 import pytest
+from src.core import get_settings
+from src.utils import normalize, normalize_newlines
 
 from app_test import FbStorage, LocalStorage, initialize_firebase_app
 from app_test.unit.shared import MOCK_FILES, RENAME_TARGETS, TARGETS
-from src.core import get_settings
-from src.utils import normalize, normalize_newlines
 
 settings = get_settings()
 

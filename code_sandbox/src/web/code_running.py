@@ -20,7 +20,7 @@ def execute_code(
                 "server.js": "function generate(){ return {ok:true}; }\nmodule.exports={generate};"
             },
         }
-    )
+    ),
 ) -> ExecutionResult:
     language = config.language
 

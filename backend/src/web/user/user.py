@@ -1,8 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from firebase_admin import auth
 from pydantic import BaseModel
-from starlette import status
-
 from src.app_types.general import ID
 from src.core.logging import logger
 from src.model.users import (
@@ -15,6 +13,7 @@ from src.model.users import (
     UserRoleResponse,
 )
 from src.service.user.user_manager import UserNotFound
+from starlette import status
 
 from .dependencies import CurrentUser, FireBaseToken, UserManagerDependeny
 
