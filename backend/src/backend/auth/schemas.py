@@ -1,12 +1,12 @@
 from enum import StrEnum
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from pydantic import BaseModel, EmailStr
 from sqlmodel import Field
 
-
 if TYPE_CHECKING:
     from .model import Institution, Role, User
+
 
 class ValidInstitutions(StrEnum):
     UCR = "University of California, Riverside"

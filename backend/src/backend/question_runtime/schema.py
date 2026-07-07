@@ -7,6 +7,7 @@ from backend.storage import FileData
 from backend.utils import normalize_content
 
 from .exceptions import MissingQuestionFileError
+from .model import RuntimeConfigSource, RuntimeLanguage
 
 Language = Literal["javascript", "python"]
 
@@ -72,6 +73,36 @@ class PreparedAdaptiveQuestion(PreparedQuestionBase):
 
 
 PreparedQuestion = Union[PreparedStaticQuestion, PreparedAdaptiveQuestion]
+
+
+# Runtime schemas for configuration, reading and updating
+class QuestionRuntimeBase(BaseModel):
+    language: RuntimeLanguage
+    entry: str
+    func_name: str = "generate"
+    is_default: bool = False
+    enabled: bool = True
+
+
+class QuestionRuntimeCreate(QuestionRuntimeBase):
+    source: RuntimeConfigSource = RuntimeConfigSource.MANUAL
+
+
+class QuestionRuntimeUpdate(BaseModel):
+    entry: str | None = None
+    func_name: str | None = None
+    is_default: bool | None = None
+    enabled: bool | None = None
+
+
+class QuestionRuntimeRead(QuestionRuntimeBase):
+    id: str
+    question_id: str
+    source: RuntimeConfigSource
+
+
+class RunTimeConfig(BaseModel):
+    runtimes: list[QuestionRuntimeBase]
 
 
 if __name__ == "__main__":

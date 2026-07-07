@@ -28,3 +28,23 @@ class RuntimeResolutionError(RuntimePrepareError):
 
 class MissingQuestionFileError(Exception):
     pass
+
+
+class QuestionRuntimeDBError(Exception):
+    """Base exception for question runtime persistence errors."""
+
+
+class QuestionRuntimeReadError(QuestionRuntimeDBError):
+    """Raised when question runtime data cannot be retrieved."""
+
+
+class QuestionRuntimeCreateError(QuestionRuntimeDBError):
+    """Raised when question runtime data cannot be created."""
+
+
+class QuestionRuntimeUpdateError(QuestionRuntimeDBError):
+    """Raised when question runtime data cannot be updated."""
+
+
+class QuestionRuntimeUpsertError(QuestionRuntimeDBError):
+    """Raised when question runtime data cannot be created or updated."""

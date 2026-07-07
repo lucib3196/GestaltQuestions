@@ -9,13 +9,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRouter
 from sqlmodel import Session
-from backend.core import get_settings, initialize_firebase_app, logger
-from backend.auth import InstitutionDB
-from backend.database import engine
+
 from backend.api import ALL_ROUTES
 from backend.auth import InstitutionDB, RoleDB
+from backend.core import get_settings, initialize_firebase_app, logger
+from backend.database import engine
 from backend.question import QuestionQTypeDB
-from sqlmodel import Session
 
 settings = get_settings()
 

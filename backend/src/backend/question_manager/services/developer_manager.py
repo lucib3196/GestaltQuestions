@@ -3,7 +3,6 @@ import json
 from collections.abc import Sequence
 from typing import Any, Literal
 
-from backend.auth.exceptions import DeveloperProfileError
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
@@ -12,6 +11,7 @@ from backend.auth import (
     DeveloperAccessService,
     DeveloperProfileError,
 )
+from backend.auth.exceptions import DeveloperProfileError
 from backend.core import logger
 from backend.question.models import Question
 from backend.question.schema import (
