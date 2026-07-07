@@ -23,6 +23,7 @@ from backend.question_manager import DeveloperQuestionService, QuestionManager
 from backend.question_runtime import QuestionRunTime
 from backend.storage import STORAGE_TYPE, FbStorage, LocalStorage, Storage
 from backend.question_runtime.service.runtime_db import QuestionRuntimeDB
+from backend.question_runtime.service.runtime_sync import QuestionRunTimeSyncService
 
 # Core dependencies
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -206,3 +207,7 @@ MessageDBDependency = Annotated[MessageDB, Depends(get_message_db)]
 def get_qruntime(session: SessionDep):
     return QuestionRuntimeDB(session)
 QuestionRuntimeDBDependency = Annotated[QuestionRuntimeDB, Depends(get_qruntime)]
+
+def get_runtime_sync(runtime_db: QuestionRuntimeDBDependency):
+    return QuestionRunTimeSyncService(runtime_db)
+QuestionRuntimeSyncDependency = Annotated[QuestionRunTimeSyncService, Depends(get_runtime_sync)]
