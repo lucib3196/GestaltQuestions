@@ -1,11 +1,8 @@
 from enum import StrEnum
-from typing import TYPE_CHECKING, Optional
+from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
 from sqlmodel import Field
-
-if TYPE_CHECKING:
-    from .model import Institution, Role, User
 
 
 class ValidInstitutions(StrEnum):
@@ -45,6 +42,22 @@ class UserRead(UserBase):
     institution: ValidInstitutions | None = None
 
 
+class RoleRead(BaseModel):
+    id: UUID
+    name: str
+    description: str | None = None
+
+
+class InstitutionRead(BaseModel):
+    id: UUID
+    name: ValidInstitutions
+    description: str | None = None
+
+
+class UserDetailRead(UserRead):
+    id: UUID
+
+
 class CreateUserFullPayload(BaseModel):
     user: UserCreate
     role: UserRoles = UserRoles.STUDENT
@@ -60,10 +73,10 @@ class UpdateUserInstitution(BaseModel):
 
 
 class UserRoleResponse(BaseModel):
-    user: "User"
-    roles: list["Role"] = []
+    user: UserDetailRead
+    roles: list[RoleRead] = Field(default_factory=list)
 
 
 class UserInstResponse(BaseModel):
-    user: "User"
-    inst: Optional["Institution"] = None
+    user: UserDetailRead
+    inst: InstitutionRead | None = None

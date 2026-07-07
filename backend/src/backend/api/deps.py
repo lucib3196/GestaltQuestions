@@ -22,6 +22,7 @@ from backend.question import QuestionDB, QuestionQueryService
 from backend.question_manager import DeveloperQuestionService, QuestionManager
 from backend.question_runtime import QuestionRunTime
 from backend.storage import STORAGE_TYPE, FbStorage, LocalStorage, Storage
+from backend.question_runtime.service.runtime_db import QuestionRuntimeDB
 
 # Core dependencies
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -201,3 +202,7 @@ def get_message_db(session: SessionDep) -> MessageDB:
 
 
 MessageDBDependency = Annotated[MessageDB, Depends(get_message_db)]
+
+def get_qruntime(session: SessionDep):
+    return QuestionRuntimeDB(session)
+QuestionRuntimeDBDependency = Annotated[QuestionRuntimeDB, Depends(get_qruntime)]

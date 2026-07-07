@@ -22,6 +22,8 @@ class QuestionRuntimeDB:
     def __init__(self, session: Session) -> None:
         """Initialize the repository with a database session."""
         self._session = session
+        
+
 
     async def list_question_runtimes(
         self, question_id: ID
@@ -62,7 +64,7 @@ class QuestionRuntimeDB:
                 language,
             )
             raise QuestionRuntimeReadError(
-                f"Failed to get question runtime for question {question_id} and language {language}"
+                f"Failed to get question runtime for question {question_id} and language {language}. Error {e}"
             ) from e
 
     async def get_default(self, question_id: ID) -> QuestionRunTime | None:
