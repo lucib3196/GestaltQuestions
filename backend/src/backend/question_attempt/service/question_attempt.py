@@ -3,13 +3,12 @@ from typing import Any
 
 from sqlalchemy import desc
 from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import select
-from backend.core import logger
-from sqlmodel import Session
-from backend.question_attempt.model import QuestionAttempt
-from backend.utils import convert_uuid
-from backend.shared import ID
+from sqlmodel import Session, select
 
+from backend.core import logger
+from backend.question_attempt.model import QuestionAttempt
+from backend.shared import ID
+from backend.utils import convert_uuid
 
 
 class QuestionAttemptDB:

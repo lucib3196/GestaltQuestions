@@ -3,10 +3,9 @@ from uuid import uuid4
 
 import pytest
 from src.data.exceptions.question_exceptions import QuestionValidationError
+from src.data.question import QuestionDB
 from src.model.question import Question, QuestionCreate, QuestionRead, QuestionUpdate
 from src.model.question_types import QType
-
-from src.data.question import QuestionDB
 
 PayloadMap = dict[str, QuestionCreate]
 

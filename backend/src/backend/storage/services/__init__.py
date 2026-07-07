@@ -1,6 +1,6 @@
-from src.app_types.general import STORAGE_TYPE
 
-from .base import Storage
+
+from .base import Storage, STORAGE_TYPE
 from .firebase_storage import FbStorage
 from .local_storage import LocalStorage
 

@@ -119,7 +119,8 @@ class FbStorage(Storage):
             raise ValueError("[FB] Failed to download blob. Blob does not exist")
         return blob.download_as_bytes()
 
-    # TODO I need a full implementation of this that works where i download all the blobs you can use the list blobs it can be a recursive download
+    # TODO I need a full implementation of this that works
+    # where i download all the blobs you can use the list blobs it can be a recursive download
     def copy(
         self,
         source: str | Path | Blob,

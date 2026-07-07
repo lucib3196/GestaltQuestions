@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, UploadFile
-from src.service.file_service.zip_files import upload_zip_and_extract
 
-from src.web.dependencies import StorageDependency
+from backend.api.deps import StorageDependency
+from backend.storage import upload_zip_and_extract
 
 router = APIRouter()
 

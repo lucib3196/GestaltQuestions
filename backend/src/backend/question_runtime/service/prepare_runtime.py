@@ -1,16 +1,19 @@
 import json
 
 from pydantic import ValidationError
-from backend.core import logger
 
+from backend.core import logger
 from backend.question_runtime.exceptions import (
     ConfigurationError,
     InvalidEntryError,
     InvalidFilePayloadError,
     RuntimeResolutionError,
 )
-from backend.question_runtime.schema import RuntimeExecutionConfig, Language, RuntimePackageConfig
-
+from backend.question_runtime.schema import (
+    Language,
+    RuntimeExecutionConfig,
+    RuntimePackageConfig,
+)
 
 
 class RuntimePreparer:

@@ -1,12 +1,12 @@
 from collections.abc import Sequence
 
 from fastapi import APIRouter, HTTPException
-from src.app_types.general import ID
-from src.core.logging import logger
-from src.model.question import Question, QuestionFilter, QuestionRead, QuestionTableRow
 from starlette import status
 
-from src.web.dependencies import QuestionDBDependency, QuestionQueryDependency
+from backend.api.deps import QuestionDBDependency, QuestionQueryDependency
+from backend.core import logger
+from backend.question import Question, QuestionFilter, QuestionRead, QuestionTableRow
+from backend.shared import ID
 
 router = APIRouter(
     prefix="/questions",

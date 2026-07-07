@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException
-from src.core.logging import logger
-from src.service.user.exceptions import DeveloperProfileNotSet
 from starlette import status
 
-from .dependencies import CurrentUser, DeveloperAccess
+from backend.api.deps import CurrentUser, DeveloperAccess
+from backend.auth import DeveloperProfileNotSet
+from backend.core import logger
 
 router = APIRouter(prefix="/users/dev", tags=["users", "developer"])
 

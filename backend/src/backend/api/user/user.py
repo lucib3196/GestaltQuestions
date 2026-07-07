@@ -1,21 +1,21 @@
 from fastapi import APIRouter, HTTPException
 from firebase_admin import auth
 from pydantic import BaseModel
-from src.app_types.general import ID
-from src.core.logging import logger
-from src.model.users import (
+from starlette import status
+
+from backend.api.deps import CurrentUser, FireBaseToken, UserManagerDependeny
+from backend.auth import (
     CreateUserFullPayload,
     UpdateUserInstitution,
     UpdateUserRole,
     User,
     UserInstResponse,
+    UserNotFound,
     UserRead,
     UserRoleResponse,
 )
-from src.service.user.user_manager import UserNotFound
-from starlette import status
-
-from .dependencies import CurrentUser, FireBaseToken, UserManagerDependeny
+from backend.core import logger
+from backend.shared import ID
 
 router = APIRouter(prefix="/users", tags=["users"])
 

@@ -1,18 +1,19 @@
 import httpx
 from fastapi import HTTPException
-from src.core.logging import logger
-from src.model.files import FileData
-from src.utils.normalization_utils import normalize_content
 from starlette import status
 
-from .models import (
+from backend.core import logger
+from backend.question_runtime.schema import (
     Language,
     PreparedAdaptiveQuestion,
     PreparedQuestion,
     PreparedStaticQuestion,
     QuestionFiles,
 )
-from .runtime_preparer import RuntimePreparer
+from backend.storage import FileData
+from backend.utils import normalize_content
+
+from .prepare_runtime import RuntimePreparer
 
 
 class QuestionRunTimeException(BaseException):

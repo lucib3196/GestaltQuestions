@@ -1,8 +1,8 @@
 from collections.abc import Sequence
 from typing import Any, Literal, overload
 
-from backend.src.backend.question.schema import QuestionUpdate
-from backend.src.backend.question.services.question_storage_service import (
+from backend.question.schema import QuestionUpdate
+from backend.question.services.question_storage_service import (
     QuestionStorageService,
 )
 

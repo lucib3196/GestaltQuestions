@@ -2,9 +2,9 @@ import json
 from typing import Literal, Union
 
 from pydantic import BaseModel, Field
+
 from backend.storage import FileData
 from backend.utils import normalize_content
-
 
 from .exceptions import MissingQuestionFileError
 

@@ -10,14 +10,14 @@ from src.core import get_session, get_settings, initialize_firebase_app
 from src.model.files import FileData
 from src.service.question_manager import QuestionManager
 from src.service.storage import FbStorage, LocalStorage
-
-from src.main import get_application
 from src.web.dependencies import (
     get_local_base_path,
     get_storage_manager,
     get_storage_type,
 )
 from src.web.question_manager.dependencies import get_question_manager
+
+from src.main import get_application
 
 settings = get_settings()
 

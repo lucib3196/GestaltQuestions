@@ -1,7 +1,6 @@
 import json
 
 import pytest
-
 from src.service.question_runtime.exceptions import (
     ConfigurationError,
     InvalidEntryError,

@@ -1,11 +1,11 @@
 import pytest
+from src.data import (
+    QuestionAttemptDB,
+)
 from src.model.question import QuestionData
 
 from app_test.shared.mock_data import (
     QUESTIONS,
-)
-from src.data import (
-    QuestionAttemptDB,
 )
 
 

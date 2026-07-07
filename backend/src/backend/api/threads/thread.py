@@ -5,13 +5,12 @@ from dotenv import load_dotenv
 from fastapi.exceptions import HTTPException
 from fastapi.routing import APIRouter
 from langgraph_sdk import get_client
-from src.core.config import get_settings
-from src.model.thread import Message, MessageCreate, Thread
 from starlette import status
 
-from src.web.user.dependencies import CurrentUser
-
-from .dependencies import MessageDBDependency, ThreadDBDependency
+from backend.api.deps import CurrentUser, MessageDBDependency, ThreadDBDependency
+from backend.chat.model import Message, Thread
+from backend.chat.schema import MessageCreate
+from backend.core import get_settings
 
 load_dotenv()
 router = APIRouter(prefix="/threads", tags=["threads"])

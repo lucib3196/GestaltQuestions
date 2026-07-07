@@ -3,6 +3,7 @@ from collections.abc import Sequence
 
 from sqlalchemy import or_
 from sqlmodel import Session, select
+from src.data import generic as gdb
 from src.model.question import (
     Question,
     QuestionType,
@@ -12,8 +13,6 @@ from src.model.question import (
     QuestionRead as QuestionData,
 )
 from src.utils import convert_uuid
-
-from src.data import generic as gdb
 
 METADATA_REL = ["topics", "languages", "qtypes"]
 RELATIONSHIP_MAP = {

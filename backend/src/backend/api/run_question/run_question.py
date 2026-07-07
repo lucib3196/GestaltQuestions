@@ -1,29 +1,17 @@
-from typing import Annotated, Literal
+from typing import Literal
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 from starlette import status
 
-from src.core.logging import logger
-from src.model.files import FileData
-from src.model.question import QuestionRead
-from src.model.question_attempt import QuizData
-from src.service.question_rendering.parser import TemplateParser
-from src.service.question_runtime.exceptions import MissingQuestionFileError
-from src.service.question_runtime.models import PreparedQuestion
-from src.service.question_runtime.question_runtime import (
-    QuestionRunTime,
-)
-from src.web.dependencies import SettingDependency
-from src.web.question_manager.dependencies import QuestionManagerDependency
-
-
-def get_runtime(app_settings: SettingDependency) -> QuestionRunTime:
-    return QuestionRunTime(base_url=app_settings.SANDBOX_URL)
-
-
-QuestionRuntimeDependency = Annotated[QuestionRunTime, Depends(get_runtime)]
+from backend.api.deps import QuestionManagerDependency, QuestionRuntimeDependency
+from backend.core import logger
+from backend.question import QuestionRead
+from backend.question_attempt.schema import QuizData
+from backend.question_rendering.parser import TemplateParser
+from backend.question_runtime import MissingQuestionFileError, PreparedQuestion
+from backend.storage import FileData
 
 router = APIRouter(
     prefix="/runtime/questions",

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, UploadFile
 from pydantic import BaseModel
 
-from src.service.file_service.utils import safe_dir_name
-from src.service.file_service.zip_files import extract_zip_files
-from src.web.dependencies import StorageDependency
+from backend.api.deps import StorageDependency
+from backend.storage import extract_zip_files
+from backend.utils import safe_dir_name
 
 router = APIRouter(
     prefix="/questions/upload",

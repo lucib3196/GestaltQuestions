@@ -6,8 +6,9 @@ from sqlmodel import Field, Relationship, SQLModel
 from .schemas import ValidInstitutions
 
 if TYPE_CHECKING:
+    from backend.question import Question
+
     from backend.chat.model import Thread
-    from backend.questions.models import Question
 
 
 class Institution(SQLModel, table=True):

@@ -4,22 +4,18 @@ from collections.abc import Sequence
 from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.responses import Response
 from pydantic import BaseModel
-from src.app_types.general import ID
-from src.model.files import FileData
-from src.model.question import (
+from starlette import status
+
+from backend.api.deps import CurrentUser, DeveloperQuestionManagerDependency
+from backend.question import (
     Question,
     QuestionCreate,
     QuestionFilter,
     QuestionRead,
     QuestionUpdate,
 )
-from src.service.file_service.file_service import UploadFileDataConverter
-from src.service.file_service.zip_files import download_zip
-from starlette import status
-
-from src.web.user.dependencies import CurrentUser
-
-from .dependencies import DeveloperQuestionManagerDependency
+from backend.shared import ID
+from backend.storage import FileData, UploadFileDataConverter, download_zip
 
 router = APIRouter(
     prefix="/developer/questions",
