@@ -1,17 +1,17 @@
 from uuid import UUID
+
+from fastapi import APIRouter, HTTPException
 from starlette import status
-from fastapi import APIRouter
-from fastapi import APIRouter, HTTPException, Query
+
 from backend.api.deps import (
-    QuestionRuntimeDBDependency,
     QuestionManagerDependency,
+    QuestionRuntimeDBDependency,
     QuestionRuntimeSyncDependency,
 )
 from backend.question_runtime.schema import (
     QuestionRuntimeCreate,
     QuestionRuntimeRead,
 )
-from backend.core import logger
 
 router = APIRouter(
     prefix="/questions/{qid}/runtimes",

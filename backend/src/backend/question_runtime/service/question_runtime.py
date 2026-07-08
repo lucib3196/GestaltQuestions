@@ -1,96 +1,105 @@
-import httpx
+from uuid import UUID, uuid4
+
+from backend.question_runtime.model import RuntimeLanguage
 from fastapi import HTTPException
-from starlette import status
+from pydantic import BaseModel, Field
 
 from backend.core import logger
-from backend.question_runtime.schema import (
-    Language,
-    PreparedAdaptiveQuestion,
-    PreparedQuestion,
-    PreparedStaticQuestion,
-    QuestionFiles,
+from backend.question_attempt.schema import QuizData
+from backend.question_manager import QuestionManager
+from backend.question_rendering.parser import TemplateParser
+from backend.question_runtime.exceptions import (
+    MissingRuntimeOutputError,
+    RuntimeExecutionError,
 )
-from backend.storage import FileData
-from backend.utils import normalize_content
+from backend.question_runtime.model import RuntimeLanguage
+from backend.question_runtime.schema import (
+    QuestionFiles,
+    RuntimeExecutionConfig,
+)
+from backend.sandbox_client import SandboxClient
+from backend.shared import ID
 
-from .prepare_runtime import RuntimePreparer
+from .runtime_db import QuestionRuntimeDB
 
 
-class QuestionRunTimeException(BaseException):
-    pass
+class RenderedQuestionBundle(BaseModel):
+    instance: UUID = Field(default_factory=uuid4)
+    question_html: str
+    solution_html: str | None = None
+    logs: list[str] = []
+    quiz_data: QuizData | dict | None = None
 
 
-class QuestionRunTime:
-    def __init__(self, base_url: str | None = None) -> None:
-        if not base_url:
-            raise QuestionRunTimeException(
-                "Sandbox url must be set for runtime excecution"
+class QuestionRunTimeService:
+    def __init__(
+        self, qm: QuestionManager, runtime_db: QuestionRuntimeDB, sandbox: SandboxClient
+    ) -> None:
+        self._qm = qm
+        self._runtime_db = runtime_db
+        self._sandbox = sandbox
+
+    async def run(
+        self, qid: ID, language: RuntimeLanguage | None
+    ) -> RenderedQuestionBundle:
+        question = await self._qm.get_question(qid, method="full")
+        if not question:
+            raise ValueError("Question not found")
+        question_files = await self._qm.get_question_filedata(qid)
+        # Handle conversion from filedata->dict and packaged model
+        question_files = QuestionFiles.from_file_data(question_files)
+        if not question.isAdaptive:
+            return RenderedQuestionBundle(
+                question_html=question_files.question_html,
+                solution_html=question_files.solution_html,
             )
-        self.base_url = base_url.rstrip("/")
-
-    async def execute(self, payload: dict) -> dict:
-        execution_endpoint = f"{self.base_url}/code_runner/generate"
-
-        logger.info("[SANDBOX] Sending runtime payload to %s", execution_endpoint)
-        logger.debug("[SANDBOX] Payload: %s", payload)
-
+        runtime = (
+            await self._runtime_db.get_for_language(qid, language)
+            if language is not None
+            else await self._runtime_db.get_default(qid)
+        )
+        if runtime is None:
+            detail = (
+                f"No enabled runtime found for language {language}"
+                if language is not None
+                else "No enabled default runtime found"
+            )
+            raise ValueError(detail)
+        exc_bundle = RuntimeExecutionConfig(
+            entry=runtime.entry,
+            language=runtime.language,  # type: ignore
+            func_name=runtime.func_name,
+            files=question_files.files,
+        )
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.post(execution_endpoint, json=payload)
-                response.raise_for_status()
-                data = response.json()
-        except httpx.TimeoutException as e:
-            logger.exception("Sandbox request timed out.")
-            raise HTTPException(
-                status_code=status.HTTP_504_GATEWAY_TIMEOUT,
-                detail="Sandbox request timed out.",
-            ) from e
-        except httpx.HTTPStatusError as e:
-            logger.error(
-                "[SANDBOX] Sandbox returned %s: %s",
-                e.response.status_code,
-                e.response.text,
-            )
-            raise HTTPException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
-                detail=f"Sandbox request failed with status {e.response.status_code}: {e.response.text}",
-            ) from e
-        except httpx.RequestError as e:
-            logger.exception("Failed to connect to sandbox service.")
-            raise HTTPException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
-                detail=f"Failed to connect to sandbox service: {e}",
-            ) from e
-        except ValueError as e:
-            logger.exception("Sandbox returned a non-JSON response.")
-            raise HTTPException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
-                detail="Sandbox returned an invalid JSON response.",
-            ) from e
+            data = await self._sandbox.execute(exc_bundle.model_dump(mode="json"))
+        except HTTPException as exc:
+            raise RuntimeExecutionError(
+                question_id=str(qid),
+                detail=str(exc.detail),
+                status_code=exc.status_code,
+            ) from exc
+        except Exception as exc:
+            logger.exception("Unexpected error executing runtime for question %s", qid)
+            raise RuntimeExecutionError(
+                question_id=str(qid),
+                detail="An unexpected error occurred.",
+            ) from exc
 
-        if data is None:
-            raise HTTPException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
-                detail="Sandbox returned no response data.",
-            )
+        output = data.get("output")
+        if output is None:
+            raise MissingRuntimeOutputError(str(qid))
 
-        logger.info("Sandbox execution completed successfully.")
-        return data
-
-    def build(
-        self,
-        question_files: list[FileData],
-        is_adaptive: bool,
-        language: Language | None = None,
-    ) -> PreparedQuestion:
-        files = QuestionFiles.from_file_data(question_files)
-        f = {fd.filename: normalize_content(fd.content) for fd in question_files}
-
-        if is_adaptive:
-            return PreparedAdaptiveQuestion(
-                kind="adaptive",
-                runtime=RuntimePreparer().prepare_runtime(f, language=language),
-                question_files=files,
-            )
-
-        return PreparedStaticQuestion(question_files=files, kind="static")
+        logs = data.get("logs", [])
+        formatted_question = TemplateParser().render(
+            question_files.question_html, output or {}
+        )
+        formatted_solution = TemplateParser().render(
+            question_files.solution_html or "", output or {}
+        )
+        return RenderedQuestionBundle(
+            question_html=formatted_question,
+            solution_html=formatted_solution,
+            logs=logs,
+            quiz_data=output,
+        )

@@ -17,7 +17,7 @@ from .schema import (
     RuntimeExecutionConfig,
     RuntimePackageConfig,
 )
-from .service.question_runtime import QuestionRunTime, QuestionRunTimeException
+from .service.question_runtime import QuestionRunTimeService
 
 __all__ = [
     "ConfigurationError",
@@ -30,8 +30,7 @@ __all__ = [
     "PreparedQuestionBase",
     "PreparedStaticQuestion",
     "QuestionFiles",
-    "QuestionRunTime",
-    "QuestionRunTimeException",
+    "QuestionRunTimeService",
     "RunTimeConfigBase",
     "RuntimeExecutionConfig",
     "RuntimePackageConfig",

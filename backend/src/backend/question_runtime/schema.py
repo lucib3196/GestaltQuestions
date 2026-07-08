@@ -1,6 +1,7 @@
 import json
 from typing import Literal, Union
 from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 from backend.storage import FileData
@@ -96,8 +97,8 @@ class QuestionRuntimeUpdate(BaseModel):
 
 
 class QuestionRuntimeRead(QuestionRuntimeBase):
-    id: str|UUID
-    question_id: str|UUID
+    id: str | UUID
+    question_id: str | UUID
     source: RuntimeConfigSource
 
 

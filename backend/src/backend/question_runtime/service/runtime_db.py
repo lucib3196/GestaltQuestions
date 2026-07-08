@@ -22,8 +22,6 @@ class QuestionRuntimeDB:
     def __init__(self, session: Session) -> None:
         """Initialize the repository with a database session."""
         self._session = session
-        
-
 
     async def list_question_runtimes(
         self, question_id: ID
@@ -32,7 +30,7 @@ class QuestionRuntimeDB:
         try:
             stmt = select(QuestionRunTime).where(
                 QuestionRunTime.question_id == convert_uuid(question_id),
-                QuestionRunTime.enabled == True,
+                QuestionRunTime.enabled,
             )
             return list(self._session.exec(stmt).all())
 
@@ -53,7 +51,7 @@ class QuestionRuntimeDB:
             stmt = select(QuestionRunTime).where(
                 QuestionRunTime.question_id == convert_uuid(question_id),
                 QuestionRunTime.language == language,
-                QuestionRunTime.enabled == True,
+                QuestionRunTime.enabled,
             )
             return self._session.exec(stmt).first()
         except SQLAlchemyError as e:

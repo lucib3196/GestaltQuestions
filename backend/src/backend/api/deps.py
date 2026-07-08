@@ -20,10 +20,11 @@ from backend.core.config import AppSettings, get_settings
 from backend.database import get_session
 from backend.question import QuestionDB, QuestionQueryService
 from backend.question_manager import DeveloperQuestionService, QuestionManager
-from backend.question_runtime import QuestionRunTime
-from backend.storage import STORAGE_TYPE, FbStorage, LocalStorage, Storage
+from backend.question_runtime.service.question_runtime import QuestionRunTimeService
 from backend.question_runtime.service.runtime_db import QuestionRuntimeDB
 from backend.question_runtime.service.runtime_sync import QuestionRunTimeSyncService
+from backend.sandbox_client import SandboxClient
+from backend.storage import STORAGE_TYPE, FbStorage, LocalStorage, Storage
 
 # Core dependencies
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -181,11 +182,11 @@ DeveloperQuestionManagerDependency = Annotated[
 
 
 # Runtime dependencies
-def get_runtime(app_settings: SettingDependency) -> QuestionRunTime:
-    return QuestionRunTime(base_url=app_settings.SANDBOX_URL)
+def get_sandbox(app_settings: SettingDependency) -> SandboxClient:
+    return SandboxClient(base_url=app_settings.SANDBOX_URL)
 
 
-QuestionRuntimeDependency = Annotated[QuestionRunTime, Depends(get_runtime)]
+SandboxDependency = Annotated[SandboxClient, Depends(get_sandbox)]
 
 
 # Thread dependencies
@@ -204,10 +205,31 @@ def get_message_db(session: SessionDep) -> MessageDB:
 
 MessageDBDependency = Annotated[MessageDB, Depends(get_message_db)]
 
+
 def get_qruntime(session: SessionDep):
     return QuestionRuntimeDB(session)
+
+
 QuestionRuntimeDBDependency = Annotated[QuestionRuntimeDB, Depends(get_qruntime)]
+
+
+def get_question_runtime_service(
+    qm: QuestionManagerDependency,
+    runtime_db: QuestionRuntimeDBDependency,
+    sandbox: SandboxDependency,
+) -> QuestionRunTimeService:
+    return QuestionRunTimeService(qm, runtime_db, sandbox)
+
+
+QuestionRuntimeServiceDependency = Annotated[
+    QuestionRunTimeService, Depends(get_question_runtime_service)
+]
+
 
 def get_runtime_sync(runtime_db: QuestionRuntimeDBDependency):
     return QuestionRunTimeSyncService(runtime_db)
-QuestionRuntimeSyncDependency = Annotated[QuestionRunTimeSyncService, Depends(get_runtime_sync)]
+
+
+QuestionRuntimeSyncDependency = Annotated[
+    QuestionRunTimeSyncService, Depends(get_runtime_sync)
+]

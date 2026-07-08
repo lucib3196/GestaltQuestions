@@ -15,6 +15,7 @@ ALL_ROUTES = [
     qcrud_router,
     chat_router,
     *general_routes,
-] + RUNTIME_ROUTES
+    *RUNTIME_ROUTES,
+]
 
 __all__ = ["ALL_ROUTES"]

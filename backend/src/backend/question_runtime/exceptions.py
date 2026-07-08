@@ -1,3 +1,7 @@
+from fastapi import HTTPException
+from starlette import status
+
+
 class RuntimePrepareError(Exception):
     """Base exception for all runtime preparation errors."""
 
@@ -48,3 +52,32 @@ class QuestionRuntimeUpdateError(QuestionRuntimeDBError):
 
 class QuestionRuntimeUpsertError(QuestionRuntimeDBError):
     """Raised when question runtime data cannot be created or updated."""
+
+
+class QuestionRuntimeServiceError(HTTPException):
+    """Base exception for question runtime service errors."""
+
+
+class RuntimeExecutionError(QuestionRuntimeServiceError):
+    """Raised when sandbox runtime execution fails."""
+
+    def __init__(
+        self,
+        question_id: str,
+        detail: str,
+        status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
+    ) -> None:
+        super().__init__(
+            status_code=status_code,
+            detail=f"Runtime execution failed for question {question_id}: {detail}",
+        )
+
+
+class MissingRuntimeOutputError(QuestionRuntimeServiceError):
+    """Raised when runtime execution returns no output."""
+
+    def __init__(self, question_id: str) -> None:
+        super().__init__(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Runtime execution returned no output for question {question_id}.",
+        )

@@ -19,7 +19,7 @@ from backend.question import QuestionQTypeDB
 settings = get_settings()
 
 
-async def seed_database(session: Session):
+async def seed_database(session: Session) -> None:
     await RoleDB(session).seed_roles()
     logger.info("[Initialization] Roles Created/verified Successfully")
     await InstitutionDB(session).seed_institution()
