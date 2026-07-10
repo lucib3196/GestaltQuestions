@@ -18,6 +18,8 @@ class QuestionSearchParams(BaseModel):
     topic: str | None = None
     # Search the question based on runtime data
     language: RuntimeLanguage | list[RuntimeLanguage] | None = None
+    # Backend-only filter for published table queries
+    published: bool | None = None
     
     isAdaptive: bool | None = None
     # General offset and limits

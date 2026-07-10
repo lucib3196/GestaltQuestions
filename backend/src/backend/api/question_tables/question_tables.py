@@ -14,6 +14,14 @@ async def search_questions(
     return service.search(params)
 
 
+@router.post("/published/search")
+async def search_published_questions(
+    service: TableQueryDependency,
+    params: QuestionSearchParams | None = None,
+) -> list[QuestionTableRow]:
+    return service.search_published_questions(params)
+
+
 @router.post("/me/search")
 async def search_my_questions(
     current_user: CurrentUser,

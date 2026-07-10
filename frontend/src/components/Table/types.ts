@@ -9,6 +9,7 @@ export type ColumnFilterKind =
 
 type TableColumnKey<T, V extends string = never> = Extract<keyof T, string> | V;
 
+
 export type TableColumn<T, V extends string = never, TQuery = unknown> = {
   key: TableColumnKey<T, V>;
   label?: string;
@@ -24,6 +25,7 @@ export type TableColumn<T, V extends string = never, TQuery = unknown> = {
     kind: ColumnFilterKind;
     label?: string;
     options?: { label: string; value: string }[];
+    show?:boolean
     toQuery?: (value: unknown) => Partial<TQuery>;
   };
 };

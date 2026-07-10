@@ -16,7 +16,6 @@ def _enum_names(value: StrEnum | list[StrEnum] | None) -> list[str]:
     values = value if isinstance(value, list) else [value]
     return [item.name for item in values]
 
-
 class TableQueryService:
     def __init__(self, session: Session):
         self._session = session
@@ -33,6 +32,15 @@ class TableQueryService:
         params: QuestionSearchParams | None = None,
     ) -> list[QuestionTableRow]:
         return self._search(params, owner_id=convert_uuid(user_id))
+
+    def search_published_questions(
+        self,
+        params: QuestionSearchParams | None = None,
+    ) -> list[QuestionTableRow]:
+        params = (params or QuestionSearchParams()).model_copy(
+            update={"published": True, "status": None}
+        )
+        return self._search(params)
 
     def _search(
         self,
@@ -67,7 +75,12 @@ class TableQueryService:
         if params.search:
             where_clauses.append("title ILIKE :search")
             query_params["search"] = f"%{params.search}%"
-        if params.status:
+        if params.published is not None:
+            where_clauses.append("status = :published_status")
+            query_params["published_status"] = (
+                "PUBLISHED" if params.published else "DRAFT"
+            )
+        elif params.status:
             where_clauses.append("status = :status")
             query_params["status"] = params.status.name
         if params.topic:

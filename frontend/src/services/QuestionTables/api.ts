@@ -18,6 +18,16 @@ export default class QuestionTablesApi {
     return response.data;
   }
 
+  static async searchPublishedQuestions(
+    params: QuestionTableSearchParams = {},
+  ): Promise<QuestionTableRow[]> {
+    const response = await api.post<QuestionTableRow[]>(
+      `${this.base}/published/search`,
+      params,
+    );
+    return response.data;
+  }
+
   static async searchMyQuestions(
     token: string,
     params: QuestionTableSearchParams = {},

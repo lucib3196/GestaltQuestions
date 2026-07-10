@@ -177,9 +177,21 @@ export function createMyQuestionTableColumns(): QuestionTableColumn[] {
 }
 
 export function createAllQuestionTableColumns(): QuestionTableColumn[] {
+
+
+  let baseColumns = createBaseQuestionTableColumns()
   const excludedCol: ExcludedColumns = ["status"]
+  const columns = baseColumns.map((column) =>
+    excludedCol.includes(column.key)
+      ? {
+          ...column,
+          defaultVisible: true,
+          filter: column.filter ? { ...column.filter, show: false } : undefined,
+        }
+      : column,
+  );
   return [
-    ...createBaseQuestionTableColumns().filter((v) => !excludedCol.includes(v.key)),
+    ...columns,
     {
       key: "institution",
       label: "Institution",

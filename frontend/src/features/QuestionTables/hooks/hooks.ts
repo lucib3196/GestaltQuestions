@@ -16,7 +16,7 @@ export function useAllQuestions(params?: QuestionTableSearchParams) {
       setError(null);
 
       try {
-        const data = await QuestionTablesApi.searchQuestions(params);
+        const data = await QuestionTablesApi.searchPublishedQuestions(params);
         if (!cancelled) setQuestions(data);
       } catch (err) {
         if (!cancelled) {

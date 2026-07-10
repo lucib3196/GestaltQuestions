@@ -60,7 +60,7 @@ type StatusDisplayConfig = {
 
 const STATUS_DISPLAY_CONFIG: Record<string, StatusDisplayConfig> = {
   published: {
-    label: "Active",
+    label: "Published",
     dotClassName: "bg-emerald-400",
     textClassName: "text-emerald-100",
   },
@@ -108,7 +108,7 @@ export function QuestionAdaptiveCell({ row }: { row: QuestionTableRow }) {
           : "inline-flex items-center rounded-full border border-border-strong bg-surface-muted px-2.5 py-1 text-xs font-semibold text-text-soft"
       }
     >
-      {isAdaptive ? "Adaptive" : "Standard"}
+      {isAdaptive ? "Adaptive" : "Static"}
     </span>
   );
 }

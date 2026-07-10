@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCopy, FaDownload, FaFilter } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { TbColumns3Filled } from "react-icons/tb";
-
+import { useRef } from "react";
 import { SearchBar } from "../../../../components/SearchBar";
 import type { QuestionTableColumn } from "../../config/columns";
 import { useQuestionTableContext } from "../../instance/context";
 import { QuestionTableColumnVisibility } from "./QuestionTableColumnVisibility";
-
+import clsx from "clsx";
 type QuestionTableToolBarProps = {
     columns: QuestionTableColumn[];
     showDelete?: boolean;
@@ -34,15 +34,33 @@ export default function QuestionTableToolBar({
     const selectedIds = useQuestionTableContext((s) => s.selectedIDs);
     const filters = useQuestionTableContext((s) => s.filters);
     const clearFilters = useQuestionTableContext((s) => s.clearFilters);
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
     const hasSelectedRows = selectedIds.length > 0;
     const hasActiveFilters = Object.keys(filters).length > 0;
 
+
+    useEffect(() => {
+        if (!showColumns) return;
+        function handleClickOutside(event: MouseEvent) {
+            const target = event.target as Node;
+
+            if (containerRef.current && !containerRef.current.contains(target)) {
+                setShowColumns(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+
+    }, [showColumns])
+
     return (
-        <div className="relative  rounded-xl border border-slate-800 bg-slate-950/80 p-4 shadow-lg">
+        <div ref = {containerRef } className=" relative  rounded-xl border border-slate-800 bg-slate-950/80 p-4 shadow-lg">
 
 
-            <div className="flex flex-col gap-3 md:flex-row md:items-center">
+            <div className=" flex flex-col gap-3 md:flex-row md:items-center">
                 <div className="w-full md:max-w-xs">
                     <SearchBar
                         value={searchTitle}
@@ -88,7 +106,7 @@ export default function QuestionTableToolBar({
                         type="button"
                         aria-expanded={showColumns}
                         onClick={() => setShowColumns((current) => !current)}
-                        className={toolbarButtonClass()}
+                        className={clsx(toolbarButtonClass(),)}
                     >
                         <TbColumns3Filled className="h-4 w-4" />
                         Columns

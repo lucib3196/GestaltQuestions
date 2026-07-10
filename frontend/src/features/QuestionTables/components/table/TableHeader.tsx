@@ -277,59 +277,60 @@ function ColumnFilterControl<T, V extends string = never>({
 }
 
 export default function TableHeader<T, V extends string = never>({
-  columns,
-  className,
-  ...props
+    columns,
+    className,
+    ...props
 }: TableHeaderProps<T, V>) {
-  const [openFilterKey, setOpenFilterKey] = useState<string | null>(null);
+    const [openFilterKey, setOpenFilterKey] = useState<string | null>(null);
 
-  return (
-    <thead className={className} {...props}>
-      <tr className="bg-surface-strong/95">
-        {columns.map((column) => {
-          const columnKey = String(column.key);
-          const isFilterOpen = openFilterKey === columnKey;
+    return (
+        <thead className={className} {...props}>
+            <tr className="bg-surface-strong/95">
+                {columns.map((column) => {
+                    const columnKey = String(column.key);
+                    const isFilterOpen = openFilterKey === columnKey;
+                    const shouldShowFilter = column.filter?.show ?? true;
+                    const hasVisibleFilter = Boolean(column.filter && shouldShowFilter);
 
-          return (
-            <th
-              key={columnKey}
-              className="min-w-44 border-b border-border-strong px-4 py-3 text-left align-top text-xs font-semibold uppercase tracking-wide text-text-muted"
-            >
-              <div className="flex min-h-6 items-center gap-2">
-                {column.filter ? (
-                  <button
-                    type="button"
-                    aria-label={`${isFilterOpen ? "Hide" : "Show"} filter for ${
-                      column.label ?? columnKey
-                    }`}
-                    aria-expanded={isFilterOpen}
-                    className={
-                      isFilterOpen
-                        ? "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-accent bg-accent text-bg shadow-sm transition hover:opacity-90"
-                        : "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-surface-secondary text-text-muted transition hover:border-accent hover:bg-surface-muted hover:text-accent"
-                    }
-                    onClick={() =>
-                      setOpenFilterKey((currentKey) =>
-                        currentKey === columnKey ? null : columnKey,
-                      )
-                    }
-                  >
-                    <FaFilter aria-hidden="true" className="h-3.5 w-3.5" />
-                  </button>
-                ) : null}
-                <span className="min-w-0 truncate">
-                  {column.label ?? columnKey}
-                </span>
-              </div>
-              {isFilterOpen ? (
-                <div className="min-w-52 max-w-72">
-                  <ColumnFilterControl column={column} />
-                </div>
-              ) : null}
-            </th>
-          );
-        })}
-      </tr>
-    </thead>
-  );
+                    return (
+                        <th
+                            key={columnKey}
+                            className="min-w-44 border-b border-border-strong px-4 py-3 text-left align-top text-xs font-semibold uppercase tracking-wide text-text-muted"
+                        >
+                            <div className="flex min-h-6 items-center gap-2">
+                                {hasVisibleFilter ? (
+                                    <button
+                                        type="button"
+                                        aria-label={`${isFilterOpen ? "Hide" : "Show"} filter for ${column.label ?? columnKey
+                                            }`}
+                                        aria-expanded={isFilterOpen}
+                                        className={
+                                            isFilterOpen
+                                                ? "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-accent bg-accent text-bg shadow-sm transition hover:opacity-90"
+                                                : "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-surface-secondary text-text-muted transition hover:border-accent hover:bg-surface-muted hover:text-accent"
+                                        }
+                                        onClick={() =>
+                                            setOpenFilterKey((currentKey) =>
+                                                currentKey === columnKey ? null : columnKey,
+                                            )
+                                        }
+                                    >
+                                        <FaFilter aria-hidden="true" className="h-3.5 w-3.5" />
+                                    </button>
+                                ) : null}
+                                <span className="min-w-0 truncate">
+                                    {column.label ?? columnKey}
+                                </span>
+                            </div>
+                            {isFilterOpen && hasVisibleFilter ? (
+                                <div className="min-w-52 max-w-72">
+                                    <ColumnFilterControl column={column} />
+                                </div>
+                            ) : null}
+                        </th>
+                    );
+                })}
+            </tr>
+        </thead>
+    );
 }
