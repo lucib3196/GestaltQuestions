@@ -3,6 +3,42 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../Auth";
 import { type QuestionTableRow } from "../../../services";
 
+export function useAllQuestions(params?: QuestionTableSearchParams) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<QuestionTableRow[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function run() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await QuestionTablesApi.searchQuestions(params);
+        if (!cancelled) setQuestions(data);
+      } catch (err) {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : "Failed to load questions",
+          );
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [params]);
+
+  return { questions, loading, error };
+}
+
 export function useMyQuestions(params?: QuestionTableSearchParams) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);

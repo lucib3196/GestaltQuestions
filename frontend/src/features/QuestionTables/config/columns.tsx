@@ -71,7 +71,8 @@ export type QuestionTableColumn = TableColumn<
   QuestionTableVirtualKey,
   QuestionTableSearchParams
 >;
-
+type QuestionColumnKey = keyof QuestionTableRow | QuestionTableVirtualKey;
+type ExcludedColumns = QuestionColumnKey[];
 export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
   return [
     {
@@ -176,8 +177,9 @@ export function createMyQuestionTableColumns(): QuestionTableColumn[] {
 }
 
 export function createAllQuestionTableColumns(): QuestionTableColumn[] {
+  const excludedCol: ExcludedColumns = ["status"]
   return [
-    ...createBaseQuestionTableColumns(),
+    ...createBaseQuestionTableColumns().filter((v) => !excludedCol.includes(v.key)),
     {
       key: "institution",
       label: "Institution",

@@ -15,12 +15,14 @@ type QuestionTableProps<T, V extends string = never> = {
   data: T[];
   columns: TableColumn<T, V>[];
   getRowId: (row: T) => RowId;
+  onQuestionSelect?: (questionId: RowId) => void;
 };
 
 export default function QuestionTable<T, V extends string = never>({
   data,
   columns,
   getRowId,
+  onQuestionSelect,
 }: QuestionTableProps<T, V>) {
   // Get the global state of the columns
   const visibleColumns = useQuestionTableContext(
@@ -65,6 +67,7 @@ export default function QuestionTable<T, V extends string = never>({
             getRowId={getRowId}
             selectedIDs={selectedIDs}
             setSelectedIDs={setSelectedIDs}
+            onQuestionSelect={onQuestionSelect}
           />
         </Table>
       </TableContainer>

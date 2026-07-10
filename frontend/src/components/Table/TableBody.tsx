@@ -9,6 +9,7 @@ type TableBodyProps<
     getRowId: (row: T) => RowId;
     selectedIDs: string[]
     setSelectedIDs: (val: string[]) => void
+    onQuestionSelect?: (questionId: RowId) => void;
 };
 
 
@@ -18,6 +19,7 @@ export function TableBody<T, V extends string = never>({
     getRowId,
     className,
     selectedIDs, setSelectedIDs,
+    onQuestionSelect,
     ...props
 }: TableBodyProps<T, V>) {
     return (
@@ -49,7 +51,7 @@ export function TableBody<T, V extends string = never>({
                                     key={`${rowKey}-${columnKey}`}
                                     className="px-4 py-3 text-sm text-text"
                                 >
-                                    {column.render ? column.render(row, () => console.log("Selected Question", rowKey)) : null}
+                                    {column.render ? column.render(row, () => onQuestionSelect?.(rowKey)) : null}
                                 </td>
                             }
                             if (columnKey === "select") {

@@ -7,13 +7,13 @@ import {
   type ServerSettings,
 } from "../features/QuestionBuilder/components/ServerToggle";
 import { QuestionRender } from "../features/QuestionEngine";
-import AllQuestionTable from "../features/QuestionTables/AllQuestionTable";
+import { AllQuestionsTable } from "../features/QuestionTables";
 
 export default function Question() {
   const navigate = useNavigate();
   return (
     <div>
-      <AllQuestionTable
+      <AllQuestionsTable
         onQuestionSelect={(qid) => navigate(`/questions/${qid}`)}
       />
     </div>

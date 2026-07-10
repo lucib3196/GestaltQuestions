@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaCopy, FaDownload } from "react-icons/fa";
+import { FaCopy, FaDownload, FaFilter } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { TbColumns3Filled } from "react-icons/tb";
 
@@ -10,6 +10,7 @@ import { QuestionTableColumnVisibility } from "./QuestionTableColumnVisibility";
 
 type QuestionTableToolBarProps = {
     columns: QuestionTableColumn[];
+    showDelete?: boolean;
 };
 
 function toolbarButtonClass(variant: "default" | "danger" = "default") {
@@ -25,13 +26,17 @@ function toolbarButtonClass(variant: "default" | "danger" = "default") {
 
 export default function QuestionTableToolBar({
     columns,
+    showDelete = true,
 }: QuestionTableToolBarProps) {
     const [showColumns, setShowColumns] = useState(false);
     const searchTitle = useQuestionTableContext((s) => s.search);
     const setSearchTitle = useQuestionTableContext((s) => s.setSearch);
     const selectedIds = useQuestionTableContext((s) => s.selectedIDs);
+    const filters = useQuestionTableContext((s) => s.filters);
+    const clearFilters = useQuestionTableContext((s) => s.clearFilters);
 
     const hasSelectedRows = selectedIds.length > 0;
+    const hasActiveFilters = Object.keys(filters).length > 0;
 
     return (
         <div className="relative  rounded-xl border border-slate-800 bg-slate-950/80 p-4 shadow-lg">
@@ -67,15 +72,17 @@ export default function QuestionTableToolBar({
                         Download
                     </button>
 
-                    <button
-                        type="button"
-                        disabled={!hasSelectedRows}
-                        onClick={() => console.log("Delete")}
-                        className={toolbarButtonClass("danger")}
-                    >
-                        <MdDelete className="h-4 w-4" />
-                        Delete
-                    </button>
+                    {showDelete ? (
+                        <button
+                            type="button"
+                            disabled={!hasSelectedRows}
+                            onClick={() => console.log("Delete")}
+                            className={toolbarButtonClass("danger")}
+                        >
+                            <MdDelete className="h-4 w-4" />
+                            Delete
+                        </button>
+                    ) : null}
 
                     <button
                         type="button"
@@ -87,6 +94,20 @@ export default function QuestionTableToolBar({
                         Columns
                     </button>
                 </div>
+            </div>
+
+            <div className="mt-4 flex items-center gap-3 border-t border-slate-800 pt-3">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-700/80 bg-slate-900/70 text-slate-300">
+                    <FaFilter className="h-3.5 w-3.5" />
+                </span>
+                <button
+                    type="button"
+                    disabled={!hasActiveFilters}
+                    onClick={clearFilters}
+                    className="text-sm font-semibold text-blue-400 transition hover:text-blue-300 disabled:cursor-not-allowed disabled:text-slate-600"
+                >
+                    Clear all filters
+                </button>
             </div>
 
             {showColumns && (
