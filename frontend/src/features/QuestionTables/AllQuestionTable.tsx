@@ -10,8 +10,8 @@ import {
 } from "../QuestionBuilder";
 import { useCopyQuestion } from "../QuestionBuilder";
 import { QuestionTableBase } from "./components";
-import { useAllTableContext } from "./instance/context";
-import type { TableColumn } from "./instance/types";
+// import { useAllTableContext } from "./instance/context";
+// import type { TableColumn } from "./instance/types";
 
 type AllQTableProps = {
   onQuestionSelect: (qid: string) => void;

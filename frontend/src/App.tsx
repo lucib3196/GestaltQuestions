@@ -18,10 +18,10 @@ import {
 } from "./pages/QuestionBuilder";
 import { GeneralQuestionRender } from "./pages/Questions";
 import RunTimeConfig from "./features/QuestionConfig/RunTimeConfig";
-
+import { Table } from "./features/QuestionTables/TempTable";
 
 function Test() {
-  return <RunTimeConfig />
+  return <div><Table/></div>
 }
 
 

@@ -11,8 +11,7 @@ import {
   useDownloadQuestions,
 } from "../QuestionBuilder";
 import { QuestionTableBase } from "./components";
-import { useDevTableContext } from "./instance/context";
-import type { TableColumn } from "./instance/types";
+
 
 type DevQTableProps = {
   onQuestionSelect: (qid: string) => void;
@@ -107,10 +106,10 @@ export default function DevQuestionTable({
           : "—",
     },
     {
-      key: "qTypes",
+      key: "qType",
       render: (q) =>
-        (q as QuestionRead).qTypes.length
-          ? (q as QuestionRead).qTypes.join(", ")
+        (q as QuestionRead).qType.length
+          ? (q as QuestionRead).qType.join(", ")
           : "—",
     },
     {

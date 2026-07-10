@@ -23,6 +23,7 @@ from backend.question_manager import DeveloperQuestionService, QuestionManager
 from backend.question_runtime.service.question_runtime import QuestionRunTimeService
 from backend.question_runtime.service.runtime_db import QuestionRuntimeDB
 from backend.question_runtime.service.runtime_sync import QuestionRunTimeSyncService
+from backend.question_views.service.table_query_service import TableQueryService
 from backend.sandbox_client import SandboxClient
 from backend.storage import STORAGE_TYPE, FbStorage, LocalStorage, Storage
 
@@ -63,6 +64,15 @@ def get_question_query(
 
 
 QuestionQueryDependency = Annotated[QuestionQueryService, Depends(get_question_query)]
+
+
+def get_table_query_service(
+    session: SessionDep,
+) -> TableQueryService:
+    return TableQueryService(session)
+
+
+TableQueryDependency = Annotated[TableQueryService, Depends(get_table_query_service)]
 
 
 # Storage dependencies

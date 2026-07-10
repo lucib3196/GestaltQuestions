@@ -1,0 +1,202 @@
+import type {
+  QuestionRuntimeLanguage,
+  QuestionTableRow,
+  QuestionTableSearchParams,
+  QuestionType,
+} from "../../../services";
+import { AllowedInstitutions, type ValidInstitutions } from "../../Auth/types";
+import type { QuestionStatus } from "../../../types/questionTypes";
+import {
+  QuestionAdaptiveCell,
+  QuestionCreatedAtCell,
+  QuestionCreatedByCell,
+  QuestionInstitutionCell,
+  QuestionRuntimesCell,
+  QuestionSelectCell,
+  QuestionStatusCell,
+  QuestionTitleCell,
+  QuestionTopicsCell,
+  QuestionTypesCell,
+} from "../components/cells";
+import type { TableColumn } from "../../../components/Table";
+
+type FilterOption<T extends string> = { label: string; value: T };
+
+const QUESTION_TYPE_OPTIONS = [
+  { label: "Multiple Choice", value: "mc" },
+  { label: "Multiple Choice Question", value: "mcq" },
+  { label: "Multiple Answer", value: "ma" },
+  { label: "True / False", value: "tf" },
+  { label: "Fill in the Blank", value: "fb" },
+  { label: "Numerical", value: "num" },
+] satisfies FilterOption<QuestionType>[];
+const QUESTION_TYPE_VALUES = QUESTION_TYPE_OPTIONS.map(
+  (option) => option.value,
+) as QuestionType[];
+
+const RUNTIME_OPTIONS = [
+  { label: "JavaScript", value: "javascript" },
+  { label: "Python", value: "python" },
+] satisfies FilterOption<QuestionRuntimeLanguage>[];
+const RUNTIME_VALUES = RUNTIME_OPTIONS.map(
+  (option) => option.value,
+) as QuestionRuntimeLanguage[];
+
+const INSTITUTION_OPTIONS = AllowedInstitutions.map((institution) => ({
+  label: institution,
+  value: institution,
+})) satisfies FilterOption<ValidInstitutions>[];
+
+function selectedOptions<T extends string>(
+  value: unknown,
+  validValues: readonly T[],
+): T[] {
+  const values = Array.isArray(value)
+    ? value
+    : typeof value === "string"
+      ? [value]
+      : [];
+  return values.filter((item): item is T => validValues.includes(item as T));
+}
+
+const STATUS_OPTIONS = [
+  { label: "archived", value: "archived" },
+  { label: "draft", value: "draft" },
+  { label: "published", value: "published" },
+] satisfies FilterOption<QuestionStatus>[];
+
+export type QuestionTableVirtualKey = "select";
+export type QuestionTableColumn = TableColumn<
+  QuestionTableRow,
+  QuestionTableVirtualKey,
+  QuestionTableSearchParams
+>;
+
+export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
+  return [
+    {
+      key: "select",
+      label: "Select",
+      defaultVisible: true,
+      render: (row, onSelect, isSelected) => (
+        <QuestionSelectCell
+          row={row}
+          checked={isSelected}
+          onSelect={onSelect}
+        />
+      ),
+    },
+    {
+      key: "title",
+      label: "Title",
+      defaultVisible: true,
+      render: (row, onSelect, isSelected) => (
+        <QuestionTitleCell
+          row={row}
+          isSelected={isSelected ?? false}
+          onSelect={onSelect ? onSelect : () => { }}
+        />
+      ),
+    },
+    {
+      key: "isAdaptive",
+      label: "Adaptive",
+      render: (row) => <QuestionAdaptiveCell row={row} />,
+      filter: {
+        kind: "booleanToggle",
+        label: "Filter adaptive questions",
+        toQuery: (value) => ({
+          isAdaptive: typeof value === "boolean" ? value : null,
+        }),
+      },
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (row) => <QuestionStatusCell row={row} />,
+      filter: {
+        kind: "select",
+        label: "filter-select",
+        options: STATUS_OPTIONS,
+        toQuery: (value) => ({
+          status: STATUS_OPTIONS.some((option) => option.value === value)
+            ? (value as QuestionStatus)
+            : null,
+        }),
+      }
+    },
+    {
+      key: "topics",
+      label: "Topics",
+      render: (row) => <QuestionTopicsCell row={row} />,
+      filter: {
+        kind: "text",
+        label: "Filter topics",
+        toQuery: (value) => ({
+          topic: typeof value === "string" && value.trim() ? value.trim() : null,
+        }),
+      },
+    },
+    {
+      key: "question_type",
+      label: "Type",
+      render: (row) => <QuestionTypesCell row={row} />,
+      filter: {
+        kind: "multiSelect",
+        label: "Filter question type",
+        options: QUESTION_TYPE_OPTIONS,
+        toQuery: (value) => ({
+          qtype: selectedOptions(value, QUESTION_TYPE_VALUES),
+        }),
+      },
+    },
+    {
+      key: "available_runtimes",
+      label: "Runtimes",
+      render: (row) => <QuestionRuntimesCell row={row} />,
+      filter: {
+        kind: "multiSelect",
+        label: "Filter runtimes",
+        options: RUNTIME_OPTIONS,
+        toQuery: (value) => ({
+          language: selectedOptions(value, RUNTIME_VALUES),
+        }),
+      },
+    },
+    {
+      key: "created_at",
+      label: "Created",
+      render: (row) => <QuestionCreatedAtCell row={row} />,
+    },
+  ];
+}
+
+export function createMyQuestionTableColumns(): QuestionTableColumn[] {
+  return createBaseQuestionTableColumns();
+}
+
+export function createAllQuestionTableColumns(): QuestionTableColumn[] {
+  return [
+    ...createBaseQuestionTableColumns(),
+    {
+      key: "institution",
+      label: "Institution",
+      render: (row) => <QuestionInstitutionCell row={row} />,
+      filter: {
+        kind: "select",
+        label: "Filter institution",
+        options: INSTITUTION_OPTIONS,
+        toQuery: (value) => ({
+          institution: AllowedInstitutions.includes(value as ValidInstitutions)
+            ? (value as ValidInstitutions)
+            : null,
+        }),
+      },
+    },
+    {
+      key: "created_by",
+      label: "Created By",
+      render: (row) => <QuestionCreatedByCell row={row} />,
+    },
+  ];
+}
