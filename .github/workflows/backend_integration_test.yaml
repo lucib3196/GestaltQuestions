@@ -54,5 +54,5 @@ jobs:
 
       - name: Run Test
         run: |
-          uv run python -m pytest/integration
+          uv run pytest app_test/integration
         working-directory: ./backend
