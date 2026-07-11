@@ -1,5 +1,5 @@
 import pytest
-from backend.questions.services.question_qtype import QType, QuestionQTypeDB
+from backend.question import QType, QuestionQTypeDB
 
 
 @pytest.fixture

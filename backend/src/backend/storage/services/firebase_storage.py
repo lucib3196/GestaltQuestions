@@ -13,7 +13,7 @@ from .base import STORAGE_TYPE, Storage
 class FbStorage(Storage):
     def __init__(
         self,
-        bucket,
+        bucket: str,
     ) -> None:
         logger.info("[Firebase]: Intializing firebase storage ")
         self.bucket = storage.bucket(bucket)
@@ -54,6 +54,7 @@ class FbStorage(Storage):
         *,
         overwrite: bool = True,
     ) -> str:
+        _ = overwrite
         key = self._to_blob_key(target).rstrip("/")
         blob: Blob = self.bucket.blob(key)
         # Data can either be string or bytes. Since we are passing in bytes this must
@@ -82,6 +83,10 @@ class FbStorage(Storage):
                 )
             return
 
+        blob = self.bucket.blob(key)
+        if blob.exists():
+            blob.delete()
+
     def list(
         self, target: str | Path | Blob, *, recursive: bool = False
     ) -> Sequence[str]:
@@ -107,11 +112,10 @@ class FbStorage(Storage):
             for blob in iterator
             if blob.name != prefix and not blob.name.endswith("/")
         ]
-        results = [*sorted(iterator.prefixes), *files]
-        logger.info("Non-recursive results: %s", results)
-        return results
+        logger.info("Non-recursive results: %s", files)
+        return files
 
-    def download(self, target) -> bytes:
+    def download(self, target: str | Path | Blob) -> bytes:
         raise NotImplementedError("Download for firebase not implemented")
         key = self._to_blob_key(target)
         blob = self.bucket.blob(key)
@@ -119,8 +123,7 @@ class FbStorage(Storage):
             raise ValueError("[FB] Failed to download blob. Blob does not exist")
         return blob.download_as_bytes()
 
-    # TODO I need a full implementation of this that works
-    # where i download all the blobs you can use the list blobs it can be a recursive download
+    # TODO: implement recursive blob download using list_blobs.
     def copy(
         self,
         source: str | Path | Blob,

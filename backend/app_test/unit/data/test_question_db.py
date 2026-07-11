@@ -2,10 +2,15 @@ from typing import Any
 from uuid import uuid4
 
 import pytest
-from src.data.exceptions.question_exceptions import QuestionValidationError
-from src.data.question import QuestionDB
-from src.model.question import Question, QuestionCreate, QuestionRead, QuestionUpdate
-from src.model.question_types import QType
+from backend.question import (
+    QType,
+    Question,
+    QuestionCreate,
+    QuestionDB,
+    QuestionRead,
+    QuestionUpdate,
+    QuestionValidationError,
+)
 
 PayloadMap = dict[str, QuestionCreate]
 

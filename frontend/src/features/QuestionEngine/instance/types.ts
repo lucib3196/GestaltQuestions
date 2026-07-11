@@ -1,21 +1,11 @@
 // Question Metadata
+import type { QuestionRunResponse } from "../../../services/QuestionRuntime";
 import type { FileData } from "../../../types/fileTypes";
 import { type QuestionRead } from "../../../types/questionTypes";
 // General Types for the values
 
 export type QuestionValue = string | number | string[] | boolean | null;
 export type QuestionAnswerMap = Record<string, QuestionValue>;
-
-// Raw from backend using camel case
-export type QuestionRunTimeResponse = {
-  instance: string | number;
-  question_meta?: QuestionRead | null;
-  question_html: string;
-  solution_html?: string;
-  logs?: string[];
-  files?: FileData[];
-  quiz_data?: QuizData | null;
-};
 
 // domain state (frontend)
 export type QuestionInstanceState = {
@@ -47,7 +37,7 @@ export type QuizData = QuestionParams & {
 };
 
 export type QuestionInstanceActions = {
-  setRunTimeContent: (payload: QuestionRunTimeResponse) => void; // Meant to store new instances of the question
+  setRunTimeContent: (payload: QuestionRunResponse) => void; // Meant to store new instances of the question
   setAnswer: (name: string, value: QuestionValue) => void;
   resetAnswers: () => void;
   submitAnswers: () => void;

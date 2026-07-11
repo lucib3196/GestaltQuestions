@@ -1,6 +1,8 @@
 import clsx from "clsx";
 
-export type ServerSettings = "static" | "javascript" | "python";
+import type { QuestionRuntimeLanguage } from "../../../services/QuestionRuntime";
+
+export type ServerSettings = QuestionRuntimeLanguage;
 
 type ServerModeSwitchProps = {
   value: ServerSettings;

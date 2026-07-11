@@ -2,8 +2,8 @@ import { getDownloadURL, getStorage, ref } from "firebase/storage";
 import { useEffect, useState } from "react";
 
 import { firebase } from "../../../config/firebaseClient";
+import { QuestionRuntimeApi } from "../../../services/QuestionRuntime";
 import type { ServerSettings } from "../../QuestionBuilder/components/ServerToggle";
-import { QuestionRunnerApi } from "../runtime/questionRuntimeApi";
 import { useQuestionInstance } from "./context";
 
 export function useLoadQuestionRuntime(
@@ -24,7 +24,7 @@ export function useLoadQuestionRuntime(
     startLoading();
     const run = async () => {
       try {
-        const data = await QuestionRunnerApi.runQuestion(
+        const data = await QuestionRuntimeApi.runQuestion(
           questionId,
           serverMode,
         );

@@ -1,10 +1,11 @@
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
-from src.core.logging import (
+from backend.core.logging import (
     in_test_ctx,
     logger,
 )
-from src.data.question import QuestionDB
+import backend.chat.model # noqa: F401
+from backend.question import QuestionDB
 
 
 # ===== Database Fixtures =========================================================

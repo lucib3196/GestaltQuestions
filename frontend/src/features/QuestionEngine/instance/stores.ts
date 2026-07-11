@@ -1,22 +1,20 @@
 import { createStore } from "zustand";
 
+import type { QuestionRunResponse } from "../../../services/QuestionRuntime";
 import type {
   QuestionInstanceState,
   QuestionInstanceStore,
-  QuestionRunTimeResponse,
 } from "./types";
 
 export function toQuestionInstanceState(
-  res: QuestionRunTimeResponse,
+  res: QuestionRunResponse,
 ): Partial<QuestionInstanceState> {
   return {
     runInstanceId: String(res.instance),
-    questionMeta: res.question_meta ?? null,
     questionHtml: res.question_html ?? "",
     solutionHtml: res.solution_html ?? null,
     logs: res.logs ?? [],
     quizData: res.quiz_data ?? null,
-    files: res.files ?? [],
   };
 }
 
