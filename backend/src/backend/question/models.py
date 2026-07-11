@@ -81,9 +81,6 @@ class Question(SQLModel, table=True):
         default=Status.DRAFT.name,
         sa_column_kwargs={"server_default": Status.DRAFT.name.upper()},
     )
-    supports_python: bool = SQLField(default=False)
-    supports_javascript: bool = SQLField(default=False)
-
     # External storage location.
     storage_type: str = SQLField(default="cloud")
     storage_path: str | None = None
