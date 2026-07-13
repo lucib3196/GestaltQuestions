@@ -1,13 +1,13 @@
 export * from "./questionAPI";
-export * from "./questionSyncAPI";
-export * from "./QuestionTables";
-export { QuestionRuntimeApi } from "./QuestionRuntime";
 export type {
   QuestionRunAnswerMap,
   QuestionRunQuizData,
   QuestionRunResponse,
-  QuestionRunValue,
   QuestionRuntimeCreateRequest,
   QuestionRuntimeResponse,
+  QuestionRunValue,
   RuntimeConfigSource,
 } from "./QuestionRuntime";
+export { QuestionRuntimeApi } from "./QuestionRuntime";
+export * from "./questionSyncAPI";
+export * from "./QuestionTables";

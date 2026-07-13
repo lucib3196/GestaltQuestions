@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
+
 import {
+  type RowId,
   Table,
   TableBody,
+  type TableColumn,
   TableContainer,
   TableFooter,
-  type RowId,
-  type TableColumn,
 } from "../../../../components/Table";
 import { useQuestionTableContext } from "../../instance/context";
 import { getVisibleColumns } from "../../utils/getVisibleColumns";
@@ -34,8 +35,10 @@ export default function QuestionTable<T, V extends string = never>({
   }, [columns, visibleColumns]);
 
   // Get all selected ids
-  const selectedIDs = useQuestionTableContext((state) => state.selectedIDs)
-  const setSelectedIDs = useQuestionTableContext((state) => state.setSelectedIDs)
+  const selectedIDs = useQuestionTableContext((state) => state.selectedIDs);
+  const setSelectedIDs = useQuestionTableContext(
+    (state) => state.setSelectedIDs,
+  );
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);

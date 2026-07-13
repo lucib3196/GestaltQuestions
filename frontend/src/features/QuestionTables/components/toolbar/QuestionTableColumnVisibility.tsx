@@ -1,5 +1,5 @@
-import { useQuestionTableContext } from "../../instance/context";
 import type { QuestionTableColumn } from "../../config/columns";
+import { useQuestionTableContext } from "../../instance/context";
 
 type QuestionTableColumnVisibilityProps = {
   columns: QuestionTableColumn[];

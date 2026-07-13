@@ -1,7 +1,11 @@
-import { QuestionTablesApi, type QuestionTableSearchParams } from "../../../services";
 import { useEffect, useState } from "react";
-import { useAuth } from "../../Auth";
+
+import {
+  QuestionTablesApi,
+  type QuestionTableSearchParams,
+} from "../../../services";
 import { type QuestionTableRow } from "../../../services";
+import { useAuth } from "../../Auth";
 
 export function useAllQuestions(params?: QuestionTableSearchParams) {
   const [loading, setLoading] = useState(false);
@@ -57,7 +61,7 @@ export function useMyQuestions(params?: QuestionTableSearchParams) {
 
       try {
         const token = await user.getIdToken();
-        const data = await QuestionTablesApi.searchMyQuestions(token,params);
+        const data = await QuestionTablesApi.searchMyQuestions(token, params);
         if (!cancelled) setQuestions(data);
       } catch (err) {
         if (!cancelled) {

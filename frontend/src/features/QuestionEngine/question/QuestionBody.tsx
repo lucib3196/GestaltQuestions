@@ -2,12 +2,12 @@ import type React from "react";
 import type { IconType } from "react-icons";
 import { FiFileText, FiTarget } from "react-icons/fi";
 
-import type { QuestionRead } from "../../QuestionBuilder";
 import type { QuestionRunResponse } from "../../../services";
+import type { QuestionRead } from "../../QuestionBuilder";
+import { useQuestionInstance } from "../instance";
 import QuestionHTMLToReact from "../render/QuestionHtmlToReact";
 import QuestionActions from "./QuestionActions";
 import DisplayAnswers from "./QuestionFeedback";
-import { useQuestionInstance } from "../instance";
 
 type QuestionHeaderProps = {
   qdata: QuestionRead | null | undefined;
@@ -80,19 +80,12 @@ export default function QuestionBody({
 }) {
   const hasSubmitted = useQuestionInstance((s) => s.hasSubmitted);
   const answers = useQuestionInstance((s) => s.answers);
-  const showSolution = useQuestionInstance((s) => s.showSolution);
 
   return (
     <div>
       <QuestionHeader qdata={qpayload.qmeta} />
       <QuestionHTMLToReact html={qpayload.question_html} />
       <QuestionActions />
-
-      {showSolution && (
-        <QuestionHTMLToReact
-          html={qpayload.solution_html ?? "No Solution Available for Question"}
-        />
-      )}
 
       {hasSubmitted && qpayload.quiz_data && (
         <DisplayAnswers

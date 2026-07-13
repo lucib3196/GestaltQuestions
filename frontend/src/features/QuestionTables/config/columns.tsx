@@ -1,11 +1,12 @@
+import type { TableColumn } from "../../../components/Table";
 import type {
   QuestionRuntimeLanguage,
   QuestionTableRow,
   QuestionTableSearchParams,
   QuestionType,
 } from "../../../services";
-import { AllowedInstitutions, type ValidInstitutions } from "../../Auth/types";
 import type { QuestionStatus } from "../../../types/questionTypes";
+import { AllowedInstitutions, type ValidInstitutions } from "../../Auth/types";
 import {
   QuestionAdaptiveCell,
   QuestionCreatedAtCell,
@@ -18,7 +19,6 @@ import {
   QuestionTopicsCell,
   QuestionTypesCell,
 } from "../components/cells";
-import type { TableColumn } from "../../../components/Table";
 
 type FilterOption<T extends string> = { label: string; value: T };
 
@@ -95,7 +95,7 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
         <QuestionTitleCell
           row={row}
           isSelected={isSelected ?? false}
-          onSelect={onSelect ? onSelect : () => { }}
+          onSelect={onSelect ? onSelect : () => {}}
         />
       ),
     },
@@ -124,7 +124,7 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
             ? (value as QuestionStatus)
             : null,
         }),
-      }
+      },
     },
     {
       key: "topics",
@@ -134,7 +134,8 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
         kind: "text",
         label: "Filter topics",
         toQuery: (value) => ({
-          topic: typeof value === "string" && value.trim() ? value.trim() : null,
+          topic:
+            typeof value === "string" && value.trim() ? value.trim() : null,
         }),
       },
     },
@@ -177,10 +178,8 @@ export function createMyQuestionTableColumns(): QuestionTableColumn[] {
 }
 
 export function createAllQuestionTableColumns(): QuestionTableColumn[] {
-
-
-  let baseColumns = createBaseQuestionTableColumns()
-  const excludedCol: ExcludedColumns = ["status"]
+  let baseColumns = createBaseQuestionTableColumns();
+  const excludedCol: ExcludedColumns = ["status"];
   const columns = baseColumns.map((column) =>
     excludedCol.includes(column.key)
       ? {

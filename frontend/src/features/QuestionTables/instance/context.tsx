@@ -4,9 +4,8 @@ import { useStore } from "zustand";
 import { createQuestionTableStore } from "./store";
 import type { QuestionTableState, QuestionTableStore } from "./types";
 
-
-type QuestionTableStoreApi = ReturnType<typeof createQuestionTableStore>
-const QuestionTableContext = createContext<QuestionTableStoreApi | null>(null)
+type QuestionTableStoreApi = ReturnType<typeof createQuestionTableStore>;
+const QuestionTableContext = createContext<QuestionTableStoreApi | null>(null);
 type QuestionTableProviderProps = {
   children: ReactNode;
   initialState?: Partial<QuestionTableState>;
@@ -40,7 +39,6 @@ export function useQuestionTableContext<T>(
 
   return useStore(store, selector);
 }
-
 
 // type DevTableStore = QuestionTableStore<QuestionRead>;
 // type AllTableStore = QuestionTableStore<QuestionAllRow>;

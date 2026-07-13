@@ -8,7 +8,6 @@ import { ToastContainer } from "react-toastify";
 import App from "./App.tsx";
 import { AuthProvider } from "./features/Auth/AuthContext.tsx";
 
-
 /* =========================
    MathJax Config
 ========================= */
@@ -34,11 +33,9 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <MathJaxContext version={3} config={config}>
       <AuthProvider>
-
         <ToastContainer />
 
         <App />
-
       </AuthProvider>
     </MathJaxContext>
   </StrictMode>,

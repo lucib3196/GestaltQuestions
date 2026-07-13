@@ -1,19 +1,19 @@
-import { useMemo, type PropsWithChildren } from "react";
+import { type PropsWithChildren, useMemo } from "react";
 
+import type { QuestionTableRow } from "../../services";
 import { QuestionTableBase } from "./components";
-import {
-  QuestionTableProvider,
-  useQuestionTableContext,
-} from "./instance/context";
+import QuestionTableToolBar from "./components/toolbar/QuestionTableToolBar";
 import {
   createAllQuestionTableColumns,
   createMyQuestionTableColumns,
   type QuestionTableColumn,
 } from "./config/columns";
-import QuestionTableToolBar from "./components/toolbar/QuestionTableToolBar";
-import { buildQuestionTableQuery } from "./utils/buildQuestionTableQuery";
 import { useAllQuestions, useMyQuestions } from "./hooks/hooks";
-import type { QuestionTableRow } from "../../services";
+import {
+  QuestionTableProvider,
+  useQuestionTableContext,
+} from "./instance/context";
+import { buildQuestionTableQuery } from "./utils/buildQuestionTableQuery";
 
 export type QuestionTableViewProps = {
   onQuestionSelect?: (questionId: string) => void;
@@ -53,7 +53,9 @@ function QuestionTableLayout({
   );
 }
 
-function AllQuestionsTableContent({ onQuestionSelect }: QuestionTableViewProps) {
+function AllQuestionsTableContent({
+  onQuestionSelect,
+}: QuestionTableViewProps) {
   const columns = useMemo(() => createAllQuestionTableColumns(), []);
   const query = useTableQuery(columns);
   const { questions } = useAllQuestions(query);

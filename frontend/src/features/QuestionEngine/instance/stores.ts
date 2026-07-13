@@ -1,5 +1,6 @@
 import { createStore } from "zustand";
-import type { QuestionInstanceStore, QuestionInstanceState } from "./types";
+
+import type { QuestionInstanceState, QuestionInstanceStore } from "./types";
 
 export function createQuestionInstanceStore(
   initialState?: Partial<QuestionInstanceState>,
@@ -25,6 +26,7 @@ export function createQuestionInstanceStore(
     resetAnswers: () => set(() => ({ answers: {} })),
     submitAnswers: () => set(() => ({ hasSubmitted: true })),
     resetSubmissions: () => set(() => ({ hasSubmitted: false })),
-    setShowSolution: ()=>set((state)=>({showSolution: !state.showSolution}))
+    setShowSolution: () =>
+      set((state) => ({ showSolution: !state.showSolution })),
   }));
 }

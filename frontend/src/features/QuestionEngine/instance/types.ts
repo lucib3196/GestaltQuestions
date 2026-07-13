@@ -10,7 +10,7 @@ export type QuestionInstanceState = QuestionRuntimeState & {
   answers: QuestionAnswerMap;
   hasSubmitted: boolean;
   refreshKey: number;
-  showSolution: boolean
+  showSolution: boolean;
 };
 
 export type QuestionInstanceActions = {
@@ -20,7 +20,7 @@ export type QuestionInstanceActions = {
   resetAnswers: () => void;
   submitAnswers: () => void;
   resetSubmissions: () => void;
-  setShowSolution: ()=>void;
+  setShowSolution: () => void;
 };
 
 export type QuestionInstanceStore = QuestionInstanceState &

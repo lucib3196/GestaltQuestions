@@ -1,6 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { RequireRole } from "./features/Auth";
+import RunTimeConfig from "./features/QuestionConfig/RunTimeConfig";
+import { AllQuestionsTable } from "./features/QuestionTables";
 import AppLayout from "./layouts/AppLayout";
 import {
   AccountPage,
@@ -17,15 +19,14 @@ import {
   QuestionsListPage,
 } from "./pages/QuestionBuilder";
 import { GeneralQuestionRender } from "./pages/Questions";
-import RunTimeConfig from "./features/QuestionConfig/RunTimeConfig";
-import { AllQuestionsTable } from "./features/QuestionTables";
 
 function Test() {
-  return <div><AllQuestionsTable /></div>
+  return (
+    <div>
+      <AllQuestionsTable />
+    </div>
+  );
 }
-
-
-
 
 function App() {
   return (

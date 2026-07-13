@@ -1,5 +1,3 @@
 export default function RunTimeConfig() {
-    return <div>
-        Runtime configuration
-    </div>
+  return <div>Runtime configuration</div>;
 }
