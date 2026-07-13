@@ -61,9 +61,7 @@ function QuestionHeader({
       {qdata?.qTypes?.length ? (
         <div className="flex flex-wrap items-center gap-2 text-sm text-text-muted">
           <FiFileText className="h-4 w-4 text-accent" />
-          <span className="font-semibold text-text">
-            Question Type:
-          </span>
+          <span className="font-semibold text-text">Question Type:</span>
           {qdata.qTypes.map((qType) => (
             <MetadataChip key={qType}>{qType}</MetadataChip>
           ))}
