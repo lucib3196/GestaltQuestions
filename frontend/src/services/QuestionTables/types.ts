@@ -1,6 +1,6 @@
 import type { ValidInstitutions } from "../../features/Auth/types";
 import type { QuestionStatus } from "../../types/questionTypes";
-export type QuestionRuntimeLanguage = "javascript" | "python";
+import type { QuestionRuntimeLanguage } from "../QuestionRuntime";
 export type QuestionType = "mc" | "mcq" | "ma" | "tf" | "fb" | "num";
 
 export type QuestionTableSearchParams = {

@@ -15,8 +15,17 @@ function QuestionRenderBody({ qid, serverSettings }: QuestionRenderProps) {
     serverSettings,
     refreshKey,
   );
-
-  if (loading || !qPayload) return <div>Loading</div>;
+  if (loading || !qPayload) {
+    return (
+      <div
+        className="flex min-h-130 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-strong)] text-sm font-medium text-text-muted"
+        role="status"
+        aria-live="polite"
+      >
+        Loading question...
+      </div>
+    );
+  }
   if (error) return <div>{String(error)}</div>;
 
   return <QuestionRenderShell qpayload={qPayload} />;

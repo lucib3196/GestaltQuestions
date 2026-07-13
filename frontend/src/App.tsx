@@ -1,8 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { RequireRole } from "./features/Auth";
-import RunTimeConfig from "./features/QuestionConfig/RunTimeConfig";
-import { AllQuestionsTable } from "./features/QuestionTables";
+import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
 import AppLayout from "./layouts/AppLayout";
 import {
   AccountPage,
@@ -23,7 +22,8 @@ import { GeneralQuestionRender } from "./pages/Questions";
 function Test() {
   return (
     <div>
-      <AllQuestionsTable />
+      <QuestionWorkspace />
+      
     </div>
   );
 }

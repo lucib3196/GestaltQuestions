@@ -22,8 +22,8 @@ function MetadataChip({
   icon?: IconType | null;
 }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-secondary)] px-3 py-2 text-sm font-medium text-[var(--color-text-muted)]">
-      {Icon ? <Icon className="h-4 w-4 text-[var(--color-accent)]" /> : null}
+    <span className="inline-flex items-center gap-2 rounded-md border border-border bg-surface-secondary px-3 py-2 text-sm font-medium text-text-muted">
+      {Icon ? <Icon className="h-4 w-4 text-accent" /> : null}
       {children}
     </span>
   );
@@ -36,10 +36,10 @@ function QuestionHeader({
   return (
     <header className="mb-6 space-y-4">
       <div className="flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] bg-[rgba(57,91,255,0.18)] text-[var(--color-accent)]">
+        <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[rgba(57,91,255,0.18)] text-accent">
           <FiTarget className="h-5 w-5" />
         </span>
-        <h1 className="text-2xl font-semibold text-[var(--color-text)]">
+        <h1 className="text-2xl font-semibold text-text">
           {qdata?.title ?? "Untitled question"}
         </h1>
       </div>
@@ -59,9 +59,9 @@ function QuestionHeader({
       ) : null}
 
       {qdata?.qTypes?.length ? (
-        <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--color-text-muted)]">
-          <FiFileText className="h-4 w-4 text-[var(--color-accent)]" />
-          <span className="font-semibold text-[var(--color-text)]">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-text-muted">
+          <FiFileText className="h-4 w-4 text-accent" />
+          <span className="font-semibold text-text">
             Question Type:
           </span>
           {qdata.qTypes.map((qType) => (

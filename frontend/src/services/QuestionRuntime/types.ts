@@ -1,6 +1,6 @@
 import type { QuestionRead } from "../../types/questionTypes";
 
-export type QuestionRuntimeLanguage = "javascript" | "python";
+export type QuestionRuntimeLanguage = "javascript" | "python" | "static";
 
 export type RuntimeConfigSource = "manual" | "config_file" | "inferred";
 
