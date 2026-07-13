@@ -81,7 +81,7 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
         <QuestionTitleCell
           row={row}
           isSelected={isSelected ?? false}
-          onSelect={onSelect ? onSelect : () => {}}
+          onSelect={onSelect ? onSelect : () => { }}
         />
       ),
     },
@@ -100,6 +100,7 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
     {
       key: "status",
       label: "Status",
+      defaultVisible: true,
       render: (row) => <QuestionStatusCell row={row} />,
       filter: {
         kind: "select",
@@ -143,6 +144,7 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
     {
       key: "available_runtimes",
       label: "Runtimes",
+      defaultVisible: true,
       render: (row) => <QuestionRuntimesCell row={row} />,
       filter: {
         kind: "multiSelect",
@@ -171,10 +173,10 @@ export function createAllQuestionTableColumns(): QuestionTableColumn[] {
   const columns = baseColumns.map((column) =>
     excludedCol.includes(column.key)
       ? {
-          ...column,
-          defaultVisible: true,
-          filter: column.filter ? { ...column.filter, show: false } : undefined,
-        }
+        ...column,
+        defaultVisible: true,
+        filter: column.filter ? { ...column.filter, show: false } : undefined,
+      }
       : column,
   );
   return [
