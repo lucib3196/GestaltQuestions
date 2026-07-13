@@ -103,9 +103,7 @@ export default function UploadFiles({
       <MdDriveFolderUpload
         className={clsx(
           "mb-3",
-          isEditorDropzone
-            ? "text-accent"
-            : "text-blue-500 dark:text-blue-400",
+          isEditorDropzone ? "text-accent" : "text-blue-500 dark:text-blue-400",
         )}
         size={isEditorDropzone ? 48 : 40}
       />
@@ -117,7 +115,9 @@ export default function UploadFiles({
             : "text-lg text-blue-700 dark:text-blue-300",
         )}
       >
-        {isEditorDropzone ? "Drag & drop files here" : "Click to select file(s)"}
+        {isEditorDropzone
+          ? "Drag & drop files here"
+          : "Click to select file(s)"}
       </span>
       {isEditorDropzone && (
         <span className="mt-1 text-sm font-medium text-accent">
@@ -127,7 +127,9 @@ export default function UploadFiles({
       <p
         className={clsx(
           "mt-2 text-sm",
-          isEditorDropzone ? "text-text-soft" : "text-gray-600 dark:text-gray-400",
+          isEditorDropzone
+            ? "text-text-soft"
+            : "text-gray-600 dark:text-gray-400",
         )}
       >
         {message}

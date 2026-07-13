@@ -20,7 +20,9 @@ export default function Question() {
 
 export function GeneralQuestionRender() {
   const { qid } = useParams<{ qid: string }>();
-  const { runtimeLanguages, loading, error } = useGetQuestionRunTimes(qid ?? "");
+  const { runtimeLanguages, loading, error } = useGetQuestionRunTimes(
+    qid ?? "",
+  );
   const [serverMode, setServerMode] =
     useState<QuestionRuntimeLanguage>("javascript");
 

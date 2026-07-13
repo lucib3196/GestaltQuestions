@@ -1,9 +1,10 @@
 import type { OnChange } from "@monaco-editor/react";
 import Editor from "@monaco-editor/react";
-import CodeEditorToolBar from "./CodeEditorToolBar";
 import { debounce } from "lodash";
 import type { editor as MonacoEditor } from "monaco-editor";
 import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+
+import CodeEditorToolBar from "./CodeEditorToolBar";
 import type { EditorThemeKey } from "./types";
 import { languageMap } from "./types";
 import { editorThemeOptions } from "./types";
@@ -46,7 +47,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   return (
     <div className="w-full overflow-hidden rounded-lg border border-border bg-surface">
-      <CodeEditorToolBar language={resolvedLanguage} theme={editorThemeKey} setEditorTheme={setEditorThemeKey} />
+      <CodeEditorToolBar
+        language={resolvedLanguage}
+        theme={editorThemeKey}
+        setEditorTheme={setEditorThemeKey}
+      />
 
       <Editor
         height="70vh"

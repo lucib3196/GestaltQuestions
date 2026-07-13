@@ -178,8 +178,6 @@ export default function EditorPane({ qid, fileData }: EditorPaneProps) {
   return (
     <Container header="Code Editor">
       <div className="mb-3 flex flex-wrap items-end gap-3 rounded-md border border-border bg-surface p-3">
-        
-
         <div className="flex items-center gap-2">
           <Button
             name={isSaving ? "Saving..." : "Save"}

@@ -81,7 +81,7 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
         <QuestionTitleCell
           row={row}
           isSelected={isSelected ?? false}
-          onSelect={onSelect ? onSelect : () => { }}
+          onSelect={onSelect ? onSelect : () => {}}
         />
       ),
     },
@@ -173,10 +173,10 @@ export function createAllQuestionTableColumns(): QuestionTableColumn[] {
   const columns = baseColumns.map((column) =>
     excludedCol.includes(column.key)
       ? {
-        ...column,
-        defaultVisible: true,
-        filter: column.filter ? { ...column.filter, show: false } : undefined,
-      }
+          ...column,
+          defaultVisible: true,
+          filter: column.filter ? { ...column.filter, show: false } : undefined,
+        }
       : column,
   );
   return [

@@ -28,7 +28,6 @@ export function TopicsSection({ topics, onTopicsChange }: TopicsSectionProps) {
     onTopicsChange(topics.filter((topic) => topic !== topicToRemove));
   };
 
-
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-1 text-sm font-medium text-text-muted">
@@ -68,8 +67,6 @@ export function TopicsSection({ topics, onTopicsChange }: TopicsSectionProps) {
           placeholder={topics.length ? "Add another topic" : "Add topics"}
           className="min-w-40 flex-1 bg-transparent px-1 py-1.5 text-sm text-text outline-none placeholder:text-text-muted"
         />
-
-
       </div>
 
       <p className="text-sm text-text-muted">

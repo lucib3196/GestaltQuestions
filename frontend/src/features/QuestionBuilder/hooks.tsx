@@ -407,8 +407,6 @@ export function useCreateQuestion() {
   return { createQuestion, loading, error };
 }
 
-
-
 export function useDeleteQuestion() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

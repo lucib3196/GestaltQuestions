@@ -54,7 +54,8 @@ export default function ShowUploadedFiles({
                 <span
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md font-mono text-xs font-bold ${getFileBadge(file)}`}
                 >
-                  {file.name.split(".").pop()?.slice(0, 3).toUpperCase() ?? "FILE"}
+                  {file.name.split(".").pop()?.slice(0, 3).toUpperCase() ??
+                    "FILE"}
                 </span>
                 <span className="min-w-0 flex-1 truncate font-medium">
                   {file.name}

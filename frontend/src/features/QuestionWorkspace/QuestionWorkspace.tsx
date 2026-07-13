@@ -77,10 +77,7 @@ export default function QuestionWorkspace() {
                   minSize={25}
                   className="min-w-0"
                 >
-                  <PaneContent
-                    qid={qid}
-                    serverMode={serverMode}
-                  />
+                  <PaneContent qid={qid} serverMode={serverMode} />
                 </Panel>
 
                 {layoutMode === "split" && index < panes.length - 1 && (

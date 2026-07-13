@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+
 import { useQuestionMetadata } from "../QuestionBuilder";
+import { useUpdateQuestion } from "./hooks/hooks";
 import { QuestionMetadataForm } from "./QuestionMetadataForm";
 import {
   metadataValuesEqual,
   type QuestionMetadataFormValue,
   toQuestionMetadataFormValue,
 } from "./utils";
-import { useUpdateQuestion } from "./hooks/hooks";
 type QuestionMetadataWorkspacePanelProps = {
   qid: string;
 };
@@ -15,7 +16,7 @@ export default function QuestionMetadataWorkspacePanel({
   qid,
 }: QuestionMetadataWorkspacePanelProps) {
   const { questionMetadata, loading } = useQuestionMetadata(qid);
-  const { updateQuestion, loading: uloading } = useUpdateQuestion()
+  const { updateQuestion, loading: uloading } = useUpdateQuestion();
 
   const [value, setValue] = useState<QuestionMetadataFormValue>(
     toQuestionMetadataFormValue(null),
@@ -35,7 +36,7 @@ export default function QuestionMetadataWorkspacePanel({
   };
 
   const handleSubmit = async () => {
-    await updateQuestion(qid, value)
+    await updateQuestion(qid, value);
   };
 
   if (loading) {
@@ -64,4 +65,3 @@ export default function QuestionMetadataWorkspacePanel({
     />
   );
 }
-
