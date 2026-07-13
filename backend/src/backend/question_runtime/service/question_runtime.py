@@ -75,12 +75,13 @@ class QuestionRunTimeService:
             func_name=runtime.func_name,
             files=question_files.files,
         )
+        
         try:
             data = await self._sandbox.execute(exc_bundle.model_dump(mode="json"))
         except HTTPException as exc:
             raise RuntimeExecutionError(
                 question_id=str(qid),
-                detail=str(exc.detail),
+                detail=exc.detail,
                 status_code=exc.status_code,
             ) from exc
         except Exception as exc:
@@ -89,12 +90,12 @@ class QuestionRunTimeService:
                 question_id=str(qid),
                 detail="An unexpected error occurred.",
             ) from exc
-
         output = data.get("output")
         if output is None:
             raise MissingRuntimeOutputError(str(qid))
 
         logs = data.get("logs", [])
+
         formatted_question = TemplateParser().render(
             question_files.question_html, output or {}
         )

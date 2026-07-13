@@ -18,14 +18,6 @@ import {
 } from "./pages/QuestionBuilder";
 import { GeneralQuestionRender } from "./pages/Questions";
 
-function Test() {
-  return (
-    <div>
-      
-    </div>
-  );
-}
-
 function App() {
   return (
     <>
@@ -58,7 +50,6 @@ function App() {
                 <Route path="chat" element={<ChatPage />} />
               </Route>
             </Route>
-            <Route path="test" element={<Test />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

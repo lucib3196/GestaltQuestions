@@ -135,7 +135,7 @@ export function useFilterGeneralQuestions(filter: QuestionFilter) {
   return { questions, loading, error };
 }
 
-export function useQuestionFileData(qid: string) {
+export function useQuestionFileData(qid: string, refreshKey = 0) {
   const { user } = useAuth();
   const [fileData, setFileData] = useState<FileData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -175,7 +175,7 @@ export function useQuestionFileData(qid: string) {
     return () => {
       cancelled = true;
     };
-  }, [user, qid]);
+  }, [user, qid, refreshKey]);
 
   return { fileData, loading, error };
 }

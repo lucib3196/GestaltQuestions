@@ -14,6 +14,7 @@ export function useRunQuestion(
   serverMode: QuestionRuntimeLanguage | null,
   refreshKey?: number,
 ) {
+  const setRunTimeContent = useQuestionInstance((s) => s.setRunTimeContent);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [qPayload, setQPayload] = useState<QuestionRunResponse | null>(null);
@@ -33,6 +34,7 @@ export function useRunQuestion(
 
         if (!cancelled) {
           setQPayload(data);
+          setRunTimeContent(data);
         }
       } catch (err) {
         if (!cancelled) {
@@ -51,7 +53,7 @@ export function useRunQuestion(
     return () => {
       cancelled = true;
     };
-  }, [questionID, serverMode, refreshKey]);
+  }, [questionID, serverMode, refreshKey, setRunTimeContent]);
 
   return {
     qPayload,

@@ -5,6 +5,18 @@ from starlette import status
 from backend.core import logger
 
 
+def _get_response_detail(response: httpx.Response) -> object:
+    try:
+        payload = response.json()
+    except ValueError:
+        return response.text
+
+    if isinstance(payload, dict) and "detail" in payload:
+        return payload["detail"]
+
+    return payload
+
+
 class SandboxClient:
     def __init__(self, base_url: str | None = None) -> None:
         if not base_url:
@@ -20,6 +32,7 @@ class SandboxClient:
                 response = await client.post(execution_endpoint, json=payload)
                 response.raise_for_status()
                 data = response.json()
+                print("Sandbox data", data)
         except httpx.TimeoutException as e:
             logger.exception("Sandbox request timed out.")
             raise HTTPException(
@@ -27,14 +40,23 @@ class SandboxClient:
                 detail="Sandbox request timed out.",
             ) from e
         except httpx.HTTPStatusError as e:
+            response_status = e.response.status_code
+            response_detail = _get_response_detail(e.response)
             logger.error(
                 "[SANDBOX] Sandbox returned %s: %s",
-                e.response.status_code,
+                response_status,
                 e.response.text,
             )
+
+            if response_status == status.HTTP_400_BAD_REQUEST:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=response_detail,
+                ) from e
+
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
-                detail=f"Sandbox request failed with status {e.response.status_code}: {e.response.text}",
+                detail=f"Sandbox request failed with status {response_status}: {e.response.text}",
             ) from e
         except httpx.RequestError as e:
             logger.exception("Failed to connect to sandbox service.")
@@ -48,6 +70,7 @@ class SandboxClient:
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail="Sandbox returned an invalid JSON response.",
             ) from e
+
 
         if data is None:
             raise HTTPException(

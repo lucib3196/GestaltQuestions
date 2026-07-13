@@ -64,12 +64,16 @@ class RuntimeExecutionError(QuestionRuntimeServiceError):
     def __init__(
         self,
         question_id: str,
-        detail: str,
+        detail: object,
         status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
     ) -> None:
         super().__init__(
             status_code=status_code,
-            detail=f"Runtime execution failed for question {question_id}: {detail}",
+            detail={
+                "status_code": status_code,
+                "message": f"Runtime execution failed for question {question_id}.",
+                "execution_error": detail,
+            },
         )
 
 
