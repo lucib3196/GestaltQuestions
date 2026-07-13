@@ -5,7 +5,6 @@ import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
 import AppLayout from "./layouts/AppLayout";
 import {
   AccountPage,
-  EditQuestionPage,
   Home,
   LoginPage,
   QuestionBuilder,
@@ -50,7 +49,7 @@ function App() {
                 <Route path="questions/new" element={<CreateNewQuestion />} />
                 <Route
                   path="questions/:qid/edit"
-                  element={<EditQuestionPage />}
+                  element={<QuestionWorkspace />}
                 />
                 <Route
                   path="playground"
