@@ -1,54 +1,23 @@
 import { createStore } from "zustand";
-
-import type { QuestionRunResponse } from "../../../services/QuestionRuntime";
-import type {
-  QuestionInstanceState,
-  QuestionInstanceStore,
-} from "./types";
-
-export function toQuestionInstanceState(
-  res: QuestionRunResponse,
-): Partial<QuestionInstanceState> {
-  return {
-    runInstanceId: String(res.instance),
-    questionHtml: res.question_html ?? "",
-    solutionHtml: res.solution_html ?? null,
-    logs: res.logs ?? [],
-    quizData: res.quiz_data ?? null,
-  };
-}
-
-const initialState: QuestionInstanceState = {
-  runInstanceId: null,
-  questionMeta: null,
-  questionHtml: "",
-  solutionHtml: null,
-  logs: [],
-  quizData: null,
-  files: [],
-
-  answers: {},
-  hasSubmitted: false,
-
-  loading: false,
-  error: null,
-};
+import type { QuestionInstanceStore, QuestionInstanceState } from "./types";
 
 export function createQuestionInstanceStore(
-  preloaded?: Partial<QuestionInstanceState>,
+  initialState?: Partial<QuestionInstanceState>,
 ) {
   return createStore<QuestionInstanceStore>()((set) => ({
+    answers: {},
+    hasSubmitted: false,
+    refreshKey: 0,
+    showSolution: false,
     ...initialState,
-    ...preloaded,
 
     setRunTimeContent: (payload) =>
       set(() => ({
-        ...toQuestionInstanceState(payload),
-        loading: false,
-        error: null,
+        ...payload,
         hasSubmitted: false,
         answers: {},
       })),
+    setRefreshKey: () => set((state) => ({ refreshKey: state.refreshKey + 1 })),
     setAnswer: (name, value) =>
       set((state) => ({
         answers: { ...state.answers, [name]: value },
@@ -56,9 +25,6 @@ export function createQuestionInstanceStore(
     resetAnswers: () => set(() => ({ answers: {} })),
     submitAnswers: () => set(() => ({ hasSubmitted: true })),
     resetSubmissions: () => set(() => ({ hasSubmitted: false })),
-    startLoading: () => set(() => ({ loading: true, error: null })),
-    setError: (message) => set(() => ({ error: message, loading: false })),
-
-    resetAll: () => set(() => ({ ...initialState })),
+    setShowSolution: ()=>set((state)=>({showSolution: !state.showSolution}))
   }));
 }

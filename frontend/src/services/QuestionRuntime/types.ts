@@ -1,3 +1,5 @@
+import type { QuestionRead } from "../../types/questionTypes";
+
 export type QuestionRuntimeLanguage = "javascript" | "python";
 
 export type RuntimeConfigSource = "manual" | "config_file" | "inferred";
@@ -36,8 +38,24 @@ export type QuestionRuntimeResponse = {
 
 export type QuestionRunResponse = {
   instance: string;
+  qmeta: QuestionRead;
   question_html: string;
   solution_html?: string | null;
   logs: string[];
   quiz_data?: QuestionRunQuizData | null;
+};
+
+export type QuestionValue = string | number | string[] | boolean | null;
+export type QuestionAnswerMap = Record<string, QuestionValue>;
+
+//  The payload from the backend the pure QuizData
+export type QuestionParams = {
+  params: QuestionAnswerMap;
+  correct_answers: QuestionAnswerMap;
+  sigfigs?: number;
+};
+export type QuizData = QuestionParams & {
+  nDigits?: number;
+  sigfigs?: number;
+  logs?: string[];
 };

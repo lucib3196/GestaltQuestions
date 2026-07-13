@@ -15,11 +15,14 @@ export default class QuestionRuntimeApi {
 
   static async runQuestion(
     qid: string,
-    language: QuestionRuntimeLanguage,
+    language: QuestionRuntimeLanguage | null,
   ): Promise<QuestionRunResponse> {
-    const response = await api.post<QuestionRunResponse>(
-      `${this.runtimeBase(qid)}/run/${encodeURIComponent(language)}`,
-    );
+    const url = language
+      ? `${this.runtimeBase(qid)}/run?language=${encodeURIComponent(language)}`
+      : `${this.runtimeBase(qid)}/run`;
+
+    const response = await api.post<QuestionRunResponse>(url);
+
     return response.data;
   }
 

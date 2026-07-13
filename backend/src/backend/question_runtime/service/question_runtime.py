@@ -19,12 +19,13 @@ from backend.question_runtime.schema import (
 )
 from backend.sandbox_client import SandboxClient
 from backend.shared import ID
-
+from backend.question import QuestionRead
 from .runtime_db import QuestionRuntimeDB
-
+from .runtime_sync import QuestionRunTimeSyncService
 
 class RenderedQuestionBundle(BaseModel):
     instance: UUID = Field(default_factory=uuid4)
+    qmeta: QuestionRead
     question_html: str
     solution_html: str | None = None
     logs: list[str] = []
@@ -38,6 +39,7 @@ class QuestionRunTimeService:
         self._qm = qm
         self._runtime_db = runtime_db
         self._sandbox = sandbox
+        self._sync = QuestionRunTimeSyncService(self._runtime_db)
 
     async def run(
         self, qid: ID, language: RuntimeLanguage | None
@@ -46,10 +48,12 @@ class QuestionRunTimeService:
         if not question:
             raise ValueError("Question not found")
         question_files = await self._qm.get_question_filedata(qid)
+        await self._sync.sync_from_files(qid, question_files)
         # Handle conversion from filedata->dict and packaged model
         question_files = QuestionFiles.from_file_data(question_files)
         if not question.isAdaptive:
             return RenderedQuestionBundle(
+                qmeta=question,
                 question_html=question_files.question_html,
                 solution_html=question_files.solution_html,
             )
@@ -98,6 +102,7 @@ class QuestionRunTimeService:
             question_files.solution_html or "", output or {}
         )
         return RenderedQuestionBundle(
+            qmeta=question,
             question_html=formatted_question,
             solution_html=formatted_solution,
             logs=logs,

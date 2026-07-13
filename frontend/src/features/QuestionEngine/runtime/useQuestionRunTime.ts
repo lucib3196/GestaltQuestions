@@ -4,37 +4,45 @@ import { useEffect, useState } from "react";
 import { firebase } from "../../../config/firebaseClient";
 import { QuestionRuntimeApi } from "../../../services/QuestionRuntime";
 import type { ServerSettings } from "../../QuestionBuilder/components/ServerToggle";
-import { useQuestionInstance } from "./context";
+import { useQuestionInstance } from "../instance";
+import type {
+  QuestionRunResponse,
+  QuestionRuntimeLanguage,
+} from "../../../services/QuestionRuntime";
 
-export function useLoadQuestionRuntime(
-  questionId: string | null,
-  serverMode: ServerSettings,
-  refreshKey: number = 0,
+export function useRunQuestion(
+  questionID: string,
+  serverMode: QuestionRuntimeLanguage | null,
+  refreshKey?: number,
 ) {
-  const startLoading = useQuestionInstance((s) => s.startLoading);
-  const setRuntimeContent = useQuestionInstance((s) => s.setRunTimeContent); // Initially all values are null
-  const setError = useQuestionInstance((s) => s.setError);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [qPayload, setQPayload] = useState<QuestionRunResponse | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    if (!questionId) {
-      setError(null);
-      return;
-    }
-    startLoading();
+
     const run = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
         const data = await QuestionRuntimeApi.runQuestion(
-          questionId,
+          questionID,
           serverMode,
         );
+
         if (!cancelled) {
-          setRuntimeContent(data); // stores instance, html, quiz_data, logs, etc.
+          setQPayload(data);
         }
       } catch (err) {
         if (!cancelled) {
           const message = err instanceof Error ? err.message : String(err);
           setError(message);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
         }
       }
     };
@@ -44,25 +52,21 @@ export function useLoadQuestionRuntime(
     return () => {
       cancelled = true;
     };
-  }, [
-    questionId,
-    serverMode,
-    refreshKey,
-    startLoading,
-    setRuntimeContent,
-    setError,
-  ]);
-}
+  }, [questionID, serverMode, refreshKey]);
 
-// Backward-compatible alias
-export const useRunQuestion = useLoadQuestionRuntime;
+  return {
+    qPayload,
+    error,
+    loading,
+  };
+}
 
 export function useQuestionFigureSource(
   src?: string,
   filename?: string,
   useClientFilesDir: boolean = false,
 ) {
-  const qmeta = useQuestionInstance((s) => s.questionMeta);
+  const qmeta = useQuestionInstance((s) => s.qmeta);
   const [resolvedImageSrc, setResolvedImageSrc] = useState("");
 
   useEffect(() => {

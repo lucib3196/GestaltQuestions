@@ -5,13 +5,14 @@ from backend.question import QType, Status
 from backend.question_runtime.model import RuntimeLanguage
 from backend.auth import ValidInstitutions
 
+
 class QuestionSearchParams(BaseModel):
     # Search query for title
     search: str | None = None
     # Filter question based on status
     status: Status | None = None
     # Filter based on institution
-    institution: ValidInstitutions|None = None
+    institution: ValidInstitutions | None = None
     # filter question based on question type
     qtype: QType | list[QType] | None = None
     # general term for searching topics based on topics
@@ -20,7 +21,7 @@ class QuestionSearchParams(BaseModel):
     language: RuntimeLanguage | list[RuntimeLanguage] | None = None
     # Backend-only filter for published table queries
     published: bool | None = None
-    
+
     isAdaptive: bool | None = None
     # General offset and limits
     limit: int = 50
@@ -37,7 +38,7 @@ class QuestionTableRow(BaseModel):
     created_by: str
     status: Status | str
     topics: list[str]
-    question_type: list[QType | str]
+    question_type: list[QType | str | None] | None
     available_runtimes: list[RuntimeLanguage | str]
     created_at: datetime
     updated_at: datetime | None = None

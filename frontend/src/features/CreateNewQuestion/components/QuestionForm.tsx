@@ -16,7 +16,7 @@ export default function QuestionForm({
   if (!value) return null;
 
   const topicsInput = (value.topics ?? []).join(", ");
-  const qTypesInput = (value.qTypes ?? []).join(", ");
+  const qTypesInput = (value.qType ?? []).join(", ");
 
   const patch = (partial: Partial<QuestionCreate>) => {
     onChange({ ...value, ...partial });
@@ -65,7 +65,7 @@ export default function QuestionForm({
               hint="e.g. conceptual, numerical, coding"
               variant="createQuestion"
               onChange={(e) =>
-                patch({ qTypes: handleCommaSeperatedValues(e.target.value) })
+                patch({ qType: handleCommaSeperatedValues(e.target.value) })
               }
             />
           </div>

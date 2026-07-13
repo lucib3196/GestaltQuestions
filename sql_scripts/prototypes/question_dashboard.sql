@@ -30,14 +30,14 @@ coalesce(
     "question"."updated_at"
 FROM
     "question"
-    JOIN "question_topic_link" ON "question_topic_link"."question_id" = "question"."id"
-    JOIN "topic" ON "topic"."id" = "question_topic_link"."topic_id"
-    JOIN "question_qtype_link" ON "question_qtype_link"."question_id" = "question"."id"
-    JOIN "question_type" ON "question_type"."id" = "question_qtype_link"."qtype_id"
+    LEFT JOIN "question_topic_link" ON "question_topic_link"."question_id" = "question"."id"
+    LEFT JOIN "topic" ON "topic"."id" = "question_topic_link"."topic_id"
+    LEFT JOIN  "question_qtype_link" ON "question_qtype_link"."question_id" = "question"."id"
+    LEFT JOIN  "question_type" ON "question_type"."id" = "question_qtype_link"."qtype_id"
     LEFT JOIN "question_runtime" ON "question_runtime"."question_id" = "question"."id"
     JOIN "developer_profile" ON "developer_profile"."id" = "question"."created_by_id"
     JOIN "user" ON "user"."id" = "developer_profile"."user_id"
-    JOIN "institution" ON "user"."institution_id" = "institution"."id"
+    LEFT JOIN "institution" ON "user"."institution_id" = "institution"."id"
 GROUP BY
     "question"."id",
     "developer_profile"."user_id",

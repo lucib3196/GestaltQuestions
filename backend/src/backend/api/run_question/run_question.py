@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from backend.api.deps import (
     QuestionRuntimeServiceDependency,
@@ -13,10 +13,10 @@ router = APIRouter(
 )
 
 
-@router.post("/run/{language}", response_model=RenderedQuestionBundle)
+@router.post("/run", response_model=RenderedQuestionBundle)
 async def run(
     qid: ID,
     runtime_service: QuestionRuntimeServiceDependency,
-    language: RuntimeLanguage | None,
+    language: RuntimeLanguage | None = Query(default=None),
 ):
     return await runtime_service.run(qid, language)

@@ -36,7 +36,7 @@ export type QuestionCreate = {
   ai_generated?: boolean;
   isAdaptive?: boolean;
   topics?: string[];
-  qTypes?: string[];
+  qType?: string[];
 };
 
 export type QuestionUpdate = {
