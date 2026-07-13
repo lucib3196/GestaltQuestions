@@ -23,14 +23,13 @@ export function normalizeQuestionStatus(value: string | null | undefined) {
   const normalized = value?.toLowerCase() ?? "";
   return isQuestionStatus(normalized) ? normalized : "draft";
 }
-
 export const QUESTION_TYPE_VALUES = [
-  "mc",
-  "mcq",
-  "ma",
-  "tf",
-  "fb",
-  "num",
+  "MC",
+  "MCQ",
+  "MA",
+  "TF",
+  "FB",
+  "NUM",
 ] as const;
 
 export type QuestionType = (typeof QUESTION_TYPE_VALUES)[number];
@@ -39,12 +38,12 @@ export const QUESTION_TYPE_OPTIONS: {
   label: string;
   value: QuestionType;
 }[] = [
-  { label: "Multiple Choice", value: "mc" },
-  { label: "Multiple Choice Question", value: "mcq" },
-  { label: "Multiple Answer", value: "ma" },
-  { label: "True / False", value: "tf" },
-  { label: "Fill in the Blank", value: "fb" },
-  { label: "Numerical", value: "num" },
+  { label: "Multiple Choice", value: "MC" },
+  { label: "Multiple Choice Question", value: "MCQ" },
+  { label: "Multiple Answer", value: "MA" },
+  { label: "True / False", value: "TF" },
+  { label: "Fill in the Blank", value: "FB" },
+  { label: "Numerical", value: "NUM" },
 ];
 
 export function isQuestionType(value: string): value is QuestionType {
@@ -67,7 +66,7 @@ export type QuestionRead = {
   status: QuestionStatus;
   created_by_id: string | null;
   topics: string[];
-  qTypes: QuestionType[];
+  qType: QuestionType[];
 };
 
 export type QuestionAllRow = {
@@ -97,7 +96,6 @@ export type QuestionUpdate = {
   isAdaptive?: boolean;
   topics?: string[];
   qType?: QuestionType[];
-  qTypes?: QuestionType[];
   status?: QuestionStatus;
 };
 

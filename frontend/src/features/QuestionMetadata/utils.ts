@@ -14,7 +14,7 @@ export type QuestionMetadataFormValue = {
   ai_generated: boolean;
   isAdaptive: boolean;
   topics: string[];
-  qTypes: QuestionType[];
+  qType: QuestionType[];
 };
 
 export const emptyQuestionMetadata: QuestionMetadataFormValue = {
@@ -23,7 +23,7 @@ export const emptyQuestionMetadata: QuestionMetadataFormValue = {
   ai_generated: false,
   isAdaptive: false,
   topics: [],
-  qTypes: [],
+  qType: [],
 };
 
 export function toQuestionMetadataFormValue(
@@ -37,8 +37,8 @@ export function toQuestionMetadataFormValue(
     ai_generated: Boolean(question.ai_generated),
     isAdaptive: Boolean(question.isAdaptive),
     topics: Array.isArray(question.topics) ? question.topics : [],
-    qTypes: Array.isArray(question.qTypes)
-      ? normalizeQuestionTypes(question.qTypes)
+    qType: Array.isArray(question.qType)
+      ? normalizeQuestionTypes(question.qType)
       : [],
   };
 }
@@ -50,7 +50,7 @@ export function serializeQuestionMetadata(value: QuestionMetadataFormValue) {
     ai_generated: value.ai_generated,
     isAdaptive: value.isAdaptive,
     topics: value.topics,
-    qType: value.qTypes,
+    qType: value.qType,
   };
 }
 

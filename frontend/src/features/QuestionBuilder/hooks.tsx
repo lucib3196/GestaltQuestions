@@ -407,44 +407,7 @@ export function useCreateQuestion() {
   return { createQuestion, loading, error };
 }
 
-export function useUpdateQuestion(onRefresh?: () => void) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
 
-  const updateQuestion = useCallback(
-    async (questionId: string, payload: QuestionUpdate) => {
-      setLoading(true);
-      setError(null);
-
-      if (!user) {
-        setError("You must be signed in to update questions.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const token = await user.getIdToken();
-        const updated = await QuestionBuilderAPI.updateQuestion(
-          token,
-          questionId,
-          payload,
-        );
-        onRefresh?.();
-        return updated;
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to update question",
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [user, onRefresh],
-  );
-
-  return { updateQuestion, loading, error };
-}
 
 export function useDeleteQuestion() {
   const [loading, setLoading] = useState(false);

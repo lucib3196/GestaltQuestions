@@ -53,9 +53,9 @@ export function QuestionMetadataForm({
 
         <ClassificationSection
           topics={value.topics}
-          qTypes={value.qTypes}
+          qTypes={value.qType}
           onTopicsChange={(topics) => patch({ topics })}
-          onQuestionTypesChange={(qTypes) => patch({ qTypes })}
+          onQuestionTypesChange={(qType) => patch({ qType })}
         />
 
         <QuestionMetadataActions

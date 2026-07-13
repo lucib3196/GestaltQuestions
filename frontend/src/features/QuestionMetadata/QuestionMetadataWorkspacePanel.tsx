@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-
 import { useQuestionMetadata } from "../QuestionBuilder";
 import { QuestionMetadataForm } from "./QuestionMetadataForm";
 import {
   metadataValuesEqual,
   type QuestionMetadataFormValue,
-  serializeQuestionMetadata,
   toQuestionMetadataFormValue,
 } from "./utils";
-
+import { useUpdateQuestion } from "./hooks/hooks";
 type QuestionMetadataWorkspacePanelProps = {
   qid: string;
 };
@@ -17,6 +15,8 @@ export default function QuestionMetadataWorkspacePanel({
   qid,
 }: QuestionMetadataWorkspacePanelProps) {
   const { questionMetadata, loading } = useQuestionMetadata(qid);
+  const { updateQuestion, loading: uloading } = useUpdateQuestion()
+
   const [value, setValue] = useState<QuestionMetadataFormValue>(
     toQuestionMetadataFormValue(null),
   );
@@ -34,11 +34,8 @@ export default function QuestionMetadataWorkspacePanel({
     setValue(originalValue);
   };
 
-  const handleSubmit = () => {
-    globalThis.console.log(
-      "Question metadata draft",
-      serializeQuestionMetadata(value),
-    );
+  const handleSubmit = async () => {
+    await updateQuestion(qid, value)
   };
 
   if (loading) {
@@ -63,7 +60,8 @@ export default function QuestionMetadataWorkspacePanel({
       onChange={setValue}
       onReset={handleReset}
       onSubmit={handleSubmit}
-      disableSubmit={metadataValuesEqual(value, originalValue)}
+      disableSubmit={metadataValuesEqual(value, originalValue) || uloading}
     />
   );
 }
+

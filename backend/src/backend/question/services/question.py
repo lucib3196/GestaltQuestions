@@ -33,6 +33,8 @@ from backend.shared import ID
 from backend.utils import convert_uuid
 from backend.utils import database_generics as gdb
 
+from .qtype import QuestionQTypeDB
+
 
 class QuestionDB:
     def __init__(self, session: Session) -> None:
@@ -43,6 +45,7 @@ class QuestionDB:
             session: Active SQLModel session used for database operations.
         """
         self.session = session
+        self._qtype = QuestionQTypeDB(self.session)
         self.metadata_rel = ["topics", "qType"]
         self.excluded_fields = self.metadata_rel
 
@@ -178,7 +181,10 @@ class QuestionDB:
             raise QuestionNotFoundError(f"Question '{qid}' was not found.")
         question_data = q.model_dump(exclude=set(self.metadata_rel))
         relationship_data = await self.get_question_relationship_data(q)
-        return QuestionRead(**question_data, **relationship_data)
+
+        payload = QuestionRead(**question_data, **relationship_data)
+        
+        return payload
 
     async def update_question(
         self,
@@ -351,9 +357,11 @@ class QuestionDB:
         topic_names = data.topics or []
         qtype_names = data.qType or []
         question.topics = await gdb.get_or_create_many(self.session, Topic, topic_names)
-        question.qType = await gdb.get_or_create_many(
-            self.session, QuestionType, qtype_names
-        )
+        
+        qtypes = []
+        for t in qtype_names:
+            qtypes.append(self._qtype.get_qtype_by_name(t))
+        question.qType = qtypes
         return question
 
     async def get_question_relationship_data(self, q: Question) -> dict[str, Any]:
@@ -369,7 +377,7 @@ class QuestionDB:
         # Get the topics,languages and qtypes
         topics = await gdb.get_relationship_data(q, "topics", mode="list")
         qtypes = await gdb.get_relationship_data(q, "qType", mode="list")
-        return {"topics": topics, "qtype": qtypes}
+        return {"topics": topics, "qType": qtypes}
 
     def validate_data(self, question: QuestionCreate | dict) -> QuestionCreate:
         """
