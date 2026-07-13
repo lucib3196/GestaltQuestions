@@ -1,3 +1,7 @@
+import type React from "react";
+import type { IconType } from "react-icons";
+import { FiFileText, FiTarget } from "react-icons/fi";
+
 import type { QuestionRead } from "../../QuestionBuilder";
 import type { QuestionRunResponse } from "../../../services";
 import QuestionHTMLToReact from "../render/QuestionHtmlToReact";
@@ -5,59 +9,97 @@ import QuestionActions from "./QuestionActions";
 import DisplayAnswers from "./QuestionFeedback";
 import { useQuestionInstance } from "../instance";
 
-function QuestionHeader({ qdata }: { qdata: QuestionRead | null | undefined }) {
-    return (
-        <header className="mb-4 border-b border-border pb-3">
-            <h1 className="mt-1 text-2xl font-semibold text-text">
-                {qdata?.title ?? "Untitled question"}
-            </h1>
-            <span className="flex flex-row gap-2 items-center justify-baseline">
-                Topics:{" "}
-                {qdata?.topics?.length ? (
-                    <p className="mt-1 text-sm text-text-muted">
-                        {qdata.topics.join(", ")}
-                    </p>
-                ) : null}
-            </span>
-            <span className="flex flex-row gap-2 items-center justify-baseline">
-                Question Type:{" "}
-                {qdata?.qTypes?.length ? (
-                    <p className="mt-1 text-sm text-text-muted">
-                        {qdata.qTypes.join(", ")}
-                    </p>
-                ) : null}
-            </span>
-        </header>
-    );
+type QuestionHeaderProps = {
+  qdata: QuestionRead | null | undefined;
+  topicIcon?: IconType | null;
+};
+
+function MetadataChip({
+  children,
+  icon: Icon,
+}: {
+  children: React.ReactNode;
+  icon?: IconType | null;
+}) {
+  return (
+    <span className="inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-secondary)] px-3 py-2 text-sm font-medium text-[var(--color-text-muted)]">
+      {Icon ? <Icon className="h-4 w-4 text-[var(--color-accent)]" /> : null}
+      {children}
+    </span>
+  );
+}
+
+function QuestionHeader({
+  qdata,
+  topicIcon: TopicIcon = null,
+}: QuestionHeaderProps) {
+  return (
+    <header className="mb-6 space-y-4">
+      <div className="flex items-center gap-3">
+        <span className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] bg-[rgba(57,91,255,0.18)] text-[var(--color-accent)]">
+          <FiTarget className="h-5 w-5" />
+        </span>
+        <h1 className="text-2xl font-semibold text-[var(--color-text)]">
+          {qdata?.title ?? "Untitled question"}
+        </h1>
+      </div>
+
+      {qdata?.topics?.length ? (
+        <div className="flex flex-wrap gap-2">
+          {qdata.topics.map((topic) => (
+            <MetadataChip
+              key={topic}
+              // TopicIcon is intentionally optional until topic-specific icons exist.
+              icon={TopicIcon}
+            >
+              {topic}
+            </MetadataChip>
+          ))}
+        </div>
+      ) : null}
+
+      {qdata?.qTypes?.length ? (
+        <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--color-text-muted)]">
+          <FiFileText className="h-4 w-4 text-[var(--color-accent)]" />
+          <span className="font-semibold text-[var(--color-text)]">
+            Question Type:
+          </span>
+          {qdata.qTypes.map((qType) => (
+            <MetadataChip key={qType}>{qType}</MetadataChip>
+          ))}
+        </div>
+      ) : null}
+    </header>
+  );
 }
 
 export default function QuestionBody({
-    qpayload,
+  qpayload,
 }: {
-    qpayload: QuestionRunResponse;
+  qpayload: QuestionRunResponse;
 }) {
-    const hasSubmitted = useQuestionInstance((s) => s.hasSubmitted);
-    const answers = useQuestionInstance((s) => s.answers);
-    const showSolution = useQuestionInstance((s) => s.showSolution);
+  const hasSubmitted = useQuestionInstance((s) => s.hasSubmitted);
+  const answers = useQuestionInstance((s) => s.answers);
+  const showSolution = useQuestionInstance((s) => s.showSolution);
 
-    return (
-        <div>
-            <QuestionHeader qdata={qpayload.qmeta} />
-            <QuestionHTMLToReact html={qpayload.question_html} />
-            <QuestionActions />
+  return (
+    <div>
+      <QuestionHeader qdata={qpayload.qmeta} />
+      <QuestionHTMLToReact html={qpayload.question_html} />
+      <QuestionActions />
 
-            {showSolution && (
-                <QuestionHTMLToReact
-                    html={qpayload.solution_html ?? "No Solution Available for Question"}
-                />
-            )}
+      {showSolution && (
+        <QuestionHTMLToReact
+          html={qpayload.solution_html ?? "No Solution Available for Question"}
+        />
+      )}
 
-            {hasSubmitted && qpayload.quiz_data && (
-                <DisplayAnswers
-                    quizData={qpayload.quiz_data}
-                    submittedAnswer={answers}
-                />
-            )}
-        </div>
-    );
+      {hasSubmitted && qpayload.quiz_data && (
+        <DisplayAnswers
+          quizData={qpayload.quiz_data}
+          submittedAnswer={answers}
+        />
+      )}
+    </div>
+  );
 }
