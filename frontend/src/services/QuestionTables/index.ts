@@ -1,6 +1,6 @@
+export type { QuestionRuntimeLanguage } from "../QuestionRuntime";
 export { default as QuestionTablesApi } from "./api";
 export type {
-  QuestionRuntimeLanguage,
   QuestionTableRow,
   QuestionTableSearchParams,
   QuestionType,

@@ -1,11 +1,16 @@
+import type { Dispatch } from "react";
+
 import { BooleanField, InputTextForm } from "../../../components/FormInputs";
-import type { QuestionCreate } from "../../../types/questionTypes";
+import {
+  normalizeQuestionTypes,
+  type QuestionCreate,
+} from "../../../types/questionTypes";
 import { handleCommaSeperatedValues } from "../../../utils";
 
 export type QuestionFormProps = {
   value: QuestionCreate | null | undefined;
-  onChange: (next: QuestionCreate) => void;
-  onAdaptiveChange?: (isAdaptive: boolean) => void;
+  onChange: Dispatch<QuestionCreate>;
+  onAdaptiveChange?: Dispatch<boolean>;
 };
 
 export default function QuestionForm({
@@ -65,7 +70,11 @@ export default function QuestionForm({
               hint="e.g. conceptual, numerical, coding"
               variant="createQuestion"
               onChange={(e) =>
-                patch({ qType: handleCommaSeperatedValues(e.target.value) })
+                patch({
+                  qType: normalizeQuestionTypes(
+                    handleCommaSeperatedValues(e.target.value),
+                  ),
+                })
               }
             />
           </div>

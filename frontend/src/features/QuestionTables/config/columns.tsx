@@ -3,9 +3,13 @@ import type {
   QuestionRuntimeLanguage,
   QuestionTableRow,
   QuestionTableSearchParams,
-  QuestionType,
 } from "../../../services";
-import type { QuestionStatus } from "../../../types/questionTypes";
+import {
+  QUESTION_STATUS_OPTIONS,
+  QUESTION_TYPE_OPTIONS,
+  QUESTION_TYPE_VALUES,
+  type QuestionStatus,
+} from "../../../types/questionTypes";
 import { AllowedInstitutions, type ValidInstitutions } from "../../Auth/types";
 import {
   QuestionAdaptiveCell,
@@ -21,18 +25,6 @@ import {
 } from "../components/cells";
 
 type FilterOption<T extends string> = { label: string; value: T };
-
-const QUESTION_TYPE_OPTIONS = [
-  { label: "Multiple Choice", value: "mc" },
-  { label: "Multiple Choice Question", value: "mcq" },
-  { label: "Multiple Answer", value: "ma" },
-  { label: "True / False", value: "tf" },
-  { label: "Fill in the Blank", value: "fb" },
-  { label: "Numerical", value: "num" },
-] satisfies FilterOption<QuestionType>[];
-const QUESTION_TYPE_VALUES = QUESTION_TYPE_OPTIONS.map(
-  (option) => option.value,
-) as QuestionType[];
 
 const RUNTIME_OPTIONS = [
   { label: "JavaScript", value: "javascript" },
@@ -58,12 +50,6 @@ function selectedOptions<T extends string>(
       : [];
   return values.filter((item): item is T => validValues.includes(item as T));
 }
-
-const STATUS_OPTIONS = [
-  { label: "archived", value: "archived" },
-  { label: "draft", value: "draft" },
-  { label: "published", value: "published" },
-] satisfies FilterOption<QuestionStatus>[];
 
 export type QuestionTableVirtualKey = "select";
 export type QuestionTableColumn = TableColumn<
@@ -118,9 +104,11 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
       filter: {
         kind: "select",
         label: "filter-select",
-        options: STATUS_OPTIONS,
+        options: QUESTION_STATUS_OPTIONS,
         toQuery: (value) => ({
-          status: STATUS_OPTIONS.some((option) => option.value === value)
+          status: QUESTION_STATUS_OPTIONS.some(
+            (option) => option.value === value,
+          )
             ? (value as QuestionStatus)
             : null,
         }),

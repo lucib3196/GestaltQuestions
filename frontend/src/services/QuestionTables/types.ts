@@ -1,7 +1,8 @@
 import type { ValidInstitutions } from "../../features/Auth/types";
-import type { QuestionStatus } from "../../types/questionTypes";
+import type { QuestionStatus, QuestionType } from "../../types/questionTypes";
 import type { QuestionRuntimeLanguage } from "../QuestionRuntime";
-export type QuestionType = "mc" | "mcq" | "ma" | "tf" | "fb" | "num";
+
+export type { QuestionType };
 
 export type QuestionTableSearchParams = {
   search?: string | null;

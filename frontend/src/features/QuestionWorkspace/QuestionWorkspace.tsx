@@ -5,8 +5,8 @@ import { useParams } from "react-router-dom";
 import type { QuestionRuntimeLanguage } from "../../services/QuestionRuntime";
 import { useQuestionFileData } from "../QuestionBuilder/hooks";
 import EditorPane from "../QuestionBuilder/sections/EditorPane";
-import QuestionMetaDataPreview from "../QuestionConfig/QuestionMetadataPreview";
 import { QuestionRender } from "../QuestionEngine";
+import { QuestionMetadataWorkspacePanel } from "../QuestionMetadata";
 import { WorkspaceHeader } from "./components/WorkspaceHeader";
 import { WorkspaceToolbar } from "./components/WorkspaceToolbar";
 import { useGetQuestionRunTimes } from "./hooks/hooks";
@@ -19,15 +19,12 @@ type PaneContext = {
   serverMode: QuestionRuntimeLanguage;
 };
 
-const paneRenderMap: Record<
-  WorkspacePane,
-  (context: PaneContext) => React.ReactNode
-> = {
+const paneRenderMap: Record<WorkspacePane, React.ComponentType<PaneContext>> = {
   livePreview: ({ qid, serverMode }) => (
     <QuestionRender qid={qid} serverSettings={serverMode} />
   ),
   editor: ({ qid, fileData }) => <EditorPane qid={qid} fileData={fileData} />,
-  metadata: ({ qid }) => <QuestionMetaDataPreview qid={qid} />,
+  metadata: ({ qid }) => <QuestionMetadataWorkspacePanel qid={qid} />,
 };
 
 export default function QuestionWorkspace() {
@@ -72,26 +69,30 @@ export default function QuestionWorkspace() {
       )}
 
       <PanelGroup direction="horizontal" className="min-h-180">
-        {panesToRender.map((pane, index, panes) => (
-          <React.Fragment key={`${pane}-${index}`}>
-            <Panel
-              order={index + 1}
-              defaultSize={100 / panes.length}
-              minSize={25}
-              className="min-w-0"
-            >
-              {paneRenderMap[pane]?.({
-                qid,
-                fileData,
-                serverMode,
-              })}
-            </Panel>
+        {panesToRender.map((pane, index, panes) => {
+          const PaneContent = paneRenderMap[pane];
 
-            {layoutMode === "split" && index < panes.length - 1 && (
-              <PanelResizeHandle className="w-3 cursor-col-resize bg-border transition-colors hover:bg-border-strong" />
-            )}
-          </React.Fragment>
-        ))}
+          return (
+            <React.Fragment key={`${pane}-${index}`}>
+              <Panel
+                order={index + 1}
+                defaultSize={100 / panes.length}
+                minSize={25}
+                className="min-w-0"
+              >
+                <PaneContent
+                  qid={qid}
+                  fileData={fileData}
+                  serverMode={serverMode}
+                />
+              </Panel>
+
+              {layoutMode === "split" && index < panes.length - 1 && (
+                <PanelResizeHandle className="w-3 cursor-col-resize bg-border transition-colors hover:bg-border-strong" />
+              )}
+            </React.Fragment>
+          );
+        })}
       </PanelGroup>
     </div>
   );

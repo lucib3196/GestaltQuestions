@@ -3,9 +3,17 @@ import { toast } from "react-toastify";
 
 import { Button } from "../../components/Button";
 import { Container } from "../../components/Container";
-import { DropDown } from "../../components/DropDown";
-import type { QuestionStatus } from "../QuestionBuilder";
+import {
+  normalizeQuestionStatus,
+  normalizeQuestionTypes,
+  type QuestionStatus,
+  type QuestionType,
+} from "../../types/questionTypes";
 import { useQuestionMetadata, useUpdateQuestion } from "../QuestionBuilder";
+import {
+  QuestionStatusSelect,
+  QuestionTypeMultiSelect,
+} from "../QuestionMetadata/components";
 import { normalizeList } from "./utils";
 
 type Props = {
@@ -22,11 +30,8 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
   const [aiGenerated, setAiGenerated] = useState(false);
   const [isAdaptive, setIsAdaptive] = useState(false);
   const [topicsText, setTopicsText] = useState("");
-  const [qTypesText, setQTypesText] = useState("");
+  const [qTypes, setQTypes] = useState<QuestionType[]>([]);
   const [qStatus, setQStatus] = useState<QuestionStatus>("draft");
-
-  // Options for status dropdown
-  const statusOptions: QuestionStatus[] = ["draft", "published"];
 
   // Update the metadata on change
   useEffect(() => {
@@ -39,12 +44,12 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
         ? questionMetadata.topics.join(", ")
         : "",
     );
-    setQTypesText(
+    setQTypes(
       Array.isArray(questionMetadata.qTypes)
-        ? questionMetadata.qTypes.join(", ")
-        : "",
+        ? normalizeQuestionTypes(questionMetadata.qTypes)
+        : [],
     );
-    setQStatus(questionMetadata.status ?? "draft");
+    setQStatus(normalizeQuestionStatus(questionMetadata.status));
   }, [questionMetadata]);
 
   if (!qid) {
@@ -77,17 +82,16 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
     ? questionMetadata.topics
     : [];
   const currentQTypes = Array.isArray(questionMetadata.qTypes)
-    ? questionMetadata.qTypes
+    ? normalizeQuestionTypes(questionMetadata.qTypes)
     : [];
   const nextTopics = normalizeList(topicsText);
-  const nextQTypes = normalizeList(qTypesText);
   const hasChanges =
     (questionMetadata.title ?? "") !== title ||
     questionMetadata.ai_generated !== aiGenerated ||
     questionMetadata.isAdaptive !== isAdaptive ||
     currentTopics.join("|") !== nextTopics.join("|") ||
-    currentQTypes.join("|") !== nextQTypes.join("|") ||
-    questionMetadata.status !== qStatus;
+    currentQTypes.join("|") !== qTypes.join("|") ||
+    normalizeQuestionStatus(questionMetadata.status) !== qStatus;
 
   const onSubmit = async () => {
     if (!qid) return;
@@ -96,7 +100,7 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
       ai_generated: aiGenerated,
       isAdaptive,
       topics: normalizeList(topicsText),
-      qTypes: normalizeList(qTypesText),
+      qType: qTypes,
       status: qStatus,
     });
 
@@ -115,12 +119,7 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
             className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text"
           />
         </div>
-        <DropDown
-          label="Status"
-          options={statusOptions}
-          selected={qStatus}
-          setSelected={(val) => setQStatus(val)}
-        ></DropDown>
+        <QuestionStatusSelect value={qStatus} onChange={setQStatus} />
         <span className="text-sm text-text-muted">
           {qStatus === "published"
             ? "Published questions are visible to everyone."
@@ -158,16 +157,7 @@ export default function QuestionMetaDataPreview({ qid }: Props) {
           />
         </div>
 
-        <div className="space-y-1">
-          <label className="text-text-muted text-sm">
-            Question Types (comma-separated)
-          </label>
-          <input
-            value={qTypesText}
-            onChange={(e) => setQTypesText(e.target.value)}
-            className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text"
-          />
-        </div>
+        <QuestionTypeMultiSelect value={qTypes} onChange={setQTypes} />
 
         {saveError && <div className="text-sm text-red-500">{saveError}</div>}
 

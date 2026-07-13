@@ -21,7 +21,7 @@ import { GeneralQuestionRender } from "./pages/Questions";
 function Test() {
   return (
     <div>
-      <QuestionWorkspace />
+      
     </div>
   );
 }
