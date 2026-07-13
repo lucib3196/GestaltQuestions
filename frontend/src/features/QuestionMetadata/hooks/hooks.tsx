@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import type { QuestionUpdate } from "../../QuestionBuilder";
 import { useAuth } from "../../Auth";
 import QuestionBuilderAPI from "../../QuestionBuilder/questionBuilderApi";
-import { toast } from "react-toastify"
+import { toast } from "react-toastify";
 
 
 export function useUpdateQuestion() {
@@ -16,7 +16,9 @@ export function useUpdateQuestion() {
             setError(null);
 
             if (!user) {
-                setError("You must be signed in to update questions.");
+                const message = "You must be signed in to update questions.";
+                setError(message);
+                toast.error(message);
                 setLoading(false);
                 return;
             }
@@ -29,12 +31,14 @@ export function useUpdateQuestion() {
                     payload,
                 );
 
+                toast.success("Question updated successfully.");
                 return updated;
             } catch (err) {
-                setError(
-                    err instanceof Error ? err.message : "Failed to update question",
-                );
-                toast.error(error)
+                const message =
+                    err instanceof Error ? err.message : "Failed to update question";
+
+                setError(message);
+                toast.error(message);
             } finally {
                 setLoading(false);
             }
