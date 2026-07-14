@@ -92,14 +92,21 @@ WHERE name IN (
 
 -- Rename the remaining lookup value.
 UPDATE question_type
-SET name = 'NUM'
-WHERE name = 'numerical';
+SET name = CASE
+    WHEN name IN ('multiple-choice', 'multiple_choice', 'mc') THEN 'MC'
+    WHEN name IN ('multiple-choice-question', 'multiple_choice_question', 'mcq') THEN 'MCQ'
+    WHEN name IN ('multiple-answer', 'multiple_answer', 'ma') THEN 'MA'
+    WHEN name IN ('true-false', 'true_false', 'tf') THEN 'TF'
+    WHEN name IN ('fill-in-the-blank', 'fill_in_the_blank', 'fb') THEN 'FB'
+    WHEN name IN ('numerical', 'number', 'num') THEN 'NUM'
+    ELSE name
+END;
 
 -- Convert the column to the enum.
 ALTER TABLE question_type
 ALTER COLUMN name
 TYPE qtype
-USING name::qtype;
+USING upper(name)::qtype;
 """)
 
     with op.batch_alter_table("question", schema=None) as batch_op:
@@ -124,11 +131,6 @@ USING name::qtype;
         )
         batch_op.alter_column(
             "updated_at", existing_type=postgresql.TIMESTAMP(), nullable=True
-        )
-
-    with op.batch_alter_table("question_type", schema=None) as batch_op:
-        batch_op.alter_column(
-            "name", existing_type=sa.VARCHAR(), type_=qtype, existing_nullable=False
         )
 
     # ### end Alembic commands ###
