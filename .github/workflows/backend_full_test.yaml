@@ -43,6 +43,9 @@ jobs:
         with:
           firebase-json: ${{ secrets.FIREBASE_JSON }}
           credentials-path: ${{ vars.FIREBASE_JSON_PATH }}
+      # Start the emulator
+      - uses: ./.github/actions/firebase-emulator-start
+        name: Start firebase emulator
       # Actually run the test
       # Current just running the unit test but should be moved to actual api test
       - name: Run Test
