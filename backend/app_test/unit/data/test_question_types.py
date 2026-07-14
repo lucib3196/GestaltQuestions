@@ -1,5 +1,11 @@
 import pytest
 from backend.question import QType, QuestionQTypeDB
+from backend.question.services.question import QuestionDB
+
+
+@pytest.fixture
+def question_db(db_session) -> QuestionDB:
+    return QuestionDB(db_session)
 
 
 @pytest.fixture

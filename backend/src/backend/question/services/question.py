@@ -341,27 +341,26 @@ class QuestionDB:
 
     # Utils
     async def _attach_question_relationships(
-        self, question: Question, data: QuestionRelationships | QuestionUpdate
-    ) -> Question:
+    self, question: Question, data: QuestionRelationships | QuestionUpdate
+) -> Question:
         """
-        Attach topic, language, and question-type relationships to a question.
-
-        Args:
-            question: Question ORM instance being created or updated.
-            data: Question payload containing relationship names.
-
-        Returns:
-            The same Question instance with relationships attached.
+        Attach topic and question-type relationships to a question.
         """
-        # Extract relationship meta
-        topic_names = data.topics or []
-        qtype_names = data.qType or []
-        question.topics = await gdb.get_or_create_many(self.session, Topic, topic_names)
-        
-        qtypes = []
-        for t in qtype_names:
-            qtypes.append(self._qtype.get_qtype_by_name(t))
-        question.qType = qtypes
+        if data.topics is not None:
+            question.topics = await gdb.get_or_create_many(
+                self.session,
+                Topic,
+                data.topics,
+            )
+
+        if data.qType is not None:
+            qtypes = []
+            for qtype in data.qType:
+                existing = self._qtype.get_qtype_by_name(qtype)
+                qtypes.append(existing)
+
+            question.qType = qtypes
+
         return question
 
     async def get_question_relationship_data(self, q: Question) -> dict[str, Any]:

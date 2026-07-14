@@ -4,14 +4,11 @@ from backend.core.logging import (
     in_test_ctx,
     logger,
 )
-import backend.chat.model # noqa: F401
+import backend.chat.model  # noqa: F401
 from backend.question import QuestionDB
-
+from backend.question.services.qtype import QuestionQTypeDB
 
 # ===== Database Fixtures =========================================================
-@pytest.fixture
-def question_db(db_session) -> QuestionDB:
-    return QuestionDB(db_session)
 
 
 # ===== Engine Fixtures ===========================================================
@@ -35,6 +32,7 @@ def db_session(test_engine):
     """Provide a new SQLModel session for each test with isolation."""
     with Session(test_engine, expire_on_commit=False) as session:
         yield session
+
         session.rollback()
 
 
@@ -44,6 +42,16 @@ def _clean_db(db_session, test_engine) -> None:
     logger.debug("Cleaning Database")
     SQLModel.metadata.drop_all(test_engine)
     SQLModel.metadata.create_all(test_engine)
+
+
+@pytest.fixture()
+def seed_qtypes(db_session):
+    QuestionQTypeDB(db_session).seed_types()
+
+
+@pytest.fixture
+def question_db(db_session, seed_qtypes) -> QuestionDB:
+    return QuestionDB(db_session)
 
 
 # ===== Logging / Test Context Fixtures ===========================================
