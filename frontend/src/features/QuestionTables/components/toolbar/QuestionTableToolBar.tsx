@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { FaCopy, FaDownload, FaFilter } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { TbColumns3Filled } from "react-icons/tb";
-
+import { useCopyQuestion, useDeleteQuestion, useDownloadQuestions } from "../../../QuestionBuilder";
 import { SearchBar } from "../../../../components/SearchBar";
 import type { QuestionTableColumn } from "../../config/columns";
 import { useQuestionTableContext } from "../../instance/context";
@@ -27,7 +27,7 @@ function toolbarButtonClass(variant: "default" | "danger" = "default") {
 
 export default function QuestionTableToolBar({
   columns,
-  showDelete = true,
+  showDelete = false,
 }: QuestionTableToolBarProps) {
   const [showColumns, setShowColumns] = useState(false);
   const searchTitle = useQuestionTableContext((s) => s.search);
@@ -39,6 +39,12 @@ export default function QuestionTableToolBar({
 
   const hasSelectedRows = selectedIds.length > 0;
   const hasActiveFilters = Object.keys(filters).length > 0;
+
+
+  // Unpack the function
+  const { copyQuestion } = useCopyQuestion()
+  const { deleteQuestion } = useDeleteQuestion()
+  const { downLoadQuestions } = useDownloadQuestions()
 
   useEffect(() => {
     if (!showColumns) return;
@@ -73,7 +79,7 @@ export default function QuestionTableToolBar({
           <button
             type="button"
             disabled={!hasSelectedRows}
-            onClick={() => console.log("Copy")}
+            onClick={() => copyQuestion(selectedIds)}
             className={toolbarButtonClass()}
           >
             <FaCopy className="h-3.5 w-3.5" />
@@ -83,7 +89,7 @@ export default function QuestionTableToolBar({
           <button
             type="button"
             disabled={!hasSelectedRows}
-            onClick={() => console.log("download")}
+            onClick={() => downLoadQuestions(selectedIds)}
             className={toolbarButtonClass()}
           >
             <FaDownload className="h-3.5 w-3.5" />
@@ -94,7 +100,7 @@ export default function QuestionTableToolBar({
             <button
               type="button"
               disabled={!hasSelectedRows}
-              onClick={() => console.log("Delete")}
+              onClick={() => deleteQuestion(selectedIds)}
               className={toolbarButtonClass("danger")}
             >
               <MdDelete className="h-4 w-4" />

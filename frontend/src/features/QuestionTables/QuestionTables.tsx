@@ -79,7 +79,7 @@ function MyQuestionsTableContent({ onQuestionSelect }: QuestionTableViewProps) {
     <QuestionTableLayout
       columns={columns}
       questions={questions}
-      showDelete
+      showDelete={false}
       onQuestionSelect={onQuestionSelect}
     />
   );
