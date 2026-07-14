@@ -7,7 +7,6 @@ import type {
   QuestionCreate,
   QuestionFilter,
   QuestionRead,
-  QuestionUpdate,
 } from "../../types/questionTypes";
 import { useAuth } from "../Auth";
 import QuestionBuilderAPI from "./questionBuilderApi";

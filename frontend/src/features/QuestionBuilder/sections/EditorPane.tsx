@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "../../../components/Button";
 import { CodeEditor } from "../../../components/CodeEditor";
 import { Container } from "../../../components/Container";
-import { DropDown } from "../../../components/DropDown";
 import { ShowUploadedFiles, UploadFiles } from "../../../components/UploadFile";
 import { type FileData } from "../../../types/fileTypes";
 import {
