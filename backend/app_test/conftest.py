@@ -91,8 +91,8 @@ def storage_params()-> list[str]:
 
 @pytest.fixture(scope="session")
 def firebase_app_for_tests() -> Generator[Any]:
-    if "cloud" not in storage_params():
-        pytest.skip("Firebase storage emulator is not configured.")
+    if not os.environ.get("FIREBASE_AUTH_EMULATOR_HOST"):
+        pytest.skip("Firebase auth emulator is not configured.")
 
     app = initialize_firebase_app()
     yield app

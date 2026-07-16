@@ -146,6 +146,10 @@ class UserManager:
         """Return a user by UUID or string ID."""
         return await self.udb.get_user(id)
 
+    async def get_user_by_email(self, email: str) -> User | None:
+        """Return a user by email."""
+        return await self.udb.get_user_by_email(email)
+
     async def read_user(self, id: ID) -> UserRead:
         try:
             base_user = await self.get_user(id)

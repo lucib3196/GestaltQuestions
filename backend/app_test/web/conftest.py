@@ -1,9 +1,13 @@
+import asyncio
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 import pytest
 from fastapi.testclient import TestClient
-from contextlib import asynccontextmanager
+
+from backend.api.deps import get_session, get_user_mng
+from backend.auth import InstitutionDB, RoleDB, UserDB, UserManager
 from src.main import get_application
-from backend.api.deps import get_session
 
 
 @asynccontextmanager
@@ -13,7 +17,20 @@ async def on_startup_test(app: FastAPI):
 
 
 @pytest.fixture(scope="function")
-def api_client(db_session):
+def user_manager(db_session):
+    return UserManager(
+        session=db_session,
+        inst=InstitutionDB(db_session),
+        rm=RoleDB(db_session),
+        udb=UserDB(db_session),
+    )
+
+
+@pytest.fixture(scope="function")
+def api_client(db_session, user_manager):
+    asyncio.run(RoleDB(db_session).seed_roles())
+    asyncio.run(InstitutionDB(db_session).seed_institution())
+
     app = get_application()
     # Skips initialization in main
     app.router.lifespan_context = on_startup_test
@@ -22,7 +39,11 @@ def api_client(db_session):
     def override_get_db():
         yield db_session
 
+    def override_get_user_manager():
+        return user_manager
+
     app.dependency_overrides[get_session] = override_get_db
+    app.dependency_overrides[get_user_mng] = override_get_user_manager
 
     with TestClient(app, raise_server_exceptions=True) as client:
         yield client

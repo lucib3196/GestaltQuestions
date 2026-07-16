@@ -30,14 +30,12 @@ async def create_user(
 ) -> UserRead:
     try:
         logger.debug("Attempting to create user")
+        print("Got data", payload.user)
         created_user = await user_manager.create_user(
-            data=payload.user, institution=payload.institution
+            role=payload.role, data=payload.user, institution=payload.institution
         )
-        return UserRead(
-            first_name=created_user.first_name,
-            last_name=created_user.last_name,
-            username=created_user.username,
-            email=created_user.email,
+        return UserRead.from_model(
+            created_user,
         )
     except HTTPException:
         raise
