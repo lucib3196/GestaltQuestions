@@ -6,7 +6,7 @@ from backend.api.questions import qcrud_router
 from backend.api.run_question import RUNTIME_ROUTES
 from backend.api.threads import router as chat_router
 from backend.api.user import developer_router, health_router, user_router
-
+from backend.api.health import health_routes
 ALL_ROUTES = [
     user_router,
     health_router,
@@ -18,6 +18,7 @@ ALL_ROUTES = [
     chat_router,
     *general_routes,
     *RUNTIME_ROUTES,
+    *health_routes
 ]
 
 __all__ = ["ALL_ROUTES"]

@@ -12,10 +12,10 @@ from backend.auth import (
     UserInstResponse,
     UserNotFound,
     UserRead,
-    UserRoleResponse,
 )
 from backend.core import logger
 from backend.shared import ID
+
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -142,7 +142,7 @@ async def delete_user_by_id(user_manager: UserManagerDependeny, id: ID):
 @router.get("/{id}/roles")
 async def get_user_roles_by_id(
     user_manager: UserManagerDependeny, id: ID
-) -> UserRoleResponse:
+) -> UserRead:
     """
     Retrieve all roles for a user by internal ID.
 
@@ -155,8 +155,7 @@ async def get_user_roles_by_id(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"User '{id}' not found",
             )
-        roles = await user_manager.get_user_role(id)
-        return UserRoleResponse(user=user, roles=roles)
+        return UserRead.from_model(user)
     except HTTPException:
         raise
     except Exception as e:
@@ -170,7 +169,7 @@ async def get_user_roles_by_id(
 @router.post("/{id}/roles")
 async def add_user_role(
     user_manager: UserManagerDependeny, id: ID, payload: UpdateUserRole
-) -> UserRoleResponse:
+) -> UserRead:
     """
     Add a role to a user by internal ID and return the updated role set.
 
@@ -184,8 +183,7 @@ async def add_user_role(
                 detail=f"User '{id}' not found",
             )
         user = await user_manager.add_role_to_user(role=payload.role, user=id)
-        roles = await user_manager.get_user_role(id)
-        return UserRoleResponse(user=user, roles=roles)
+        return UserRead.from_model(user)
     except HTTPException:
         raise
     except ValueError as e:
@@ -218,7 +216,7 @@ async def get_institution_by_id(
                 detail=f"User '{id}' not found",
             )
         inst = await user_manager.get_user_inst(id)
-        return UserInstResponse(user=user, inst=inst)
+        return UserInstResponse.from_model(user, inst)
     except HTTPException:
         raise
     except Exception as e:
@@ -249,7 +247,7 @@ async def add_user_inst(
             institution=payload.institution, user=id
         )
         inst = await user_manager.get_user_inst(id)
-        return UserInstResponse(user=user, inst=inst)
+        return UserInstResponse.from_model(user, inst)
     except HTTPException:
         raise
     except ValueError as e:
