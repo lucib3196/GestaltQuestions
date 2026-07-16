@@ -16,7 +16,6 @@ from backend.auth import (
 from backend.core import logger
 from backend.shared import ID
 
-
 router = APIRouter(prefix="/users", tags=["users"])
 
 
@@ -140,9 +139,7 @@ async def delete_user_by_id(user_manager: UserManagerDependeny, id: ID):
 
 
 @router.get("/{id}/roles")
-async def get_user_roles_by_id(
-    user_manager: UserManagerDependeny, id: ID
-) -> UserRead:
+async def get_user_roles_by_id(user_manager: UserManagerDependeny, id: ID) -> UserRead:
     """
     Retrieve all roles for a user by internal ID.
 

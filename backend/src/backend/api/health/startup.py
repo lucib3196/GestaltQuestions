@@ -1,11 +1,11 @@
-from fastapi import APIRouter
-from starlette import status
-from sqlalchemy import text
-from backend.api.deps import SettingDependency, SessionDep, FbStorage
-from fastapi import HTTPException
 import firebase_admin
+from fastapi import APIRouter, HTTPException
+from sqlalchemy import text
+from starlette import status
 
-router = APIRouter(tags=["health"])
+from backend.api.deps import SessionDep, SettingDependency
+
+router = APIRouter(tags=["health"], prefix="/health")
 
 
 @router.get("/live", status_code=status.HTTP_200_OK)
@@ -27,6 +27,7 @@ def database_health(session: SessionDep):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database connection failed: {e}",
         ) from e
+
 
 @router.get("/firebase")
 def firebase_health():

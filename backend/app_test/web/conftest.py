@@ -1,13 +1,34 @@
-import os
-from contextlib import asynccontextmanager, suppress
-from pathlib import Path
-
-import firebase_admin
-import pytest
 from fastapi import FastAPI
+import pytest
 from fastapi.testclient import TestClient
-
+from contextlib import asynccontextmanager
 from src.main import get_application
+from backend.api.deps import get_session
+
+
+@asynccontextmanager
+async def on_startup_test(app: FastAPI):
+    """Async startup context for tests (skips DB initialization)."""
+    yield
+
+
+@pytest.fixture(scope="function")
+def api_client(db_session):
+    app = get_application()
+    # Skips initialization in main
+    app.router.lifespan_context = on_startup_test
+
+    # Dependency override
+    def override_get_db():
+        yield db_session
+
+    app.dependency_overrides[get_session] = override_get_db
+
+    with TestClient(app, raise_server_exceptions=True) as client:
+        yield client
+
+    app.dependency_overrides.clear()
+
 
 # settings = get_settings()
 
@@ -50,12 +71,6 @@ from src.main import get_application
 # @pytest.fixture
 # def question_manager(storage, question_db):
 #     return QuestionManager(question_db, storage)
-
-
-# @asynccontextmanager
-# async def on_startup_test(app: FastAPI):
-#     """Async startup context for tests (skips DB initialization)."""
-#     yield
 
 
 # @pytest.fixture(scope="function")
@@ -102,12 +117,3 @@ from src.main import get_application
 #         FileData(filename="server.js", content=(base / "generate.js").read_bytes()),
 #         FileData(filename="server.py", content=(base / "generate.py").read_bytes()),
 #     ]
-
-
-@pytest.fixture(scope = "function")
-def api_client():
-    app = get_application()
-    with TestClient(app, raise_server_exceptions=True) as client:
-        yield client
-        
-        

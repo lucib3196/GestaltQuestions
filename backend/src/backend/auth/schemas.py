@@ -47,7 +47,7 @@ class UserRead(UserBase):
     institution: ValidInstitutions | None = None
 
     @classmethod
-    def from_model(cls, user: User) -> "UserRead":
+    def from_model(cls, user: User) -> UserRead:
         return cls(
             first_name=user.first_name,
             last_name=user.last_name,
@@ -78,7 +78,7 @@ class UserDetailRead(UserRead):
     id: UUID
 
     @classmethod
-    def from_model(cls, user: User) -> "UserDetailRead":
+    def from_model(cls, user: User) -> UserDetailRead:
         return cls(
             id=user.id,
             first_name=user.first_name,
@@ -101,7 +101,7 @@ class UpdateUserRole(BaseModel):
 
 
 class UpdateUserInstitution(BaseModel):
-    institution: "ValidInstitutions"
+    institution: ValidInstitutions
 
 
 class UserInstResponse(BaseModel):
@@ -111,7 +111,7 @@ class UserInstResponse(BaseModel):
     @classmethod
     def from_model(
         cls, user: User, inst: Institution | None = None
-    ) -> "UserInstResponse":
+    ) -> UserInstResponse:
         return cls(
             user=UserDetailRead.from_model(user),
             inst=InstitutionRead.model_validate(inst) if inst else None,
