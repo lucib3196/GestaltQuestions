@@ -1,3 +1,4 @@
+import pytest
 def test_startup_connection(api_client) -> None:
     response = api_client.get("/health/live")
     body = response.json()
@@ -17,9 +18,9 @@ def test_database_health(api_client) -> None:
     assert data.get("status") == "ok"
     assert data.get("database") == "connected"
 
-
-def test_firebase_health(api_client, firebase_app_for_tests) -> None:
-    response = api_client.get("/firebase")
+@pytest.mark.usefixtures("firebase_app_for_tests")
+def test_firebase_health(api_client,) -> None:
+    response = api_client.get("health/firebase")
 
     assert response.status_code == 200
 
