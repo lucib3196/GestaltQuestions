@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
-
+import { useQuestionInstance } from "../../../instance";
+import { useQuestionFigure } from "../../../runtime/useQuestionRunTime";
 export type ImageSize = "sm" | "md" | "lg";
 
 export interface PLFigureProps {
@@ -19,6 +20,14 @@ const variantStyles: Record<string, string> = {
     "border border-transparent bg-[var(--color-surface-muted)] hover:bg-[var(--color-surface)] rounded-[var(--radius-md)]",
 };
 
+const getStoragePath = (
+  storagePath: string | null | undefined,
+): string | undefined => {
+  const normalizedPath = storagePath?.trim();
+
+  return normalizedPath || undefined;
+};
+
 const sizeStyles: Record<ImageSize, string> = {
   sm: "max-w-[150px] md:max-w-[200px]",
   md: "max-w-[300px] md:max-w-[400px]",
@@ -32,6 +41,11 @@ export default function PLFigure({
   variant = "default",
 }: PLFigureProps) {
   const resolvedName = src || filename || "default.png";
+  const path = useQuestionInstance((s) =>
+    getStoragePath(s.qmeta?.storage_path),
+  );
+
+  const { image } = useQuestionFigure(resolvedName, path);
 
   return (
     <div
@@ -44,7 +58,7 @@ export default function PLFigure({
       )}
     >
       <img
-        src={resolvedName}
+        src={image}
         alt={resolvedName}
         className={clsx(
           "w-full h-auto object-contain transition-transform duration-(--duration-base) hover:scale-[1.02]",

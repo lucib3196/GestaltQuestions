@@ -24,4 +24,6 @@ if (import.meta.env.VITE_MODE === "dev") {
 
   connectAuthEmulator(auth, authEmulatorAPI);
   connectStorageEmulator(getStorage(), "127.0.0.1", 9199);
+
+  console.log("Emulator connected")
 }

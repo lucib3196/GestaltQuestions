@@ -130,8 +130,6 @@ export default function QuestionHTMLToReact({ html }: { html: string | null }) {
     parsed = html;
   }
 
-  console.log("Parsed", parsed);
-
   return (
     <SafeRenderer>
       <MathJax>
