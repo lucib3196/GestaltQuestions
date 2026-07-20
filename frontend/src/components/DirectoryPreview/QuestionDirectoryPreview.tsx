@@ -21,13 +21,29 @@ function FolderHeader({ name }: { name: string }) {
   );
 }
 
+type DirectoryPreviewProps = {
+  rootName?: string;
+  paths: string[];
+};
 
-// type DirectoryPreviewProps = {
-//   rootName?: string
-//   paths: string[]
-// }
+export function QPreview({ rootName, paths }: DirectoryPreviewProps) {
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4">
+      <h2 className="self-center text-base font-semibold text-text">
+        Directory Preview
+      </h2>
+      <div className="rounded-xl border border-border bg-surface-strong p-4">
+        <FolderHeader name={`${rootName}/`} />
 
-
+        <div className="mt-2 flex flex-col gap-1 pl-6">
+          {paths.map((file) => (
+            <FilePreview key={file} filename={file} />
+          ))}{" "}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 type QuestionDirectoryPreviewProps = {
   directoryName?: string;

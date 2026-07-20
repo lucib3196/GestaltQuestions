@@ -1,0 +1,68 @@
+import { Checkbox } from "@mui/material";
+
+import type { Filenames} from "../constants/questionFiles";
+import { useQuestionCreate } from "../instance";
+
+
+type FileOptionProps = {
+    filename: string,
+    required: boolean
+    isAdaptive: boolean,
+    description: string
+}
+export function QuestionFileOption({ filename,
+    required,
+    isAdaptive,
+    description, }: FileOptionProps) {
+    const selectedFiles = useQuestionCreate((s) => s.files)
+    const questionIsAdaptive = useQuestionCreate((s) => s.questionData.isAdaptive)
+
+    const add = useQuestionCreate((s) => s.addFile)
+    const remove = useQuestionCreate((s) => s.removeFile);
+
+    // Basic checks cross reference with current metadata and the file content 
+    const adaptiveRequired = questionIsAdaptive && isAdaptive;
+    const isChecked =
+        required || adaptiveRequired || selectedFiles.includes(filename);
+    if (required) {
+        add(filename);
+    }
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value as Filenames;
+        const checked = event.target.checked;
+        checked ? add(value) : remove(value);
+    };
+
+    return (
+        <div className="flex items-start gap-3 rounded-xl border border-border bg-surface px-3 py-2 transition hover:border-border-strong">
+            <Checkbox
+                value={filename}
+                checked={isChecked}
+                onChange={handleChange}
+                className="mt-0.5"
+            />
+
+            <div className="flex min-w-0 flex-col gap-1">
+                <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-mono text-sm font-semibold text-text">
+                        {filename}
+                    </span>
+
+                    {required && (
+                        <span className="rounded-full border border-accent-strong/35 bg-accent-strong/15 px-2 py-0.5 text-[11px] font-semibold text-accent-strong">
+                            required
+                        </span>
+                    )}
+
+                    {!required && adaptiveRequired && (
+                        <span className="rounded-full border border-accent/35 bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">
+                            required when adaptive
+                        </span>
+                    )}
+                </div>
+
+                <p className="text-sm text-text-muted">{description}</p>
+            </div>
+        </div>
+    );
+}

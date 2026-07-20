@@ -5,10 +5,10 @@ import { Toggle } from "../../../components/Toggles";
 import { QuestionDirectoryPreview } from "../../../components/DirectoryPreview";
 import { ShowUploadedFiles, UploadFiles } from "../../../components/UploadFile";
 import { TemplateFiles } from "../constants/templateFiles";
-import type { Filenames, QuestionFileSpec } from "../instance";
+import type { Filenames, QuestionFileSpec } from "../constants/questionFiles";
 import { useQuestionCreate } from "../instance";
 
-function QuestionFileDisplay({
+export function QuestionFileDisplay({
   filename,
   required,
   isAdaptive,

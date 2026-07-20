@@ -1,47 +1,38 @@
-import type { QuestionCreate } from "../../../types/questionTypes";
+import type { QuestionMetadataFormValue } from "../../QuestionMetadata";
+import type { Filenames } from "../constants/questionFiles";
+import type { QuestionTemplateId } from "../constants/templateFiles";
 
+export type Mode = "blank" | "template" | "upload";
 export type CreateMode = "blank" | "upload";
 
-export type FileType = "html" | "javascript" | "python";
-
-export type Filenames =
-  | "question.html"
-  | "solution.html"
-  | "server.js"
-  | "server.py";
-
-type FileTemplate = {
-  adaptive: boolean;
-  template: string;
-};
-
-export type QuestionFileSpec = {
-  filename: Filenames;
-  type: FileType;
-  required: boolean;
-  description: string;
-  isAdaptive: boolean;
-  template: FileTemplate[];
-};
-
 export type QuestionCreationState = {
-  defaultFiles: Filenames[];
+  mode: Mode;
+  questionData: QuestionMetadataFormValue;
+  selectedTemplate: QuestionTemplateId | null;
+  files: string[]
+  // OLD
   uploadedFiles: File[] | null;
   questionIsAdaptive: boolean;
-  questionData: QuestionCreate | null;
   fileDrafts: Partial<Record<Filenames, string>>;
 };
 
 export type QuestionCreationActions = {
-  setDefaultFiles: (files: Filenames[]) => void;
-  addDefaultFile: (file: Filenames) => void;
-  removeDefaultFile: (file: Filenames) => void;
+  setMode: (val: Mode) => void;
+  setQuestionData: (payload: Partial<QuestionMetadataFormValue>) => void;
+  resetQuestionData: () => void;
+  setTemplate: (v: QuestionTemplateId) => void;
+
+  setFiles: (files: string[])=>void
+  addFile: (file: string)=>void
+  removeFile: (file: string)=>void
+
+  //Old
+
 
   setUploadedFiles: (files: File[]) => void;
   removeUploadedFile: (file: File) => void;
   removeUploadedFileByIndex: (index: number) => void;
   setIsAdaptive: (value: boolean) => void;
-  setQuestionData: (payload: Partial<QuestionCreate>) => void;
   setFileDraft: (filename: Filenames, content: string) => void;
 };
 

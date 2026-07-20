@@ -10,8 +10,9 @@ import {
 import { useCreateQuestion } from "../QuestionBuilder";
 import { QuestionTemplateEditor } from "../QuestionEditor";
 import QuestionFilesDisplay from "./components/QuestionFilesView";
-import { TemplateFiles, TemplateModePresets } from "./constants/templateFiles";
-import { type Filenames, useQuestionCreate } from "./instance";
+import { TemplateFiles } from "./constants/templateFiles";
+import type { Filenames } from "./constants/questionFiles";
+import { useQuestionCreate } from "./instance";
 
 type CreateMode = "blank" | "template";
 
@@ -54,16 +55,17 @@ export default function CreateQuestionFromBlank() {
   useEffect(() => {
     if (mode !== "template") return;
 
-    const preset = questionIsAdaptive
-      ? TemplateModePresets.adaptive
-      : TemplateModePresets.nonAdaptive;
+    // const preset = questionIsAdaptive
+    //   ? TemplateModePresets.adaptive
+    //   : TemplateModePresets.nonAdaptive;
+    // const preset = true
 
-    setDefaultFiles(preset.defaultFiles);
-    setQdata({
-      ...preset.questionData,
-      title: qdata?.title ? preset.questionData?.title : "",
-      ai_generated: qdata?.ai_generated ?? false,
-    });
+    // setDefaultFiles(preset.defaultFiles);
+    // setQdata({
+    //   ...preset.questionData,
+    //   title: qdata?.title ? preset.questionData?.title : "",
+    //   ai_generated: qdata?.ai_generated ?? false,
+    // });
   }, [
     mode,
     questionIsAdaptive,

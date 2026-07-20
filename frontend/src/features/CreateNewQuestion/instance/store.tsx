@@ -1,19 +1,25 @@
 import { createStore } from "zustand";
-
-import type { QuestionCreate } from "../../../types/questionTypes";
+import { useStore } from "zustand";
 import type { QuestionCreationState, QuestionCreationStore } from "./types";
+import type { QuestionMetadataFormValue } from "../../QuestionMetadata";
 
+const defaultQuestionData: QuestionMetadataFormValue = {
+  title: "",
+  topics: [],
+  qType: [],
+  isAdaptive: false,
+  ai_generated: false,
+  status: "draft",
+};
 const initialState: QuestionCreationState = {
-  defaultFiles: [],
+  mode: "blank",
+  questionData: defaultQuestionData,
+  selectedTemplate: null,
+
+  files: [],
   uploadedFiles: null,
   questionIsAdaptive: false,
-  questionData: {
-    title: "",
-    topics: [],
-    qType: [],
-    isAdaptive: false,
-    ai_generated: false,
-  },
+
   fileDrafts: {},
 };
 
@@ -23,17 +29,49 @@ export function createQuestionStore(
   return createStore<QuestionCreationStore>()((set) => ({
     ...initialState,
     ...preloaded,
-    setDefaultFiles: (files) => set({ defaultFiles: files }),
-    addDefaultFile: (file) =>
+    setMode: (m) =>
+      set(() => {
+        if (m === "blank") {
+          return {
+            mode: m,
+            defaultFiles: [],
+            fileDrafts: {},
+            selectedTemplate: null,
+          };
+        }
+
+        return { mode: m };
+      }),
+    setQuestionData: (payload) =>
+      set((state) => {
+        const nextQuestionData = {
+          ...(state.questionData ?? {}),
+          ...payload,
+        } as QuestionMetadataFormValue;
+
+        return {
+          questionData: nextQuestionData,
+          questionIsAdaptive: nextQuestionData.isAdaptive ? true : false,
+        };
+      }),
+    resetQuestionData: () => set({ questionData: defaultQuestionData }),
+    setTemplate: (v) =>
+      set({
+        selectedTemplate: v,
+      }),
+    setFiles: (files) => set({ files: files }),
+    addFile: (file) =>
       set((state) => ({
-        defaultFiles: state.defaultFiles.includes(file)
-          ? state.defaultFiles
-          : [...state.defaultFiles, file],
+        files: state.files.includes(file)
+          ? state.files
+          : [...state.files, file],
       })),
-    removeDefaultFile: (file) =>
+    removeFile: (file) =>
       set((state) => ({
-        defaultFiles: state.defaultFiles.filter((v) => v !== file),
+        files: state.files.filter((v) => v !== file),
       })),
+    // Old
+
     setUploadedFiles: (files) =>
       set((state) => ({
         uploadedFiles: [...(state.uploadedFiles ?? []), ...files],
@@ -52,20 +90,9 @@ export function createQuestionStore(
         questionData: {
           ...(state.questionData ?? { title: "" }),
           isAdaptive: value,
-        } as QuestionCreate,
+        } as QuestionMetadataFormValue,
       })),
-    setQuestionData: (payload) =>
-      set((state) => {
-        const nextQuestionData = {
-          ...(state.questionData ?? {}),
-          ...payload,
-        } as QuestionCreate;
 
-        return {
-          questionData: nextQuestionData,
-          questionIsAdaptive: nextQuestionData.isAdaptive ? true : false,
-        };
-      }),
     setFileDraft: (filename, content) =>
       set((state) => ({
         fileDrafts: {
@@ -74,4 +101,12 @@ export function createQuestionStore(
         },
       })),
   }));
+}
+
+const questionCreateStore = createQuestionStore();
+
+export function useQuestionCreate<T>(
+  selector: (state: QuestionCreationStore) => T,
+) {
+  return useStore(questionCreateStore, selector);
 }
