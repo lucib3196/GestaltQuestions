@@ -104,7 +104,7 @@ export default function ShowUploadedFiles({
               key={`${file.name}-${idx}`}
               className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-surface-strong px-3 py-1 text-sm text-text"
             >
-              <span className="max-w-[260px] truncate">{file.name}</span>
+              <span className="max-w-65 truncate">{file.name}</span>
               <button
                 type="button"
                 onClick={() => onRemove(idx)}

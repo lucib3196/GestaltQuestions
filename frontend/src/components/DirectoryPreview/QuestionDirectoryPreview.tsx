@@ -1,7 +1,7 @@
 import { CiFolderOn } from "react-icons/ci";
 import { MdOutlineSubdirectoryArrowRight } from "react-icons/md";
 
-import type { Filenames } from "../../features/CreateNewQuestion/instance";
+import type { Filenames } from "../../features/CreateNewQuestion/constants/questionFiles";
 
 function FilePreview({ filename }: { filename: string }) {
   return (
@@ -48,7 +48,7 @@ export function QPreview({ rootName, paths }: DirectoryPreviewProps) {
 type QuestionDirectoryPreviewProps = {
   directoryName?: string;
   files: Filenames[] | string[];
-  additionalFiles?: File[];
+  additionalFiles?: globalThis.File[];
   includeClientDirectory?: boolean;
 };
 

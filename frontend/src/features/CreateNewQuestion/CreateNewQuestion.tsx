@@ -3,15 +3,15 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { toast } from "react-toastify";
 
 import { Button } from "../../components/Button";
+import { useCreateQuestion } from "../QuestionBuilder";
+import { QuestionTemplateEditor } from "../QuestionEditor";
 import {
   QuestionMetadataForm,
   type QuestionMetadataFormValue,
 } from "../QuestionMetadata";
-import { useCreateQuestion } from "../QuestionBuilder";
-import { QuestionTemplateEditor } from "../QuestionEditor";
 import QuestionFilesDisplay from "./components/QuestionFilesView";
-import { TemplateFiles } from "./constants/templateFiles";
 import type { Filenames } from "./constants/questionFiles";
+import { TemplateFiles } from "./constants/templateFiles";
 import { useQuestionCreate } from "./instance";
 
 type CreateMode = "blank" | "template";
@@ -39,12 +39,11 @@ const getTemplateContent = (
 
 export default function CreateQuestionFromBlank() {
   const qdata = useQuestionCreate((s) => s.questionData);
-  const defaultFiles = useQuestionCreate((s) => s.defaultFiles);
+  const files = useQuestionCreate((s) => s.files);
   const uploadedFiles = useQuestionCreate((s) => s.uploadedFiles);
   const questionIsAdaptive = useQuestionCreate((s) => s.questionIsAdaptive);
   const fileDrafts = useQuestionCreate((s) => s.fileDrafts);
   const setQdata = useQuestionCreate((s) => s.setQuestionData);
-  const setDefaultFiles = useQuestionCreate((s) => s.setDefaultFiles);
   const { createQuestion } = useCreateQuestion();
   const [mode, setMode] = useState<CreateMode>("blank");
   const [showTemplateEditor, setShowTemplateEditor] = useState(
@@ -66,14 +65,7 @@ export default function CreateQuestionFromBlank() {
     //   title: qdata?.title ? preset.questionData?.title : "",
     //   ai_generated: qdata?.ai_generated ?? false,
     // });
-  }, [
-    mode,
-    questionIsAdaptive,
-    setDefaultFiles,
-    setQdata,
-    qdata?.title,
-    qdata?.ai_generated,
-  ]);
+  }, [mode, questionIsAdaptive, setQdata, qdata?.title, qdata?.ai_generated]);
 
   useEffect(() => {
     if (mode === "blank") {
@@ -93,8 +85,7 @@ export default function CreateQuestionFromBlank() {
   };
 
   const handleMetadataChange = (nextValue: QuestionMetadataFormValue) => {
-    const { status: _status, ...questionData } = nextValue;
-    setQdata(questionData);
+    setQdata(nextValue);
   };
 
   const handleSubmit = async () => {
@@ -105,9 +96,7 @@ export default function CreateQuestionFromBlank() {
 
     try {
       const selectedTemplateFiles =
-        mode === "template"
-          ? TemplateFiles.map((t) => t.filename)
-          : defaultFiles;
+        mode === "template" ? TemplateFiles.map((t) => t.filename) : files;
 
       const dFiles = selectedTemplateFiles.map((filename) => {
         const content = getTemplateContent(
@@ -117,7 +106,7 @@ export default function CreateQuestionFromBlank() {
           fileDrafts,
         );
 
-        return new File([content], filename, {
+        return new globalThis.File([content], filename, {
           type: "text/plain",
         });
       });

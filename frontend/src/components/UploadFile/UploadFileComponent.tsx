@@ -3,7 +3,7 @@ import { useId, useState } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import { MdDriveFolderUpload } from "react-icons/md";
 
-import { type UploadAccept } from "./types";
+import { acceptMap, filterAcceptedFiles, type UploadAccept } from "./types";
 
 // Some styles
 export const uploadFilesBase =
@@ -67,7 +67,8 @@ export default function UploadFiles({
   const isEditorDropzone = variant === "editorDropzone";
 
   const selectFiles = (files: FileList | null) => {
-    onFilesSelected(files ? Array.from(files) : []);
+    const selected = files ? Array.from(files) : [];
+    onFilesSelected(filterAcceptedFiles(selected, accept));
   };
 
   const handleClick = () => {
@@ -137,7 +138,7 @@ export default function UploadFiles({
 
       <input
         type="file"
-        accept={accept}
+        accept={acceptMap[accept]}
         id={inputId}
         className="sr-only"
         multiple={multiple}

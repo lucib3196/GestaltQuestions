@@ -1,11 +1,11 @@
 import { Checkbox } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { Toggle } from "../../../components/Toggles";
 import { QuestionDirectoryPreview } from "../../../components/DirectoryPreview";
+import { Toggle } from "../../../components/Toggles";
 import { ShowUploadedFiles, UploadFiles } from "../../../components/UploadFile";
-import { TemplateFiles } from "../constants/templateFiles";
 import type { Filenames, QuestionFileSpec } from "../constants/questionFiles";
+import { TemplateFiles } from "../constants/templateFiles";
 import { useQuestionCreate } from "../instance";
 
 export function QuestionFileDisplay({
@@ -14,20 +14,24 @@ export function QuestionFileDisplay({
   isAdaptive,
   description,
 }: QuestionFileSpec) {
-  const add = useQuestionCreate((s) => s.addDefaultFile);
-  const remove = useQuestionCreate((s) => s.removeDefaultFile);
-  const selectedFiles = useQuestionCreate((s) => s.defaultFiles);
+  const add = useQuestionCreate((s) => s.addFile);
+  const remove = useQuestionCreate((s) => s.removeFile);
+  const selectedFiles = useQuestionCreate((s) => s.files);
   const questionIsAdaptive = useQuestionCreate((s) => s.questionIsAdaptive);
 
   const adaptiveRequired = questionIsAdaptive && isAdaptive;
   const isChecked =
     required || adaptiveRequired || selectedFiles.includes(filename);
 
-  if (required) {
-    add(filename);
-  }
+  useEffect(() => {
+    if (required && !selectedFiles.includes(filename)) {
+      add(filename);
+    }
+  }, [add, filename, required, selectedFiles]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: {
+    target: { value: string; checked: boolean };
+  }) => {
     const value = event.target.value as Filenames;
     const checked = event.target.checked;
     checked ? add(value) : remove(value);
@@ -75,7 +79,7 @@ export default function QuestionFilesDisplay() {
   const uploadedFiles = useQuestionCreate((s) => s.uploadedFiles);
   const setUploadedFiles = useQuestionCreate((s) => s.setUploadedFiles);
   const removeUploaded = useQuestionCreate((s) => s.removeUploadedFileByIndex);
-  const defaultFiles = useQuestionCreate((s) => s.defaultFiles);
+  const files = useQuestionCreate((s) => s.files);
   const qdata = useQuestionCreate((s) => s.questionData);
   const isUploadOnly = uploadMode === "upload-only";
   const [showPreview, setShowPreview] = useState(false);
@@ -168,7 +172,7 @@ export default function QuestionFilesDisplay() {
             <div className="rounded-xl border border-border bg-surface p-3">
               <QuestionDirectoryPreview
                 directoryName={qdata?.title}
-                files={defaultFiles}
+                files={files}
                 additionalFiles={uploadedFiles ?? []}
               />
             </div>

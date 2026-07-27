@@ -2,11 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 
 import { CodeEditor } from "../../components/CodeEditor";
 import { DropDown } from "../../components/DropDown";
+import type { Filenames } from "../CreateNewQuestion/constants/questionFiles";
 import { TemplateFiles } from "../CreateNewQuestion/constants/templateFiles";
-import {
-  type Filenames,
-  useQuestionCreate,
-} from "../CreateNewQuestion/instance";
+import { useQuestionCreate } from "../CreateNewQuestion/instance";
 
 type QuestionTemplateEditorProps = {
   mode: "blank" | "template";
@@ -42,7 +40,7 @@ const getDefaultTemplateContent = (
 export default function QuestionTemplateEditor({
   mode,
 }: QuestionTemplateEditorProps) {
-  const defaultFiles = useQuestionCreate((s) => s.defaultFiles);
+  const files = useQuestionCreate((s) => s.files);
   const questionIsAdaptive = useQuestionCreate((s) => s.questionIsAdaptive);
   const fileDrafts = useQuestionCreate((s) => s.fileDrafts);
   const setFileDraft = useQuestionCreate((s) => s.setFileDraft);
@@ -52,8 +50,8 @@ export default function QuestionTemplateEditor({
     if (mode === "template") {
       return TemplateFiles.map((f) => f.filename);
     }
-    return defaultFiles;
-  }, [mode, defaultFiles]);
+    return files;
+  }, [mode, files]);
 
   useEffect(() => {
     if (!editorFiles.length) {

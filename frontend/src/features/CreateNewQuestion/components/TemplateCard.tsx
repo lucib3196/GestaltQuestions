@@ -58,7 +58,7 @@ export function TemplateCard({
 
 export function TemplateCardContainer() {
   const selectedTemplate = useQuestionCreate((s) => s.selectedTemplate);
-  const setFiles = useQuestionCreate((s) => s.setDefaultFiles);
+  const setFiles = useQuestionCreate((s) => s.setFiles);
   const setTemplate = useQuestionCreate((s) => s.setTemplate);
   const setQuestionData = useQuestionCreate((s) => s.setQuestionData);
 

@@ -31,17 +31,16 @@ export function createQuestionStore(
     ...preloaded,
     setMode: (m) =>
       set(() => {
-        if (m === "blank") {
-          return {
-            mode: m,
-            defaultFiles: [],
-            fileDrafts: {},
-            selectedTemplate: null,
-          };
-        }
 
-        return { mode: m };
-      }),
+        return {
+          mode: m,
+          files: [],
+          fileDrafts: {},
+          selectedTemplate: null,
+        };
+      }
+
+      ),
     setQuestionData: (payload) =>
       set((state) => {
         const nextQuestionData = {
