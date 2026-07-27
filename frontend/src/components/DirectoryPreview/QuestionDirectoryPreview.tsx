@@ -21,17 +21,25 @@ function FolderHeader({ name }: { name: string }) {
   );
 }
 
+
+// type DirectoryPreviewProps = {
+//   rootName?: string
+//   paths: string[]
+// }
+
+
+
 type QuestionDirectoryPreviewProps = {
   directoryName?: string;
   files: Filenames[] | string[];
-  additionalFiles: File[];
+  additionalFiles?: File[];
   includeClientDirectory?: boolean;
 };
 
 export function QuestionDirectoryPreview({
   directoryName = "Directory",
   files,
-  additionalFiles,
+  additionalFiles = [],
   includeClientDirectory = false,
 }: QuestionDirectoryPreviewProps) {
   return (

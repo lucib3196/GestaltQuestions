@@ -1,7 +1,6 @@
-import { getDownloadURL, getStorage, ref } from "firebase/storage";
 import { useEffect, useState } from "react";
 
-import { firebase } from "../../../config/firebaseClient";
+import { questionAPIURL } from "../../../config/apiConfig";
 import type {
   QuestionRunResponse,
   QuestionRuntimeLanguage,
@@ -61,64 +60,38 @@ export function useRunQuestion(
     loading,
   };
 }
-
-export function useQuestionFigureSource(
-  src?: string,
-  filename?: string,
-  useClientFilesDir: boolean = false,
-) {
-  const qmeta = useQuestionInstance((s) => s.qmeta);
-  const [resolvedImageSrc, setResolvedImageSrc] = useState("");
+export function useQuestionFigure(src: string, baseStorage?: string) {
+  const [image, setImage] = useState<string>("");
 
   useEffect(() => {
     let cancelled = false;
-    let objectUrl: string | null = null;
 
-    const resolvedSource =
-      filename && qmeta?.storage_path ? filename : (src ?? "");
-    const isExternalUrl =
-      resolvedSource.startsWith("http://") ||
-      resolvedSource.startsWith("https://");
+    const normalizedBase = baseStorage?.replace(/\/+$/, "") ?? "";
+    const normalizedSrc = src.replace(/^\/+|\/+$/g, "");
 
-    if (!resolvedSource) {
-      setResolvedImageSrc("");
+    if (!normalizedBase || !normalizedSrc) {
+      setImage("");
       return;
     }
 
-    if (isExternalUrl) {
-      setResolvedImageSrc(resolvedSource);
-      return;
-    }
+    const resolvedSrc = `${normalizedBase}/${normalizedSrc}`;
+    const imageUrl = `${questionAPIURL}/images/firebase-data-url?path=${encodeURIComponent(resolvedSrc)}`;
 
     const load = async () => {
       try {
-        const relativePath = `${useClientFilesDir ? "clientFiles/" : ""}${filename ?? resolvedSource}`;
-
-        if (qmeta?.storage_path) {
-          const fullObjectPath = `${qmeta.storage_path.replace(/\/+$/, "")}/${relativePath}`;
-          const storage = getStorage(firebase);
-          const downloadUrl = await getDownloadURL(
-            ref(storage, fullObjectPath),
-          );
-
-          const response = await fetch(downloadUrl);
-
-          console.log(response);
-          if (!response.ok)
-            throw new Error(`Failed to fetch image: ${response.status}`);
-          const rawBlob = await response.blob();
-
-          const imageBlob = rawBlob.type.startsWith("image/")
-            ? rawBlob
-            : rawBlob.slice(0, rawBlob.size, "image/png");
-          const objectUrl = URL.createObjectURL(imageBlob);
-          if (!cancelled) setResolvedImageSrc(objectUrl);
-          return;
+        const response = await fetch(imageUrl);
+        if (!response.ok) {
+          throw new Error(`Failed to load image: ${response.status}`);
         }
 
-        if (!cancelled) setResolvedImageSrc(resolvedSource);
+        const data = (await response.json()) as { src?: string };
+        if (!cancelled) {
+          setImage(data.src ?? "");
+        }
       } catch {
-        if (!cancelled) setResolvedImageSrc(resolvedSource);
+        if (!cancelled) {
+          setImage("");
+        }
       }
     };
 
@@ -126,9 +99,8 @@ export function useQuestionFigureSource(
 
     return () => {
       cancelled = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [src, filename, qmeta?.id, qmeta?.storage_path, useClientFilesDir]);
+  }, [src, baseStorage]);
 
-  return resolvedImageSrc;
+  return { image };
 }

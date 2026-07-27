@@ -26,13 +26,12 @@ class SandboxClient:
     async def execute(self, payload: dict) -> dict:
         execution_endpoint = f"{self.base_url}/code_runner/generate"
         logger.debug("[SANDBOX] Sending runtime payload to %s", execution_endpoint)
-        logger.debug("[SANDBOX] Payload: %s", payload)
+        # logger.debug("[SANDBOX] Payload: %s", payload)
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.post(execution_endpoint, json=payload)
                 response.raise_for_status()
                 data = response.json()
-                print("Sandbox data", data)
         except httpx.TimeoutException as e:
             logger.exception("Sandbox request timed out.")
             raise HTTPException(

@@ -2,8 +2,8 @@ import { Checkbox } from "@mui/material";
 import { useState } from "react";
 
 import { Toggle } from "../../../components/Toggles";
+import { QuestionDirectoryPreview } from "../../../components/DirectoryPreview";
 import { ShowUploadedFiles, UploadFiles } from "../../../components/UploadFile";
-import { QuestionDirectoryPreview } from "../../../components/UploadFile";
 import { TemplateFiles } from "../constants/templateFiles";
 import type { Filenames, QuestionFileSpec } from "../instance";
 import { useQuestionCreate } from "../instance";
