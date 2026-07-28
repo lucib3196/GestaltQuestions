@@ -1,10 +1,9 @@
-import { SelectableInfoCard } from "../../../components/SelectableInfoCard";
-import { QuestionTemplates } from "../constants/templateFiles";
-import type { QuestionTemplate } from "../constants/templateFiles";
-import { useQuestionCreate } from "../instance";
 import type { IconType } from "react-icons";
 import { LuCalculator, LuImage, LuShuffle } from "react-icons/lu";
-import { questionTemplateFileToFile } from "../utils/fileConversion";
+
+import { SelectableInfoCard } from "../../../components/SelectableInfoCard";
+import type { QuestionTemplate } from "../constants/templateFiles";
+
 const TEMPLATE_CARD_STYLES: Record<
   QuestionTemplate["id"],
   {
@@ -53,35 +52,5 @@ export function TemplateCard({
       isSelected={isSelected}
       onClick={onClick}
     />
-  );
-}
-
-export function TemplateCardContainer() {
-  const selectedTemplate = useQuestionCreate((s) => s.selectedTemplate);
-  const setTemplate = useQuestionCreate((s) => s.setTemplate);
-  const setQuestionData = useQuestionCreate((s) => s.setQuestionData);
-  const addFile = useQuestionCreate((s) => s.addFile);
-  const clearFiles = useQuestionCreate((s) => s.clearFiles);
-
-  const handleSelect = (template: QuestionTemplate) => {
-    clearFiles();
-    setTemplate(template.id);
-    setQuestionData(template.questionData);
-    template.files.map((f) => {
-      addFile(questionTemplateFileToFile(f));
-    });
-  };
-
-  return (
-    <div className="flex flex-col gap-2">
-      {QuestionTemplates.map((template) => (
-        <TemplateCard
-          key={template.id}
-          template={template}
-          onClick={() => handleSelect(template)}
-          isSelected={selectedTemplate === template.id}
-        />
-      ))}
-    </div>
   );
 }

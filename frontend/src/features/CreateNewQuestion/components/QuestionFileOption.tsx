@@ -1,31 +1,15 @@
 import { Checkbox } from "@mui/material";
 import { useEffect } from "react";
-import { FaHtml5, FaJsSquare, FaPython } from "react-icons/fa";
 import { MdCode } from "react-icons/md";
 
 import type { QuestionFileSpec } from "../constants/questionFiles";
 import { useQuestionCreate } from "../instance";
 import { questionFileSpecToFile } from "../utils/fileConversion";
+import { FileIcon } from "./FileIcon";
 
 type QuestionFileOptionProps = {
   spec: QuestionFileSpec;
 };
-
-function FileIcon({ language }: { language: QuestionFileSpec["language"] }) {
-  if (language === "html") {
-    return <FaHtml5 className="text-orange-400" size={28} />;
-  }
-
-  if (language === "javascript") {
-    return <FaJsSquare className="text-yellow-300" size={28} />;
-  }
-
-  if (language === "python") {
-    return <FaPython className="text-blue-300" size={28} />;
-  }
-
-  return <MdCode className="text-text-muted" size={28} />;
-}
 
 export function QuestionFileOption({ spec }: QuestionFileOptionProps) {
   const files = useQuestionCreate((s) => s.files);
@@ -62,13 +46,12 @@ export function QuestionFileOption({ spec }: QuestionFileOptionProps) {
       <Checkbox
         value={spec.filename}
         checked={isChecked}
-
         onChange={handleChange}
         className="shrink-0"
       />
 
       <div className="shrink-0">
-        <FileIcon language={spec.language} />
+        <FileIcon filename={spec.filename} />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-1">

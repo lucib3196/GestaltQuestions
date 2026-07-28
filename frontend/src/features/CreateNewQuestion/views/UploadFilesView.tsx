@@ -2,15 +2,15 @@ import { MdOutlineCloudUpload } from "react-icons/md";
 
 import { UploadFiles } from "../../../components/UploadFile";
 import { QuestionMetadataForm } from "../../QuestionMetadata";
-import { DirectoryPreviewPanel } from "../components/DirectoryPreview";
+import { UploadedQuestionFile } from "../components/UploadedQuestionFile";
+import { UploadSummary } from "../components/UploadSummary";
 import {
   SectionDescription,
   SectionTitle,
   ViewHeader,
 } from "../components/ViewText";
-import { UploadSummary } from "../components/UploadSummary";
-import { UploadedQuestionFile } from "../components/UploadedQuestionFile";
 import { useQuestionCreate } from "../instance";
+import { DirectoryPreviewPanel } from "../sections/DirectoryPreviewPanel";
 
 export function UploadFilesView() {
   const questionData = useQuestionCreate((s) => s.questionData);
@@ -21,7 +21,7 @@ export function UploadFilesView() {
   const clearFiles = useQuestionCreate((s) => s.clearFiles);
   const files = useQuestionCreate((s) => s.files);
 
-  const handleFileUpload = (uploadedFiles: File[]) => {
+  const handleFileUpload = (uploadedFiles: globalThis.File[]) => {
     uploadedFiles.forEach((file) => addFile(file));
   };
 

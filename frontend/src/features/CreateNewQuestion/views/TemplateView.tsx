@@ -1,11 +1,11 @@
 import { ReadOnlyQuestionMetadata } from "../../QuestionMetadata/QuestionMetadataForm";
-import { TemplateCardContainer } from "../components/TemplateCard";
 import {
   SectionDescription,
   SectionTitle,
   ViewHeader,
 } from "../components/ViewText";
 import { useQuestionCreate } from "../instance";
+import { TemplateSelectionSection } from "../sections/TemplateSelectionSection";
 
 export default function TemplateView() {
   const qData = useQuestionCreate((s) => s.questionData);
@@ -27,7 +27,10 @@ export default function TemplateView() {
             </SectionDescription>
           </div>
 
-          <ReadOnlyQuestionMetadata value={qData} showPublishingStatus={false} />
+          <ReadOnlyQuestionMetadata
+            value={qData}
+            showPublishingStatus={false}
+          />
         </section>
 
         <section className="min-w-0 rounded-xl border border-border bg-surface/80 p-4 shadow-sm md:p-5">
@@ -39,7 +42,7 @@ export default function TemplateView() {
             </SectionDescription>
           </div>
 
-          <TemplateCardContainer />
+          <TemplateSelectionSection />
         </section>
       </main>
     </div>

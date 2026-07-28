@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import { DirectoryPreview } from "../../../components/DirectoryPreview";
 import { Toggle } from "../../../components/Toggles";
+import { SectionDescription, SectionTitle } from "../components/ViewText";
 import { useQuestionCreate } from "../instance";
-import { SectionDescription, SectionTitle } from "./ViewText";
 
 export function DirectoryPreviewPanel() {
   const [showPreview, setShowPreview] = useState(false);

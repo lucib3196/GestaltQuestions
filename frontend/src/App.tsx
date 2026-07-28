@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { RequireRole } from "./features/Auth";
+import { CreateNewQuestion as CreateQuestionFeature } from "./features/CreateNewQuestion";
 import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
 import AppLayout from "./layouts/AppLayout";
 import {
@@ -17,10 +18,13 @@ import {
   QuestionsListPage,
 } from "./pages/QuestionBuilder";
 import { GeneralQuestionRender } from "./pages/Questions";
-import CreateQuestion from "./features/CreateNewQuestion/CreateNewQuestionTemp";
 
 export function Test() {
-  return <div><CreateQuestion/></div>
+  return (
+    <div>
+      <CreateQuestionFeature />
+    </div>
+  );
 }
 
 function App() {
@@ -36,7 +40,7 @@ function App() {
             <Route path="/questions" element={<Questions />} />
             <Route path="/questions/:qid" element={<GeneralQuestionRender />} />
 
-            <Route path = "/test" element={<Test/>}></Route>
+            <Route path="/test" element={<Test />}></Route>
 
             {/* Non User Specific */}
 
