@@ -18,14 +18,11 @@ import {
   QuestionsListPage,
 } from "./pages/QuestionBuilder";
 import { GeneralQuestionRender } from "./pages/Questions";
+// import { QuestionDirectoryPreview } from "./components/DirectoryPreview";
 
-export function Test() {
-  return (
-    <div>
-      <CreateQuestionFeature />
-    </div>
-  );
-}
+// export function Test(){
+//   return <div><QuestionDirectoryPreview directoryName={"Title"} files={["question.html"] }/></div>
+// }
 
 function App() {
   return (
@@ -40,7 +37,7 @@ function App() {
             <Route path="/questions" element={<Questions />} />
             <Route path="/questions/:qid" element={<GeneralQuestionRender />} />
 
-            <Route path="/test" element={<Test />}></Route>
+            {/* <Route path = "/test" element={<Test/>}></Route> */}
 
             {/* Non User Specific */}
 
