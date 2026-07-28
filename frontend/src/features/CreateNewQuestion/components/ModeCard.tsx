@@ -5,6 +5,7 @@ import { MdOutlineUploadFile } from "react-icons/md";
 import { SelectableInfoCard } from "../../../components/SelectableInfoCard";
 import { useQuestionCreate } from "../instance";
 import type { Mode } from "../instance";
+import { SectionTitle, StepLabel } from "./ViewText";
 
 const MODE_CARD_CONTENT: Record<
     Mode,
@@ -55,9 +56,11 @@ export default function ModeCard({ mode }: { mode: Mode }) {
 
 export function ModeCardContainer() {
     return (
-        <div className="flex flex-col">
-            <span className="text-sm font-semibold uppercase tracking-wide text-accent-strong">Step 1: </span>
-            <span>Choose how to start</span>
+        <div className="flex flex-col gap-4">
+            <div>
+                <StepLabel>Step 1</StepLabel>
+                <SectionTitle>Choose how to start</SectionTitle>
+            </div>
             <div className="flex flex-row gap-5 ">
                 <ModeCard mode={"blank"} />
                 <ModeCard mode={"template"} />

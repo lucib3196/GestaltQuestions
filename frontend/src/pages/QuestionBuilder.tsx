@@ -2,7 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import { Header } from "../components/Header";
 import { ComponentPlayGround } from "../features/ComponentPlayGround";
-import CreateQuestionFromBlank from "../features/CreateNewQuestion/CreateNewQuestion";
+
 
 import { MyQuestionsTable } from "../features/QuestionTables";
 

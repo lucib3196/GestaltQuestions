@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import type { QuestionMetadataFormValue } from "../../QuestionMetadata";
-import type { Filenames } from "../constants/questionFiles";
 import type { QuestionTemplateId } from "../constants/templateFiles";
 
 export type Mode = "blank" | "template" | "upload";
@@ -10,32 +9,25 @@ export type QuestionCreationState = {
   mode: Mode;
   questionData: QuestionMetadataFormValue;
   selectedTemplate: QuestionTemplateId | null;
-  files: string[];
 
-
-  uploadedFiles: globalThis.File[] | null;
-  questionIsAdaptive: boolean;
-  fileDrafts: Partial<Record<Filenames, string>>;
+  files: globalThis.File[];
 };
 
 export type QuestionCreationActions = {
+  // General mode
   setMode(val: Mode): void;
+  // Question data specific
   setQuestionData(payload: Partial<QuestionMetadataFormValue>): void;
   resetQuestionData(): void;
+
+  // Template logic
   setTemplate(v: QuestionTemplateId): void;
 
-  // Just handles the the filenames
-  setFiles(files: string[]): void;
-  addFile(file: string): void;
-  removeFile(file: string): void;
-
-  // Handles the uploaded files
-
-  setUploadedFiles(files: globalThis.File[]): void;
-  removeUploadedFile(file: globalThis.File): void;
-  removeUploadedFileByIndex(index: number): void;
-  setIsAdaptive(value: boolean): void;
-  setFileDraft(filename: Filenames, content: string): void;
+  // Handle file properties
+  addFile(file: globalThis.File): void;
+  removeFileByName(filename: string): void;
+  removeFileByIndex(index: number): void;
+  clearFiles(): void;
 };
 
 export type QuestionCreationStore = QuestionCreationState &

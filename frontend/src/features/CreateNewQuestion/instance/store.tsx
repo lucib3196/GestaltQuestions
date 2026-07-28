@@ -15,12 +15,7 @@ const initialState: QuestionCreationState = {
   mode: "blank",
   questionData: defaultQuestionData,
   selectedTemplate: null,
-
   files: [],
-  uploadedFiles: null,
-  questionIsAdaptive: false,
-
-  fileDrafts: {},
 };
 
 export function createQuestionStore(
@@ -31,16 +26,14 @@ export function createQuestionStore(
     ...preloaded,
     setMode: (m) =>
       set(() => {
-
         return {
           mode: m,
           files: [],
           fileDrafts: {},
           selectedTemplate: null,
+          questionData: defaultQuestionData,
         };
-      }
-
-      ),
+      }),
     setQuestionData: (payload) =>
       set((state) => {
         const nextQuestionData = {
@@ -58,47 +51,25 @@ export function createQuestionStore(
       set({
         selectedTemplate: v,
       }),
-    setFiles: (files) => set({ files: files }),
     addFile: (file) =>
       set((state) => ({
-        files: state.files.includes(file)
+        files: state.files.some(
+          (existingFile) => existingFile.name === file.name,
+        )
           ? state.files
           : [...state.files, file],
       })),
-    removeFile: (file) =>
+    removeFileByName: (filename) =>
       set((state) => ({
-        files: state.files.filter((v) => v !== file),
+        files: state.files.filter((v) => v.name !== filename),
       })),
-    // Old
-
-    setUploadedFiles: (files) =>
+    removeFileByIndex: (index: number) =>
       set((state) => ({
-        uploadedFiles: [...(state.uploadedFiles ?? []), ...files],
+        files: state.files?.filter((_, i) => i !== index) ?? [],
       })),
-    removeUploadedFile: (file) =>
-      set((state) => ({
-        uploadedFiles: state.uploadedFiles?.filter((v) => v !== file),
-      })),
-    removeUploadedFileByIndex: (index: number) =>
-      set((state) => ({
-        uploadedFiles: state.uploadedFiles?.filter((_, i) => i !== index) ?? [],
-      })),
-    setIsAdaptive: (value) =>
-      set((state) => ({
-        questionIsAdaptive: value,
-        questionData: {
-          ...(state.questionData ?? { title: "" }),
-          isAdaptive: value,
-        } as QuestionMetadataFormValue,
-      })),
-
-    setFileDraft: (filename, content) =>
-      set((state) => ({
-        fileDrafts: {
-          ...state.fileDrafts,
-          [filename]: content,
-        },
-      })),
+    clearFiles: () => set(() => ({
+      files: []
+    }))
   }));
 }
 

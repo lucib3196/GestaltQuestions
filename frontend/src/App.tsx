@@ -17,7 +17,6 @@ import {
   QuestionsListPage,
 } from "./pages/QuestionBuilder";
 import { GeneralQuestionRender } from "./pages/Questions";
-// import { QuestionDirectoryPreview } from "./components/DirectoryPreview";
 import CreateQuestion from "./features/CreateNewQuestion/CreateNewQuestionTemp";
 
 export function Test() {

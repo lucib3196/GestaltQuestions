@@ -4,7 +4,7 @@ import type { QuestionTemplate } from "../constants/templateFiles";
 import { useQuestionCreate } from "../instance";
 import type { IconType } from "react-icons";
 import { LuCalculator, LuImage, LuShuffle } from "react-icons/lu";
-
+import { questionTemplateFileToFile } from "../utils/fileConversion";
 const TEMPLATE_CARD_STYLES: Record<
   QuestionTemplate["id"],
   {
@@ -13,12 +13,12 @@ const TEMPLATE_CARD_STYLES: Record<
     className: string;
   }
 > = {
-  "static-addition": {
+  "static-question": {
     icon: LuCalculator,
     iconClassName: "bg-accent/10 text-accent",
     className: "min-h-28",
   },
-  "adaptive-addition": {
+  numerical: {
     icon: LuShuffle,
     iconClassName: "bg-accent-strong/10 text-accent-strong",
     className: "min-h-28",
@@ -58,14 +58,18 @@ export function TemplateCard({
 
 export function TemplateCardContainer() {
   const selectedTemplate = useQuestionCreate((s) => s.selectedTemplate);
-  const setFiles = useQuestionCreate((s) => s.setFiles);
   const setTemplate = useQuestionCreate((s) => s.setTemplate);
   const setQuestionData = useQuestionCreate((s) => s.setQuestionData);
+  const addFile = useQuestionCreate((s) => s.addFile);
+  const clearFiles = useQuestionCreate((s) => s.clearFiles);
 
   const handleSelect = (template: QuestionTemplate) => {
+    clearFiles();
     setTemplate(template.id);
     setQuestionData(template.questionData);
-    setFiles(template.defaultFiles);
+    template.files.map((f) => {
+      addFile(questionTemplateFileToFile(f));
+    });
   };
 
   return (

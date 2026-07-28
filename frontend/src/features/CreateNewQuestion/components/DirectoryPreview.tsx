@@ -1,11 +1,12 @@
 import { useState } from "react";
 
-import { QPreview } from "../../../components/DirectoryPreview/QuestionDirectoryPreview";
+import { DirectoryPreview } from "../../../components/DirectoryPreview";
 import { Toggle } from "../../../components/Toggles";
 import { useQuestionCreate } from "../instance";
+import { SectionDescription, SectionTitle } from "./ViewText";
 
 export function DirectoryPreviewPanel() {
-  const [showPreview, setShowPreview] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
   const questionData = useQuestionCreate((s) => s.questionData);
   const files = useQuestionCreate((s) => s.files);
 
@@ -13,10 +14,10 @@ export function DirectoryPreviewPanel() {
     <aside className="flex min-w-0 flex-col gap-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold text-text">Directory</h2>
-          <p className="text-sm text-text-muted">
+          <SectionTitle>Directory</SectionTitle>
+          <SectionDescription>
             Preview the files that will be created for this question.
-          </p>
+          </SectionDescription>
         </div>
 
         <Toggle
@@ -31,9 +32,10 @@ export function DirectoryPreviewPanel() {
       </div>
 
       {showPreview && (
-        <QPreview
-          rootName={questionData.title || "My Question"}
-          paths={files}
+        <DirectoryPreview
+          rootName={questionData.title || "UntitledQuestion"}
+          files={files}
+          showIcons={true}
         />
       )}
     </aside>

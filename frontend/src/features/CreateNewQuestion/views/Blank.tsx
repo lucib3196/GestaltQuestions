@@ -1,37 +1,38 @@
+import { MdFolderOpen } from "react-icons/md";
 import { QuestionMetadataForm } from "../../QuestionMetadata";
-import { QuestionFileOption } from "../components/QuestionFileOption";
-import { MainQuestionFiles } from "../constants/questionFiles";
-import { useQuestionCreate } from "../instance";
+import { AdditionalFilesUpload } from "../components/AdditionalFilesUpload";
 import { DirectoryPreviewPanel } from "../components/DirectoryPreview";
-import { UploadFiles } from "../../../components/UploadFile";
-
-
+import { QuestionFileOption } from "../components/QuestionFileOption";
+import {
+    SectionDescription,
+    SectionTitle,
+    ViewHeader,
+} from "../components/ViewText";
+import { DefaultQuestionFiles } from "../constants/questionFiles";
+import { useQuestionCreate } from "../instance";
 
 export function Blank() {
     const questionData = useQuestionCreate((s) => s.questionData);
     const resetQuestionData = useQuestionCreate((s) => s.resetQuestionData);
     const updateQuestionData = useQuestionCreate((s) => s.setQuestionData);
 
-    const addFile = useQuestionCreate((s)=>s.addFile)
-
-    const handleFileUpload = (files: File[]) => {
-        console.log("Uploaded file", files)
-        files.map((f)=>addFile(f.name))
-    }
+    const addFile = useQuestionCreate((s) => s.addFile);
+    const removeFileByIndex = useQuestionCreate((s) => s.removeFileByIndex);
+    const files = useQuestionCreate((s) => s.files);
+    const handleFileUpload = (uploadedFiles: File[]) => {
+        uploadedFiles.forEach((file) => addFile(file));
+    };
 
     return (
-        <div className="flex  gap-5">
-            <div className="min-w-0 rounded-2xl border border-border bg-surface p-4 shadow-sm md:p-5">
-                <div className="mb-4 flex flex-col gap-1">
-                    <span className="text-sm font-semibold uppercase tracking-wide text-accent-strong">
-                        Step 2: Hi
-                    </span>
-                    <h2 className="text-xl font-semibold text-text">
-                        Define question metadata
-                    </h2>
-                </div>
+        <div className="min-h-full bg-bg p-6 text-text">
+            <ViewHeader
+                step="Step 2"
+                title="Define metadata and files"
+                description="Fill in the question details, choose starter files, and attach any supporting files."
+            />
 
-                <div className="min-w-0">
+            <main className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                <section className="min-w-0 rounded-xl border border-border bg-surface/80 p-4 shadow-sm">
                     <QuestionMetadataForm
                         value={questionData}
                         onChange={updateQuestionData}
@@ -39,28 +40,45 @@ export function Blank() {
                         showPublishingStatus={false}
                         showActions={true}
                     />
-                </div>
-            </div>
+                </section>
 
-            <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm md:p-5">
-                <div className="mb-4 flex flex-col gap-1">
-                    <h2 className="text-xl font-semibold text-text">Question files</h2>
-                    <p className="text-sm text-text-muted">
-                        Pick the starter files to include with this question.
-                    </p>
-                </div>
+                <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-surface/80 shadow-sm">
+                    <div className="p-5">
+                        <div className="mb-4 flex items-start gap-3">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-strong/15 text-accent-strong">
+                                <MdFolderOpen size={24} />
+                            </div>
 
-                <div className="flex flex-col gap-3">
-                    {MainQuestionFiles.map((spec) => (
-                        <QuestionFileOption key={spec.filename} {...spec} />
-                    ))}
+                            <div className="min-w-0">
+                                <SectionTitle>Question files</SectionTitle>
+                                <SectionDescription>
+                                    Pick the starter files to include with this question.
+                                </SectionDescription>
+                            </div>
+                        </div>
 
-                    <UploadFiles onFilesSelected={handleFileUpload} accept={"regular_files_images"} />
-                    <DirectoryPreviewPanel />
+                        <div className="flex flex-col gap-3">
+                            {DefaultQuestionFiles.map((spec) => (
+                                <QuestionFileOption key={spec.filename} spec={spec} />
+                            ))}
+                        </div>
 
-                </div>
+                        <AdditionalFilesUpload
+                            files={files}
+                            onFilesSelected={handleFileUpload}
+                            onRemoveFile={removeFileByIndex}
+                        />
 
-            </div>
+                    </div>
+
+
+                    <div className="border-t border-border p-5">
+                        <DirectoryPreviewPanel />
+                    </div>
+
+
+                </section>
+            </main>
         </div>
     );
 }

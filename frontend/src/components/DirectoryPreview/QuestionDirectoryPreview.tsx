@@ -1,13 +1,39 @@
 import { CiFolderOn } from "react-icons/ci";
-import { MdOutlineSubdirectoryArrowRight } from "react-icons/md";
+import { FaHtml5, FaJsSquare, FaPython } from "react-icons/fa";
+import {
+  MdImage,
+  MdInsertDriveFile,
+  MdOutlineSubdirectoryArrowRight,
+} from "react-icons/md";
 
-import type { Filenames } from "../../features/CreateNewQuestion/constants/questionFiles";
+function FileIcon({ filename }: { filename: string }) {
+  const ext = filename.split(".").pop()?.toLowerCase();
 
-function FilePreview({ filename }: { filename: string }) {
+  if (ext === "html") return <FaHtml5 className="shrink-0 text-orange-400" />;
+  if (ext === "js") return <FaJsSquare className="shrink-0 text-yellow-300" />;
+  if (ext === "py") return <FaPython className="shrink-0 text-blue-300" />;
+  if (["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext ?? "")) {
+    return <MdImage className="shrink-0 text-emerald-300" />;
+  }
+
+  return <MdInsertDriveFile className="shrink-0 text-text-muted" />;
+}
+
+function FilePreview({
+  file,
+  showIcons,
+}: {
+  file: File;
+  showIcons: boolean;
+}) {
   return (
     <div className="flex items-center gap-2 text-sm text-text-muted">
-      <MdOutlineSubdirectoryArrowRight className="shrink-0 text-text-soft" />
-      <span className="font-mono text-text">{filename}</span>
+      {showIcons ? (
+        <FileIcon filename={file.name} />
+      ) : (
+        <MdOutlineSubdirectoryArrowRight className="shrink-0 text-text-soft" />
+      )}
+      <span className="font-mono text-text">{file.name}</span>
     </div>
   );
 }
@@ -22,75 +48,38 @@ function FolderHeader({ name }: { name: string }) {
 }
 
 type DirectoryPreviewProps = {
+  files: File[];
   rootName?: string;
-  paths: string[];
+  showIcons?: boolean;
 };
 
-export function QPreview({ rootName, paths }: DirectoryPreviewProps) {
+export function DirectoryPreview({
+  files,
+  rootName = "Directory",
+  showIcons = false,
+}: DirectoryPreviewProps) {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4">
+    <section className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-4">
       <h2 className="self-center text-base font-semibold text-text">
         Directory Preview
       </h2>
-      <div className="rounded-xl border border-border bg-surface-strong p-4">
+
+      <div className="rounded-lg border border-border bg-code/70 p-4">
         <FolderHeader name={`${rootName}/`} />
 
-        <div className="mt-2 flex flex-col gap-1 pl-6">
-          {paths.map((file) => (
-            <FilePreview key={file} filename={file} />
-          ))}{" "}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-type QuestionDirectoryPreviewProps = {
-  directoryName?: string;
-  files: Filenames[] | string[];
-  additionalFiles?: globalThis.File[];
-  includeClientDirectory?: boolean;
-};
-
-export function QuestionDirectoryPreview({
-  directoryName = "Directory",
-  files,
-  additionalFiles = [],
-  includeClientDirectory = false,
-}: QuestionDirectoryPreviewProps) {
-  return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4">
-      <h2 className="self-center text-base font-semibold text-text">
-        Directory Preview
-      </h2>
-
-      <div className="rounded-xl border border-border bg-surface-strong p-4">
-        <FolderHeader name={`${directoryName}/`} />
-
-        <div className="mt-2 flex flex-col gap-1 pl-6">
-          {files.map((file) => (
-            <FilePreview key={file} filename={file} />
-          ))}
-
-          {additionalFiles?.length > 0 && includeClientDirectory && (
-            <div className="mt-2">
-              <FolderHeader name="clientFiles/" />
-              <div className="mt-1 flex flex-col gap-1 pl-6">
-                {additionalFiles.map((file) => (
-                  <FilePreview key={file.name} filename={file.name} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {additionalFiles?.length > 0 && !includeClientDirectory && (
-            <>
-              {additionalFiles.map((file) => (
-                <FilePreview key={file.name} filename={file.name} />
-              ))}
-            </>
-          )}
-        </div>
+        {files.length > 0 ? (
+          <div className="mt-2 flex flex-col gap-2 pl-6">
+            {files.map((file, index) => (
+              <FilePreview
+                key={`${file.name}-${index}`}
+                file={file}
+                showIcons={showIcons}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-2 text-sm text-text-muted">No files uploaded yet.</p>
+        )}
       </div>
     </section>
   );

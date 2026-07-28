@@ -1,31 +1,37 @@
 import type { QuestionCreate } from "../../../types/questionTypes";
-import type { Filenames, QuestionFileSpec } from "./questionFiles";
 
-export type QuestionTemplateFile = QuestionFileSpec & {
-  title: string;
+export type QuestionTemplateFile = {
+  filename: string;
+  description: string;
+  mimeType: string;
+  content: string;
 };
 
+export type QuestionTemplateId =
+  | "numerical"
+  | "static-question"
+  | "image-question";
+
+export type QuestionTemplateName =
+  | "Numerical question"
+  | "Static question"
+  | "Image question";
+
 export type QuestionTemplate = {
-  id: string;
+  id: QuestionTemplateId;
+  name: QuestionTemplateName;
   title: string;
   description: string;
   questionData: Partial<QuestionCreate>;
-  defaultFiles: Filenames[];
+  defaultFiles: string[];
   files: QuestionTemplateFile[];
 };
 
 const staticAdditionQuestionHtml = {
   filename: "question.html",
-  title: "Question markup",
-  type: "html",
-  required: true,
-  isAdaptive: false,
-  description:
-    "Defines a fixed addition prompt with multiple-choice answers.",
-  template: [
-    {
-      adaptive: false,
-      template: `
+  mimeType: "text/html",
+  description: "Defines a fixed addition prompt with multiple-choice answers.",
+  content: `
 <pl-question-panel>
   <p>
     What is 2 + 3?
@@ -37,23 +43,15 @@ const staticAdditionQuestionHtml = {
   <pl-answer correct="true">5</pl-answer>
   <pl-answer correct="false">6</pl-answer>
 </pl-multiple-choice>
-      `.trim(),
-    },
-  ],
+  `.trim(),
 } satisfies QuestionTemplateFile;
 
 const adaptiveAdditionQuestionHtml = {
   filename: "question.html",
-  title: "Adaptive question markup",
-  type: "html",
-  required: true,
-  isAdaptive: true,
+  mimeType: "text/html",
   description:
     "Defines an adaptive addition prompt that reads generated parameters.",
-  template: [
-    {
-      adaptive: true,
-      template: `
+  content: `
 <pl-question-panel>
   <p>
     What is the sum of {{params.a}} and {{params.b}}?
@@ -64,37 +62,15 @@ const adaptiveAdditionQuestionHtml = {
   answers-name="sum"
   label="Sum"
 />
-      `.trim(),
-    },
-  ],
+  `.trim(),
 } satisfies QuestionTemplateFile;
 
-const solutionHtml = {
+const staticSolutionHtml = {
   filename: "solution.html",
-  title: "Solution explanation",
-  type: "html",
-  required: false,
-  isAdaptive: false,
+  mimeType: "text/html",
   description:
     "Provides optional hints, worked steps, or final explanation for the question.",
-  template: [
-    {
-      adaptive: true,
-      template: `
-<pl-solution-panel>
-  <pl-hint level="1">
-    Add the two given numbers.
-  </pl-hint>
-
-  <pl-hint level="2">
-    {{params.a}} + {{params.b}} = {{correct_answers.sum}}
-  </pl-hint>
-</pl-solution-panel>
-      `.trim(),
-    },
-    {
-      adaptive: false,
-      template: `
+  content: `
 <pl-solution-panel>
   <pl-hint level="1">
     The problem asks for the sum of 2 and 3.
@@ -104,23 +80,33 @@ const solutionHtml = {
     2 + 3 = 5
   </pl-hint>
 </pl-solution-panel>
-      `.trim(),
-    },
-  ],
+  `.trim(),
+} satisfies QuestionTemplateFile;
+
+const adaptiveSolutionHtml = {
+  filename: "solution.html",
+  mimeType: "text/html",
+  description:
+    "Provides optional hints, worked steps, or final explanation for the question.",
+  content: `
+<pl-solution-panel>
+  <pl-hint level="1">
+    Add the two given numbers.
+  </pl-hint>
+
+  <pl-hint level="2">
+    {{params.a}} + {{params.b}} = {{correct_answers.sum}}
+  </pl-hint>
+</pl-solution-panel>
+  `.trim(),
 } satisfies QuestionTemplateFile;
 
 const serverJs = {
   filename: "server.js",
-  title: "JavaScript generator",
-  type: "javascript",
-  required: false,
-  isAdaptive: true,
+  mimeType: "text/javascript",
   description:
     "Generates randomized parameters and correct answers for adaptive questions.",
-  template: [
-    {
-      adaptive: true,
-      template: `
+  content: `
 const math = require("mathjs");
 
 const generate = () => {
@@ -136,23 +122,15 @@ const generate = () => {
 };
 
 module.exports = { generate };
-      `.trim(),
-    },
-  ],
+  `.trim(),
 } satisfies QuestionTemplateFile;
 
 const serverPy = {
   filename: "server.py",
-  title: "Python generator",
-  type: "python",
-  required: false,
-  isAdaptive: true,
+  mimeType: "text/x-python",
   description:
     "Alternative Python generator for adaptive parameters and correct answers.",
-  template: [
-    {
-      adaptive: true,
-      template: `
+  content: `
 import random
 
 def generate():
@@ -168,23 +146,15 @@ def generate():
             "sum": a + b,
         },
     }
-      `.trim(),
-    },
-  ],
+  `.trim(),
 } satisfies QuestionTemplateFile;
 
 const imageQuestionHtml = {
   filename: "question.html",
-  title: "Image question markup",
-  type: "html",
-  required: true,
-  isAdaptive: false,
+  mimeType: "text/html",
   description:
     "Displays an image beside the prompt and captures the student's answer.",
-  template: [
-    {
-      adaptive: false,
-      template: `
+  content: `
 <pl-question-panel>
   <p>Use the image below to answer the question.</p>
   <img src="image.png" alt="Question reference" />
@@ -194,46 +164,22 @@ const imageQuestionHtml = {
   answers-name="answer"
   label="Answer"
 />
-      `.trim(),
-    },
-  ],
+  `.trim(),
 } satisfies QuestionTemplateFile;
 
 const imageFile = {
   filename: "image.png",
-  title: "Reference image",
-  type: "image",
-  required: false,
-  isAdaptive: false,
+  mimeType: "image/png",
   description:
     "Placeholder image asset referenced by question.html; replace with the final image file later.",
-  template: [
-    {
-      adaptive: false,
-      template: "",
-    },
-  ],
+  content: "",
 } satisfies QuestionTemplateFile;
 
-const QuestionTemplates = [
-  {
-    id: "static-addition",
-    title: "Static addition question",
-    description:
-      "A fixed multiple-choice arithmetic question with no generated parameters.",
-    questionData: {
-      isAdaptive: false,
-      topics: ["static"],
-      qType: ["mcq"],
-      ai_generated: false,
-      title: "Add Numbers MC",
-    },
-    defaultFiles: ["question.html", "solution.html"],
-    files: [staticAdditionQuestionHtml, solutionHtml],
-  },
-  {
-    id: "adaptive-addition",
-    title: "Adaptive addition question",
+export const QuestionTemplatesById = {
+  numerical: {
+    id: "numerical",
+    name: "Numerical question",
+    title: "Numerical question",
     description:
       "A generated arithmetic question bundled with JavaScript and Python server templates.",
     questionData: {
@@ -243,11 +189,28 @@ const QuestionTemplates = [
       ai_generated: false,
       title: "Add Numbers Adaptive",
     },
-    defaultFiles: ["question.html", "solution.html", "server.js"],
-    files: [adaptiveAdditionQuestionHtml, solutionHtml, serverJs, serverPy],
+    defaultFiles: ["question.html", "solution.html", "server.js", "server.py"],
+    files: [adaptiveAdditionQuestionHtml, adaptiveSolutionHtml, serverJs, serverPy],
   },
-  {
+  "static-question": {
+    id: "static-question",
+    name: "Static question",
+    title: "Static question",
+    description:
+      "A fixed multiple-choice question with no JavaScript or Python server files.",
+    questionData: {
+      isAdaptive: false,
+      topics: ["static"],
+      qType: ["mcq"],
+      ai_generated: false,
+      title: "Static Question",
+    },
+    defaultFiles: ["question.html", "solution.html"],
+    files: [staticAdditionQuestionHtml, staticSolutionHtml],
+  },
+  "image-question": {
     id: "image-question",
+    name: "Image question",
     title: "Image question",
     description:
       "A starter question that includes an image asset referenced from the question markup.",
@@ -259,13 +222,25 @@ const QuestionTemplates = [
       title: "Image Question",
     },
     defaultFiles: ["question.html", "image.png"],
-    files: [imageQuestionHtml, imageFile, solutionHtml],
+    files: [imageQuestionHtml, imageFile],
   },
-] satisfies QuestionTemplate[];
+} satisfies Record<QuestionTemplateId, QuestionTemplate>;
 
-type QuestionTemplateId = (typeof QuestionTemplates)[number]["id"];
+export const QuestionTemplates = Object.values(QuestionTemplatesById);
 
-const TemplateFiles: QuestionFileSpec[] = QuestionTemplates[0].files;
+export const QuestionTemplatesByName = QuestionTemplates.reduce(
+  (templates, template) => ({
+    ...templates,
+    [template.name]: template,
+  }),
+  {} as Record<QuestionTemplateName, QuestionTemplate>,
+);
 
-export { QuestionTemplates, TemplateFiles };
-export type { QuestionTemplateId };
+export const getQuestionTemplate = (id: QuestionTemplateId) =>
+  QuestionTemplatesById[id];
+
+export const getQuestionTemplateFiles = (id: QuestionTemplateId) =>
+  QuestionTemplatesById[id].files;
+
+export const TemplateFiles: QuestionTemplateFile[] =
+  QuestionTemplatesById.numerical.files;
