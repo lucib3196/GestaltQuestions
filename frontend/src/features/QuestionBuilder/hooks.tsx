@@ -380,9 +380,9 @@ export function useCreateQuestion() {
       setError(null);
 
       if (!user) {
-        setError("You must be signed in to delete files.");
+        setError("You must be signed in to create questions.");
         setLoading(false);
-        return;
+        return null;
       }
 
       try {
@@ -391,18 +391,24 @@ export function useCreateQuestion() {
           token,
           payload,
         );
-        const qId = qCreated.id;
-        if (files) {
-          await QuestionBuilderAPI.uploadFiles(token, qId, files);
+
+        if (files?.length) {
+          await QuestionBuilderAPI.uploadFiles(token, qCreated.id, files);
         }
+
+        return qCreated.id;
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to upload file");
+        setError(
+          err instanceof Error ? err.message : "Failed to create question",
+        );
+        return null;
       } finally {
         setLoading(false);
       }
     },
     [user],
   );
+
   return { createQuestion, loading, error };
 }
 

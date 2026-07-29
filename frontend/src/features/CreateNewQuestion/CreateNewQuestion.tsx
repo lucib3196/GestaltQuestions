@@ -1,192 +1,64 @@
-import { useEffect, useState } from "react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { toast } from "react-toastify";
+import { ViewHeader } from "./components/ViewText";
+import { useQuestionCreate } from "./instance";
+import { CreateQuestionActionPanel } from "./sections/CreateQuestionActionPanel";
+import { ModeSelectionSection } from "./sections/ModeSelectionSection";
+import { Blank } from "./views/Blank";
+import TemplateView from "./views/TemplateView";
+import { UploadFilesView } from "./views/UploadFilesView";
 
-import { Button } from "../../components/Button";
-import {
-  QuestionMetadataForm,
-  type QuestionMetadataFormValue,
-} from "../QuestionMetadata";
-import { useCreateQuestion } from "../QuestionBuilder";
-import { QuestionTemplateEditor } from "../QuestionEditor";
-import QuestionFilesDisplay from "./components/QuestionFilesView";
-import { TemplateFiles, TemplateModePresets } from "./constants/templateFiles";
-import { type Filenames, useQuestionCreate } from "./instance";
-
-type CreateMode = "blank" | "template";
-
-const getTemplateContent = (
-  filename: Filenames,
-  isAdaptive: boolean,
-  mode: CreateMode,
-  fileDrafts: Partial<Record<Filenames, string>>,
-) => {
-  if (fileDrafts[filename] !== undefined) {
-    return fileDrafts[filename] ?? "";
-  }
-
-  if (mode === "blank") return "";
-
-  const templateSpec = TemplateFiles.find((f) => f.filename === filename);
-  if (!templateSpec) return "";
-
-  const adaptiveMatch = templateSpec.template.find(
-    (t) => t.adaptive === isAdaptive,
-  );
-  return adaptiveMatch?.template ?? templateSpec.template[0]?.template ?? "";
+const MODE_HELPER_TEXT = {
+  blank:
+    "Define metadata, choose starter files, and add any supporting uploads.",
+  template:
+    "Pick a starter template, then create the question package from its files.",
+  upload:
+    "Upload an existing question package and add metadata before creating it.",
 };
 
-export default function CreateQuestionFromBlank() {
-  const qdata = useQuestionCreate((s) => s.questionData);
-  const defaultFiles = useQuestionCreate((s) => s.defaultFiles);
-  const uploadedFiles = useQuestionCreate((s) => s.uploadedFiles);
-  const questionIsAdaptive = useQuestionCreate((s) => s.questionIsAdaptive);
-  const fileDrafts = useQuestionCreate((s) => s.fileDrafts);
-  const setQdata = useQuestionCreate((s) => s.setQuestionData);
-  const setDefaultFiles = useQuestionCreate((s) => s.setDefaultFiles);
-  const { createQuestion } = useCreateQuestion();
-  const [mode, setMode] = useState<CreateMode>("blank");
-  const [showTemplateEditor, setShowTemplateEditor] = useState(
-    mode === "template",
-  );
-
-  // Set default files and qdata
-  useEffect(() => {
-    if (mode !== "template") return;
-
-    const preset = questionIsAdaptive
-      ? TemplateModePresets.adaptive
-      : TemplateModePresets.nonAdaptive;
-
-    setDefaultFiles(preset.defaultFiles);
-    setQdata({
-      ...preset.questionData,
-      title: qdata?.title ? preset.questionData?.title : "",
-      ai_generated: qdata?.ai_generated ?? false,
-    });
-  }, [
-    mode,
-    questionIsAdaptive,
-    setDefaultFiles,
-    setQdata,
-    qdata?.title,
-    qdata?.ai_generated,
-  ]);
-
-  useEffect(() => {
-    if (mode === "blank") {
-      setShowTemplateEditor(false);
-    } else {
-      setShowTemplateEditor(true);
-    }
-  }, [mode]);
-
-  const metadataValue: QuestionMetadataFormValue = {
-    title: qdata?.title ?? "",
-    status: "draft",
-    ai_generated: qdata?.ai_generated ?? false,
-    isAdaptive: qdata?.isAdaptive ?? false,
-    topics: qdata?.topics ?? [],
-    qType: qdata?.qType ?? [],
-  };
-
-  const handleMetadataChange = (nextValue: QuestionMetadataFormValue) => {
-    const { status: _status, ...questionData } = nextValue;
-    setQdata(questionData);
-  };
-
-  const handleSubmit = async () => {
-    if (!qdata?.title) {
-      toast.error("Question title is required.");
-      return;
-    }
-
-    try {
-      const selectedTemplateFiles =
-        mode === "template"
-          ? TemplateFiles.map((t) => t.filename)
-          : defaultFiles;
-
-      const dFiles = selectedTemplateFiles.map((filename) => {
-        const content = getTemplateContent(
-          filename,
-          questionIsAdaptive,
-          mode,
-          fileDrafts,
-        );
-
-        return new File([content], filename, {
-          type: "text/plain",
-        });
-      });
-
-      const totalFiles = [...dFiles, ...(uploadedFiles ?? [])];
-
-      await createQuestion(qdata, totalFiles);
-      toast.success("Question created successfully.");
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to create question.",
-      );
-    }
-  };
+function Header() {
+  const mode = useQuestionCreate((s) => s.mode);
 
   return (
-    <div className="flex h-full w-full flex-col gap-2 p-2">
-      <div className="flex gap-2">
-        <Button
-          name="Blank"
-          onClick={() => setMode("blank")}
-          className={mode === "blank" ? "opacity-100" : "opacity-70"}
-        />
-        <Button
-          name="Template"
-          onClick={() => setMode("template")}
-          className={mode === "template" ? "opacity-100" : "opacity-70"}
-        />
-        <Button
-          name={
-            showTemplateEditor ? "Hide Template Editor" : "Show Template Editor"
-          }
-          onClick={() => setShowTemplateEditor((prev) => !prev)}
-          className="opacity-80"
-        />
+    <header className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-semibold uppercase tracking-wide text-accent">
+          Question setup
+        </p>
+        <h1 className="text-3xl font-bold text-text">Create a new question</h1>
+        <p className="max-w-2xl text-sm text-text-muted">
+          {MODE_HELPER_TEXT[mode]}
+        </p>
       </div>
+    </header>
+  );
+}
 
-      <PanelGroup
-        direction="horizontal"
-        className="min-h-0 flex-1 items-stretch"
-      >
-        <Panel defaultSize={showTemplateEditor ? 34 : 50} minSize={25}>
-          <div className="h-full overflow-auto">
-            <QuestionMetadataForm
-              value={metadataValue}
-              onChange={handleMetadataChange}
-              showPublishingStatus={false}
-              showActions={false}
-            />
-          </div>
-        </Panel>
+export default function CreateNewQuestion() {
+  const mode = useQuestionCreate((s) => s.mode);
 
-        <PanelResizeHandle className="mx-1 w-px bg-border/70" />
+  return (
+    <div className="mx-auto flex w-full flex-col gap-6 bg-bg p-4 text-text md:p-6">
+      <Header />
 
-        <Panel defaultSize={showTemplateEditor ? 33 : 50} minSize={25}>
-          <QuestionFilesDisplay />
-        </Panel>
+      <section className="rounded-2xl border border-border bg-surface p-4 shadow-sm md:p-5">
+        <ModeSelectionSection />
+      </section>
 
-        {showTemplateEditor && (
-          <>
-            <PanelResizeHandle className="mx-1 w-px bg-border/70" />
-            <Panel defaultSize={33} minSize={25}>
-              <div className="h-full overflow-auto">
-                <QuestionTemplateEditor mode={mode} />
-              </div>
-            </Panel>
-          </>
-        )}
-      </PanelGroup>
+      <section className="">
+        {mode === "blank" && <Blank />}
+        {mode === "template" && <TemplateView />}
+        {mode === "upload" && <UploadFilesView />}
+      </section>
 
-      <Button name="Create" onClick={handleSubmit} />
+      <section className="rounded-2xl border border-border bg-surface p-4 shadow-sm md:p-5">
+        <ViewHeader
+          step="Step 3"
+          title="Create the question"
+          description="Review the setup above, then create the question package."
+        />
+
+        <CreateQuestionActionPanel />
+      </section>
     </div>
   );
 }

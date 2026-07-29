@@ -43,6 +43,7 @@ class QuestionCreate(QuestionRelationships):
     title: str
     ai_generated: bool = False
     isAdaptive: bool = False
+    status: Status | None = None
 
     model_config = ConfigDict(extra="ignore")
 

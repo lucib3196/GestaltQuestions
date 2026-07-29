@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { RequireRole } from "./features/Auth";
+
 import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
 import AppLayout from "./layouts/AppLayout";
 import {
@@ -17,11 +18,7 @@ import {
   QuestionsListPage,
 } from "./pages/QuestionBuilder";
 import { GeneralQuestionRender } from "./pages/Questions";
-// import { QuestionDirectoryPreview } from "./components/DirectoryPreview";
 
-// export function Test(){
-//   return <div><QuestionDirectoryPreview directoryName={"Title"} files={["question.html"] }/></div>
-// }
 
 function App() {
   return (

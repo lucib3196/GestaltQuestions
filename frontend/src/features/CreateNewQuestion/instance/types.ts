@@ -1,48 +1,33 @@
-import type { QuestionCreate } from "../../../types/questionTypes";
+/* eslint-disable no-unused-vars */
+import type { QuestionMetadataFormValue } from "../../QuestionMetadata";
+import type { QuestionTemplateId } from "../constants/templateFiles";
 
+export type Mode = "blank" | "template" | "upload";
 export type CreateMode = "blank" | "upload";
 
-export type FileType = "html" | "javascript" | "python";
-
-export type Filenames =
-  | "question.html"
-  | "solution.html"
-  | "server.js"
-  | "server.py";
-
-type FileTemplate = {
-  adaptive: boolean;
-  template: string;
-};
-
-export type QuestionFileSpec = {
-  filename: Filenames;
-  type: FileType;
-  required: boolean;
-  description: string;
-  isAdaptive: boolean;
-  template: FileTemplate[];
-};
-
 export type QuestionCreationState = {
-  defaultFiles: Filenames[];
-  uploadedFiles: File[] | null;
-  questionIsAdaptive: boolean;
-  questionData: QuestionCreate | null;
-  fileDrafts: Partial<Record<Filenames, string>>;
+  mode: Mode;
+  questionData: QuestionMetadataFormValue;
+  selectedTemplate: QuestionTemplateId | null;
+
+  files: globalThis.File[];
 };
 
 export type QuestionCreationActions = {
-  setDefaultFiles: (files: Filenames[]) => void;
-  addDefaultFile: (file: Filenames) => void;
-  removeDefaultFile: (file: Filenames) => void;
+  // General mode
+  setMode(val: Mode): void;
+  // Question data specific
+  setQuestionData(payload: Partial<QuestionMetadataFormValue>): void;
+  resetQuestionData(): void;
 
-  setUploadedFiles: (files: File[]) => void;
-  removeUploadedFile: (file: File) => void;
-  removeUploadedFileByIndex: (index: number) => void;
-  setIsAdaptive: (value: boolean) => void;
-  setQuestionData: (payload: Partial<QuestionCreate>) => void;
-  setFileDraft: (filename: Filenames, content: string) => void;
+  // Template logic
+  setTemplate(v: QuestionTemplateId): void;
+
+  // Handle file properties
+  addFile(file: globalThis.File): void;
+  removeFileByName(filename: string): void;
+  removeFileByIndex(index: number): void;
+  clearFiles(): void;
 };
 
 export type QuestionCreationStore = QuestionCreationState &

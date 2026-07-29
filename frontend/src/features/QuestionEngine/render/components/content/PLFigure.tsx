@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
+
 import { useQuestionInstance } from "../../../instance";
 import { useQuestionFigure } from "../../../runtime/useQuestionRunTime";
 export type ImageSize = "sm" | "md" | "lg";

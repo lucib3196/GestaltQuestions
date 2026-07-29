@@ -53,9 +53,7 @@ export function isQuestionType(value: string): value is QuestionType {
 export function normalizeQuestionTypes(
   values: readonly string[],
 ): QuestionType[] {
-  return values
-    .map((value) => value.toLowerCase())
-    .filter(isQuestionType);
+  return values.map((value) => value.toLowerCase()).filter(isQuestionType);
 }
 
 export type QuestionRead = {
@@ -85,11 +83,11 @@ export type QuestionAllRow = {
 export type QuestionCreate = {
   id?: string | null;
   title: string;
+  status?: QuestionStatus;
   ai_generated?: boolean;
   isAdaptive?: boolean;
   topics?: string[];
   qType?: QuestionType[];
-  qTypes?: QuestionType[];
 };
 
 export type QuestionUpdate = {

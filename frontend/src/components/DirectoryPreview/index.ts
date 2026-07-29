@@ -1,1 +1,1 @@
-export { QuestionDirectoryPreview } from "./QuestionDirectoryPreview";
+export { DirectoryPreview } from "./QuestionDirectoryPreview";

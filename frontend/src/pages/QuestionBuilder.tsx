@@ -1,9 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
-import { Header } from "../components/Header";
 import { ComponentPlayGround } from "../features/ComponentPlayGround";
-import CreateQuestionFromBlank from "../features/CreateNewQuestion/CreateNewQuestion";
-import { QuestionCreateProvider } from "../features/CreateNewQuestion/instance";
+import { CreateNewQuestion as CreateQuestion } from "../features/CreateNewQuestion";
 import { MyQuestionsTable } from "../features/QuestionTables";
 
 export default function QuestionBuilderPage() {
@@ -85,14 +83,9 @@ export function QuestionsListPage() {
 
 export function CreateNewQuestion() {
   return (
-    <QuestionCreateProvider>
-      <Header
-        variant="QuestionBuilder"
-        title="Create Question"
-        className="flex flex-row justify-between"
-      />
-      <CreateQuestionFromBlank />
-    </QuestionCreateProvider>
+    <>
+      <CreateQuestion />
+    </>
   );
 }
 
