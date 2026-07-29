@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useRef, useState } from "react";
 import { type IconType } from "react-icons";
 
-import { useOnClickOutside } from "../../hooks/hooks";
+import { useOnClickOutside } from "../../hooks";
 import { type DropDownBase } from "./types";
 
 export type DropDownAdvanceOption = {

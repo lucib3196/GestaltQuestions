@@ -22,9 +22,14 @@ const TEMPLATE_CARD_STYLES: Record<
     iconClassName: "bg-accent-strong/10 text-accent-strong",
     className: "min-h-28",
   },
-  "image-question": {
+  "incline-plane-static": {
     icon: LuImage,
     iconClassName: "bg-surface-muted text-text-muted",
+    className: "min-h-28",
+  },
+  "incline-plane-numeric": {
+    icon: LuImage,
+    iconClassName: "bg-accent/10 text-accent",
     className: "min-h-28",
   },
 };

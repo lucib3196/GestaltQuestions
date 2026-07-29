@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { QuestionCreate } from "../../../types/questionTypes";
 
 export type QuestionTemplateFile = {
@@ -5,17 +6,20 @@ export type QuestionTemplateFile = {
   description: string;
   mimeType: string;
   content: string;
+  assetUrl?: string;
 };
 
 export type QuestionTemplateId =
   | "numerical"
   | "static-question"
-  | "image-question";
+  | "incline-plane-static"
+  | "incline-plane-numeric";
 
 export type QuestionTemplateName =
-  | "Numerical question"
-  | "Static question"
-  | "Image question";
+  | "Addition Adaptive Question"
+  | "Static Addition"
+  | "Incline plane concept"
+  | "Incline plane components";
 
 export type QuestionTemplate = {
   id: QuestionTemplateId;
@@ -149,30 +153,143 @@ def generate():
   `.trim(),
 } satisfies QuestionTemplateFile;
 
-const imageQuestionHtml = {
+const inclinePlaneStaticQuestionHtml = {
   filename: "question.html",
   mimeType: "text/html",
   description:
-    "Displays an image beside the prompt and captures the student's answer.",
+    "Asks students to interpret the weight decomposition shown on an incline plane diagram.",
   content: `
 <pl-question-panel>
-  <p>Use the image below to answer the question.</p>
-  <img src="image.png" alt="Question reference" />
+  <p>
+    The diagram shows a block on an incline. The weight force $mg$ is drawn
+    vertically downward, while two components are labeled $mg\\sin(\\theta)$
+    and $mg\\cos(\\theta)$.
+  </p>
+
+  <p>
+    Why is the weight split into these two components?
+  </p>
+
+  <p>
+    <pl-figure src="image.png" alt="Block on an incline with weight components labeled" />
+  </p>
 </pl-question-panel>
 
-<pl-string-input
-  answers-name="answer"
-  label="Answer"
+<pl-multiple-choice answers-name="reason">
+  <pl-answer correct="false">
+    The force of gravity changes direction when the block is placed on the incline.
+  </pl-answer>
+  <pl-answer correct="true">
+    The weight is decomposed into components parallel and perpendicular to the incline.
+  </pl-answer>
+  <pl-answer correct="false">
+    The normal force is always equal to $mg$, so the extra components cancel it.
+  </pl-answer>
+  <pl-answer correct="false">
+    The angle of the ramp creates two different gravitational forces.
+  </pl-answer>
+</pl-multiple-choice>
+  `.trim(),
+} satisfies QuestionTemplateFile;
+
+const inclinePlaneNumericQuestionHtml = {
+  filename: "question.html",
+  mimeType: "text/html",
+  description:
+    "Asks students to calculate the parallel and perpendicular components of weight.",
+  content: `
+<pl-question-panel>
+  <p>
+    A block with mass $\{{params.mass}}$, $\\text{kg}$ rests on an incline at
+    $\{{params.theta}}^\\circ$. Use $g = {{params.g}}$, $\\text{m/s}^2$.
+  </p>
+
+  <p>
+    <pl-figure src="image.png" alt="Block on an incline with weight components labeled" />
+  </p>
+
+  <p>
+    Calculate the component of the block's weight parallel to the incline,
+    $mg\\sin(\\theta)$, and perpendicular to the incline,
+    $mg\\cos(\\theta)$.
+  </p>
+</pl-question-panel>
+<div>
+  <pl-number-input
+    answers-name="parallel"
+    label="Parallel component, $mg \\sin(\\theta)$"
+    suffix="N"
+  />
+</div>
+
+<pl-number-input
+  answers-name="perpendicular"
+  label="Perpendicular component, $mg \\cos(\\theta)$"
+  suffix="N"
 />
+  `.trim(),
+} satisfies QuestionTemplateFile;
+
+const inclinePlaneServerJs = {
+  filename: "server.js",
+  mimeType: "text/javascript",
+  description:
+    "Generates randomized mass and angle values for incline-plane weight components.",
+  content: `
+const generate = () => {
+  const mass = 2 + Math.floor(Math.random() * 9);
+  const theta = 20 + Math.floor(Math.random() * 31);
+  const g = 9.8;
+  const radians = theta * Math.PI / 180;
+
+  return {
+    params: { mass, theta, g },
+    correct_answers: {
+      parallel: mass * g * Math.sin(radians),
+      perpendicular: mass * g * Math.cos(radians),
+    },
+  };
+};
+
+module.exports = { generate };
+  `.trim(),
+} satisfies QuestionTemplateFile;
+
+const inclinePlaneServerPy = {
+  filename: "server.py",
+  mimeType: "text/x-python",
+  description:
+    "Python version of the randomized incline-plane weight component generator.",
+  content: `
+import math
+import random
+
+def generate():
+    mass = random.randint(2, 10)
+    theta = random.randint(20, 50)
+    g = 9.8
+    radians = math.radians(theta)
+
+    return {
+        "params": {
+            "mass": mass,
+            "theta": theta,
+            "g": g,
+        },
+        "correct_answers": {
+            "parallel": mass * g * math.sin(radians),
+            "perpendicular": mass * g * math.cos(radians),
+        },
+    }
   `.trim(),
 } satisfies QuestionTemplateFile;
 
 const imageFile = {
   filename: "image.png",
   mimeType: "image/png",
-  description:
-    "Placeholder image asset referenced by question.html; replace with the final image file later.",
+  description: "Incline plane diagram referenced by the question prompt.",
   content: "",
+  assetUrl: "/incline_plane_asset.png",
 } satisfies QuestionTemplateFile;
 
 export const QuestionTemplatesById = {
@@ -190,7 +307,12 @@ export const QuestionTemplatesById = {
       title: "Add Numbers Adaptive",
     },
     defaultFiles: ["question.html", "solution.html", "server.js", "server.py"],
-    files: [adaptiveAdditionQuestionHtml, adaptiveSolutionHtml, serverJs, serverPy],
+    files: [
+      adaptiveAdditionQuestionHtml,
+      adaptiveSolutionHtml,
+      serverJs,
+      serverPy,
+    ],
   },
   "static-question": {
     id: "static-question",
@@ -208,21 +330,42 @@ export const QuestionTemplatesById = {
     defaultFiles: ["question.html", "solution.html"],
     files: [staticAdditionQuestionHtml, staticSolutionHtml],
   },
-  "image-question": {
-    id: "image-question",
-    name: "Image question",
-    title: "Image question",
+  "incline-plane-static": {
+    id: "incline-plane-static",
+    name: "Incline plane concept",
+    title: "Incline plane concept",
     description:
-      "A starter question that includes an image asset referenced from the question markup.",
+      "A conceptual multiple-choice question about decomposing weight on an incline.",
     questionData: {
       isAdaptive: false,
-      topics: ["image"],
-      qType: ["fb"],
+      topics: ["incline-plane", "forces", "components"],
+      qType: ["mcq"],
       ai_generated: false,
-      title: "Image Question",
+      title: "Incline Plane Weight Components",
     },
     defaultFiles: ["question.html", "image.png"],
-    files: [imageQuestionHtml, imageFile],
+    files: [inclinePlaneStaticQuestionHtml, imageFile],
+  },
+  "incline-plane-numeric": {
+    id: "incline-plane-numeric",
+    name: "Incline plane components",
+    title: "Incline plane components",
+    description:
+      "A numeric incline-plane question with JavaScript and Python generators.",
+    questionData: {
+      isAdaptive: true,
+      topics: ["incline-plane", "forces", "trigonometry"],
+      qType: ["num"],
+      ai_generated: false,
+      title: "Calculate Incline Plane Weight Components",
+    },
+    defaultFiles: ["question.html", "image.png", "server.js", "server.py"],
+    files: [
+      inclinePlaneNumericQuestionHtml,
+      imageFile,
+      inclinePlaneServerJs,
+      inclinePlaneServerPy,
+    ],
   },
 } satisfies Record<QuestionTemplateId, QuestionTemplate>;
 

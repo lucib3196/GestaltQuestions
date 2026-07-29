@@ -11,13 +11,16 @@ export function TemplateSelectionSection() {
   const addFile = useQuestionCreate((s) => s.addFile);
   const clearFiles = useQuestionCreate((s) => s.clearFiles);
 
-  const handleSelect = (template: QuestionTemplate) => {
+  const handleSelect = async (template: QuestionTemplate) => {
     clearFiles();
     setTemplate(template.id);
     setQuestionData(template.questionData);
-    template.files.forEach((file) => {
-      addFile(questionTemplateFileToFile(file));
-    });
+
+    const files = await Promise.all(
+      template.files.map((file) => questionTemplateFileToFile(file)),
+    );
+
+    files.forEach(addFile);
   };
 
   return (
