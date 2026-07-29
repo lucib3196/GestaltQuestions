@@ -149,8 +149,8 @@ export function QuestionReviewCard({
       : "",
   );
   const [qTypeInput, setQTypeInputs] = useState(
-    Array.isArray(payload.metadata?.qTypes)
-      ? payload.metadata.qTypes.join(", ")
+    Array.isArray(payload.metadata?.qType)
+      ? payload.metadata.qType?.join(", ")
       : "",
   );
 

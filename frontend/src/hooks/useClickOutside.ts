@@ -22,4 +22,3 @@ export function useOnClickOutside<T extends HTMLDivElement>(
     };
   }, [ref, handler]);
 }
-

@@ -19,13 +19,7 @@ function FileIcon({ filename }: { filename: string }) {
   return <MdInsertDriveFile className="shrink-0 text-text-muted" />;
 }
 
-function FilePreview({
-  file,
-  showIcons,
-}: {
-  file: File;
-  showIcons: boolean;
-}) {
+function FilePreview({ file, showIcons }: { file: File; showIcons: boolean }) {
   return (
     <div className="flex items-center gap-2 text-sm text-text-muted">
       {showIcons ? (

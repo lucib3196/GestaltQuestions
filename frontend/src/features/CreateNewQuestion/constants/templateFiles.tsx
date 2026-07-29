@@ -295,7 +295,7 @@ const imageFile = {
 export const QuestionTemplatesById = {
   numerical: {
     id: "numerical",
-    name: "Numerical question",
+    name: "Addition Adaptive Question",
     title: "Numerical question",
     description:
       "A generated arithmetic question bundled with JavaScript and Python server templates.",
@@ -316,7 +316,7 @@ export const QuestionTemplatesById = {
   },
   "static-question": {
     id: "static-question",
-    name: "Static question",
+    name: "Static Addition",
     title: "Static question",
     description:
       "A fixed multiple-choice question with no JavaScript or Python server files.",

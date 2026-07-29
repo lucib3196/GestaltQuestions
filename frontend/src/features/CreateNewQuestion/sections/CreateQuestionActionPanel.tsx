@@ -21,7 +21,6 @@ export function CreateQuestionActionPanel() {
   const navigate = useNavigate();
   const creatingToastId = useRef<Id | null>(null);
 
-
   useEffect(() => {
     if (!error) return;
 

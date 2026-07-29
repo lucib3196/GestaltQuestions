@@ -1,9 +1,6 @@
 import { MdCheckCircle, MdClose, MdWarningAmber } from "react-icons/md";
 
-import {
-  getFileStatus,
-  getKnownQuestionFile,
-} from "../utils/fileValidation";
+import { getFileStatus, getKnownQuestionFile } from "../utils/fileValidation";
 import { FileIcon } from "./FileIcon";
 
 type UploadedQuestionFileProps = {

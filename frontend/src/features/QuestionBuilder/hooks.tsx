@@ -387,7 +387,10 @@ export function useCreateQuestion() {
 
       try {
         const token = await user.getIdToken();
-        const qCreated = await QuestionBuilderAPI.createQuestion(token, payload);
+        const qCreated = await QuestionBuilderAPI.createQuestion(
+          token,
+          payload,
+        );
 
         if (files?.length) {
           await QuestionBuilderAPI.uploadFiles(token, qCreated.id, files);
@@ -395,7 +398,9 @@ export function useCreateQuestion() {
 
         return qCreated.id;
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to create question");
+        setError(
+          err instanceof Error ? err.message : "Failed to create question",
+        );
         return null;
       } finally {
         setLoading(false);

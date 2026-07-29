@@ -4,8 +4,13 @@ import { useRef } from "react";
 import { FaCopy, FaDownload, FaFilter } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { TbColumns3Filled } from "react-icons/tb";
-import { useCopyQuestion, useDeleteQuestion, useDownloadQuestions } from "../../../QuestionBuilder";
+
 import { SearchBar } from "../../../../components/SearchBar";
+import {
+  useCopyQuestion,
+  useDeleteQuestion,
+  useDownloadQuestions,
+} from "../../../QuestionBuilder";
 import type { QuestionTableColumn } from "../../config/columns";
 import { useQuestionTableContext } from "../../instance/context";
 import { QuestionTableColumnVisibility } from "./QuestionTableColumnVisibility";
@@ -40,11 +45,10 @@ export default function QuestionTableToolBar({
   const hasSelectedRows = selectedIds.length > 0;
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-
   // Unpack the function
-  const { copyQuestion } = useCopyQuestion()
-  const { deleteQuestion } = useDeleteQuestion()
-  const { downLoadQuestions } = useDownloadQuestions()
+  const { copyQuestion } = useCopyQuestion();
+  const { deleteQuestion } = useDeleteQuestion();
+  const { downLoadQuestions } = useDownloadQuestions();
 
   useEffect(() => {
     if (!showColumns) return;

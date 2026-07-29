@@ -1,5 +1,5 @@
-import type { Dispatch } from "react";
 import { FileText, Globe2, Settings, Tag } from "lucide-react";
+import type { Dispatch } from "react";
 
 import {
   BasicInfoSection,
@@ -127,7 +127,6 @@ export function QuestionMetadataForm({
     if (readOnly || !onChange) return;
     onChange({ ...value, ...partial });
   };
-
 
   return (
     <section className="rounded-xl border border-border bg-surface p-6 text-text shadow-[0_12px_32px_rgba(0,0,0,0.18)]">

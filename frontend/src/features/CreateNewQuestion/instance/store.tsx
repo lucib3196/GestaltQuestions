@@ -1,7 +1,8 @@
 import { createStore } from "zustand";
 import { useStore } from "zustand";
-import type { QuestionCreationState, QuestionCreationStore } from "./types";
+
 import type { QuestionMetadataFormValue } from "../../QuestionMetadata";
+import type { QuestionCreationState, QuestionCreationStore } from "./types";
 
 const defaultQuestionData: QuestionMetadataFormValue = {
   title: "",
@@ -67,9 +68,10 @@ export function createQuestionStore(
       set((state) => ({
         files: state.files?.filter((_, i) => i !== index) ?? [],
       })),
-    clearFiles: () => set(() => ({
-      files: []
-    }))
+    clearFiles: () =>
+      set(() => ({
+        files: [],
+      })),
   }));
 }
 

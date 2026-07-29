@@ -1,3 +1,4 @@
+import type { QuestionCreate } from "../../types/questionTypes";
 import {
   normalizeQuestionStatus,
   normalizeQuestionTypes,
@@ -7,7 +8,6 @@ import {
   type QuestionStatus,
   type QuestionType,
 } from "../../types/questionTypes";
-import type { QuestionCreate } from "../../types/questionTypes";
 
 export type QuestionMetadataFormValue = Required<
   Pick<
@@ -15,7 +15,6 @@ export type QuestionMetadataFormValue = Required<
     "title" | "ai_generated" | "isAdaptive" | "topics" | "qType" | "status"
   >
 >;
-
 
 export const emptyQuestionMetadata: QuestionMetadataFormValue = {
   title: "",
