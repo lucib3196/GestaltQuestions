@@ -2,25 +2,13 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
-
+from app_test.shared.fakes.fake_user_manager import FakeUserManager
 from backend.access_policy.exceptions import AccessPolicyDenied
 from backend.access_policy.service.access_policy import RoleAccessPolicy
 from backend.auth import UserRoles
 
-
 @pytest.fixture
 def fake_user_manager():
-    class FakeUserManager:
-        def __init__(self) -> None:
-            self.user = SimpleNamespace(id=uuid4())
-            self.roles = []
-
-        async def get_user(self, user_id):
-            return self.user
-
-        async def get_user_role(self, user_id):
-            return self.roles
-
     return FakeUserManager()
 
 
@@ -100,7 +88,9 @@ async def test_role_access_policy_denies_missing_user(fake_user_manager) -> None
 
 
 @pytest.mark.asyncio
-async def test_role_access_policy_require_access_raises_when_denied(fake_user_manager) -> None:
+async def test_role_access_policy_require_access_raises_when_denied(
+    fake_user_manager,
+) -> None:
     user_id = uuid4()
     fake_user_manager.roles = [SimpleNamespace(name=UserRoles.STUDENT.value)]
 

@@ -21,7 +21,7 @@ from backend.question.schema import (
     QuestionRead,
     QuestionUpdate,
 )
-from backend.question_control import QuestionControl
+from backend.question_access import QuestionAccessService
 from backend.question_manager.exceptions import (
     DeveloperQuestionServiceError,
     QuestionNotFoundError,
@@ -39,7 +39,7 @@ class DeveloperQuestionService:
         self,
         session: Session,
         question_manager: QuestionManager,
-        question_control: QuestionControl,
+        question_control: QuestionAccessService,
         developer_profiles: DeveloperProfileService,
     ) -> None:
 

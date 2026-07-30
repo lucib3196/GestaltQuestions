@@ -5,7 +5,7 @@ from sqlmodel import Session, select
 
 from backend.access_policy import RoleAccessPolicy
 from backend.auth import UserRoles
-from backend.auth.model import DeveloperProfile
+from backend.developer import DeveloperProfile
 from backend.auth.services.user_manager import UserManager
 from backend.core import logger
 from backend.developer.exceptions import (

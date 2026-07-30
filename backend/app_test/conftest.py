@@ -2,7 +2,7 @@ import contextlib
 import os
 from collections.abc import Generator
 from typing import Any
-
+from backend.chat.model import Message, Thread # noqa: F401
 import firebase_admin
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
