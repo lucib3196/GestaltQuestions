@@ -2,8 +2,6 @@ from types import SimpleNamespace
 
 import pytest
 
-from app_test.shared.factories.question_factory import make_question
-from app_test.shared.factories.user_factory import make_developer_profile, make_user
 from app_test.shared.fakes.fake_user_manager import FakeUserManager
 from backend.access_policy import RoleAccessPolicy
 from backend.auth import UserRoles
@@ -55,7 +53,7 @@ async def test_question_owner_has_access(
     fake_user_manager,
     owned_question,
     access_method,
-):
+) -> None:
     fake_user_manager.user = owned_question.owner
     fake_user_manager.roles = [SimpleNamespace(name=UserRoles.DEVELOPER.value)]
 
@@ -86,7 +84,7 @@ async def test_question_requester_without_ownership_has_no_access(
     owned_question,
     access_method,
     expected_reason,
-):
+) -> None:
     fake_user_manager.user = owned_question.requester
     fake_user_manager.roles = [SimpleNamespace(name=UserRoles.DEVELOPER.value)]
 

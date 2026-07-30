@@ -14,12 +14,11 @@ from backend.api.deps import (
     get_storage_type,
     get_user_mng,
 )
-from backend.auth import InstitutionDB, RoleDB
+from backend.auth import InstitutionDB, RoleDB, UserManager
 from backend.core import get_settings
 from backend.developer.services import (
     DeveloperProfileService,
 )
-from backend.auth import UserManager
 from backend.storage import FbStorage, LocalStorage, Storage
 from src.main import get_application
 

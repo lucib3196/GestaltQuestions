@@ -7,7 +7,7 @@ import pytest
 from backend.auth import (
     UserRoles,
 )
-from backend.developer import DeveloperProfileService, DeveloperProfile
+from backend.developer import DeveloperProfile, DeveloperProfileService
 
 
 @pytest.fixture
@@ -27,9 +27,7 @@ def mocked_storage():
 
 
 @pytest.fixture
-def developer_profile_service(
-    db_session, mocked_user_manager, mocked_storage
-):
+def developer_profile_service(db_session, mocked_user_manager, mocked_storage):
     return DeveloperProfileService(
         session=db_session,
         storage=mocked_storage,

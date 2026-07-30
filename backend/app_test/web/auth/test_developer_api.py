@@ -11,6 +11,7 @@ from backend.auth import (
 )
 from backend.developer.model import DeveloperProfile
 
+
 def test_add_developer_role_then_set_profile(
     api_client, user_manager, db_session
 ) -> None:

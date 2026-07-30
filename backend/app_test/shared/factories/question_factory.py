@@ -1,6 +1,7 @@
-from backend.question import Question
-from backend.developer import DeveloperProfile
 import pytest
+
+from backend.developer import DeveloperProfile
+from backend.question import Question
 
 
 @pytest.fixture

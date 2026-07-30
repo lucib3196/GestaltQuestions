@@ -3,9 +3,9 @@ from sqlmodel import Session, select
 
 from backend.auth.model import User
 from backend.auth.services.institution import Institution
+from backend.developer import DeveloperProfile
 from backend.question.models import Question
 from backend.question.schema import QuestionTableRow
-from backend.developer import DeveloperProfile
 
 
 class QuestionQueryService:

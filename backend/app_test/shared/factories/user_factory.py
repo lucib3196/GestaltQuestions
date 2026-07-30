@@ -1,7 +1,10 @@
-import pytest
-from backend.auth import User
 from uuid import uuid4
+
+import pytest
+
+from backend.auth import User
 from backend.developer import DeveloperProfile
+
 
 @pytest.fixture
 def make_user(db_session):
@@ -19,6 +22,7 @@ def make_user(db_session):
         return user
 
     return make
+
 
 @pytest.fixture
 def make_developer_profile(db_session):

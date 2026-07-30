@@ -88,6 +88,7 @@ class DeveloperQuestionService:
 
     async def copy_question(self, qid: ID, user_id: ID):
         """Create a copy question under the developer profile and assign ownership."""
+        await self._question_control.require_question_view_access(user_id, qid)
         profile = await self._developer_profiles.get_or_create_profile(user_id)
         assert profile.storage_path
 
@@ -136,7 +137,7 @@ class DeveloperQuestionService:
         self, user_id: ID, qid: ID, method: Literal["full", "simple"] = "simple"
     ) -> Question | QuestionRead:
         """Retrieve a question after checking developer question control."""
-        await self._question_control.can_view_question(user_id, qid)
+        await self._question_control.require_question_view_access(user_id, qid)
         if method == "full":
             q = await self._question_manager.qdb.get_question_data(qid)
         else:
@@ -147,12 +148,12 @@ class DeveloperQuestionService:
 
     async def update_question(self, user_id: ID, qid: ID, update: QuestionUpdate):
         """Update question metadata after checking developer question control."""
-        await self._question_control.can_edit_question(user_id, qid)
+        await self._question_control.require_question_edit_access(user_id, qid)
         return await self._question_manager.update_question_meta(qid, update)
 
     async def delete_question(self, user_id: ID, qid: ID) -> bool:
         """Delete a question and its storage after checking developer question control."""
-        await self._question_control.can_delete_question(user_id, qid)
+        await self._question_control.require_question_delete_access(user_id, qid)
         return await self._question_manager.delete_question(qid)
 
     # Filtering
@@ -198,29 +199,29 @@ class DeveloperQuestionService:
 
     async def get_question_files(self, user_id: ID, qid: ID) -> Sequence[str]:
         """List stored files for a controlled question."""
-        await self._question_control.can_view_question(user_id, qid)
+        await self._question_control.require_question_view_access(user_id, qid)
         return await self._question_manager.get_question_files(qid)
 
     async def get_question_filedata(self, user_id: ID, qid: ID) -> Sequence[FileData]:
-        await self._question_control.can_view_question(user_id, qid)
+        await self._question_control.require_question_view_access(user_id, qid)
         return await self._question_manager.get_question_filedata(qid)
 
     async def read_file(self, user_id: ID, qid: ID, filename: str) -> bytes | None:
         """Read a stored question file after checking developer question control."""
-        await self._question_control.can_view_question(user_id, qid)
+        await self._question_control.require_question_view_access(user_id, qid)
         return await self._question_manager.read_file(qid, filename)
 
     async def write_file(self, user_id: ID, qid: ID, filename: str, data: Any):
         """Write or replace a question file after checking developer question control."""
-        await self._question_control.can_edit_question(user_id, qid)
+        await self._question_control.require_question_edit_access(user_id, qid)
         return await self._question_manager.write_file(qid, filename, data)
 
     async def delete_file(self, user_id: ID, qid: ID, filename: str):
         """Delete a question file after checking developer question control."""
-        await self._question_control.can_delete_question(user_id, qid)
+        await self._question_control.require_question_edit_access(user_id, qid)
         return await self._question_manager.delete_file(qid, filename)
 
     async def upload_files(self, user_id: ID, qid: ID, files: list[FileData]):
         """Upload files to a question after checking developer question control."""
-        await self._question_control.can_edit_question(user_id, qid)
+        await self._question_control.require_question_edit_access(user_id, qid)
         return await self._question_manager.upload_files(qid, files)

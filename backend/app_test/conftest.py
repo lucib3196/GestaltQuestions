@@ -2,7 +2,7 @@ import contextlib
 import os
 from collections.abc import Generator
 from typing import Any
-from backend.chat.model import Message, Thread # noqa: F401
+
 import firebase_admin
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
@@ -15,6 +15,7 @@ from backend.auth import (
     UserRoles,
     ValidInstitutions,
 )
+from backend.chat.model import Message, Thread  # noqa: F401
 from backend.core import initialize_firebase_app
 from backend.core.logging import (
     in_test_ctx,
