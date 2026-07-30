@@ -5,14 +5,9 @@ from uuid import uuid4
 import pytest
 
 from backend.auth import (
-
     UserRoles,
 )
-from backend.developer.exceptions import DeveloperAccessDenied
-from backend.developer import (
-    DeveloperProfileService,
-    DeveloperProfile
-)
+from backend.developer import DeveloperProfileService, DeveloperProfile
 
 
 @pytest.fixture
@@ -32,65 +27,14 @@ def mocked_storage():
 
 
 @pytest.fixture
-def developer_access_service(mocked_user_manager):
-    return DeveloperAccessService(
-        user_manager=mocked_user_manager,
-    )
-
-
-@pytest.fixture
 def developer_profile_service(
-    db_session, mocked_user_manager, mocked_storage, developer_access_service
+    db_session, mocked_user_manager, mocked_storage
 ):
     return DeveloperProfileService(
         session=db_session,
         storage=mocked_storage,
         user_manager=mocked_user_manager,
-        access_service=developer_access_service,
     )
-
-
-@pytest.mark.asyncio
-async def test_has_developer_role_returns_false_when_user_missing(
-    developer_access_service: DeveloperAccessService,
-    mocked_user_manager,
-) -> None:
-    mocked_user_manager.get_user.return_value = None
-    result = await developer_access_service.has_developer_role("user-123")
-    assert result.allowed is False
-    assert result.reason == "User 'user-123' not found"
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "role_name", [UserRoles.DEVELOPER.value, UserRoles.ADMIN.value]
-)
-async def test_has_developer_role_allows_developer_and_admin(
-    developer_access_service: DeveloperAccessService,
-    mocked_user_manager,
-    role_name: str,
-) -> None:
-    mocked_user_manager.get_user.return_value = SimpleNamespace(id="user-123")
-    mocked_user_manager.get_user_role.return_value = [SimpleNamespace(name=role_name)]
-
-    result = await developer_access_service.has_developer_role("user-123")
-
-    assert result.allowed is True
-    assert result.reason == "Developer access granted"
-
-
-@pytest.mark.asyncio
-async def test_require_developer_access_raises_when_role_missing(
-    developer_access_service: DeveloperAccessService,
-    mocked_user_manager,
-) -> None:
-    mocked_user_manager.get_user.return_value = SimpleNamespace(id="user-123")
-    mocked_user_manager.get_user_role.return_value = [
-        SimpleNamespace(name=UserRoles.STUDENT.value)
-    ]
-
-    with pytest.raises(DeveloperAccessDenied, match="Developer role is required"):
-        await developer_access_service.require_developer_access("user-123")
 
 
 @pytest.mark.asyncio

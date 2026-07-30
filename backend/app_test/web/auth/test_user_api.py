@@ -136,6 +136,7 @@ def test_get_user_institution_by_id_returns_user_and_institution(
 ) -> None:
     user_payload["institution"] = ValidInstitutions.CPP.value
     create_response = api_client.post("/users/", json=user_payload)
+    print("Response", create_response.json())
     assert create_response.status_code == 200
 
     user = _get_user_by_email(user_manager, user_payload["user"]["email"])
