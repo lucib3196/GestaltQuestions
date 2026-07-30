@@ -4,18 +4,16 @@ from collections.abc import Sequence
 from typing import Any, Literal
 
 from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import Session, select
+from sqlmodel import Session
 
+from backend.core import logger
 from backend.developer.exceptions import (
     DeveloperAccessDenied,
     DeveloperProfileError,
-    DeveloperProfileNotSet,
 )
 from backend.developer.services import (
     DeveloperProfileService,
-    DeveloperProfileSetupService,
 )
-from backend.core import logger
 from backend.question.models import Question
 from backend.question.schema import (
     QuestionCreate,
@@ -23,15 +21,13 @@ from backend.question.schema import (
     QuestionRead,
     QuestionUpdate,
 )
+from backend.question_control import QuestionControl
 from backend.question_manager.exceptions import (
-    DeveloperQuestionControlError,
     DeveloperQuestionServiceError,
     QuestionNotFoundError,
 )
-from backend.question_manager.schemas import AccessDecision
 from backend.shared import ID
 from backend.storage import FileData
-from backend.utils import convert_uuid
 
 from .manager import QuestionManager
 
@@ -42,74 +38,15 @@ class DeveloperQuestionService:
     def __init__(
         self,
         session: Session,
-        developer_profiles: DeveloperProfileService,
-        developer_profile_setup: DeveloperProfileSetupService,
         question_manager: QuestionManager,
+        question_control: QuestionControl,
+        developer_profiles: DeveloperProfileService,
     ) -> None:
-        self._developer_profiles = developer_profiles
-        self._developer_profile_setup = developer_profile_setup
+
         self._session = session
         self._question_manager = question_manager
-
-    async def _get_or_create_profile(self, user_id: ID):
-        try:
-            profile = await self._developer_profiles.get_developer_data(user_id)
-        except DeveloperProfileNotSet:
-            logger.info("Creating developer profile for user %s", user_id)
-            profile = await self._developer_profile_setup.set_developer_data(user_id)
-
-        if not profile.storage_path:
-            logger.info(
-                "Refreshing developer profile storage path for user %s",
-                user_id,
-            )
-            profile = await self._developer_profile_setup.set_developer_data(user_id)
-
-        if not profile.storage_path:
-            raise DeveloperProfileError(
-                "create question",
-                str(user_id),
-                f"Profile '{profile.id}' has no storage path",
-            )
-
-        return profile
-
-    async def has_question_control(self, user_id: ID, qid: ID) -> AccessDecision:
-        """Return whether the developer profile has control over a question."""
-        logger.debug(
-            "Checking question control for user %s on question %s", user_id, qid
-        )
-        profile = await self._developer_profiles.get_developer_data(user_id)
-        try:
-            stmt = select(Question).where(
-                Question.id == convert_uuid(qid),
-                Question.created_by_id == convert_uuid(profile.id),
-            )
-            q = self._session.exec(stmt).first()
-            if q is None:
-                logger.warning(
-                    "Question control denied for user %s on question %s", user_id, qid
-                )
-                return AccessDecision(
-                    allowed=False,
-                    reason="User does not have access to modify the question",
-                )
-            return AccessDecision(allowed=True, reason="User has control")
-        except SQLAlchemyError as e:
-            logger.warning(
-                "Database error checking question control for user %s on question %s",
-                user_id,
-                qid,
-            )
-            raise DeveloperQuestionControlError(str(user_id), str(qid), str(e)) from e
-
-    async def require_question_control(self, user_id: ID, qid: ID) -> None:
-        """Raise when the user does not control the requested question."""
-        access = await self.has_question_control(user_id, qid)
-        if not access.allowed:
-            raise DeveloperAccessDenied(
-                access.reason, user_id=str(user_id), question_id=str(qid)
-            )
+        self._developer_profiles = developer_profiles
+        self._question_control = question_control
 
     # ------------------------------------------------------------------
     # Question Lifecycle
@@ -122,7 +59,7 @@ class DeveloperQuestionService:
         files: list[FileData] | None = None,
     ) -> Question:
         """Create a question under the developer profile and assign ownership."""
-        profile = await self._get_or_create_profile(user_id)
+        profile = await self._developer_profiles.get_or_create_profile(user_id)
         assert profile.storage_path
         question = await self._question_manager.create_question(
             qdata=payload,
@@ -147,7 +84,7 @@ class DeveloperQuestionService:
 
     async def copy_question(self, qid: ID, user_id: ID):
         """Create a copy question under the developer profile and assign ownership."""
-        profile = await self._get_or_create_profile(user_id)
+        profile = await self._developer_profiles.get_or_create_profile(user_id)
         assert profile.storage_path
 
         question = await self._question_manager.copy_question(qid, profile.storage_path)
@@ -195,7 +132,7 @@ class DeveloperQuestionService:
         self, user_id: ID, qid: ID, method: Literal["full", "simple"] = "simple"
     ) -> Question | QuestionRead:
         """Retrieve a question after checking developer question control."""
-        await self.has_question_control(user_id, qid)
+        await self._question_control.has_question_control(user_id, qid)
         if method == "full":
             q = await self._question_manager.qdb.get_question_data(qid)
         else:
@@ -206,12 +143,12 @@ class DeveloperQuestionService:
 
     async def update_question(self, user_id: ID, qid: ID, update: QuestionUpdate):
         """Update question metadata after checking developer question control."""
-        await self.has_question_control(user_id, qid)
+        await self._question_control.has_question_control(user_id, qid)
         return await self._question_manager.update_question_meta(qid, update)
 
     async def delete_question(self, user_id: ID, qid: ID) -> bool:
         """Delete a question and its storage after checking developer question control."""
-        await self.has_question_control(user_id, qid)
+        await self._question_control.has_question_control(user_id, qid)
         return await self._question_manager.delete_question(qid)
 
     # Filtering
@@ -257,29 +194,29 @@ class DeveloperQuestionService:
 
     async def get_question_files(self, user_id: ID, qid: ID) -> Sequence[str]:
         """List stored files for a controlled question."""
-        await self.has_question_control(user_id, qid)
+        await self._question_control.has_question_control(user_id, qid)
         return await self._question_manager.get_question_files(qid)
 
     async def get_question_filedata(self, user_id: ID, qid: ID) -> Sequence[FileData]:
-        await self.has_question_control(user_id, qid)
+        await self._question_control.has_question_control(user_id, qid)
         return await self._question_manager.get_question_filedata(qid)
 
     async def read_file(self, user_id: ID, qid: ID, filename: str) -> bytes | None:
         """Read a stored question file after checking developer question control."""
-        await self.has_question_control(user_id, qid)
+        await self._question_control.has_question_control(user_id, qid)
         return await self._question_manager.read_file(qid, filename)
 
     async def write_file(self, user_id: ID, qid: ID, filename: str, data: Any):
         """Write or replace a question file after checking developer question control."""
-        await self.has_question_control(user_id, qid)
+        await self._question_control.has_question_control(user_id, qid)
         return await self._question_manager.write_file(qid, filename, data)
 
     async def delete_file(self, user_id: ID, qid: ID, filename: str):
         """Delete a question file after checking developer question control."""
-        await self.has_question_control(user_id, qid)
+        await self._question_control.has_question_control(user_id, qid)
         return await self._question_manager.delete_file(qid, filename)
 
     async def upload_files(self, user_id: ID, qid: ID, files: list[FileData]):
         """Upload files to a question after checking developer question control."""
-        await self.has_question_control(user_id, qid)
+        await self._question_control.has_question_control(user_id, qid)
         return await self._question_manager.upload_files(qid, files)

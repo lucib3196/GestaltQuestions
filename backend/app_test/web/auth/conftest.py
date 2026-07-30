@@ -9,7 +9,6 @@ from fastapi.testclient import TestClient
 from app_test.conftest import storage_params
 from backend.api.deps import (
     get_developer_profile_service,
-    get_developer_profile_setup_service,
     get_developer_role_access,
     get_session,
     get_storage_manager,
@@ -21,7 +20,6 @@ from backend.core import get_settings
 from backend.developer.services import (
     DeveloperAccessService,
     DeveloperProfileService,
-    DeveloperProfileSetupService,
 )
 from backend.storage import FbStorage, LocalStorage, Storage
 from src.main import get_application
@@ -38,7 +36,7 @@ async def on_startup_test(app: FastAPI):
 def raw_storage(request: pytest.FixtureRequest) -> Generator[Storage]:
     if request.param == "cloud":
         request.getfixturevalue("firebase_app_for_tests")
-        storage = FbStorage(settings.STORAGE_BUCKET)
+        storage = FbStorage(settings.STORAGE_BUCKET)  # type: ignore
         storage._hard_delete()
         yield storage
         storage._hard_delete()
@@ -69,12 +67,6 @@ def api_client(db_session, user_manager, raw_storage):
     def override_get_developer_profile_service():
         return DeveloperProfileService(
             session=db_session,
-            access_service=override_get_developer_role_access(),
-        )
-
-    def override_get_developer_profile_setup_service():
-        return DeveloperProfileSetupService(
-            session=db_session,
             storage=raw_storage,
             user_manager=user_manager,
             access_service=override_get_developer_role_access(),
@@ -93,9 +85,6 @@ def api_client(db_session, user_manager, raw_storage):
     )
     app.dependency_overrides[get_developer_profile_service] = (
         override_get_developer_profile_service
-    )
-    app.dependency_overrides[get_developer_profile_setup_service] = (
-        override_get_developer_profile_setup_service
     )
     app.dependency_overrides[get_storage_manager] = override_get_storage
     app.dependency_overrides[get_storage_type] = override_get_storage_type

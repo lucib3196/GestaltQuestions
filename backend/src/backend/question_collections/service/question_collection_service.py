@@ -1,17 +1,19 @@
-from backend.question_collections.model import QuestionCollection
-from sqlmodel import Session
-from typing import overload
+
 from sqlalchemy.exc import SQLAlchemyError
-from backend.question_collections.schema import QuestionCollectionCreate
-from backend.utils import convert_uuid
+from sqlmodel import Session
+
 from backend.auth.model import DeveloperProfile
-from backend.shared import ID
+from backend.developer.services import DeveloperProfileService
 from backend.question import Question
+from backend.question_collections.model import QuestionCollection
+from backend.question_collections.schema import QuestionCollectionCreate
+from backend.shared import ID
+from backend.utils import convert_uuid
 
 
 class QuestionCollectionService:
-
-    def __init__(self, session: Session):
+    def __init__(self, session: Session, dev_profile: DeveloperProfileService) -> None:
+        self._dev_profile = dev_profile
         self._session = session
 
     def create(self, data: QuestionCollectionCreate) -> QuestionCollection:
@@ -35,13 +37,13 @@ class QuestionCollectionService:
                 f"[QuestionCollectionService] Failed to create collection {e}"
             )
 
-    def delete(self):
+    def delete(self) -> None:
         pass
 
-    def update(self):
+    def update(self) -> None:
         pass
 
-    def add_question(self, collection_id: ID, qid: ID):
+    def add_question(self, collection_id: ID, qid: ID) -> None:
         pass
 
     def _validate_question(self, qid: ID, owner_id: ID) -> bool:
@@ -75,5 +77,5 @@ class QuestionCollectionService:
                 raise ValueError("Parent collection does not belong to this developer")
 
             return parent
-        else:
-            parent = None
+        parent = None
+        return None

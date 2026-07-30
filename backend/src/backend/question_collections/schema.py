@@ -1,7 +1,6 @@
-from pydantic import BaseModel
 from uuid import UUID
-from .model import QuestionCollection
-from typing import Optional
+
+from pydantic import BaseModel
 
 
 class QuestionCollectionCreate(BaseModel):

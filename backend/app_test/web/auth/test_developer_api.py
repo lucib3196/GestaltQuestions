@@ -12,7 +12,7 @@ from backend.auth import (
 )
 
 
-def test_add_developer_role_then_set_profile(api_client, user_manager, db_session):
+def test_add_developer_role_then_set_profile(api_client, user_manager, db_session) -> None:
     unique = uuid4().hex
     user = asyncio.run(
         user_manager.udb.create_user(

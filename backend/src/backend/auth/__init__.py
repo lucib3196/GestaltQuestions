@@ -53,7 +53,6 @@ from backend.auth.schemas import (
     UserUpdate,
     ValidInstitutions,
 )
-
 from backend.auth.services.institution import InstitutionDB
 from backend.auth.services.role import RoleDB
 from backend.auth.services.user import UserDB

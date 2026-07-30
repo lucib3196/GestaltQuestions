@@ -3,15 +3,15 @@ from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 import pytest
+
+from backend.auth import (
+    DeveloperProfile,
+    UserRoles,
+)
 from backend.developer.exceptions import DeveloperAccessDenied
 from backend.developer.services import (
     DeveloperAccessService,
     DeveloperProfileService,
-    DeveloperProfileSetupService,
-)
-from backend.auth import (
-    DeveloperProfile,
-    UserRoles,
 )
 
 
@@ -39,20 +39,12 @@ def developer_access_service(mocked_user_manager):
 
 
 @pytest.fixture
-def developer_profile_service(db_session, developer_access_service):
-    return DeveloperProfileService(
-        session=db_session,
-        access_service=developer_access_service,
-    )
-
-
-@pytest.fixture
-def developer_profile_setup_service(
+def developer_profile_service(
     db_session, mocked_user_manager, mocked_storage, developer_access_service
 ):
-    return DeveloperProfileSetupService(
-        storage=mocked_storage,
+    return DeveloperProfileService(
         session=db_session,
+        storage=mocked_storage,
         user_manager=mocked_user_manager,
         access_service=developer_access_service,
     )
@@ -103,34 +95,34 @@ async def test_require_developer_access_raises_when_role_missing(
 
 @pytest.mark.asyncio
 async def test_generate_storage_path_uses_institution_slug(
-    developer_profile_setup_service: DeveloperProfileSetupService,
+    developer_profile_service: DeveloperProfileService,
     mocked_user_manager,
 ) -> None:
     mocked_user_manager.get_user.return_value = SimpleNamespace(id="abc-123")
     mocked_user_manager.get_user_inst.return_value = SimpleNamespace(
         name="Cool School @ West"
     )
-    path = await developer_profile_setup_service.generate_storage_path("abc-123")
+    path = await developer_profile_service.generate_storage_path("abc-123")
 
     assert path == "cool_school_west/developers/abc-123/"
 
 
 @pytest.mark.asyncio
 async def test_generate_storage_path_falls_back_when_institution_missing(
-    developer_profile_setup_service: DeveloperProfileSetupService,
+    developer_profile_service: DeveloperProfileService,
     mocked_user_manager,
 ) -> None:
     mocked_user_manager.get_user.return_value = SimpleNamespace(id="abc-123")
     mocked_user_manager.get_user_inst.return_value = None
 
-    path = await developer_profile_setup_service.generate_storage_path("abc-123")
+    path = await developer_profile_service.generate_storage_path("abc-123")
 
     assert path == "untitled_institution/developers/abc-123/"
 
 
 @pytest.mark.asyncio
 async def test_set_developer_data_creates_profile_with_storage_path(
-    developer_profile_setup_service: DeveloperProfileSetupService,
+    developer_profile_service: DeveloperProfileService,
     mocked_user_manager,
     db_session,
 ) -> None:
@@ -141,7 +133,7 @@ async def test_set_developer_data_creates_profile_with_storage_path(
     ]
     mocked_user_manager.get_user_inst.return_value = SimpleNamespace(name="CPP")
 
-    profile = await developer_profile_setup_service.set_developer_data(user_id)
+    profile = await developer_profile_service.set_developer_data(user_id)
 
     assert isinstance(profile, DeveloperProfile)
     assert str(profile.user_id) == str(user_id)

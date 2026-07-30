@@ -54,7 +54,7 @@ def _get_user_by_email(user_manager, email: str):
 )
 def test_create_user_with_role_and_institution(
     api_client, user_manager, make_user_payload, role, institution
-):
+) -> None:
     user_payload = make_user_payload(role=role, institution=institution)
 
     response = api_client.post("/users/", json=user_payload)
@@ -82,7 +82,7 @@ def test_create_user_with_role_and_institution(
 @pytest.mark.usefixtures("firebase_app_for_tests")
 def test_create_user_defaults_to_student_role_when_role_is_omitted(
     api_client, user_manager, make_user_payload
-):
+) -> None:
     user_payload = make_user_payload(include_role=False)
 
     response = api_client.post("/users/", json=user_payload)
@@ -102,7 +102,7 @@ def test_create_user_defaults_to_student_role_when_role_is_omitted(
 @pytest.mark.usefixtures("firebase_app_for_tests")
 def test_get_user_roles_by_id_returns_assigned_roles(
     api_client, user_manager, user_payload
-):
+) -> None:
     create_response = api_client.post("/users/", json=user_payload)
     assert create_response.status_code == 200
 
@@ -133,7 +133,7 @@ def test_get_user_roles_by_id_returns_assigned_roles(
 @pytest.mark.usefixtures("firebase_app_for_tests")
 def test_get_user_institution_by_id_returns_user_and_institution(
     api_client, user_manager, user_payload
-):
+) -> None:
     user_payload["institution"] = ValidInstitutions.CPP.value
     create_response = api_client.post("/users/", json=user_payload)
     assert create_response.status_code == 200
@@ -155,7 +155,7 @@ def test_get_user_institution_by_id_returns_user_and_institution(
 
 
 @pytest.mark.usefixtures("firebase_app_for_tests")
-def test_add_user_role_response_model(api_client, user_manager, user_payload):
+def test_add_user_role_response_model(api_client, user_manager, user_payload) -> None:
     create_response = api_client.post("/users/", json=user_payload)
     assert create_response.status_code == 200
 
@@ -178,7 +178,7 @@ def test_add_user_role_response_model(api_client, user_manager, user_payload):
     auth.delete_user(str(user.id))
 
 
-def test_get_user_roles_not_found_response(api_client):
+def test_get_user_roles_not_found_response(api_client) -> None:
     response = api_client.get(f"/users/{uuid4()}/roles")
 
     assert response.status_code == 404

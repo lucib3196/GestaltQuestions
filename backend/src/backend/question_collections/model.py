@@ -1,11 +1,11 @@
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Optional
-from datetime import datetime, timezone
-from uuid import UUID
+from uuid import UUID, uuid4
+
 from sqlmodel import Field, Relationship, SQLModel
-from uuid import uuid4
 
 if TYPE_CHECKING:
-    from backend.question.models import Question
+    pass
 
 
 class QuestionCollection(SQLModel, table=True):
@@ -31,12 +31,12 @@ class QuestionCollection(SQLModel, table=True):
         sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
 
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class QuestionCollectionLink(SQLModel, table=True):
-    __tablename__= "question_collection_link"  # type: ignore
+    __tablename__ = "question_collection_link"  # type: ignore
 
     question_id: UUID | None = Field(
         default=None,

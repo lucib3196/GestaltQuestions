@@ -4,15 +4,13 @@ from starlette import status
 from backend.api.deps import (
     CurrentUser,
     DeveloperProfileDependency,
-    DeveloperProfileSetupDependency,
     DeveloperRoleAccess,
     UserManagerDependeny,
 )
 from backend.auth import UserRead, UserRoles
 from backend.core import logger
-from backend.shared import ID
-
 from backend.developer.exceptions import DeveloperProfileNotSet
+from backend.shared import ID
 
 router = APIRouter(prefix="/users/dev", tags=["users", "developer"])
 
@@ -32,7 +30,6 @@ async def check_status(
 @router.get("/")
 async def get_developer_profile(
     developer_profiles: DeveloperProfileDependency,
-    developer_profile_setup: DeveloperProfileSetupDependency,
     current_user: CurrentUser,
 ):
     try:
@@ -41,7 +38,7 @@ async def get_developer_profile(
         logger.info(
             f"Current user {current_user} does not have profile set attempting to resolve"
         )
-        return await developer_profile_setup.set_developer_data(current_user)
+        return await developer_profiles.set_developer_data(current_user)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
 
@@ -64,7 +61,6 @@ async def set_developer_role(
 @router.post("/{user_id}")
 async def set_developer_profile(
     developer_profiles: DeveloperProfileDependency,
-    developer_profile_setup: DeveloperProfileSetupDependency,
     user_manager: UserManagerDependeny,
     user_id: ID,
 ):
@@ -73,11 +69,11 @@ async def set_developer_profile(
         profile = await developer_profiles.get_developer_data(user_id)
         if profile:
             return profile
-        return await developer_profile_setup.set_developer_data(user_id)
+        return await developer_profiles.set_developer_data(user_id)
     except DeveloperProfileNotSet:
         logger.info(
             f"Current user {user_id} does not have profile set attempting to resolve"
         )
-        return await developer_profile_setup.set_developer_data(user_id)
+        return await developer_profiles.set_developer_data(user_id)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e

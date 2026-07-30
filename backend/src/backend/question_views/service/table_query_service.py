@@ -18,7 +18,7 @@ def _enum_names(value: StrEnum | list[StrEnum] | None) -> list[str]:
 
 
 class TableQueryService:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         self._session = session
 
     def search(

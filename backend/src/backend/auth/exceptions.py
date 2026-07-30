@@ -184,5 +184,3 @@ class InstitutionSeedError(InstitutionError):
     """Raised when default institutions cannot be seeded."""
 
     default_message = "Failed to seed institutions"
-
-

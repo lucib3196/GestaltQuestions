@@ -6,7 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from firebase_admin.auth import verify_id_token
 from sqlmodel import Session
 from starlette import status
-from backend.developer.services import DeveloperAccessService
+
 from backend.auth import (
     UserManager,
 )
@@ -19,9 +19,9 @@ from backend.developer.services import (
 )
 from backend.developer.services import (
     DeveloperProfileService,
-    DeveloperProfileSetupService,
 )
 from backend.question import QuestionDB, QuestionQueryService
+from backend.question_control import QuestionControl
 from backend.question_manager import DeveloperQuestionService, QuestionManager
 from backend.question_runtime.service.question_runtime import QuestionRunTimeService
 from backend.question_runtime.service.runtime_db import QuestionRuntimeDB
@@ -177,9 +177,16 @@ DeveloperRoleAccess = Annotated[
 
 def get_developer_profile_service(
     session: SessionDep,
+    storage: StorageDependency,
+    user_manager: UserManagerDependeny,
     access: DeveloperRoleAccess,
 ) -> DeveloperProfileService:
-    return DeveloperProfileService(session=session, access_service=access)
+    return DeveloperProfileService(
+        session=session,
+        storage=storage,
+        user_manager=user_manager,
+        access_service=access,
+    )
 
 
 DeveloperProfileDependency = Annotated[
@@ -188,24 +195,14 @@ DeveloperProfileDependency = Annotated[
 ]
 
 
-def get_developer_profile_setup_service(
+def get_question_control(
     session: SessionDep,
-    storage: StorageDependency,
-    user_manager: UserManagerDependeny,
-    access: DeveloperRoleAccess,
-) -> DeveloperProfileSetupService:
-    return DeveloperProfileSetupService(
-        session=session,
-        storage=storage,
-        user_manager=user_manager,
-        access_service=access,
-    )
+    developer_profiles: DeveloperProfileDependency,
+) -> QuestionControl:
+    return QuestionControl(session=session, developer_profiles=developer_profiles)
 
 
-DeveloperProfileSetupDependency = Annotated[
-    DeveloperProfileSetupService,
-    Depends(get_developer_profile_setup_service),
-]
+QuestionControlDependency = Annotated[QuestionControl, Depends(get_question_control)]
 
 
 # Question manager dependencies
@@ -213,13 +210,13 @@ def get_dev_question_manager(
     session: SessionDep,
     qm: QuestionManagerDependency,
     developer_profiles: DeveloperProfileDependency,
-    developer_profile_setup: DeveloperProfileSetupDependency,
+    question_control: QuestionControlDependency,
 ) -> DeveloperQuestionService:
 
     return DeveloperQuestionService(
         session=session,
         developer_profiles=developer_profiles,
-        developer_profile_setup=developer_profile_setup,
+        question_control=question_control,
         question_manager=qm,
     )
 

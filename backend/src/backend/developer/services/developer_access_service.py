@@ -1,17 +1,16 @@
-from dataclasses import dataclass
 
 from backend.auth.schemas import UserRoles
 from backend.auth.services.user_manager import UserManager
 from backend.core import logger
 from backend.developer.exceptions import DeveloperAccessDenied
-from backend.shared import ID
 from backend.developer.schema import AccessDecision
+from backend.shared import ID
 
 
 class DeveloperAccessService:
     """Owns developer/admin role checks only."""
 
-    def __init__(self, user_manager: UserManager):
+    def __init__(self, user_manager: UserManager) -> None:
         self._user_manager = user_manager
 
     async def has_developer_role(self, user_id: ID) -> AccessDecision:
