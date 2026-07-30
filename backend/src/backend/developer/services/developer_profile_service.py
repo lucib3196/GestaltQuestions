@@ -3,6 +3,8 @@ import re
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
+from backend.access_policy import RoleAccessPolicy
+from backend.auth import UserRoles
 from backend.auth.model import DeveloperProfile
 from backend.auth.services.user_manager import UserManager
 from backend.core import logger
@@ -16,8 +18,6 @@ from backend.shared import ID
 from backend.storage.services import Storage
 from backend.utils import convert_uuid
 
-from .developer_access_service import DeveloperAccessService
-
 
 class DeveloperProfileService:
     """Owns developer profile lookup and setup."""
@@ -27,16 +27,19 @@ class DeveloperProfileService:
         session: Session,
         storage: Storage,
         user_manager: UserManager,
-        access_service: DeveloperAccessService,
     ) -> None:
         self._session = session
         self._storage = storage
         self._user_manager = user_manager
-        self._access_service = access_service
+        self._policy = RoleAccessPolicy(
+            self._user_manager,
+            allowed_roles=[UserRoles.DEVELOPER, UserRoles.STUDENT],
+            access_name="Developer",
+        )
 
     async def get_developer_data(self, user_id: ID) -> DeveloperProfile:
         """Fetch the developer profile for a user after validating access."""
-        await self._access_service.require_developer_access(user_id)
+        await self._policy.require_access(user_id)
         try:
             logger.debug("Fetching developer profile for user %s", user_id)
             profile = self._session.exec(
@@ -60,7 +63,7 @@ class DeveloperProfileService:
     async def set_developer_data(self, user_id: ID) -> DeveloperProfile:
         """Create or refresh the developer profile and its storage path."""
         try:
-            await self._access_service.require_developer_access(user_id)
+            await self._policy.require_access(user_id)
             storage_path = await self.generate_storage_path(user_id)
             logger.debug("Setting developer profile for user %s", user_id)
 

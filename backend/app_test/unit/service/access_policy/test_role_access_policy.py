@@ -1,15 +1,17 @@
-import asyncio
-from backend.access_policy.service.access_policy import RoleAccessPolicy, AccessDecision
-from uuid import uuid4
-import pytest
 from types import SimpleNamespace
+from uuid import uuid4
+
+import pytest
+
+from backend.access_policy.exceptions import AccessPolicyDenied
+from backend.access_policy.service.access_policy import RoleAccessPolicy
 from backend.auth import UserRoles
 
 
 @pytest.fixture
 def fake_user_manager():
     class FakeUserManager:
-        def __init__(self):
+        def __init__(self) -> None:
             self.user = SimpleNamespace(id=uuid4())
             self.roles = []
 
@@ -64,10 +66,9 @@ async def test_role_access_policy_evaluates_roles(
     allowed_roles,
     access_name,
     expected_allowed,
-):
+) -> None:
     fake_user_manager.roles = [
-        SimpleNamespace(name=role_name)
-        for role_name in user_roles
+        SimpleNamespace(name=role_name) for role_name in user_roles
     ]
 
     policy = RoleAccessPolicy(
@@ -79,9 +80,10 @@ async def test_role_access_policy_evaluates_roles(
     decision = await policy.evaluate(uuid4())
 
     assert decision.allowed is expected_allowed
-    
+
+
 @pytest.mark.asyncio
-async def test_role_access_policy_denies_missing_user(fake_user_manager):
+async def test_role_access_policy_denies_missing_user(fake_user_manager) -> None:
     user_id = uuid4()
     fake_user_manager.user = None
 
@@ -95,3 +97,18 @@ async def test_role_access_policy_denies_missing_user(fake_user_manager):
 
     assert decision.allowed is False
     assert decision.reason == f"User '{user_id}' not found"
+
+
+@pytest.mark.asyncio
+async def test_role_access_policy_require_access_raises_when_denied(fake_user_manager) -> None:
+    user_id = uuid4()
+    fake_user_manager.roles = [SimpleNamespace(name=UserRoles.STUDENT.value)]
+
+    policy = RoleAccessPolicy(
+        user_manager=fake_user_manager,
+        allowed_roles={UserRoles.ADMIN},
+        access_name="Admin",
+    )
+
+    with pytest.raises(AccessPolicyDenied):
+        await policy.require_access(user_id)

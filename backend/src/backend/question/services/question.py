@@ -184,7 +184,6 @@ class QuestionDB:
 
         return QuestionRead(**question_data, **relationship_data)
 
-
     async def update_question(
         self,
         qid: ID,

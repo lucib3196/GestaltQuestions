@@ -32,7 +32,6 @@ from backend.auth.exceptions import (
     UserValidationError,
 )
 from backend.auth.model import (
-    DeveloperProfile,
     Institution,
     Role,
     User,
@@ -64,7 +63,6 @@ __all__ = [
     "AuthExternalServiceError",
     "AuthValidationError",
     "CreateUserFullPayload",
-    "DeveloperProfile",
     "FirebaseUserError",
     "Institution",
     "InstitutionAssignmentError",

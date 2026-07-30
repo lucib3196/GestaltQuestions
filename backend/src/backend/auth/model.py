@@ -7,7 +7,7 @@ from .schemas import ValidInstitutions
 
 if TYPE_CHECKING:
     from backend.chat.model import Thread
-    from backend.question import Question
+    from backend.developer.model import DeveloperProfile
 
 
 class Institution(SQLModel, table=True):
@@ -51,14 +51,3 @@ class User(SQLModel, table=True):
         back_populates="user"
     )
     threads: list["Thread"] = Relationship(back_populates="user")
-
-
-class DeveloperProfile(SQLModel, table=True):
-    __tablename__ = "developer_profile"  # type: ignore
-
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(foreign_key="user.id", unique=True)
-
-    user: Optional["User"] = Relationship(back_populates="developer_profile")
-    storage_path: str | None = None
-    created_questions: list["Question"] = Relationship(back_populates="created_by")

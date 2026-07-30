@@ -6,8 +6,15 @@ from typing import Any
 import firebase_admin
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
-from backend.auth import InstitutionDB, Role, RoleDB, UserDB, UserRoles
-from backend.auth import ValidInstitutions
+
+from backend.auth import (
+    InstitutionDB,
+    Role,
+    RoleDB,
+    UserDB,
+    UserRoles,
+    ValidInstitutions,
+)
 from backend.core import initialize_firebase_app
 from backend.core.logging import (
     in_test_ctx,
@@ -54,6 +61,7 @@ def _clean_db(db_session, test_engine) -> None:
 # ---------DB seeding----------------
 # -----------------------------------
 
+
 @pytest.fixture()
 def seed_qtypes(db_session) -> None:
     QuestionQTypeDB(db_session).seed_types()
@@ -92,6 +100,7 @@ def seed_roles(db_session: Session):
 @pytest.fixture
 def question_db(db_session, seed_qtypes) -> QuestionDB:
     return QuestionDB(db_session)
+
 
 @pytest.fixture
 def user_db(db_session) -> UserDB:

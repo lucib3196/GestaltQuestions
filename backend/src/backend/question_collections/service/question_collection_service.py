@@ -1,4 +1,3 @@
-
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
 

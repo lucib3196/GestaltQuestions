@@ -4,15 +4,16 @@ from uuid import uuid4
 from sqlmodel import select
 
 from backend.auth import (
-    DeveloperProfile,
     UserCreate,
     UserRead,
     UserRoles,
     ValidInstitutions,
 )
+from backend.developer.model import DeveloperProfile
 
-
-def test_add_developer_role_then_set_profile(api_client, user_manager, db_session) -> None:
+def test_add_developer_role_then_set_profile(
+    api_client, user_manager, db_session
+) -> None:
     unique = uuid4().hex
     user = asyncio.run(
         user_manager.udb.create_user(
