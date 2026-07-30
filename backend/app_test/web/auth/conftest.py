@@ -8,14 +8,21 @@ from fastapi.testclient import TestClient
 
 from app_test.conftest import storage_params
 from backend.api.deps import (
-    get_developer_access,
+    get_developer_profile_service,
+    get_developer_profile_setup_service,
+    get_developer_role_access,
     get_session,
     get_storage_manager,
     get_storage_type,
     get_user_mng,
 )
-from backend.auth import DeveloperAccessService, InstitutionDB, RoleDB
+from backend.auth import InstitutionDB, RoleDB
 from backend.core import get_settings
+from backend.developer.services import (
+    DeveloperAccessService,
+    DeveloperProfileService,
+    DeveloperProfileSetupService,
+)
 from backend.storage import FbStorage, LocalStorage, Storage
 from src.main import get_application
 
@@ -54,11 +61,23 @@ def api_client(db_session, user_manager, raw_storage):
     def override_get_user_manager():
         return user_manager
 
-    def override_get_developer_access():
+    def override_get_developer_role_access():
         return DeveloperAccessService(
             user_manager=user_manager,
-            storage=raw_storage,
+        )
+
+    def override_get_developer_profile_service():
+        return DeveloperProfileService(
             session=db_session,
+            access_service=override_get_developer_role_access(),
+        )
+
+    def override_get_developer_profile_setup_service():
+        return DeveloperProfileSetupService(
+            session=db_session,
+            storage=raw_storage,
+            user_manager=user_manager,
+            access_service=override_get_developer_role_access(),
         )
 
     def override_get_storage():
@@ -69,7 +88,15 @@ def api_client(db_session, user_manager, raw_storage):
 
     app.dependency_overrides[get_session] = override_get_db
     app.dependency_overrides[get_user_mng] = override_get_user_manager
-    app.dependency_overrides[get_developer_access] = override_get_developer_access
+    app.dependency_overrides[get_developer_role_access] = (
+        override_get_developer_role_access
+    )
+    app.dependency_overrides[get_developer_profile_service] = (
+        override_get_developer_profile_service
+    )
+    app.dependency_overrides[get_developer_profile_setup_service] = (
+        override_get_developer_profile_setup_service
+    )
     app.dependency_overrides[get_storage_manager] = override_get_storage
     app.dependency_overrides[get_storage_type] = override_get_storage_type
 

@@ -6,18 +6,21 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from firebase_admin.auth import verify_id_token
 from sqlmodel import Session
 from starlette import status
-
+from backend.developer.services import DeveloperAccessService
 from backend.auth import (
-    DeveloperAccessService,
-    InstitutionDB,
-    RoleDB,
-    UserDB,
     UserManager,
 )
 from backend.chat.service.thread import MessageDB, ThreadDB
 from backend.core import logger
 from backend.core.config import AppSettings, get_settings
 from backend.database import get_session
+from backend.developer.services import (
+    DeveloperAccessService as DeveloperRoleAccessService,
+)
+from backend.developer.services import (
+    DeveloperProfileService,
+    DeveloperProfileSetupService,
+)
 from backend.question import QuestionDB, QuestionQueryService
 from backend.question_manager import DeveloperQuestionService, QuestionManager
 from backend.question_runtime.service.question_runtime import QuestionRunTimeService
@@ -123,9 +126,6 @@ FireBaseToken = Annotated[dict, Depends(get_firebase_token)]
 def get_user_mng(session: SessionDep) -> UserManager:
     return UserManager(
         session=session,
-        inst=InstitutionDB(session),
-        rm=RoleDB(session),
-        udb=UserDB(session),
     )
 
 
@@ -153,15 +153,6 @@ UserManagerDependeny = Annotated[UserManager, Depends(get_user_mng)]
 CurrentUser = Annotated[str, Depends(get_current_user_id)]
 
 
-# Developer dependencies
-def get_developer_access(
-    session: SessionDep, user_manager: UserManagerDependeny, storage: StorageDependency
-) -> DeveloperAccessService:
-    return DeveloperAccessService(
-        user_manager=user_manager, storage=storage, session=session
-    )
-
-
 def get_question_manager(
     storage: StorageDependency,
     question_db: QuestionDBDependency,
@@ -171,18 +162,65 @@ def get_question_manager(
 
 QuestionManagerDependency = Annotated[QuestionManager, Depends(get_question_manager)]
 
-DeveloperAccess = Annotated[DeveloperAccessService, Depends(get_developer_access)]
+
+def get_developer_role_access(
+    user_manager: UserManagerDependeny,
+) -> DeveloperRoleAccessService:
+    return DeveloperRoleAccessService(user_manager=user_manager)
+
+
+DeveloperRoleAccess = Annotated[
+    DeveloperRoleAccessService,
+    Depends(get_developer_role_access),
+]
+
+
+def get_developer_profile_service(
+    session: SessionDep,
+    access: DeveloperRoleAccess,
+) -> DeveloperProfileService:
+    return DeveloperProfileService(session=session, access_service=access)
+
+
+DeveloperProfileDependency = Annotated[
+    DeveloperProfileService,
+    Depends(get_developer_profile_service),
+]
+
+
+def get_developer_profile_setup_service(
+    session: SessionDep,
+    storage: StorageDependency,
+    user_manager: UserManagerDependeny,
+    access: DeveloperRoleAccess,
+) -> DeveloperProfileSetupService:
+    return DeveloperProfileSetupService(
+        session=session,
+        storage=storage,
+        user_manager=user_manager,
+        access_service=access,
+    )
+
+
+DeveloperProfileSetupDependency = Annotated[
+    DeveloperProfileSetupService,
+    Depends(get_developer_profile_setup_service),
+]
 
 
 # Question manager dependencies
 def get_dev_question_manager(
     session: SessionDep,
     qm: QuestionManagerDependency,
-    dev_access: DeveloperAccess,
+    developer_profiles: DeveloperProfileDependency,
+    developer_profile_setup: DeveloperProfileSetupDependency,
 ) -> DeveloperQuestionService:
 
     return DeveloperQuestionService(
-        session=session, developer_access=dev_access, question_manager=qm
+        session=session,
+        developer_profiles=developer_profiles,
+        developer_profile_setup=developer_profile_setup,
+        question_manager=qm,
     )
 
 

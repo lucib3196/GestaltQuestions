@@ -9,10 +9,6 @@ from backend.auth.exceptions import (
     AuthError,
     AuthExternalServiceError,
     AuthValidationError,
-    DeveloperAccessDenied,
-    DeveloperProfileError,
-    DeveloperProfileNotSet,
-    DeveloperStoragePathError,
     FirebaseUserError,
     InstitutionAssignmentError,
     InstitutionCreateError,
@@ -57,28 +53,19 @@ from backend.auth.schemas import (
     UserUpdate,
     ValidInstitutions,
 )
-from backend.auth.services.developer_access import (
-    AccessDecision,
-    DeveloperAccessService,
-)
+
 from backend.auth.services.institution import InstitutionDB
 from backend.auth.services.role import RoleDB
 from backend.auth.services.user import UserDB
 from backend.auth.services.user_manager import UserManager
 
 __all__ = [
-    "AccessDecision",
     "AuthDatabaseError",
     "AuthError",
     "AuthExternalServiceError",
     "AuthValidationError",
     "CreateUserFullPayload",
-    "DeveloperAccessDenied",
-    "DeveloperAccessService",
     "DeveloperProfile",
-    "DeveloperProfileError",
-    "DeveloperProfileNotSet",
-    "DeveloperStoragePathError",
     "FirebaseUserError",
     "Institution",
     "InstitutionAssignmentError",

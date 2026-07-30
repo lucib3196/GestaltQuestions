@@ -26,13 +26,11 @@ from .user import UserDB
 
 
 class UserManager:
-    def __init__(
-        self, udb: UserDB, rm: RoleDB, inst: InstitutionDB, session: Session
-    ) -> None:
+    def __init__(self, session: Session) -> None:
         """Initialize user and role repositories for the provided session."""
-        self.udb = udb
-        self.rm = rm
-        self.ins = inst
+        self.udb = UserDB(session)
+        self.rm = RoleDB(session)
+        self.ins = InstitutionDB(session)
         self.session = session
 
     async def create_user(

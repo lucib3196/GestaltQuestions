@@ -3,10 +3,13 @@ from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 import pytest
-
-from backend.auth import (
-    DeveloperAccessDenied,
+from backend.developer.exceptions import DeveloperAccessDenied
+from backend.developer.services import (
     DeveloperAccessService,
+    DeveloperProfileService,
+    DeveloperProfileSetupService,
+)
+from backend.auth import (
     DeveloperProfile,
     UserRoles,
 )
@@ -29,21 +32,39 @@ def mocked_storage():
 
 
 @pytest.fixture
-def developer_service(db_session, mocked_user_manager, mocked_storage):
+def developer_access_service(mocked_user_manager):
     return DeveloperAccessService(
         user_manager=mocked_user_manager,
+    )
+
+
+@pytest.fixture
+def developer_profile_service(db_session, developer_access_service):
+    return DeveloperProfileService(
+        session=db_session,
+        access_service=developer_access_service,
+    )
+
+
+@pytest.fixture
+def developer_profile_setup_service(
+    db_session, mocked_user_manager, mocked_storage, developer_access_service
+):
+    return DeveloperProfileSetupService(
         storage=mocked_storage,
         session=db_session,
+        user_manager=mocked_user_manager,
+        access_service=developer_access_service,
     )
 
 
 @pytest.mark.asyncio
 async def test_has_developer_role_returns_false_when_user_missing(
-    developer_service: DeveloperAccessService,
+    developer_access_service: DeveloperAccessService,
     mocked_user_manager,
 ) -> None:
     mocked_user_manager.get_user.return_value = None
-    result = await developer_service.has_developer_role("user-123")
+    result = await developer_access_service.has_developer_role("user-123")
     assert result.allowed is False
     assert result.reason == "User 'user-123' not found"
 
@@ -53,14 +74,14 @@ async def test_has_developer_role_returns_false_when_user_missing(
     "role_name", [UserRoles.DEVELOPER.value, UserRoles.ADMIN.value]
 )
 async def test_has_developer_role_allows_developer_and_admin(
-    developer_service: DeveloperAccessService,
+    developer_access_service: DeveloperAccessService,
     mocked_user_manager,
     role_name: str,
 ) -> None:
     mocked_user_manager.get_user.return_value = SimpleNamespace(id="user-123")
     mocked_user_manager.get_user_role.return_value = [SimpleNamespace(name=role_name)]
 
-    result = await developer_service.has_developer_role("user-123")
+    result = await developer_access_service.has_developer_role("user-123")
 
     assert result.allowed is True
     assert result.reason == "Developer access granted"
@@ -68,7 +89,7 @@ async def test_has_developer_role_allows_developer_and_admin(
 
 @pytest.mark.asyncio
 async def test_require_developer_access_raises_when_role_missing(
-    developer_service: DeveloperAccessService,
+    developer_access_service: DeveloperAccessService,
     mocked_user_manager,
 ) -> None:
     mocked_user_manager.get_user.return_value = SimpleNamespace(id="user-123")
@@ -77,39 +98,39 @@ async def test_require_developer_access_raises_when_role_missing(
     ]
 
     with pytest.raises(DeveloperAccessDenied, match="Developer role is required"):
-        await developer_service.require_developer_access("user-123")
+        await developer_access_service.require_developer_access("user-123")
 
 
 @pytest.mark.asyncio
 async def test_generate_storage_path_uses_institution_slug(
-    developer_service: DeveloperAccessService,
+    developer_profile_setup_service: DeveloperProfileSetupService,
     mocked_user_manager,
 ) -> None:
     mocked_user_manager.get_user.return_value = SimpleNamespace(id="abc-123")
     mocked_user_manager.get_user_inst.return_value = SimpleNamespace(
         name="Cool School @ West"
     )
-    path = await developer_service.generate_storage_path("abc-123")
+    path = await developer_profile_setup_service.generate_storage_path("abc-123")
 
     assert path == "cool_school_west/developers/abc-123/"
 
 
 @pytest.mark.asyncio
 async def test_generate_storage_path_falls_back_when_institution_missing(
-    developer_service: DeveloperAccessService,
+    developer_profile_setup_service: DeveloperProfileSetupService,
     mocked_user_manager,
 ) -> None:
     mocked_user_manager.get_user.return_value = SimpleNamespace(id="abc-123")
     mocked_user_manager.get_user_inst.return_value = None
 
-    path = await developer_service.generate_storage_path("abc-123")
+    path = await developer_profile_setup_service.generate_storage_path("abc-123")
 
     assert path == "untitled_institution/developers/abc-123/"
 
 
 @pytest.mark.asyncio
 async def test_set_developer_data_creates_profile_with_storage_path(
-    developer_service: DeveloperAccessService,
+    developer_profile_setup_service: DeveloperProfileSetupService,
     mocked_user_manager,
     db_session,
 ) -> None:
@@ -120,7 +141,7 @@ async def test_set_developer_data_creates_profile_with_storage_path(
     ]
     mocked_user_manager.get_user_inst.return_value = SimpleNamespace(name="CPP")
 
-    profile = await developer_service.set_developer_data(user_id)
+    profile = await developer_profile_setup_service.set_developer_data(user_id)
 
     assert isinstance(profile, DeveloperProfile)
     assert str(profile.user_id) == str(user_id)
@@ -129,7 +150,7 @@ async def test_set_developer_data_creates_profile_with_storage_path(
 
 @pytest.mark.asyncio
 async def test_get_developer_data_returns_existing_profile(
-    developer_service: DeveloperAccessService,
+    developer_profile_service: DeveloperProfileService,
     mocked_user_manager,
     db_session,
 ) -> None:
@@ -146,7 +167,7 @@ async def test_get_developer_data_returns_existing_profile(
     db_session.add(profile)
     db_session.commit()
 
-    result = await developer_service.get_developer_data(user_id)
+    result = await developer_profile_service.get_developer_data(user_id)
 
     assert result is not None
     assert result.storage_path == "cpp/developers/abc-123/"
