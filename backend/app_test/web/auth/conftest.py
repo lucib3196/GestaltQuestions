@@ -18,7 +18,6 @@ from backend.api.deps import (
 from backend.auth import InstitutionDB, RoleDB
 from backend.core import get_settings
 from backend.developer.services import (
-    DeveloperAccessService,
     DeveloperProfileService,
 )
 from backend.storage import FbStorage, LocalStorage, Storage
@@ -59,17 +58,13 @@ def api_client(db_session, user_manager, raw_storage):
     def override_get_user_manager():
         return user_manager
 
-    def override_get_developer_role_access():
-        return DeveloperAccessService(
-            user_manager=user_manager,
-        )
+
 
     def override_get_developer_profile_service():
         return DeveloperProfileService(
             session=db_session,
             storage=raw_storage,
             user_manager=user_manager,
-            access_service=override_get_developer_role_access(),
         )
 
     def override_get_storage():

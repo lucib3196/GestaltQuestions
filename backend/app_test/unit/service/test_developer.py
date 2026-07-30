@@ -5,13 +5,13 @@ from uuid import uuid4
 import pytest
 
 from backend.auth import (
-    DeveloperProfile,
+
     UserRoles,
 )
 from backend.developer.exceptions import DeveloperAccessDenied
-from backend.developer.services import (
-    DeveloperAccessService,
+from backend.developer import (
     DeveloperProfileService,
+    DeveloperProfile
 )
 
 

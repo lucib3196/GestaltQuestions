@@ -1,3 +1,3 @@
 from .model import DeveloperProfile
-
-__all__ = ["DeveloperProfile"]
+from .services.developer_profile_service import DeveloperProfileService
+__all__ = ["DeveloperProfile", "DeveloperProfileService"]
