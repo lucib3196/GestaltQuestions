@@ -13,6 +13,8 @@ from backend.question_attempt.model import *  # type: ignore
 from backend.question_collections.model import *  # type: ignore
 from backend.question_runtime.model import *  # type: ignore
 from backend.storage.model import *  # type: ignore
+from backend.developer.model import * # type: ignore
+from backend.question_access.model import *  # type: ignore
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
