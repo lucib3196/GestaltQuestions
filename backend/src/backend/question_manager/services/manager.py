@@ -2,18 +2,10 @@ from collections.abc import Sequence
 from typing import Any, Literal, overload
 
 from backend.core import logger
-from backend.question import (
-    Question,
-    QuestionCreate,
-    QuestionDB,
-    QuestionRead,
-    QuestionStorageService,
-    QuestionUpdate,
-)
-from backend.question.schema import QuestionUpdate
-from backend.question.services.question_storage_service import (
-    QuestionStorageService,
-)
+from backend.question.models import Question
+from backend.question.schema import QuestionCreate, QuestionRead, QuestionUpdate
+from backend.question.services.question import QuestionDB
+from backend.question.services.question_storage_service import QuestionStorageService
 from backend.question_manager.exceptions import (
     FileListError,
     FileOperationError,

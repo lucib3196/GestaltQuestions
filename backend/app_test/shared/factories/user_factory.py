@@ -1,3 +1,4 @@
+from typing import Any, Protocol
 from uuid import uuid4
 
 import pytest
@@ -6,8 +7,16 @@ from backend.auth import User
 from backend.developer import DeveloperProfile
 
 
+class MakeUser(Protocol):
+    def __call__(self, **overrides: Any) -> User: ...
+
+
+class MakeDeveloperProfile(Protocol):
+    def __call__(self, user: User, **overrides: Any) -> DeveloperProfile: ...
+
+
 @pytest.fixture
-def make_user(db_session):
+def make_user(db_session) -> MakeUser:
     def make(**overrides):
         user = User(
             id=overrides.pop("id", uuid4()),
@@ -25,8 +34,8 @@ def make_user(db_session):
 
 
 @pytest.fixture
-def make_developer_profile(db_session):
-    def make(user: User, **overrides):
+def make_developer_profile(db_session) -> MakeDeveloperProfile:
+    def make(user: User, **overrides) -> DeveloperProfile:
         profile = DeveloperProfile(
             user_id=user.id,
             storage_path=overrides.pop(

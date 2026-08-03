@@ -4,7 +4,7 @@ from .exceptions import (
     QuestionAccessError,
     QuestionAccessValidationError,
 )
-from .services.question_access import QuestionAccessService
+from .services.question_access import QuestionAccessService, AccessLevel
 
 __all__ = [
     "QuestionAccessControlError",
@@ -12,4 +12,5 @@ __all__ = [
     "QuestionAccessError",
     "QuestionAccessService",
     "QuestionAccessValidationError",
+    "AccessLevel"
 ]

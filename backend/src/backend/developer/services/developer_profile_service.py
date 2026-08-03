@@ -3,7 +3,7 @@ import re
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
-from backend.access_policy import RoleAccessPolicy
+from backend.access_policy import AccessPolicyDenied, RoleAccessPolicy
 from backend.auth import UserRoles
 from backend.auth.services.user_manager import UserManager
 from backend.core import logger
@@ -37,10 +37,10 @@ class DeveloperProfileService:
             access_name="Developer",
         )
 
-    async def get_developer_data(self, user_id: ID) -> DeveloperProfile:
+    async def get_profile(self, user_id: ID) -> DeveloperProfile:
         """Fetch the developer profile for a user after validating access."""
-        await self._policy.require_access(user_id)
         try:
+            await self._policy.require_access(user_id)
             logger.debug("Fetching developer profile for user %s", user_id)
             profile = self._session.exec(
                 select(DeveloperProfile).where(
@@ -54,13 +54,15 @@ class DeveloperProfileService:
                     details=f"Developer {user_id} profile not complete must be set",
                 )
             return profile
+        except AccessPolicyDenied as e:
+            raise DeveloperAccessDenied(str(e), user_id=str(user_id)) from e
         except DeveloperProfileNotSet:
             raise
         except SQLAlchemyError as e:
             logger.warning("Failed fetching developer profile for user %s", user_id)
             raise DeveloperProfileError("retrieve", str(user_id), str(e)) from e
 
-    async def set_developer_data(self, user_id: ID) -> DeveloperProfile:
+    async def set_profile(self, user_id: ID) -> DeveloperProfile:
         """Create or refresh the developer profile and its storage path."""
         try:
             await self._policy.require_access(user_id)
@@ -89,6 +91,8 @@ class DeveloperProfileService:
             self._session.commit()
             self._session.refresh(dev_profile)
             return dev_profile
+        except AccessPolicyDenied as e:
+            raise DeveloperAccessDenied(str(e), user_id=str(user_id)) from e
         except DeveloperAccessDenied:
             raise
         except SQLAlchemyError as e:
@@ -109,17 +113,17 @@ class DeveloperProfileService:
 
     async def get_or_create_profile(self, user_id: ID) -> DeveloperProfile:
         try:
-            profile = await self.get_developer_data(user_id)
+            profile = await self.get_profile(user_id)
         except DeveloperProfileNotSet:
             logger.info("Creating developer profile for user %s", user_id)
-            profile = await self.set_developer_data(user_id)
+            profile = await self.set_profile(user_id)
 
         if not profile.storage_path:
             logger.info(
                 "Refreshing developer profile storage path for user %s",
                 user_id,
             )
-            profile = await self.set_developer_data(user_id)
+            profile = await self.set_profile(user_id)
 
         if not profile.storage_path:
             raise DeveloperProfileError(

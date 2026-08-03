@@ -6,7 +6,8 @@ from fastapi.responses import Response
 from pydantic import BaseModel
 from starlette import status
 
-from backend.api.deps import CurrentUser, DeveloperQuestionManagerDependency
+from .dependencies import DevQManager
+from backend.api.dependencies.users import CurrentUser
 from backend.question import (
     Question,
     QuestionCreate,
@@ -18,8 +19,8 @@ from backend.shared import ID
 from backend.storage import FileData, UploadFileDataConverter, download_zip
 
 router = APIRouter(
-    prefix="/developer/questions",
-    tags=["developer", "questions"],
+    prefix="/questions",
+    tags=["questions"],
 )
 
 
@@ -30,11 +31,11 @@ class WriteFilePayload(BaseModel):
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_question(
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
     payload: QuestionCreate,
 ) -> Question:
     try:
-        return await question_manager.create_question(current_user, payload)
+        return await dev_q_manager.create_question(current_user, payload)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -42,28 +43,14 @@ async def create_question(
         ) from e
 
 
-@router.get("/")
-async def list_my_questions(
-    current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
-) -> list[Question] | list[QuestionRead]:
-    try:
-        return await question_manager.list_my_questions(current_user, method="full")
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to list questions: {e}",
-        ) from e
-
-
 @router.post("/filter")
 async def filter(
     current_user: CurrentUser,
     filter: QuestionFilter,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ) -> Sequence[QuestionRead]:
     try:
-        return await question_manager.filter_questions(current_user, filter)
+        return await dev_q_manager.filter_questions(current_user, filter)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -75,10 +62,10 @@ async def filter(
 async def get_question(
     question_id: ID,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ) -> QuestionRead | Question:
     try:
-        return await question_manager.get_question(
+        return await dev_q_manager.get_question(
             current_user, question_id, method="full"
         )
     except Exception as e:
@@ -92,11 +79,11 @@ async def get_question(
 async def update_question(
     question_id: ID,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
     update: QuestionUpdate,
 ) -> QuestionRead:
     try:
-        return await question_manager.update_question(current_user, question_id, update)
+        return await dev_q_manager.update_question(current_user, question_id, update)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -108,10 +95,10 @@ async def update_question(
 async def delete_question(
     question_id: ID,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ) -> bool:
     try:
-        return await question_manager.delete_question(current_user, question_id)
+        return await dev_q_manager.delete_question(current_user, question_id)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -123,10 +110,10 @@ async def delete_question(
 async def copy_question(
     question_id: ID,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ):
     try:
-        return await question_manager.copy_question(question_id, current_user)
+        return await dev_q_manager.copy_question(question_id, current_user)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
@@ -137,11 +124,11 @@ async def copy_question(
 async def download_question_as_zip(
     question_id: ID,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ):
     try:
-        q = await question_manager.get_question(current_user, question_id)
-        payload = await question_manager.prepare_question_download(
+        q = await dev_q_manager.get_question(current_user, question_id)
+        payload = await dev_q_manager.prepare_question_download(
             current_user, question_id
         )
         response = download_zip(payload, folder_name=q.title or "Untitled Questions")
@@ -161,11 +148,11 @@ async def donwload_question_file(
     question_id: ID,
     filename: str,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ):
     try:
-        await question_manager.get_question(current_user, question_id)
-        content = await question_manager.read_file(current_user, question_id, filename)
+        await dev_q_manager.get_question(current_user, question_id)
+        content = await dev_q_manager.read_file(current_user, question_id, filename)
         if content is None:
             content = b""
         return Response(
@@ -183,10 +170,10 @@ async def donwload_question_file(
 async def get_question_files(
     question_id: ID,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ) -> Sequence[str]:
     try:
-        return await question_manager.get_question_files(current_user, question_id)
+        return await dev_q_manager.get_question_files(current_user, question_id)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -198,10 +185,10 @@ async def get_question_files(
 async def get_question_filedata(
     question_id: ID,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ) -> Sequence[FileData]:
     try:
-        return await question_manager.get_question_filedata(current_user, question_id)
+        return await dev_q_manager.get_question_filedata(current_user, question_id)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -213,7 +200,7 @@ async def get_question_filedata(
 async def upload_files(
     question_id: ID,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
     files: list[UploadFile],
 ) -> list[str]:
     try:
@@ -221,7 +208,7 @@ async def upload_files(
         file_data = await asyncio.gather(
             *[converter.convert_to_filedata(file) for file in files]
         )
-        return await question_manager.upload_files(current_user, question_id, file_data)
+        return await dev_q_manager.upload_files(current_user, question_id, file_data)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -234,10 +221,10 @@ async def read_file(
     question_id: ID,
     filename: str,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ) -> bytes | None:
     try:
-        return await question_manager.read_file(current_user, question_id, filename)
+        return await dev_q_manager.read_file(current_user, question_id, filename)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -251,10 +238,10 @@ async def write_file(
     filename: str,
     data: WriteFilePayload,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ):
     try:
-        return await question_manager.write_file(
+        return await dev_q_manager.write_file(
             current_user, question_id, filename, data.content
         )
     except Exception as e:
@@ -269,10 +256,10 @@ async def delete_file(
     question_id: ID,
     filename: str,
     current_user: CurrentUser,
-    question_manager: DeveloperQuestionManagerDependency,
+    dev_q_manager: DevQManager,
 ):
     try:
-        return await question_manager.delete_file(current_user, question_id, filename)
+        return await dev_q_manager.delete_file(current_user, question_id, filename)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
