@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import pytest
 from sqlmodel import select
@@ -9,12 +10,13 @@ from app_test.shared.factories.user_factory import (  # noqa: F401
     make_user,
 )
 from app_test.shared.fakes.fake_user_manager import FakeUserManager
-from backend.access_policy import RoleAccessPolicy
+from backend.access_policy import AccessLevel
 from backend.auth import UserRoles
 from backend.chat.model import Message, Thread  # noqa: F401
+from backend.developer import DeveloperProfileService
 from backend.question import Status
 from backend.question_access import QuestionAccessService
-from backend.question_access.model import AccessLevel, QuestionAccess
+from backend.question_access.model import QuestionAccess
 
 
 @pytest.fixture
@@ -23,13 +25,24 @@ def fake_user_manager():
 
 
 @pytest.fixture
-def question_access(db_session, fake_user_manager):
-    policy = RoleAccessPolicy(
+def mocked_storage():
+    storage = MagicMock()
+    storage.create_dir = MagicMock()
+    return storage
+
+
+@pytest.fixture
+def developer_profile_service(db_session, fake_user_manager, mocked_storage):
+    return DeveloperProfileService(
+        session=db_session,
+        storage=mocked_storage,
         user_manager=fake_user_manager,  # type: ignore[arg-type]
-        allowed_roles=[UserRoles.DEVELOPER],
-        access_name="Developer",
     )
-    return QuestionAccessService(db_session, policy)
+
+
+@pytest.fixture
+def question_access(db_session, developer_profile_service):
+    return QuestionAccessService(db_session, developer_profile_service)
 
 
 @pytest.fixture
@@ -72,13 +85,12 @@ async def test_question_owner_has_access(
     fake_user_manager.user = owned_question.owner
     fake_user_manager.roles = [SimpleNamespace(name=UserRoles.DEVELOPER.value)]
 
-    print("Getting question", owned_question.question)
-    decision = await question_access.can_access_question(
+    decision = await question_access.has_access_by_id(
         owned_question.owner.id, str(owned_question.question.id), level
     )
 
     assert decision.allowed is True
-    assert decision.reason == "Question owner has full access"
+    assert decision.reason == "Question access granted"
 
 
 @pytest.mark.asyncio
@@ -99,7 +111,7 @@ async def test_question_requester_without_ownership_has_no_access(
     fake_user_manager.user = owned_question.requester
     fake_user_manager.roles = [SimpleNamespace(name=UserRoles.DEVELOPER.value)]
 
-    decision = await question_access.can_access_question(
+    decision = await question_access.has_access_by_id(
         owned_question.requester.id, owned_question.question.id, level
     )
     assert decision.allowed is False
@@ -122,27 +134,30 @@ async def test_question_requester_violates_policy(
     level,
 ) -> None:
     fake_user_manager.user = owned_question.requester
-    fake_user_manager.roles = [SimpleNamespace(name=UserRoles.STUDENT.value)]
+    fake_user_manager.roles = [SimpleNamespace(name=UserRoles.TEACHER.value)]
 
-    decision = await question_access.can_access_question(
-        owned_question.requester.id, owned_question.question.id, level
-    )
-    assert decision.allowed is False
-    assert "Developer access requires" in decision.reason
+    with pytest.raises(PermissionError, match="Developer access requires"):
+        await question_access.has_access_by_id(
+            owned_question.requester.id, owned_question.question.id, level
+        )
 
 
 @pytest.mark.asyncio
-async def test_is_question_owner_returns_true_for_owner(
+async def test_question_owner_gets_owner_access(
     question_access,
     owned_question,
+    fake_user_manager,
 ) -> None:
-    decision = await question_access.is_question_owner(
+    fake_user_manager.roles = [SimpleNamespace(name=UserRoles.DEVELOPER.value)]
+    access = await question_access.get_access_by_id(
         owned_question.owner.id,
         owned_question.question.id,
     )
 
-    assert decision.allowed is True
-    assert decision.reason == "User is the question owner"
+    assert access is not None
+    assert access.question_id == owned_question.question.id
+    assert access.developer_id == owned_question.owner_profile.id
+    assert access.access_level == AccessLevel.OWNER
 
 
 @pytest.mark.asyncio
@@ -155,14 +170,14 @@ async def test_published_question_grants_view_access_without_shared_access(
     fake_user_manager.roles = [SimpleNamespace(name=UserRoles.DEVELOPER.value)]
     owned_question.question.status = Status.PUBLISHED
 
-    decision = await question_access.can_access_question(
+    decision = await question_access.has_access_by_id(
         owned_question.requester.id,
         owned_question.question.id,
         AccessLevel.VIEW,
     )
 
     assert decision.allowed is True
-    assert decision.reason == "Published question grants public view access"
+    assert decision.reason == "Question public view access granted"
 
 
 # --------------------------------------
@@ -183,9 +198,9 @@ async def test_grant_access(
     level,
 ) -> None:
     fake_user_manager.roles = [SimpleNamespace(name=UserRoles.DEVELOPER.value)]
-    qaccess = await question_access.grant_access(
-        owned_question.owner,
-        owned_question.requester,
+    qaccess = await question_access.grant_access_by_id(
+        owned_question.owner.id,
+        owned_question.requester.id,
         owned_question.question.id,
         level,
     )
@@ -193,9 +208,10 @@ async def test_grant_access(
     assert qaccess.developer_id == owned_question.requester_profile.id
     assert qaccess.access_level == level
 
-    assert await question_access.can_access_question(
+    decision = await question_access.has_access_by_id(
         owned_question.requester.id, owned_question.question.id, level
     )
+    assert decision.allowed is True
 
 
 # ---------------------------------
@@ -216,13 +232,13 @@ async def test_update_access(
     question_access, fake_user_manager, owned_question, level
 ) -> None:
     fake_user_manager.roles = [SimpleNamespace(name=UserRoles.DEVELOPER.value)]
-    qaccess = await question_access.grant_access(
-        owned_question.owner,
-        owned_question.requester,
+    qaccess = await question_access.grant_access_by_id(
+        owned_question.owner.id,
+        owned_question.requester.id,
         owned_question.question.id,
         AccessLevel.VIEW,
     )
-    updated = await question_access.update_access(
+    updated = await question_access.update_access_by_id(
         owned_question.owner.id,
         owned_question.requester.id,
         owned_question.question.id,
@@ -247,27 +263,26 @@ async def test_revoke_access_removes_question_access(
 ) -> None:
     fake_user_manager.roles = [SimpleNamespace(name=UserRoles.DEVELOPER.value)]
 
-    qaccess = await question_access.grant_access(
+    qaccess = await question_access.grant_access_by_id(
         owned_question.owner.id,
         owned_question.requester.id,
         owned_question.question.id,
         AccessLevel.FULL,
     )
 
-    revoked = await question_access.revoke_access(
+    revoked = await question_access.revoke_access_by_id(
         owned_question.owner.id,
         owned_question.requester.id,
         owned_question.question.id,
     )
 
-    assert revoked.id == qaccess.id
 
     stored_access = db_session.exec(
         select(QuestionAccess).where(QuestionAccess.id == qaccess.id)
     ).first()
     assert stored_access is None
 
-    decision = await question_access.can_access_question(
+    decision = await question_access.has_access_by_id(
         owned_question.requester.id,
         owned_question.question.id,
     )

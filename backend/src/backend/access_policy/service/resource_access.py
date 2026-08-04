@@ -1,8 +1,8 @@
 from typing import Generic
 
 from backend.access_policy.exceptions import (
+    AccessPolicyError,
     ResourceAccessDenied,
-    ResourceAccessError,
     ResourceAccessOperationError,
     ResourceAccessValidationError,
 )
@@ -58,7 +58,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
                 return access
 
             return None
-        except ResourceAccessError:
+        except AccessPolicyError:
             raise
         except Exception as e:
             raise self._operation_error("retrieve", requester, resource, str(e)) from e
@@ -72,7 +72,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
             requester = await self._get_profile(requester_id)
             resource = await self._get_resource(resource_id)
             return await self.get_access(requester, resource)
-        except ResourceAccessError:
+        except AccessPolicyError:
             raise
         except Exception as e:
             raise self._operation_error_by_id(
@@ -102,7 +102,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
                 )
 
             return await self._adapter.build_access(resource, requester, level)
-        except ResourceAccessError:
+        except AccessPolicyError:
             raise
         except Exception as e:
             raise self._operation_error("grant", requester, resource, str(e)) from e
@@ -119,7 +119,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
             requester = await self._get_profile(requester_id)
             resource = await self._get_resource(resource_id)
             return await self.grant_access(owner, requester, resource, level)
-        except ResourceAccessError:
+        except AccessPolicyError:
             raise
         except Exception as e:
             raise self._operation_error_by_id(
@@ -145,7 +145,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
                 return await self._adapter.build_access(resource, requester, level)
 
             return await self._adapter.update_access(existing, level=level)
-        except ResourceAccessError:
+        except AccessPolicyError:
             raise
         except Exception as e:
             raise self._operation_error("update", requester, resource, str(e)) from e
@@ -162,7 +162,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
             requester = await self._get_profile(requester_id)
             resource = await self._get_resource(resource_id)
             return await self.update_access(owner, requester, resource, level)
-        except ResourceAccessError:
+        except AccessPolicyError:
             raise
         except Exception as e:
             raise self._operation_error_by_id(
@@ -194,7 +194,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
                 )
 
             return await self._adapter.remove_access(target, resource)
-        except ResourceAccessError:
+        except AccessPolicyError:
             raise
         except Exception as e:
             raise self._operation_error("revoke", target, resource, str(e)) from e
@@ -210,7 +210,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
             target = await self._get_profile(target_id)
             resource = await self._get_resource(resource_id)
             return await self.revoke_access(owner, target, resource)
-        except ResourceAccessError:
+        except AccessPolicyError:
             raise
         except Exception as e:
             raise self._operation_error_by_id(
@@ -256,7 +256,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
                 False,
                 f"{self._adapter.name} access does not exist",
             )
-        except ResourceAccessError:
+        except AccessPolicyError:
             raise
         except Exception as e:
             raise self._operation_error("check", requester, resource, str(e)) from e
@@ -271,7 +271,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
             requester = await self._get_profile(requester_id)
             resource = await self._get_resource(resource_id)
             return await self.has_access(requester, resource, minimum_level)
-        except ResourceAccessError:
+        except AccessPolicyError:
             raise
         except Exception as e:
             raise self._operation_error_by_id(

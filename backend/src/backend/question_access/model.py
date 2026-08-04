@@ -1,16 +1,10 @@
 from datetime import datetime
-from enum import StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, SQLModel
 
-
-class AccessLevel(StrEnum):
-    VIEW = "view"
-    EDIT = "edit"
-    FULL = "full"
-    OWNER = "owner"
+from backend.access_policy import AccessLevel
 
 
 class QuestionAccess(SQLModel, table=True):

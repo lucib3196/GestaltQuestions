@@ -45,7 +45,7 @@ class ResourceAccessAdapter(ABC, Generic[AccessModelT, ProfileT, ResourceT]):
         self,
         target: ProfileT,
         resource: ResourceT,
-    ) -> AccessModelT: ...
+    ) -> None: ...
 
     @abstractmethod
     async def is_owner(
