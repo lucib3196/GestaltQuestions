@@ -1,6 +1,5 @@
 from .auth import FireBaseToken, bearer_scheme, get_firebase_token
 from .core import SessionDep, SettingDependency, get_app_settings, get_session
-
 from .questions import (
     QuestionDBDependency,
     QuestionManagerDependency,

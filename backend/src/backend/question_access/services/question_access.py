@@ -20,7 +20,7 @@ from backend.question_access.model import AccessLevel, QuestionAccess
 from backend.shared import ID
 from backend.utils import convert_uuid
 
-type UserRef = User | str | UUID
+type UserRef = User | str | UUID | ID
 
 
 class QuestionAccessService:
@@ -38,16 +38,6 @@ class QuestionAccessService:
         self._session = session
         # Defines which roles have access
         self._policy = policy
-
-    @overload
-    async def get_question_access(
-        self, requester: User, question_id: ID
-    ) -> QuestionAccess | None: ...
-
-    @overload
-    async def get_question_access(
-        self, requester: str | UUID, question_id: ID
-    ) -> QuestionAccess | None: ...
 
     @multimethod
     async def get_question_access(  # type: ignore
@@ -91,16 +81,6 @@ class QuestionAccessService:
             minimum_level,
         )
 
-    @overload
-    async def grant_access(
-        self, owner: User, requester: User, question_id: ID, level: AccessLevel
-    ) -> QuestionAccess: ...
-
-    @overload
-    async def grant_access(
-        self, owner: UserRef, requester: UserRef, question_id: ID, level: AccessLevel
-    ) -> QuestionAccess: ...
-
     async def grant_access(
         self, owner: UserRef, requester: UserRef, question_id: ID, level: AccessLevel
     ) -> QuestionAccess:
@@ -109,7 +89,7 @@ class QuestionAccessService:
         requester_id = self._user_ref_id(requester)
 
         await self._validate(owner_id, requester_id, question_id)
-    
+
         requester_profile = await self._get_developer_profile(requester_id)
         if requester_profile is None:
             raise QuestionAccessValidationError(
@@ -350,7 +330,7 @@ class QuestionAccessService:
         )
         return self._session.exec(stmt).first()
 
-    def _user_ref_id(self, user: UserRef) -> str | UUID:
+    def _user_ref_id(self, user: UserRef) -> ID:
         if isinstance(user, User):
             return user.id
         return user

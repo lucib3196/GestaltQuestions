@@ -1,11 +1,20 @@
 from datetime import UTC, datetime
+from enum import StrEnum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
+from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     pass
+
+
+class CollectionAccessLevel(StrEnum):
+    VIEW = "view"
+    EDIT = "edit"
+    FULL = "full"
+    OWNER = "owner"
 
 
 class QuestionCollection(SQLModel, table=True):
@@ -48,3 +57,30 @@ class QuestionCollectionLink(SQLModel, table=True):
         foreign_key="question_collection.id",
         primary_key=True,
     )
+
+
+class QuestionCollectionAccess(SQLModel, table=True):
+    __tablename__ = "question_collection_access"  # type: ignore
+
+    __table_args__ = (
+        UniqueConstraint(
+            "collection_id",
+            "developer_id",
+            name="uq_question_collection_access_collection_developer",
+        ),
+        Index(
+            "uq_question_collection_access_one_owner_per_collection",
+            "collection_id",
+            unique=True,
+            sqlite_where=text("access_level = 'OWNER'"),
+            postgresql_where=text("access_level = 'OWNER'"),
+        ),
+    )
+
+    id: UUID | None = Field(default_factory=uuid4, primary_key=True, index=True)
+    collection_id: UUID = Field(foreign_key="question_collection.id")
+    developer_id: UUID = Field(foreign_key="developer_profile.id")
+    access_level: CollectionAccessLevel
+
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)

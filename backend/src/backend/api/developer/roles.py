@@ -12,7 +12,12 @@ from backend.shared import ID
 
 from .dependencies import DeveloperProfileDependency, DeveloperRoleAccess
 
-router = APIRouter(prefix="/roles", tags=["users",])
+router = APIRouter(
+    prefix="/roles",
+    tags=[
+        "users",
+    ],
+)
 
 
 @router.post("/")

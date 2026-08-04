@@ -3,14 +3,14 @@ from typing import Annotated
 from fastapi import Depends
 
 from backend.access_policy import RoleAccessPolicy
+from backend.api.dependencies import QuestionManagerDependency
 from backend.api.dependencies.core import SessionDep
 from backend.api.dependencies.storage import StorageDependency
 from backend.api.dependencies.users import UserManagerDependeny
 from backend.auth import UserRoles
+from backend.developer import DeveloperQuestionService
 from backend.developer.services import DeveloperProfileService
 from backend.question_access import QuestionAccessService
-from backend.developer import DeveloperQuestionService
-from backend.api.dependencies import QuestionManagerDependency
 
 
 def get_developer_role_access(user_manager: UserManagerDependeny) -> RoleAccessPolicy:

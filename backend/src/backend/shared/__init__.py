@@ -1,3 +1,3 @@
-from .schema import ID, Runtime
+from .schema import ID, Runtime, UserRef
 
-__all__ = ["ID", "Runtime"]
+__all__ = ["ID", "Runtime", "UserRef"]

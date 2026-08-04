@@ -1,6 +1,8 @@
 from enum import StrEnum
 from uuid import UUID
 
+from backend.auth.model import User
+
 
 class Runtime(StrEnum):
     PYTHON = "python"
@@ -8,3 +10,4 @@ class Runtime(StrEnum):
 
 
 ID = str | UUID | None
+type UserRef = User | ID

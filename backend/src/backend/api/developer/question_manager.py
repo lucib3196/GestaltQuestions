@@ -6,7 +6,6 @@ from fastapi.responses import Response
 from pydantic import BaseModel
 from starlette import status
 
-from .dependencies import DevQManager
 from backend.api.dependencies.users import CurrentUser
 from backend.question import (
     Question,
@@ -17,6 +16,8 @@ from backend.question import (
 )
 from backend.shared import ID
 from backend.storage import FileData, UploadFileDataConverter, download_zip
+
+from .dependencies import DevQManager
 
 router = APIRouter(
     prefix="/questions",

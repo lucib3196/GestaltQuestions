@@ -3,9 +3,12 @@ from types import SimpleNamespace
 import pytest
 from sqlmodel import select
 
-from app_test.shared.fakes.fake_user_manager import FakeUserManager
-from app_test.shared.factories.user_factory import make_user, make_developer_profile  # noqa: F401
 from app_test.shared.factories.question_factory import make_question  # noqa: F401
+from app_test.shared.factories.user_factory import (  # noqa: F401
+    make_developer_profile,
+    make_user,
+)
+from app_test.shared.fakes.fake_user_manager import FakeUserManager
 from backend.access_policy import RoleAccessPolicy
 from backend.auth import UserRoles
 from backend.chat.model import Message, Thread  # noqa: F401

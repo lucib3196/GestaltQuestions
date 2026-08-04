@@ -1,7 +1,8 @@
 from datetime import datetime
 from enum import StrEnum
 from uuid import UUID, uuid4
-from sqlalchemy import UniqueConstraint, Index, text
+
+from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, SQLModel
 
 
