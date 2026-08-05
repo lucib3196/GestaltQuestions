@@ -29,10 +29,8 @@ from backend.question_manager.services.manager import QuestionManager
 from backend.shared import ID
 from backend.storage import FileData
 
-from .developer_question_action import DeveloperQuestionAction, DeveloperQuestionPolicy
-
-if TYPE_CHECKING:
-    from backend.question_access import QuestionAccessService
+from backend.developer.actions import DeveloperQuestionPolicy, DeveloperQuestionAction
+from backend.developer.access import QuestionAccessService
 
 
 class DeveloperQuestionService:
@@ -222,6 +220,6 @@ class DeveloperQuestionService:
     ) -> None:
         """Require the access level mapped to a developer question action."""
         required_level = self._policy.required_level(action)
-        await self._question_access.require_question_access(
+        await self._question_access.has_access_by_id(
             user_id, question_id, required_level
         )

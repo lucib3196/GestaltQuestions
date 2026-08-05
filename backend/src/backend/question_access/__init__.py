@@ -6,13 +6,15 @@ from .exceptions import (
     QuestionAccessError,
     QuestionAccessValidationError,
 )
-from .services.question_access import QuestionAccessService
+from .model import QuestionAccess
+from .services import QuestionAccessAdapter
 
 __all__ = [
     "AccessLevel",
+    "QuestionAccess",
+    "QuestionAccessAdapter",
     "QuestionAccessControlError",
     "QuestionAccessDenied",
     "QuestionAccessError",
-    "QuestionAccessService",
     "QuestionAccessValidationError",
 ]

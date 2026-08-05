@@ -22,7 +22,7 @@ async def get_my_question_access(
     question_access: QuestionAccessDependency,
 ) -> QuestionAccess | None:
     try:
-        return await question_access.get_question_access(current_user, question_id)
+        return await question_access.get_access_by_id(current_user, question_id)
     except QuestionAccessError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -43,7 +43,7 @@ async def get_my_question_access_decision(
     minimum_level: AccessLevel = Query(default=AccessLevel.VIEW),
 ) -> AccessDecision:
     try:
-        return await question_access.can_access_question(
+        return await question_access.has_access_by_id(
             current_user,
             question_id,
             minimum_level,
@@ -60,21 +60,3 @@ async def get_my_question_access_decision(
         ) from e
 
 
-@router.get("/{question_id}/owner")
-async def get_my_question_owner_decision(
-    question_id: ID,
-    current_user: CurrentUser,
-    question_access: QuestionAccessDependency,
-) -> AccessDecision:
-    try:
-        return await question_access.is_question_owner(current_user, question_id)
-    except QuestionAccessError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        ) from e
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to check question ownership",
-        ) from e

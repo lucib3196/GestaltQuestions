@@ -174,7 +174,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
 
     async def revoke_access(
         self, owner: ProfileT, target: ProfileT, resource: ResourceT
-    ) -> AccessModelT:
+    ) -> None:
         try:
             await self._validate_owner(owner, resource)
 
@@ -193,7 +193,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
                     resource,
                 )
 
-            return await self._adapter.remove_access(target, resource)
+            await self._adapter.remove_access(target, resource)
         except AccessPolicyError:
             raise
         except Exception as e:
@@ -204,7 +204,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
         owner_id: ID,
         target_id: ID,
         resource_id: ID,
-    ) -> AccessModelT:
+    ) -> None:
         try:
             owner = await self._get_profile(owner_id)
             target = await self._get_profile(target_id)

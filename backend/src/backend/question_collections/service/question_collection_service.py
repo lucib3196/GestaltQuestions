@@ -1,44 +1,43 @@
+from collections.abc import Sequence
 from datetime import UTC, datetime
+from typing import Generic
+from uuid import UUID
 
-from multimethod import multimethod
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
-from backend.developer.services import DeveloperProfileService
+from backend.access_policy import ProfileT
 from backend.question import Question
+from backend.question_collections.exceptions import (
+    QuestionCollectionNotFoundError,
+    QuestionCollectionOperationError,
+    QuestionCollectionValidationError,
+)
 from backend.question_collections.model import (
     QuestionCollection,
     QuestionCollectionLink,
-)
-from backend.question_collections.schema import (
-    QuestionCollectionCreate,
-    QuestionCollectionUpdate,
 )
 from backend.shared import ID
 from backend.utils import convert_uuid
 
 
-class QuestionCollectionService:
-    def __init__(
-        self,
-        session: Session,
-        profile: DeveloperProfileService,
-    ) -> None:
+class QuestionCollectionService(Generic[ProfileT]):
+    def __init__(self, session: Session) -> None:
         self._session = session
-        self._profile = profile
 
     async def create_collection(
-        self, data: QuestionCollectionCreate
+        self,
+        owner: ProfileT,
+        title: str,
+        parent: QuestionCollection | None = None,
     ) -> QuestionCollection:
-        user_profile = await self._profile.get_profile(data.owner_id)
-        parent = self._validate_parent(
-            parent_id=data.parent_id,
-            owner_id=user_profile.id,
-        )
+        owner_id = self._require_profile_id(owner)
+        self._validate_parent(parent, owner_id)
+
         try:
             collection = QuestionCollection(
-                title=data.title,
-                owner_id=user_profile.id,
+                title=title,
+                owner_id=owner_id,
                 parent=parent,
                 parent_id=parent.id if parent else None,
             )
@@ -46,132 +45,205 @@ class QuestionCollectionService:
             self._session.commit()
             self._session.refresh(collection)
             return collection
-
         except SQLAlchemyError as e:
             self._session.rollback()
-            raise ValueError(
-                f"[QuestionCollectionService] Failed to create collection {e}"
-            )
+            raise QuestionCollectionOperationError("create", str(e)) from e
 
-    async def delete_collection(self, owner_id: ID, collection_id: ID) -> bool:
-        collection = self.get_collection_by_owner(owner_id, collection_id)
-        self._session.delete(collection)
-        self._session.commit()
-        return True
+    async def delete_collection(
+        self,
+        owner: ProfileT,
+        collection_id: ID,
+    ) -> bool:
+        collection = self.get_collection_by_owner(owner, collection_id)
+        if collection is None:
+            raise QuestionCollectionNotFoundError(str(collection_id))
+
+        try:
+            self._session.delete(collection)
+            self._session.commit()
+            return True
+        except SQLAlchemyError as e:
+            self._session.rollback()
+            raise QuestionCollectionOperationError("delete", str(e)) from e
 
     async def update_collection(
         self,
-        owner_id: ID,
+        owner: ProfileT,
         collection_id: ID,
-        data: QuestionCollectionUpdate,
+        title: str | None = None,
+        parent: QuestionCollection | None = None,
     ) -> QuestionCollection:
-        user_profile = await self._profile.get_profile(owner_id)
-        collection = self.get_collection_by_owner(user_profile.id, collection_id)
+        owner_id = self._require_profile_id(owner)
+        collection = self.get_collection_by_owner(owner, collection_id)
         if collection is None:
-            raise ValueError("Collection does not exist")
+            raise QuestionCollectionNotFoundError(str(collection_id))
+
+        self._validate_parent(parent, owner_id)
+        if parent and parent.id == collection.id:
+            raise QuestionCollectionValidationError(
+                "Collection cannot be its own parent"
+            )
 
         try:
-            if data.title is not None:
-                collection.title = data.title
+            if title is not None:
+                collection.title = title
 
-            if data.parent_id is not None:
-                parent = self._validate_parent(
-                    parent_id=data.parent_id,
-                    owner_id=user_profile.id,
-                )
-                if parent and parent.id == collection.id:
-                    raise ValueError("Collection cannot be its own parent")
-                collection.parent = parent
-                collection.parent_id = parent.id if parent else None
-
+            collection.parent = parent
+            collection.parent_id = parent.id if parent else None
             collection.updated_at = datetime.now(UTC)
+
             self._session.add(collection)
             self._session.commit()
             self._session.refresh(collection)
             return collection
         except SQLAlchemyError as e:
             self._session.rollback()
-            raise ValueError(
-                f"[QuestionCollectionService] Failed to update collection {e}"
-            ) from e
-
-    @multimethod
-    async def add_question(  # pyright: ignore[reportRedeclaration]
-        self, collection_id: ID, qid: ID
-    ) -> QuestionCollectionLink:
-        collection = self.get_collection(collection_id)
-        if collection is None or collection.id is None:
-            raise ValueError("Collection does not exist")
-
-        return self._add_question_link(collection.id, qid)
-
-    @multimethod
-    async def add_question(
-        self,
-        collection_id: ID,
-        question: Question,
-    ) -> QuestionCollectionLink:
-        if question.id is None:
-            raise ValueError("Question does not have an id")
-        return await self.add_question(collection_id, question.id)
+            raise QuestionCollectionOperationError("update", str(e)) from e
 
     def get_collection(self, collection_id: ID) -> QuestionCollection | None:
         return self._session.get(QuestionCollection, convert_uuid(collection_id))
 
-    def get_collection_by_owner(self, owner_id: ID, collection_id: ID):
+    def get_collection_by_owner(
+        self,
+        owner: ProfileT,
+        collection_id: ID,
+    ) -> QuestionCollection | None:
+        owner_id = self._require_profile_id(owner)
+
         try:
             stmt = select(QuestionCollection).where(
                 QuestionCollection.id == convert_uuid(collection_id),
-                QuestionCollection.owner_id == convert_uuid(owner_id),
+                QuestionCollection.owner_id == owner_id,
             )
             return self._session.exec(stmt).first()
         except SQLAlchemyError as e:
-            raise ValueError("Failed to get collection") from e
+            raise QuestionCollectionOperationError("retrieve", str(e)) from e
 
-    def _add_question_link(
+    def list_collections_by_owner(
+        self,
+        owner: ProfileT,
+        offset: int | None = None,
+        limit: int | None = 10,
+    ) -> Sequence[QuestionCollection]:
+        try:
+            owner_id = self._require_profile_id(owner)
+            stmt = (
+                select(QuestionCollection)
+                .where(
+                    QuestionCollection.owner_id == owner_id,
+                )
+                .order_by(QuestionCollection.created_at.desc())  # type: ignore[attr-defined]
+                .offset(offset)
+                .limit(limit)
+            )
+            return self._session.exec(stmt).all()
+        except SQLAlchemyError as e:
+            raise QuestionCollectionOperationError("retrieve", str(e)) from e
+
+    async def add_question(
         self,
         collection_id: ID,
         question_id: ID,
     ) -> QuestionCollectionLink:
+        collection = self.get_collection(collection_id)
+        if collection is None or collection.id is None:
+            raise QuestionCollectionNotFoundError(str(collection_id))
+
         try:
-            qlink = QuestionCollectionLink(
+            link = QuestionCollectionLink(
                 question_id=convert_uuid(question_id),
                 collection_id=convert_uuid(collection_id),
             )
-            self._session.add(qlink)
+            self._session.add(link)
             self._session.commit()
-            self._session.refresh(qlink)
-            return qlink
+            self._session.refresh(link)
+            return link
         except SQLAlchemyError as e:
             self._session.rollback()
-            raise ValueError(
-                f"[QuestionCollectionService] Failed to add question {e}"
+            raise QuestionCollectionOperationError("add question to", str(e)) from e
+
+    async def get_all_questions(self, collection_id: ID) -> Sequence[Question]:
+        collection = self.get_collection(collection_id)
+        if collection is None or collection.id is None:
+            raise QuestionCollectionNotFoundError(str(collection_id))
+
+        try:
+            stmt = (
+                select(Question)
+                .join(
+                    QuestionCollectionLink,
+                    QuestionCollectionLink.question_id == Question.id,  # type: ignore
+                )
+                .where(QuestionCollectionLink.collection_id == collection.id)
+            )
+            return self._session.exec(stmt).all()
+        except SQLAlchemyError as e:
+            raise QuestionCollectionOperationError(
+                "retrieve questions from",
+                str(e),
             ) from e
 
-    def _validate_parent(
-        self, parent_id: ID, owner_id: ID
-    ) -> QuestionCollection | None:
-        owner_id = convert_uuid(owner_id)
-        if parent_id:
-            parent_id = convert_uuid(parent_id)
-            parent = self._session.get(QuestionCollection, parent_id)
-            if not parent:
-                raise ValueError("Parent collection does not exist")
+    async def remove_question(
+        self,
+        collection_id: ID,
+        question_id: ID,
+    ) -> bool:
+        try:
+            link = self._session.get(
+                QuestionCollectionLink,
+                (
+                    convert_uuid(question_id),
+                    convert_uuid(collection_id),
+                ),
+            )
+            if link is None:
+                raise QuestionCollectionNotFoundError(
+                    f"{collection_id}/questions/{question_id}"
+                )
 
-            if parent.owner_id != owner_id:
-                raise ValueError("Parent collection does not belong to this developer")
+            self._session.delete(link)
+            self._session.commit()
+            return True
+        except QuestionCollectionNotFoundError:
+            raise
+        except SQLAlchemyError as e:
+            self._session.rollback()
+            raise QuestionCollectionOperationError(
+                "remove question from",
+                str(e),
+            ) from e
 
-            return parent
-        parent = None
-        return None
-
-    def _reconstruct(self, collection: QuestionCollection):
+    def reconstruct_path(self, collection: QuestionCollection) -> str:
         parts: list[str] = []
-        c: QuestionCollection | None = collection
-        while c is not None:
-            parts.append(c.title)
-            if c.parent_id is None:
+        current: QuestionCollection | None = collection
+
+        while current is not None:
+            parts.append(current.title)
+            if current.parent_id is None:
                 break
-            c = self.get_collection(c.parent_id)
+            current = self.get_collection(current.parent_id)
 
         return "->".join(reversed(parts))
+
+    def _validate_parent(
+        self,
+        parent: QuestionCollection | None,
+        owner_id: UUID,
+    ) -> None:
+        if parent is None:
+            return
+
+        if parent.id is None:
+            raise QuestionCollectionValidationError(
+                "Parent collection must be persisted"
+            )
+
+        if parent.owner_id != owner_id:
+            raise QuestionCollectionValidationError(
+                "Parent collection does not belong to this developer"
+            )
+
+    def _require_profile_id(self, profile: ProfileT) -> UUID:
+        if profile.id is None:
+            raise QuestionCollectionValidationError("Profile must be persisted")
+        return profile.id

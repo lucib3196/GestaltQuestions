@@ -1,20 +1,14 @@
 from datetime import UTC, datetime
-from enum import StrEnum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, Relationship, SQLModel
 
+from backend.access_policy import AccessLevel
+
 if TYPE_CHECKING:
     pass
-
-
-class CollectionAccessLevel(StrEnum):
-    VIEW = "view"
-    EDIT = "edit"
-    FULL = "full"
-    OWNER = "owner"
 
 
 class QuestionCollection(SQLModel, table=True):
@@ -80,7 +74,7 @@ class QuestionCollectionAccess(SQLModel, table=True):
     id: UUID | None = Field(default_factory=uuid4, primary_key=True, index=True)
     collection_id: UUID = Field(foreign_key="question_collection.id")
     developer_id: UUID = Field(foreign_key="developer_profile.id")
-    access_level: CollectionAccessLevel
+    access_level: AccessLevel
 
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)

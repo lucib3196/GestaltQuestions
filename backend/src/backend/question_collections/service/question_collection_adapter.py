@@ -9,25 +9,27 @@ from backend.access_policy import (
     ResourceAccessOperationError,
     ResourceAccessValidationError,
 )
-from backend.access_policy import ProfileT
-from backend.question import Question
-from backend.question.schema import Status
-from backend.question_access.model import QuestionAccess
+from backend.developer.model import DeveloperProfile
+from backend.question_collections.model import (
+    QuestionCollection,
+    QuestionCollectionAccess,
+)
 from backend.shared import ID
 from backend.utils import convert_uuid
 
 
-class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Question]):
-    def __init__(
-        self,
-        session: Session,
-    ) -> None:
-        super().__init__("Question")
+class QuestionCollectionAdapter(
+    ResourceAccessAdapter[
+        QuestionCollectionAccess, DeveloperProfile, QuestionCollection
+    ]
+):
+    def __init__(self, session: Session) -> None:
+        super().__init__("Collection")
         self._session = session
 
-    async def get_resource(self, resource_id: ID) -> Question | None:
+    async def get_resource(self, resource_id: ID) -> QuestionCollection | None:
         try:
-            return self._session.get(Question, convert_uuid(resource_id))
+            return self._session.get(QuestionCollection, convert_uuid(resource_id))
         except SQLAlchemyError as e:
             raise self._operation_error(
                 "retrieve resource",
@@ -36,14 +38,16 @@ class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Ques
             ) from e
 
     async def get_access(
-        self, resource: Question, profile: ProfileT
-    ) -> QuestionAccess | None:
+        self,
+        resource: QuestionCollection,
+        profile: DeveloperProfile,
+    ) -> QuestionCollectionAccess | None:
         self._validate_resource(resource)
 
         try:
-            stmt = select(QuestionAccess).where(
-                QuestionAccess.question_id == resource.id,
-                QuestionAccess.developer_id == profile.id,
+            stmt = select(QuestionCollectionAccess).where(
+                QuestionCollectionAccess.collection_id == resource.id,
+                QuestionCollectionAccess.developer_id == profile.id,
             )
             return self._session.exec(stmt).first()
         except SQLAlchemyError as e:
@@ -55,20 +59,23 @@ class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Ques
             ) from e
 
     async def build_access(
-        self, resource: Question, profile: ProfileT, level: AccessLevel
-    ) -> QuestionAccess:
+        self,
+        resource: QuestionCollection,
+        profile: DeveloperProfile,
+        level: AccessLevel,
+    ) -> QuestionCollectionAccess:
         self._validate_resource(resource)
 
         try:
-            qaccess = QuestionAccess(
-                question_id=resource.id,  # type: ignore
+            access = QuestionCollectionAccess(
+                collection_id=resource.id,  # type: ignore[arg-type]
                 developer_id=profile.id,
                 access_level=level,
             )
-            self._session.add(qaccess)
+            self._session.add(access)
             self._session.commit()
-            self._session.refresh(qaccess)
-            return qaccess
+            self._session.refresh(access)
+            return access
         except SQLAlchemyError as e:
             self._session.rollback()
             raise self._operation_error(
@@ -79,8 +86,10 @@ class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Ques
             ) from e
 
     async def update_access(
-        self, access: QuestionAccess, level: AccessLevel
-    ) -> QuestionAccess:
+        self,
+        access: QuestionCollectionAccess,
+        level: AccessLevel,
+    ) -> QuestionCollectionAccess:
         try:
             access.access_level = level
             access.updated_at = datetime.now()
@@ -92,12 +101,16 @@ class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Ques
             self._session.rollback()
             raise self._operation_error(
                 "update access",
-                resource_id=str(access.question_id),
+                resource_id=str(access.collection_id),
                 profile_id=str(access.developer_id),
                 details=str(e),
             ) from e
 
-    async def remove_access(self, target: ProfileT, resource: Question) -> None:
+    async def remove_access(
+        self,
+        target: DeveloperProfile,
+        resource: QuestionCollection,
+    ) -> None:
         self._validate_resource(resource)
 
         try:
@@ -112,7 +125,6 @@ class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Ques
 
             self._session.delete(existing)
             self._session.commit()
-
         except ResourceAccessValidationError:
             raise
         except SQLAlchemyError as e:
@@ -124,20 +136,21 @@ class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Ques
                 details=str(e),
             ) from e
 
-    async def is_owner(self, resource: Question, profile: ProfileT) -> bool:
-        return resource.created_by_id == profile.id
+    async def is_owner(
+        self,
+        resource: QuestionCollection,
+        profile: DeveloperProfile,
+    ) -> bool:
+        return resource.owner_id == profile.id
 
-    async def is_public(self, resource: Question) -> bool:
-        return resource.status == Status.PUBLISHED
-
-    def _validate_resource(self, resource: Question) -> None:
+    def _validate_resource(self, resource: QuestionCollection) -> None:
         if resource.id is None:
             raise ResourceAccessValidationError(
-                "Question must be persisted before access can be managed",
+                "Collection must be persisted before access can be managed",
                 resource_name=self.name,
             )
 
-    def _resource_id(self, resource: Question) -> str | None:
+    def _resource_id(self, resource: QuestionCollection) -> str | None:
         if resource.id is None:
             return None
         return str(resource.id)

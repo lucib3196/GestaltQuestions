@@ -4,18 +4,19 @@ from unittest.mock import MagicMock
 import pytest
 from sqlmodel import select
 
-from app_test.shared.factories.question_factory import make_question  # noqa: F401
-from app_test.shared.factories.user_factory import (  # noqa: F401
+from app_test.shared.factories import (
     make_developer_profile,
     make_user,
-)
-from app_test.shared.fakes.fake_user_manager import FakeUserManager
+    make_question,
+)  # noqa: F401
+from app_test.shared.fakes import FakeUserManager, FakeStorage
 from backend.access_policy import AccessLevel
 from backend.auth import UserRoles
 from backend.chat.model import Message, Thread  # noqa: F401
 from backend.developer import DeveloperProfileService
 from backend.question import Status
-from backend.question_access import QuestionAccessService
+from backend.question_access import QuestionAccessAdapter
+from backend.developer.access import QuestionAccessService
 from backend.question_access.model import QuestionAccess
 
 
@@ -26,9 +27,7 @@ def fake_user_manager():
 
 @pytest.fixture
 def mocked_storage():
-    storage = MagicMock()
-    storage.create_dir = MagicMock()
-    return storage
+    return FakeStorage()
 
 
 @pytest.fixture
@@ -42,7 +41,10 @@ def developer_profile_service(db_session, fake_user_manager, mocked_storage):
 
 @pytest.fixture
 def question_access(db_session, developer_profile_service):
-    return QuestionAccessService(db_session, developer_profile_service)
+    return QuestionAccessService(
+        QuestionAccessAdapter(db_session),
+        developer_profile_service,
+    )
 
 
 @pytest.fixture
@@ -270,12 +272,11 @@ async def test_revoke_access_removes_question_access(
         AccessLevel.FULL,
     )
 
-    revoked = await question_access.revoke_access_by_id(
+    await question_access.revoke_access_by_id(
         owned_question.owner.id,
         owned_question.requester.id,
         owned_question.question.id,
     )
-
 
     stored_access = db_session.exec(
         select(QuestionAccess).where(QuestionAccess.id == qaccess.id)

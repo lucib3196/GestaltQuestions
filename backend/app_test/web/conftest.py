@@ -8,12 +8,12 @@ from fastapi.testclient import TestClient
 
 from app_test.conftest import storage_params
 from backend.api.deps import (
-    get_developer_profile_service,
     get_session,
     get_storage_manager,
     get_storage_type,
     get_user_mng,
 )
+from backend.api.developer.dependencies import get_developer_profile_service
 from backend.auth import InstitutionDB, RoleDB, UserManager
 from backend.core import get_settings
 from backend.developer.services import (

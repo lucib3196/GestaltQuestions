@@ -1,6 +1,6 @@
 from enum import StrEnum
 
-from backend.question_access.model import AccessLevel
+from backend.access_policy import AccessLevel
 
 
 class DeveloperQuestionAction(StrEnum):
@@ -31,4 +31,29 @@ class DeveloperQuestionPolicy:
     }
 
     def required_level(self, action: DeveloperQuestionAction) -> AccessLevel:
+        return self._ACTION_ACCESS[action]
+
+
+class DeveloperCollectionAction(StrEnum):
+    VIEW = "view"
+    CREATE_CHILD = "create_child"
+    UPDATE = "update"
+    DELETE = "delete"
+    ADD_QUESTION = "add_question"
+    REMOVE_QUESTION = "remove_question"
+    SHARE = "share"
+
+
+class DeveloperCollectionPolicy:
+    _ACTION_ACCESS = {
+        DeveloperCollectionAction.VIEW: AccessLevel.VIEW,
+        DeveloperCollectionAction.CREATE_CHILD: AccessLevel.EDIT,
+        DeveloperCollectionAction.UPDATE: AccessLevel.EDIT,
+        DeveloperCollectionAction.DELETE: AccessLevel.FULL,
+        DeveloperCollectionAction.ADD_QUESTION: AccessLevel.EDIT,
+        DeveloperCollectionAction.REMOVE_QUESTION: AccessLevel.EDIT,
+        DeveloperCollectionAction.SHARE: AccessLevel.FULL,
+    }
+
+    def required_level(self, action: DeveloperCollectionAction) -> AccessLevel:
         return self._ACTION_ACCESS[action]

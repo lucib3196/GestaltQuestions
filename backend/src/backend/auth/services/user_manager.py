@@ -18,7 +18,7 @@ from backend.auth.exceptions import (
 from backend.auth.model import Institution, Role, User
 from backend.auth.schemas import UserCreate, UserRead, UserRoles, ValidInstitutions
 from backend.core import logger
-from backend.shared.schema import ID
+from backend.shared import ID
 
 from .institution import InstitutionDB
 from .role import RoleDB
