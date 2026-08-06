@@ -40,7 +40,7 @@ class User(SQLModel, table=True):
     first_name: str
     last_name: str
     username: str | None = Field(default=None, unique=True)
-    email: str = Field(index=True)
+    email: str = Field(index=True, unique=True)
 
     roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
 
@@ -50,4 +50,7 @@ class User(SQLModel, table=True):
     developer_profile: Optional["DeveloperProfile"] = Relationship(
         back_populates="user"
     )
-    threads: list["Thread"] = Relationship(back_populates="user")
+    threads: list["Thread"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )

@@ -19,6 +19,12 @@ import {
 } from "./pages/QuestionBuilder";
 import { GeneralQuestionRender } from "./pages/Questions";
 
+import QuestionCollections from "./features/QuestionCollections/QuestionCollections";
+
+function Test(){
+  return <div><QuestionCollections/></div>
+}
+
 
 function App() {
   return (
@@ -33,7 +39,7 @@ function App() {
             <Route path="/questions" element={<Questions />} />
             <Route path="/questions/:qid" element={<GeneralQuestionRender />} />
 
-            {/* <Route path = "/test" element={<Test/>}></Route> */}
+            <Route path = "/test" element={<Test/>}></Route>
 
             {/* Non User Specific */}
 

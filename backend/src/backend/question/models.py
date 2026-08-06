@@ -88,6 +88,7 @@ class Question(SQLModel, table=True):
     # Ownership and timestamps.
     created_by: Optional["DeveloperProfile"] = Relationship(
         back_populates="created_questions",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
     created_by_id: UUID | None = SQLField(
         default=None,

@@ -1,4 +1,5 @@
 export * from "./questionAPI";
+export * from "./Collections";
 export type {
   QuestionRunAnswerMap,
   QuestionRunQuizData,

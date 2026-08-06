@@ -1,6 +1,6 @@
 from datetime import datetime
 from uuid import UUID
-
+from dataclasses import dataclass
 from pydantic import BaseModel
 
 from backend.auth import ValidInstitutions
@@ -23,6 +23,9 @@ class QuestionSearchParams(BaseModel):
     language: RuntimeLanguage | list[RuntimeLanguage] | None = None
     # Backend-only filter for published table queries
     published: bool | None = None
+    # Filter questions by collection membership
+    collection_id: UUID | None = None
+    collection_title: str | None = None
 
     isAdaptive: bool | None = None
     # General offset and limits
@@ -42,5 +45,14 @@ class QuestionTableRow(BaseModel):
     topics: list[str | None] | None
     question_type: list[QType | str | None] | None
     available_runtimes: list[RuntimeLanguage | str]
+    collection_id: UUID | None
+    collection_title: str | None
     created_at: datetime | None = None
     updated_at: datetime | None = None
+
+
+@dataclass(frozen=True)
+class QuestionTableSearchContext:
+    owner_id: UUID | None = None
+    developer_profile_id: UUID | None = None
+    collection_owner_id: UUID | None = None

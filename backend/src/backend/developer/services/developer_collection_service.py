@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from uuid import UUID
 
 from backend.developer.exceptions import DeveloperAccessDenied
 from backend.developer.model import DeveloperProfile
@@ -137,6 +138,15 @@ class DeveloperCollectionService:
         return self._collections.list_collections_by_owner(
             await self._developer_profiles.get_profile(user_id), offset, limit
         )
+
+    async def get_owner_profile_id(self, user_id: ID) -> UUID:
+        owner = await self._developer_profiles.get_profile(user_id)
+        if owner.id is None:
+            raise DeveloperAccessDenied(
+                "Developer profile must be persisted",
+                user_id=str(user_id),
+            )
+        return owner.id
 
     async def get_all_questions(
         self, user_id: ID, collection_id: ID

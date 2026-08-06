@@ -14,11 +14,13 @@ from backend.developer.access import (
     QuestionCollectionAccessService,
 )
 from backend.developer.services import DeveloperProfileService
+from backend.developer.services.developer_question_table import DeveloperTables
 from backend.question_access import QuestionAccessAdapter
 from backend.question_collections import (
     QuestionCollectionAdapter,
     QuestionCollectionService,
 )
+from backend.question_views.service.table_query_service import TableQueryService
 
 
 def get_developer_role_access(user_manager: UserManagerDependeny) -> RoleAccessPolicy:
@@ -123,6 +125,18 @@ def get_dev_question_manager(
 DevQManager = Annotated[
     DeveloperQuestionService,
     Depends(get_dev_question_manager),
+]
+
+
+def get_developer_tables(
+    session: SessionDep,
+) -> DeveloperTables:
+    return DeveloperTables(TableQueryService(session))
+
+
+DeveloperTablesDependency = Annotated[
+    DeveloperTables,
+    Depends(get_developer_tables),
 ]
 
 
