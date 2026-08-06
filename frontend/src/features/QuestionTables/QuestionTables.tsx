@@ -14,17 +14,25 @@ import {
   useQuestionTableContext,
 } from "./instance/context";
 import { buildQuestionTableQuery } from "./utils/buildQuestionTableQuery";
+import type { QuestionTableSearchParams } from "../../services";
 
 export type QuestionTableViewProps = {
   onQuestionSelect?: (questionId: string) => void;
+  baseQuery?: QuestionTableSearchParams;
 };
 
-function useTableQuery(columns: QuestionTableColumn[]) {
+function useTableQuery(
+  columns: QuestionTableColumn[],
+  baseQuery: QuestionTableSearchParams = {},
+) {
   const searchTerm = useQuestionTableContext((s) => s.search);
   const rawFilters = useQuestionTableContext((s) => s.filters);
 
   return useMemo(
-    () => buildQuestionTableQuery(columns, rawFilters, searchTerm),
+    () => ({
+      ...buildQuestionTableQuery(columns, rawFilters, searchTerm),
+      ...baseQuery,
+    }),
     [columns, searchTerm, rawFilters],
   );
 }
@@ -70,9 +78,13 @@ function AllQuestionsTableContent({
   );
 }
 
-function MyQuestionsTableContent({ onQuestionSelect }: QuestionTableViewProps) {
+function MyQuestionsTableContent({
+  onQuestionSelect,
+  baseQuery,
+}: QuestionTableViewProps) {
   const columns = useMemo(() => createMyQuestionTableColumns(), []);
-  const query = useTableQuery(columns);
+  const query = useTableQuery(columns, baseQuery);
+
   const { questions } = useMyQuestions(query);
 
   return (

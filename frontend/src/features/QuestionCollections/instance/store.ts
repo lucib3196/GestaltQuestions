@@ -9,43 +9,27 @@ import type { NormalizedCollections } from "./types";
 
 type QuestionCollectionState = {
   // Manages general state for the collections. Treated as a folder structure
-
   normalizedCollection: NormalizedCollections;
-
-  // Handles any selected or expanded collections
+  // Handles any selected and the current expanded collections
   expandedCollectionIds: Set<CollectionId>;
   selectedCollectionIds: Set<CollectionId>;
-
   // Question + Collections + cache
-  questionByCollectionId: Record<CollectionId, CollectionQuestion[]>;
-  loadedQuestionCollectionIds: Set<CollectionId>;
-  loadingQuestionCollectionIds: Set<CollectionId>;
-
-  // Handle Error States
-  collectionsError: string | null;
-  questionErrorsByCollectionId: Record<CollectionId, string>;
+  qByCollectionIds: Record<CollectionId, CollectionQuestion[]>;
+  loadedQCollectionIds: Set<CollectionId>;
+  loadingQCollectionIds: Set<CollectionId>;
 };
 
 type QuestionCollectionActions = {
-  setCollections: (collections: QuestionCollection[]) => void;
-  toggleSelectedCollection: (collectionId: CollectionId) => void;
-  setSelectedCollectionIds: (collectionIds: CollectionId[]) => void;
+  // Gets the raw collection and normalizes it for me
+  setNormalizeCollection: (collections: QuestionCollection[]) => void;
 
-  //   Setting Question Loading
-  setCollectionQuestionsLoading: (collectionId: CollectionId) => void;
-  setCollectionQuestionsLoaded: (
+  // Setting the Question + Collections
+  setLoadingQCollectionIds: (collectionId: CollectionId) => void;
+  setLoadedQCollectionIds: (
     collectionId: CollectionId,
     questions: CollectionQuestion[],
   ) => void;
-
-  clearSelectedCollections: () => void;
-
-  //   Setting errors
-  setCollectionsError: (error: string) => void;
-  setCollectionQuestionsError: (
-    collectionId: CollectionId,
-    error: string,
-  ) => void;
+  clearLoadingQCollectionIds: (collectionId: CollectionId) => void;
 };
 
 type QuestionCollectionStore = QuestionCollectionState &
@@ -61,88 +45,59 @@ const initialState: QuestionCollectionState = {
   expandedCollectionIds: new Set(),
   selectedCollectionIds: new Set(),
 
-  questionByCollectionId: {},
-  loadedQuestionCollectionIds: new Set(),
-  loadingQuestionCollectionIds: new Set(),
-
-  collectionsError: null,
-  questionErrorsByCollectionId: {},
+  qByCollectionIds: {},
+  loadedQCollectionIds: new Set(),
+  loadingQCollectionIds: new Set(),
 };
 
 export const useQuestionCollectionStore = create<QuestionCollectionStore>(
   (set) => ({
     ...initialState,
 
-    setCollections: (colletions) => {
+    setNormalizeCollection: (colletions) => {
       let norm = normalizeCollections(colletions);
       set({
         normalizedCollection: norm,
       });
     },
-    toggleSelectedCollection: (id) => {
-      set({
-        selectedCollectionIds: new Set([id]),
-      });
-    },
-    setSelectedCollectionIds: (ids) => {
-      set({ selectedCollectionIds: new Set(ids) });
-    },
 
-    setCollectionQuestionsLoading: (collectionId) => {
+    setLoadingQCollectionIds: (collectionId) => {
       set((state) => {
-        const loading = new Set(state.loadingQuestionCollectionIds);
+        const loading = new Set(state.loadingQCollectionIds);
         loading.add(collectionId);
 
-        const errors = { ...state.questionErrorsByCollectionId };
-        delete errors[collectionId];
-
         return {
-          loadingQuestionCollectionIds: loading,
-          questionErrorsByCollectionId: errors,
+          loadingQCollectionIds: loading,
         };
       });
     },
 
-    setCollectionQuestionsLoaded: (collectionId, questions) => {
+    setLoadedQCollectionIds: (collectionId, questions) => {
       set((state) => {
-        const loading = new Set(state.loadingQuestionCollectionIds);
+        const loading = new Set(state.loadingQCollectionIds);
         loading.delete(collectionId);
 
-        const loaded = new Set(state.loadedQuestionCollectionIds);
+        const loaded = new Set(state.loadedQCollectionIds);
         loaded.add(collectionId);
 
-        const errors = { ...state.questionErrorsByCollectionId };
-        delete errors[collectionId];
-
         return {
-          questionByCollectionId: {
-            ...state.questionByCollectionId,
+          qByCollectionIds: {
+            ...state.qByCollectionIds,
             [collectionId]: questions,
           },
-          loadingQuestionCollectionIds: loading,
-          loadedQuestionCollectionIds: loaded,
-          questionErrorsByCollectionId: errors,
+          loadingQCollectionIds: loading,
+          loadedQCollectionIds: loaded,
         };
       });
     },
-    clearSelectedCollections: () => {
-      set({ selectedCollectionIds: new Set() });
-    },
 
-    setCollectionsError: (err) => {
-      set({ collectionsError: err });
-    },
-    setCollectionQuestionsError: (collectionId, error) => {
+    clearLoadingQCollectionIds: (collectionId) => {
       set((state) => {
-        const loading = new Set(state.loadingQuestionCollectionIds);
+        const loading = new Set(state.loadingQCollectionIds);
         loading.delete(collectionId);
 
         return {
-          loadingQuestionCollectionIds: loading,
-          questionErrorsByCollectionId: {
-            ...state.questionErrorsByCollectionId,
-            [collectionId]: error,
-          },
+          loadingQCollectionIds: loading,
         };
       });
     },

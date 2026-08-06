@@ -1,45 +1,52 @@
+import { useState } from "react";
+import { CollectionsApi } from "../../../services";
+import type { CollectionId } from "../../../services";
 import { useAuth } from "../../Auth";
 import { useQuestionCollectionStore } from "../instance/store";
-import { CollectionsApi } from "../../../services";
-
 
 export function useCollectionQuestions() {
   const { user } = useAuth();
-
-  const questionCollectionById = useQuestionCollectionStore(
-    (s) => s.questionByCollectionId,
-  );
-  const loadedIds = useQuestionCollectionStore(
-    (s) => s.loadedQuestionCollectionIds,
+  const [fetchQuestionsError, setFetchQuestionsError] = useState<string | null>(
+    null,
   );
 
-  const errorsByCollectionId = useQuestionCollectionStore(
-    (s) => s.questionErrorsByCollectionId,
+  const loadedQuestionCollectionIds = useQuestionCollectionStore(
+    (s) => s.loadedQCollectionIds,
   );
-  const loadingIds = useQuestionCollectionStore(
-    (s) => s.loadingQuestionCollectionIds,
+  const loadingQuestionCollectionIds = useQuestionCollectionStore(
+    (s) => s.loadingQCollectionIds,
   );
-  const setLoading = useQuestionCollectionStore(
-    (s) => s.setCollectionQuestionsLoading,
+  const setLoadingQuestionCollectionId = useQuestionCollectionStore(
+    (s) => s.setLoadingQCollectionIds,
   );
-  const setLoaded = useQuestionCollectionStore(
-    (s) => s.setCollectionQuestionsLoaded,
+  const setLoadedQuestionCollectionId = useQuestionCollectionStore(
+    (s) => s.setLoadedQCollectionIds,
+  );
+  const clearLoadingQuestionCollectionId = useQuestionCollectionStore(
+    (s) => s.clearLoadingQCollectionIds,
+  );
+  const questionsByCollectionId = useQuestionCollectionStore(
+    (s) => s.qByCollectionIds,
   );
 
-  // Error
-  const setError = useQuestionCollectionStore(
-    (s) => s.setCollectionQuestionsError,
-  );
+  const isFetchingQuestions = loadingQuestionCollectionIds.size > 0;
 
-  async function ensureQuestionsLoaded(collectionId: string) {
+  function isLoadingQuestionsForCollection(collectionId: CollectionId) {
+    return loadingQuestionCollectionIds.has(collectionId);
+  }
+
+  async function ensureQuestionsLoaded(collectionId: CollectionId) {
     if (!user) return;
 
-
-    if (loadedIds.has(collectionId) || loadingIds.has(collectionId)) {
-      console.log("Already loaded questions", "returning")
+    if (
+      loadedQuestionCollectionIds.has(collectionId) ||
+      loadingQuestionCollectionIds.has(collectionId)
+    ) {
       return;
     }
-    setLoading(collectionId);
+
+    setFetchQuestionsError(null);
+    setLoadingQuestionCollectionId(collectionId);
 
     try {
       const token = await user.getIdToken();
@@ -47,19 +54,20 @@ export function useCollectionQuestions() {
         token,
         collectionId,
       );
-      setLoaded(collectionId, questions);
+      setLoadedQuestionCollectionId(collectionId, questions);
     } catch (err) {
-      setError(
-        collectionId,
+      clearLoadingQuestionCollectionId(collectionId);
+      setFetchQuestionsError(
         err instanceof Error ? err.message : "Failed to load questions",
       );
     }
   }
 
-  async function refetchQuestions(collectionId: string) {
+  async function refetchQuestions(collectionId: CollectionId) {
     if (!user) return;
 
-    setLoading(collectionId);
+    setFetchQuestionsError(null);
+    setLoadingQuestionCollectionId(collectionId);
 
     try {
       const token = await user.getIdToken();
@@ -68,20 +76,20 @@ export function useCollectionQuestions() {
         collectionId,
       );
 
-      setLoaded(collectionId, questions);
+      setLoadedQuestionCollectionId(collectionId, questions);
     } catch (err) {
-      setError(
-        collectionId,
+      clearLoadingQuestionCollectionId(collectionId);
+      setFetchQuestionsError(
         err instanceof Error ? err.message : "Failed to load questions",
       );
     }
   }
 
   return {
-    questionCollectionById,
-    loadedIds,
-    loadingIds,
-    errorsByCollectionId,
+    questionsByCollectionId,
+    isFetchingQuestions,
+    fetchQuestionsError,
+    isLoadingQuestionsForCollection,
     ensureQuestionsLoaded,
     refetchQuestions,
   };

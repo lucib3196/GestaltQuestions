@@ -1,13 +1,19 @@
 import { CollectionsApi } from "../../../services";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../Auth";
+import { useQuestionCollectionStore } from "../instance/store";
 
-import type { QuestionCollection } from "../../../services";
 export function useCollections() {
   const { user } = useAuth();
-  const [collections, setCollections] = useState<QuestionCollection[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const setNormalizedCollections = useQuestionCollectionStore(
+    (s) => s.setNormalizeCollection,
+  );
+  const normalizedCollection = useQuestionCollectionStore(
+    (s) => s.normalizedCollection,
+  );
 
   async function fetchCollections() {
     if (!user) return;
@@ -16,7 +22,7 @@ export function useCollections() {
     try {
       const token = await user.getIdToken();
       const collections = await CollectionsApi.getCollections(token);
-      setCollections(collections);
+      setNormalizedCollections(collections);
     } catch (err) {
       setError(String(err));
     } finally {
@@ -29,7 +35,7 @@ export function useCollections() {
   }, [user]);
 
   return {
-    collections,
+    normalizedCollection,
     loading,
     error,
   };

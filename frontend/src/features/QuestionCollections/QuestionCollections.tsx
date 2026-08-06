@@ -1,58 +1,55 @@
 import { useMemo, useState } from "react";
 
+import Container from "./components/Container";
+import QuestionCollectionToolBar from "./components/CollectionToolBar";
 import { QuestionCollectionDirectory } from "./components/QuestionCollectionDirectory";
 import { useCollections } from "./hooks/useCollection";
 import { useCollectionQuestions } from "./hooks/useCollectionQuestionsCache";
 import type { QuestionCollectionTreeNode } from "./instance/types";
 import { buildCollectionTree } from "./utils/collectionTree";
-import { useQuestionCollectionStore } from "./instance/store";
 
-import { useEffect } from "react";
 export default function QuestionCollections() {
-    const { collections } = useCollections();
-    const setCollections = useQuestionCollectionStore((s) => s.setCollections);
-    useEffect(() => {
-        setCollections(collections);
-    }, [collections, setCollections]);
+  const { normalizedCollection } = useCollections();
 
-    const normalizedCollections = useQuestionCollectionStore(
-        (s) => s.normalizedCollection,
-    );
-    const { questionCollectionById, ensureQuestionsLoaded } =
-        useCollectionQuestions();
+  const { questionsByCollectionId, ensureQuestionsLoaded } =
+    useCollectionQuestions();
+  const [expandedNodeIds, setExpandedNodeIds] = useState<Set<string>>(
+    () => new Set(),
+  );
 
-    const [expandedNodeIds, setExpandedNodeIds] = useState<Set<string>>(
-        () => new Set(),
-    );
+  const tree = useMemo(() => {
+    if (!normalizedCollection) return;
+    return buildCollectionTree(normalizedCollection, questionsByCollectionId);
+  }, [normalizedCollection, questionsByCollectionId]);
 
-    const tree = useMemo(() => {
-        if (!normalizedCollections) return;
-        return buildCollectionTree(normalizedCollections, questionCollectionById);
-    }, [questionCollectionById, normalizedCollections]);
+  const handleNodeToggle = async (node: QuestionCollectionTreeNode) => {
+    if (node.kind !== "collection") return;
+    const collectionId = node.data?.id;
+    if (!collectionId) return;
 
-    const handleNodeToggle = async (node: QuestionCollectionTreeNode) => {
-        if (node.kind !== "collection") return;
-        const collectionId = node.data?.id;
-        if (!collectionId) return;
+    await ensureQuestionsLoaded(collectionId);
 
-        await ensureQuestionsLoaded(collectionId);
+    setExpandedNodeIds((current) => {
+      const nextExpanded = new Set(current);
+      if (nextExpanded.has(node.id)) {
+        nextExpanded.delete(node.id);
+      } else {
+        nextExpanded.add(node.id);
+      }
+      return nextExpanded;
+    });
+  };
 
-        setExpandedNodeIds((current) => {
-            const nextExpanded = new Set(current);
-            if (nextExpanded.has(node.id)) {
-                nextExpanded.delete(node.id);
-            } else {
-                nextExpanded.add(node.id);
-            }
-            return nextExpanded;
-        });
-    };
-
-    return (
+  return (
+    <Container>
+      <QuestionCollectionToolBar />
+      <div className="min-h-0 flex-1 overflow-y-auto p-3">
         <QuestionCollectionDirectory
-            nodes={tree ?? []}
-            expandedNodeIds={expandedNodeIds}
-            onToggleNode={handleNodeToggle}
+          nodes={tree ?? []}
+          expandedNodeIds={expandedNodeIds}
+          onToggleNode={handleNodeToggle}
         />
-    );
+      </div>
+    </Container>
+  );
 }
