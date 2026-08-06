@@ -44,29 +44,38 @@ BEGIN
             'NUM'
         );
     END IF;
-END $$;
+
 
 -- Create any missing NUM links.
-INSERT INTO question_qtype_link (question_id, qtype_id)
-SELECT
-    question_id,
-    (
-        SELECT id
-        FROM question_type
-        WHERE name = 'numerical'
-    )
-FROM question_qtype_link
-WHERE qtype_id IN (
-    SELECT id
-    FROM question_type
-    WHERE name IN (
-        'computational',
-        'derivation',
-        'numeric',
-        'analysis'
-    )
-)
-ON CONFLICT DO NOTHING;
+-- Only run the old string-value cleanup if question_type.name is not already qtype.
+ IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_name = 'question_type'
+          AND column_name = 'name'
+          AND udt_name <> 'qtype'
+    ) THEN
+
+        INSERT INTO question_qtype_link (question_id, qtype_id)
+        SELECT
+            question_id,
+            (
+                SELECT id
+                FROM question_type
+                WHERE name::text = 'numerical'
+            )
+        FROM question_qtype_link
+        WHERE qtype_id IN (
+            SELECT id
+            FROM question_type
+            WHERE name::text IN (
+                'computational',
+                'derivation',
+                'numeric',
+                'analysis'
+            )
+        )
+        ON CONFLICT DO NOTHING;
 
 -- Remove the obsolete links.
 DELETE FROM question_qtype_link
@@ -107,6 +116,8 @@ ALTER TABLE question_type
 ALTER COLUMN name
 TYPE qtype
 USING upper(name)::qtype;
+ END IF;
+END $$
 """)
 
     with op.batch_alter_table("question", schema=None) as batch_op:
