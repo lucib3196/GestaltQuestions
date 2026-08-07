@@ -11,7 +11,7 @@ from .dependencies import DeveloperProfileDependency, DeveloperTablesDependency
 
 router = APIRouter(
     prefix="/tables",
-    tags=["Developer Tables"],
+    tags=["Developer Tables", "Question Tables"],
 )
 
 
@@ -30,3 +30,27 @@ async def search_my_questions(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=str(e),
         ) from e
+
+
+@router.post("/questions/collections/search", response_model=list[QuestionTableRow])
+async def search_my_collection_questions(
+    current_user: CurrentUser,
+    profiles: DeveloperProfileDependency,
+    tables: DeveloperTablesDependency,
+    params: QuestionSearchParams,
+) -> Sequence[QuestionTableRow]:
+    try:
+        profile = await profiles.get_profile(current_user)
+        return tables.get_questions_by_collection(profile, params)
+    except DeveloperProfileError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(e),
+        ) from e
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        ) from e
+
+

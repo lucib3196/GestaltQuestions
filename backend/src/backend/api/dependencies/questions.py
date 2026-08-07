@@ -28,13 +28,6 @@ def get_question_query(
 QuestionQueryDependency = Annotated[QuestionQueryService, Depends(get_question_query)]
 
 
-def get_table_query_service(
-    session: SessionDep,
-) -> TableQueryService:
-    return TableQueryService(session)
-
-
-TableQueryDependency = Annotated[TableQueryService, Depends(get_table_query_service)]
 
 
 def get_question_manager(
@@ -50,9 +43,7 @@ __all__ = [
     "QuestionDBDependency",
     "QuestionManagerDependency",
     "QuestionQueryDependency",
-    "TableQueryDependency",
     "get_question_database",
     "get_question_manager",
     "get_question_query",
-    "get_table_query_service",
 ]

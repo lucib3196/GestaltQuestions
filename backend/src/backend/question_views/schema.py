@@ -35,7 +35,7 @@ class QuestionSearchParams(BaseModel):
 
 class QuestionTableRow(BaseModel):
     question_id: UUID
-    owner_id: UUID
+    user_id: UUID
     developer_profile_id: UUID
     title: str
     institution_id: UUID

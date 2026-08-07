@@ -4,7 +4,7 @@ CREATE VIEW
     question_table_view AS
 SELECT
     "question"."id" AS "question_id",
-    "developer_profile"."user_id" AS "owner_id",
+    "developer_profile"."user_id" AS "user_id",
     "developer_profile"."id" AS "developer_profile_id",
     "question"."title",
     "institution"."id" AS "institution_id",

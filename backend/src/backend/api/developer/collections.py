@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from starlette import status
 
-from backend.api.dependencies import TableQueryDependency
+
 from backend.api.dependencies.users import CurrentUser
 from backend.developer.exceptions import DeveloperAccessDenied
 from backend.question import Question
@@ -80,52 +80,6 @@ async def get_collections(
         return await collections.list_collections(current_user, offset, limit)
     except DeveloperAccessDenied as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
-    except QuestionCollectionError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
-        ) from e
-
-
-@router.get(
-    "/questions/table/by-title",
-    response_model=list[QuestionTableRow],
-)
-async def get_collection_questions_table_by_title(
-    collection_title: str,
-    current_user: CurrentUser,
-    collections: DevCollectionManager,
-    table_query: TableQueryDependency,
-) -> list[QuestionTableRow]:
-    try:
-        developer_profile_id = await collections.get_owner_profile_id(current_user)
-        return table_query.search_user_questions_by_collection_title(
-            current_user,
-            developer_profile_id,
-            collection_title,
-        )
-    except DeveloperAccessDenied as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
-
-
-@router.get(
-    "/{collection_id}/questions/table",
-    response_model=list[QuestionTableRow],
-)
-async def get_collection_questions_table(
-    collection_id: ID,
-    current_user: CurrentUser,
-    collections: DevCollectionManager,
-    table_query: TableQueryDependency,
-) -> list[QuestionTableRow]:
-    try:
-        await collections.get_collection(current_user, collection_id)
-        params = QuestionSearchParams(collection_id=UUID(str(collection_id)))
-        return table_query.search_user_questions(current_user, params)
-    except DeveloperAccessDenied as e:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
-    except QuestionCollectionNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
     except QuestionCollectionError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

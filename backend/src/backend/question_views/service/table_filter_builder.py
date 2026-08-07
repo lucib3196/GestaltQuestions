@@ -9,8 +9,6 @@ from collections.abc import Sequence
 from backend.question_views.schema import QuestionTableSearchContext
 
 
-
-
 class QuestionTableFilterBuilder:
     def __init__(
         self, params: QuestionSearchParams, context: QuestionTableSearchContext
@@ -34,6 +32,7 @@ class QuestionTableFilterBuilder:
         self.add_language()
         self.add_institution()
         self.add_is_adaptive()
+        self.add_collection()
 
         where_sql = ""
         if self.clauses:
@@ -93,10 +92,7 @@ class QuestionTableFilterBuilder:
                     for index in range(len(qtype_names))
                 )
                 + ")",
-                **{
-                    f"qtype_{index}": qtype
-                    for index, qtype in enumerate(qtype_names)
-                },
+                **{f"qtype_{index}": qtype for index, qtype in enumerate(qtype_names)},
             )
 
     def add_language(self) -> None:
@@ -134,6 +130,19 @@ class QuestionTableFilterBuilder:
         if not self.params.institution:
             return
         self.add("institution = :institution", institution=self.params.institution.name)
+
+    def add_collection(self) -> None:
+        if self.params.collection_id is not None:
+            self.add(
+                "collection_id = :collection_id",
+                collection_id=self.params.collection_id,
+            )
+
+        if self.params.collection_title:
+            self.add(
+                "collection_title ILIKE :collection_title",
+                collection_title=self.params.collection_title,
+            )
 
     @staticmethod
     def _enum_names(value: StrEnum | Sequence[StrEnum] | None) -> list[str]:

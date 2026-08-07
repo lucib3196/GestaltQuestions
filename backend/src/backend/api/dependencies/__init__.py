@@ -4,11 +4,11 @@ from .questions import (
     QuestionDBDependency,
     QuestionManagerDependency,
     QuestionQueryDependency,
-    TableQueryDependency,
+
     get_question_database,
     get_question_manager,
     get_question_query,
-    get_table_query_service,
+
 )
 from .runtime import (
     QuestionRuntimeDBDependency,
@@ -54,7 +54,6 @@ __all__ = [
     "SettingDependency",
     "StorageDependency",
     "StorageTypeDep",
-    "TableQueryDependency",
     "ThreadDBDependency",
     "UserManagerDependeny",
     "bearer_scheme",
@@ -72,7 +71,6 @@ __all__ = [
     "get_session",
     "get_storage_manager",
     "get_storage_type",
-    "get_table_query_service",
     "get_thread_db",
     "get_user_mng",
 ]
