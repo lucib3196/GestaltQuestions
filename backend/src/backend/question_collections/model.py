@@ -4,11 +4,8 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, Relationship, SQLModel
-
+from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, text
 from backend.access_policy import AccessLevel
-
-if TYPE_CHECKING:
-    pass
 
 
 class QuestionCollection(SQLModel, table=True):
@@ -42,14 +39,18 @@ class QuestionCollectionLink(SQLModel, table=True):
     __tablename__ = "question_collection_link"  # type: ignore
 
     question_id: UUID | None = Field(
-        default=None,
-        foreign_key="question.id",
-        primary_key=True,
+        sa_column=Column(
+            ForeignKey("question.id", ondelete="CASCADE"),
+            nullable=False,
+            primary_key=True,
+        ),
     )
-    collection_id: UUID | None = Field(
-        default=None,
-        foreign_key="question_collection.id",
-        primary_key=True,
+    collection_id: UUID = Field(
+        sa_column=Column(
+            ForeignKey("question_collection.id", ondelete="CASCADE"),
+            nullable=False,
+            primary_key=True,
+        ),
     )
 
 
@@ -72,7 +73,12 @@ class QuestionCollectionAccess(SQLModel, table=True):
     )
 
     id: UUID | None = Field(default_factory=uuid4, primary_key=True, index=True)
-    collection_id: UUID = Field(foreign_key="question_collection.id")
+    collection_id: UUID = Field(
+        sa_column=Column(
+            ForeignKey("question_collection.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
+    )
     developer_id: UUID = Field(foreign_key="developer_profile.id")
     access_level: AccessLevel
 
