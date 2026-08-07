@@ -16,7 +16,7 @@ export default function QuestionCollections() {
 
   const tree = useMemo(() => {
     if (!normalizedCollection) return;
-    return buildCollectionTree(normalizedCollection,);
+    return buildCollectionTree(normalizedCollection);
   }, [normalizedCollection]);
 
   const handleNodeToggle = async (node: QuestionCollectionTreeNode) => {

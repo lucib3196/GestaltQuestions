@@ -15,7 +15,7 @@ export function QuestionTableLayout({
   onQuestionSelect?: (questionId: string) => void;
 }) {
   return (
-    <div className="flex h-dvh flex-col gap-4">
+    <div className="flex h-dvh flex-col gap-4 ">
       <QuestionTableToolBar columns={columns} showDelete={showDelete} />
       <QuestionTableBase
         data={questions}

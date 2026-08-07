@@ -11,6 +11,7 @@ type QuestionCollectionState = {
   // Manages general state for the collections. Treated as a folder structure
   normalizedCollection: NormalizedCollections;
   // Handles any selected and the current expanded collections
+  selectedCollectionId: CollectionId;
   expandedCollectionIds: Set<CollectionId>;
   selectedCollectionIds: Set<CollectionId>;
   // Question + Collections + cache
@@ -22,6 +23,8 @@ type QuestionCollectionState = {
 type QuestionCollectionActions = {
   // Gets the raw collection and normalizes it for me
   setNormalizeCollection: (collections: QuestionCollection[]) => void;
+
+  setSelectedCollectionId: (collectionId: CollectionId) => void;
 
   // Setting the Question + Collections
   setLoadingQCollectionIds: (collectionId: CollectionId) => void;
@@ -41,6 +44,7 @@ const initialState: QuestionCollectionState = {
     rootIds: [],
     childIdsByParentId: {},
   },
+  selectedCollectionId: "",
 
   expandedCollectionIds: new Set(),
   selectedCollectionIds: new Set(),
@@ -59,6 +63,9 @@ export const useQuestionCollectionStore = create<QuestionCollectionStore>(
       set({
         normalizedCollection: norm,
       });
+    },
+    setSelectedCollectionId: (c) => {
+      set(() => ({ selectedCollectionId: c }));
     },
 
     setLoadingQCollectionIds: (collectionId) => {

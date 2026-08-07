@@ -41,7 +41,7 @@ export function ResourceTree<TNode extends ResourceTreeNode>({
   renderNode,
 }: ResourceTreeProps<TNode>) {
   return (
-    <ul className="space-y-1">
+    <ul className="flex flex-col gap-1">
       {nodes.map((node) => (
         <ResourceTreeItem
           key={node.id}
@@ -87,7 +87,7 @@ function ResourceTreeItem<TNode extends ResourceTreeNode>({
   };
 
   return (
-    <li>
+    <li className="space-y-2">
       {renderNode({
         node,
         state,
