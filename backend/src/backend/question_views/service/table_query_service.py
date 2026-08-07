@@ -38,6 +38,7 @@ class TableQueryService:
         params: QuestionSearchParams | None = None,
         *,
         context: QuestionTableSearchContext | None = None,
+        distinct_questions: bool = True,
     ) -> TextClause:
         params = params or QuestionSearchParams()
         context = context or QuestionTableSearchContext()
@@ -46,15 +47,38 @@ class TableQueryService:
             params=params,
             context=context,
         ).build()
+        if distinct_questions:
+            statement = self._distinct_query(where_sql)
+        else:
+            statement = text(f"""
+                SELECT *
+                FROM {self._view_name} table_view
+                {where_sql}
+                ORDER BY updated_at DESC NULLS LAST, created_at DESC
+                LIMIT :limit
+                OFFSET :offset
+            """)
+        return statement.bindparams(**query_params)
+
+    def _distinct_query(self, where_sql: str):
         statement = text(f"""
             SELECT *
-            FROM {self._view_name} table_view
-            {where_sql}
+            FROM (
+                SELECT
+                    table_view.*,
+                    row_number() OVER (
+                        PARTITION BY question_id
+                        ORDER BY updated_at DESC NULLS LAST, created_at DESC
+                    ) AS row_number
+                FROM {self._view_name} table_view
+                {where_sql}
+            ) deduped
+            WHERE row_number = 1
             ORDER BY updated_at DESC NULLS LAST, created_at DESC
             LIMIT :limit
             OFFSET :offset
         """)
-        return statement.bindparams(**query_params)
+        return statement
 
 
 if __name__ == "__main__":

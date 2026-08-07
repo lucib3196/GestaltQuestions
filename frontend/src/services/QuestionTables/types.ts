@@ -20,7 +20,7 @@ export type QuestionTableSearchParams = {
 
 export type QuestionTableRow = {
   question_id: string;
-  owner_id: string;
+  user_id: string;
   developer_profile_id: string;
   title: string;
   institution_id: string;

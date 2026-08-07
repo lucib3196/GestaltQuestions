@@ -37,7 +37,7 @@ export function normalizeCollections(
 
 export function buildCollectionTree(
   state: NormalizedCollections,
-  questionByCollection: Record<string, CollectionQuestion[]>,
+  questionByCollection: Record<string, CollectionQuestion[]> = {},
 ) {
   function buildNode(id: CollectionId): QuestionCollectionTreeNode {
     const collection = state.byId[id];
@@ -64,12 +64,3 @@ export function buildCollectionTree(
   return state.rootIds.map(buildNode);
 }
 
-// export function getDescendantCollectionIds(
-//   collectionId: CollectionId,
-//   state: NormalizedCollections,
-// ): CollectionId[];
-
-// export function getCollectionPath(
-//   collectionId: CollectionId,
-//   state: NormalizedCollections,
-// ): QuestionCollection[];

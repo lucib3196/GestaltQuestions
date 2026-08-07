@@ -1,82 +1,90 @@
-import { CiFileOn } from "react-icons/ci";
-import { FaFolderClosed, FaFolderOpen } from "react-icons/fa6";
+import clsx from "clsx";
+import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 
+import type {
+  RenderNodeProps,
+  ResourceTreeProps,
+} from "../../../components/ResourceTree/ResourceTree";
 import { ResourceTree } from "../../../components/ResourceTree/ResourceTree";
 import type { QuestionCollectionTreeNode } from "../instance/types";
 
 type QuestionCollectionDirectoryProps = {
   nodes: QuestionCollectionTreeNode[];
   expandedNodeIds: Set<string>;
-  onToggleNode: (node: QuestionCollectionTreeNode) => void;
+  onToggleNode: ResourceTreeProps<QuestionCollectionTreeNode>["onToggleExpanded"];
 };
+
+function CollectionNode({
+  ...props
+}: RenderNodeProps<QuestionCollectionTreeNode>) {
+  const hasChildren = props.state.hasChildren;
+
+  return (
+    <div
+      className={clsx(
+        "group flex min-h-9 items-center gap-1 rounded-md px-1.5 py-1 text-sm transition-colors",
+        props.state.isSelected
+          ? "bg-accent/15 text-text ring-1 ring-accent/35"
+          : "text-text-muted hover:bg-surface-muted hover:text-text",
+      )}
+      style={{ paddingLeft: `${props.state.depth * 16 + 6}px` }}
+    >
+      <button
+        type="button"
+        aria-label={
+          props.state.isExpanded ? "Collapse collection" : "Expand collection"
+        }
+        aria-expanded={hasChildren ? props.state.isExpanded : undefined}
+        disabled={!hasChildren}
+        onClick={props.onToggleExpanded}
+        className={clsx(
+          "flex size-7 shrink-0 items-center justify-center rounded text-text-muted transition-colors",
+          hasChildren
+            ? "hover:bg-surface-strong hover:text-text focus-visible:outline focus-visible:outline-offset-1 focus-visible:outline-accent"
+            : "cursor-default opacity-25",
+        )}
+      >
+        <ChevronRight
+          className={clsx(
+            "size-4 transition-transform",
+            props.state.isExpanded && "rotate-90",
+          )}
+        />
+      </button>
+
+      <button
+        type="button"
+        onClick={props.onSelectNode}
+        className="min-w-0 flex-1 rounded px-2 py-1.5 text-left font-medium outline-none transition focus-visible:outline focus-visible:outline-offset-1 focus-visible:outline-accent"
+      >
+        <span className="block truncate">{props.node.label}</span>
+      </button>
+
+      <span className="h-7 w-1 shrink-0" aria-hidden="true" />
+    </div>
+  );
+}
 
 export function QuestionCollectionDirectory({
   nodes,
   expandedNodeIds,
   onToggleNode,
 }: QuestionCollectionDirectoryProps) {
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+
   return (
-    <>
-      <div className="rounded-md border border-border bg-code/70 p-3">
-        <ResourceTree
-          nodes={nodes}
-          selectedNodeId={null}
-          onToggleNode={onToggleNode}
-          expandedNodeIds={expandedNodeIds}
-          getNodeClassName={(node, state) =>
-            [
-              "group flex min-h-9 w-full items-center gap-2 rounded-md py-2 pr-3 text-left text-sm transition-colors duration-base",
-              "hover:bg-surface-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
-              node.kind === "collection"
-                ? "font-semibold text-text"
-                : "font-normal text-text-muted",
-              state.isExpanded ? "bg-surface-secondary" : "bg-transparent",
-            ].join(" ")
-          }
-          getNodeIcon={(node, state) => {
-            if (node.kind === "collection") {
-              const FolderIcon = state.isExpanded
-                ? FaFolderOpen
-                : FaFolderClosed;
-
-              return (
-                <span
-                  className="flex w-9 shrink-0 items-center justify-center gap-1 text-text-soft transition-colors group-hover:text-accent"
-                  aria-hidden="true"
-                >
-                  <span className="w-3 text-center text-xs">
-                    {state.hasChildren ? (state.isExpanded ? "▾" : "▸") : ""}
-                  </span>
-                  <FolderIcon className="text-lg" />
-                </span>
-              );
-            }
-
-            if (node.kind === "question") {
-              return (
-                <span
-                  className="flex w-9 shrink-0 items-center justify-end text-text-tertiary"
-                  aria-hidden="true"
-                >
-                  <CiFileOn className="text-lg" />
-                </span>
-              );
-            }
-
-            return null;
-          }}
-          renderNodeLabel={(node) => (
-            <span
-              className={[
-                "min-w-0 flex-1 truncate leading-5",
-                node.kind === "question" ? "font-mono text-xs" : "",
-              ].join(" ")}
-            >
-              {node.label}
-            </span>
-          )}
-        />
-      </div>
-    </>
+    <ResourceTree
+      nodes={nodes}
+      selectedNodeId={selectedNodeId}
+      expandedNodeIds={expandedNodeIds}
+      onSelectNode={(node) => setSelectedNodeId(node.id)}
+      onToggleExpanded={onToggleNode}
+      renderNode={(props) => {
+        if (props.node.kind == "collection") {
+          return <CollectionNode {...props} />;
+        }
+      }}
+    />
   );
 }

@@ -4,30 +4,25 @@ import Container from "./components/Container";
 import QuestionCollectionToolBar from "./components/CollectionToolBar";
 import { QuestionCollectionDirectory } from "./components/QuestionCollectionDirectory";
 import { useCollections } from "./hooks/useCollection";
-import { useCollectionQuestions } from "./hooks/useCollectionQuestionsCache";
 import type { QuestionCollectionTreeNode } from "./instance/types";
 import { buildCollectionTree } from "./utils/collectionTree";
 
 export default function QuestionCollections() {
   const { normalizedCollection } = useCollections();
 
-  const { questionsByCollectionId, ensureQuestionsLoaded } =
-    useCollectionQuestions();
   const [expandedNodeIds, setExpandedNodeIds] = useState<Set<string>>(
     () => new Set(),
   );
 
   const tree = useMemo(() => {
     if (!normalizedCollection) return;
-    return buildCollectionTree(normalizedCollection, questionsByCollectionId);
-  }, [normalizedCollection, questionsByCollectionId]);
+    return buildCollectionTree(normalizedCollection,);
+  }, [normalizedCollection]);
 
   const handleNodeToggle = async (node: QuestionCollectionTreeNode) => {
     if (node.kind !== "collection") return;
     const collectionId = node.data?.id;
     if (!collectionId) return;
-
-    await ensureQuestionsLoaded(collectionId);
 
     setExpandedNodeIds((current) => {
       const nextExpanded = new Set(current);

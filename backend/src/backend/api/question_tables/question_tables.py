@@ -3,7 +3,7 @@ from .dependencies import TableQueryDependecy
 from backend.question_views.schema import QuestionSearchParams, QuestionTableRow
 from typing import Sequence
 
-router = APIRouter(prefix="/question-tables", tags=["question-tables"])
+router = APIRouter(prefix="/question-tables", tags=["Question Tables"])
 
 
 @router.post("/search")
