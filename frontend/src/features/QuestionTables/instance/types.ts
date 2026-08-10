@@ -1,3 +1,5 @@
+import type { QuestionTableColumn } from "../config/columns";
+
 // Handle the state of the table
 type TableFilterValues = Record<string, unknown>;
 type TableColumnVisibility = Record<string, boolean>;
@@ -5,6 +7,7 @@ type TableColumnVisibility = Record<string, boolean>;
 export type QuestionTableState = {
   selectedIDs: string[];
   visibleColumns: TableColumnVisibility;
+  columns: QuestionTableColumn[];
   filters: TableFilterValues;
   search: string;
   limit: number;
@@ -12,6 +15,7 @@ export type QuestionTableState = {
 };
 
 export type QuestionTableBaseActions = {
+  setQuestionTableColumns: (col: QuestionTableColumn[]) => void;
   setSelectedIDs: (ids: string[]) => void;
   toggleSelectedId: (id: string) => void;
   clearSelectedIds: () => void;

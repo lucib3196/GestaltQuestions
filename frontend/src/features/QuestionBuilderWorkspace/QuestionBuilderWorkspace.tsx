@@ -1,12 +1,13 @@
 import type React from "react";
 import { useNavigate } from "react-router-dom";
 import { NavLink, Outlet } from "react-router-dom";
-
+import { useMemo } from "react";
 import { CollectionProvider } from "../QuestionCollections/instance/context";
 import { useCollectionStore } from "../QuestionCollections/instance/context";
 import DeveloperQuestionsTable from "../QuestionTables/tables/DeveloperQuestionsTable";
 import { QuestionTableStoreProvider } from "../QuestionTables/tables/QuestionTableStoreProvider";
 import QuestionBuilderSideBar from "./QuestionBuilderSideBar";
+import { createMyQuestionTableColumns, useQuestionTableContext } from "../QuestionTables";
 import { ToolBar } from "./toolbar/ToolBar";
 export function QuestionBuilderShell({
   children,
@@ -93,8 +94,11 @@ function WorkspaceLinks() {
 
 function TableView() {
   const navigate = useNavigate();
+const columns = useMemo(() => createMyQuestionTableColumns(), []);
 
   const selectedCollection = useCollectionStore((s) => s.selectedCollectionId);
+  const l = useQuestionTableContext((s)=>s.setQuestionTableColumns)
+  l(columns)
 
   return (
     <section className="flex min-w-0 flex-col gap-4">
@@ -110,6 +114,7 @@ function TableView() {
   );
 }
 export default function QuestionBuilderWorkspace() {
+    
   return (
     <QuestionBuilderShell>
       <div>

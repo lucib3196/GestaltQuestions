@@ -5,6 +5,7 @@ import { SearchBar } from "../../../components/SearchBar";
 import { useQuestionTableContext } from "../../QuestionTables";
 import { CollectionPopUp } from "../components/CollectionsPopUp";
 import { ClearFilters, ToolBarActions } from "./ToolBarActions";
+import { QuestionTableColumnVisibility } from "../../QuestionTables";
 
 export function ToolBar() {
   const searchTitle = useQuestionTableContext((s) => s.search);
@@ -13,6 +14,7 @@ export function ToolBar() {
     null,
   );
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const cols = useQuestionTableContext((s) => s.columns);
 
   //   Handle mouse down events when clicking outside
   useEffect(() => {
@@ -49,11 +51,13 @@ export function ToolBar() {
       <ClearFilters disabled={false} clearFilters={() => {}} />
 
       {openPopup === "columns" && (
-        <div className="absolute right-4 top-full z-20 mt-2 w-64">Columns</div>
+        <div className="absolute right-4 top-20 z-20 mt-2 w-64">
+          <QuestionTableColumnVisibility columns={cols} />
+        </div>
       )}
 
       {openPopup === "collections" && (
-        <div className="absolute right-0 top-full z-20 mt-3 w-[min(36rem,calc(100vw-2rem))]">
+        <div className="absolute right-0 top-20 z-20 mt-3 w-[min(36rem,calc(100vw-2rem))]">
           <CollectionPopUp onClose={() => setOpenPopup(null)} />
         </div>
       )}
