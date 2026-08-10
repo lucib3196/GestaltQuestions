@@ -5,7 +5,7 @@ import type {
     CollectionId,
     UpdateCollectionPayload,
 } from "../../../services";
-import { useQuestionCollectionStore } from "../instance/store";
+import { useCollectionStore } from "../instance/context";
 
 
 function useUpdateCollection() {
@@ -13,7 +13,7 @@ function useUpdateCollection() {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<null | string>(null);
 
-    const setNormalizedCollections = useQuestionCollectionStore(
+    const setNormalizedCollections = useCollectionStore(
         (s) => s.setNormalizeCollection,
     );
 

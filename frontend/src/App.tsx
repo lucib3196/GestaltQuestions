@@ -18,13 +18,31 @@ import {
   QuestionsListPage,
 } from "./pages/QuestionBuilder";
 import { GeneralQuestionRender } from "./pages/Questions";
-
+import { ToolBar } from "./features/QuestionBuilderWorkspace/toolbar/ToolBar";
 import QuestionCollections from "./features/QuestionCollections/QuestionCollections";
+import { useState } from "react";
+import QuestionBuilderWorkspace from "./features/QuestionBuilderWorkspace/QuestionBuilderWorkspace";
 
-function Test(){
-  return <div><QuestionCollections/></div>
+// function Test() {
+//   const [searchTitle, setSearchTitle] = useState<string>("");
+//   return (
+//     <div>
+//       <ToolBar
+//         searchTitle={searchTitle}
+//         questionIds={[]}
+//         setSearchTitle={(val) => setSearchTitle(val)}
+//       />
+//     </div>
+//   );
+// }
+
+function Test() {
+  return (
+    <div>
+      <QuestionBuilderWorkspace />
+    </div>
+  );
 }
-
 
 function App() {
   return (
@@ -39,7 +57,7 @@ function App() {
             <Route path="/questions" element={<Questions />} />
             <Route path="/questions/:qid" element={<GeneralQuestionRender />} />
 
-            <Route path = "/test" element={<Test/>}></Route>
+            <Route path="/test" element={<Test />}></Route>
 
             {/* Non User Specific */}
 

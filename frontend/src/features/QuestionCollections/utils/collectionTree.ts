@@ -42,14 +42,26 @@ export function buildCollectionTree(
   function buildNode(id: CollectionId): QuestionCollectionTreeNode {
     const collection = state.byId[id];
     const questions = questionByCollection[id];
-    function getDepth(node: QuestionCollection): number {
+
+    function getDepth(collection: QuestionCollection): number {
       let depth = 0;
-      while (node.parent_id) {
+      let current: QuestionCollection | undefined = collection;
+      const visited = new Set<CollectionId>();
+
+      while (current.parent_id && current) {
+        if (visited.has(current.parent_id)) break;
+
+        const parent: QuestionCollection | null = state.byId[current.parent_id];
+        if (!parent) break;
+
+        visited.add(current.parent_id);
         depth++;
-        node = state.byId[node.parent_id];
+        current = parent;
       }
+
       return depth;
     }
+
     const nodeDepth = getDepth(collection);
     return {
       ...toCollectionTreeNode(collection, nodeDepth),
@@ -63,4 +75,3 @@ export function buildCollectionTree(
   }
   return state.rootIds.map(buildNode);
 }
-

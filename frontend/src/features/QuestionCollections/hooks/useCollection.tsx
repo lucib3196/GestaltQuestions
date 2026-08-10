@@ -1,17 +1,17 @@
 import { CollectionsApi } from "../../../services";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../Auth";
-import { useQuestionCollectionStore } from "../instance/store";
+import { useCollectionStore } from "../instance/context";
 
 export function useCollections() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const setNormalizedCollections = useQuestionCollectionStore(
+  const setNormalizedCollections = useCollectionStore(
     (s) => s.setNormalizeCollection,
   );
-  const normalizedCollection = useQuestionCollectionStore(
+  const normalizedCollection = useCollectionStore(
     (s) => s.normalizedCollection,
   );
 

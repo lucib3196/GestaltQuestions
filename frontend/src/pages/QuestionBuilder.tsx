@@ -1,8 +1,8 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useQuestionCollectionStore } from "../features/QuestionCollections/instance/store";
+import { useCollectionStore } from "../features/QuestionCollections/instance/context";
 import { ComponentPlayGround } from "../features/ComponentPlayGround";
 import { CreateNewQuestion as CreateQuestion } from "../features/CreateNewQuestion";
-import { MyQuestionsTable } from "../features/QuestionTables";
+import { DeveloperQuestionsTable } from "../features/QuestionTables";
 import QuestionCollections from "../features/QuestionCollections/QuestionCollections";
 import { useEffect, useState } from "react";
 import type { QuestionTableSearchParams } from "../services";
@@ -76,10 +76,10 @@ export function QuestionsListPage() {
   const navigate = useNavigate();
   const [, setShowAllQuestions] = useState<boolean>(true);
   const [baseQuery, setBaseQuery] = useState<QuestionTableSearchParams>({});
-  const selectedCollection = useQuestionCollectionStore(
+  const selectedCollection = useCollectionStore(
     (s) => s.selectedCollectionId,
   );
-  const setSelectedCollection = useQuestionCollectionStore(
+  const setSelectedCollection = useCollectionStore(
     (s) => s.setSelectedCollectionId,
   );
 
@@ -107,7 +107,7 @@ export function QuestionsListPage() {
         <QuestionCollections />
       </div>
       <section className="min-w-0 rounded-xl border border-border bg-surface p-4 shadow-soft">
-        <MyQuestionsTable
+        <DeveloperQuestionsTable
           baseQuery={baseQuery}
           onQuestionSelect={(qid) =>
             navigate(`/question_builder/questions/${qid}/edit`)

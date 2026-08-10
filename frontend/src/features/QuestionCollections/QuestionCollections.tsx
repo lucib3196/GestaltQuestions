@@ -1,13 +1,21 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import Container from "./components/Container";
-import QuestionCollectionToolBar from "./components/CollectionToolBar";
 import { QuestionCollectionDirectory } from "./components/QuestionCollectionDirectory";
 import { useCollections } from "./hooks/useCollection";
 import type { QuestionCollectionTreeNode } from "./instance/types";
 import { buildCollectionTree } from "./utils/collectionTree";
 
-export default function QuestionCollections() {
+type QuestionCollectionsProps = {
+  page?: number;
+  pageSize?: number;
+  onTotalCollectionsChange?: (total: number) => void;
+};
+
+export default function QuestionCollections({
+  page = 1,
+  pageSize,
+  onTotalCollectionsChange,
+}: QuestionCollectionsProps) {
   const { normalizedCollection } = useCollections();
 
   const [expandedNodeIds, setExpandedNodeIds] = useState<Set<string>>(
@@ -18,6 +26,18 @@ export default function QuestionCollections() {
     if (!normalizedCollection) return;
     return buildCollectionTree(normalizedCollection);
   }, [normalizedCollection]);
+
+  const visibleTree = useMemo(() => {
+    if (!tree || !pageSize) return tree ?? [];
+    const start = (page - 1) * pageSize;
+    return tree.slice(start, start + pageSize);
+  }, [page, pageSize, tree]);
+
+  const totalCollections = tree?.length ?? 0;
+
+  useEffect(() => {
+    onTotalCollectionsChange?.(totalCollections);
+  }, [onTotalCollectionsChange, totalCollections]);
 
   const handleNodeToggle = async (node: QuestionCollectionTreeNode) => {
     if (node.kind !== "collection") return;
@@ -36,15 +56,10 @@ export default function QuestionCollections() {
   };
 
   return (
-    <Container>
-      <QuestionCollectionToolBar />
-      <div className="min-h-0 flex-1 overflow-y-auto p-3">
-        <QuestionCollectionDirectory
-          nodes={tree ?? []}
-          expandedNodeIds={expandedNodeIds}
-          onToggleNode={handleNodeToggle}
-        />
-      </div>
-    </Container>
+    <QuestionCollectionDirectory
+      nodes={visibleTree}
+      expandedNodeIds={expandedNodeIds}
+      onToggleNode={handleNodeToggle}
+    />
   );
 }

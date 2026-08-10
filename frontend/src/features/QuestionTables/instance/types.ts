@@ -28,10 +28,4 @@ export type QuestionTableBaseActions = {
 
 export type QuestionTableStore = QuestionTableState & QuestionTableBaseActions;
 
-// export type QuestionTableActions<TQuestion> = QuestionTableBaseActions & {
-//   setQuestions: (qs: TQuestion[]) => void;
-// };
 
-// export type AllQuestionTActions = QuestionTableActions<QuestionAllRow>;
-// export type QuestionTableStore<TQuestion> = QuestionTableState<TQuestion> &
-//   QuestionTableActions<TQuestion>;

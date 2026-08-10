@@ -13,6 +13,10 @@ export type QuestionCollection = {
   updated_at: string;
 };
 
+export type QuestionCollectionRead = QuestionCollection & {
+  question_ids: QuestionId[];
+};
+
 export type QuestionCollectionLink = {
   question_id: QuestionId | null;
   collection_id: CollectionId | null;
@@ -29,6 +33,13 @@ export type UpdateCollectionPayload = {
 };
 
 export type ListCollectionsParams = {
+  offset?: number | null;
+  limit?: number | null;
+};
+
+export type SearchCollectionsParams = {
+  collection_id?: CollectionId | null;
+  title?: string | null;
   offset?: number | null;
   limit?: number | null;
 };

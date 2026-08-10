@@ -1,3 +1,4 @@
+import backend.question_collections.schema
 from collections.abc import Sequence
 from uuid import UUID
 
@@ -16,6 +17,7 @@ from backend.question_collections import (
     QuestionCollectionNotFoundError,
 )
 from backend.question_views.schema import QuestionSearchParams, QuestionTableRow
+from backend.question_collections.schema import QuestionCollectionRead
 from backend.shared import ID
 
 from .dependencies import DevCollectionManager
@@ -78,6 +80,36 @@ async def get_collections(
 ) -> Sequence[QuestionCollection]:
     try:
         return await collections.list_collections(current_user, offset, limit)
+    except DeveloperAccessDenied as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
+    except QuestionCollectionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
+
+
+@router.get(
+    "/search",
+    response_model=list[QuestionCollectionRead],
+    status_code=status.HTTP_200_OK,
+)
+async def search_collections(
+    current_user: CurrentUser,
+    collections: DevCollectionManager,
+    collection_id: ID | None = None,
+    title: str | None = None,
+    offset: int | None = None,
+    limit: int | None = 10,
+) -> Sequence[QuestionCollectionRead]:
+    try:
+        return await collections.search_collections(
+            current_user,
+            collection_id=collection_id,
+            title=title,
+            offset=offset,
+            limit=limit,
+        )
     except DeveloperAccessDenied as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
     except QuestionCollectionError as e:

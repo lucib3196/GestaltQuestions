@@ -2,20 +2,20 @@ import { useState } from "react";
 import { CollectionsApi } from "../../../services";
 import type { CollectionId } from "../../../services";
 import { useAuth } from "../../Auth";
-import { useQuestionCollectionStore } from "../instance/store";
+import { useCollectionStore } from "../instance/context";
 
 export function useDeleteCollection() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
 
-  const selectedCollectionId = useQuestionCollectionStore(
+  const selectedCollectionId = useCollectionStore(
     (s) => s.selectedCollectionId,
   );
-  const setNormalizedCollections = useQuestionCollectionStore(
+  const setNormalizedCollections = useCollectionStore(
     (s) => s.setNormalizeCollection,
   );
-  const setSelectedCollectionId = useQuestionCollectionStore(
+  const setSelectedCollectionId = useCollectionStore(
     (s) => s.setSelectedCollectionId,
   );
 

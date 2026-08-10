@@ -1,4 +1,4 @@
-import { useQuestionCollectionStore } from "../instance/store";
+import { useCollectionStore } from "../instance/context";
 import type { ResourceTreeProps } from "../../../components/ResourceTree/ResourceTree";
 import { ResourceTree } from "../../../components/ResourceTree/ResourceTree";
 import type { QuestionCollectionTreeNode } from "../instance/types";
@@ -18,10 +18,10 @@ export function QuestionCollectionDirectory({
   onToggleNode,
 }: QuestionCollectionDirectoryProps) {
   const { updateCollectionParent } = useUpdateCollectionParent();
-  const selectedNodeId = useQuestionCollectionStore(
+  const selectedNodeId = useCollectionStore(
     (s) => s.selectedCollectionId,
   );
-  const setSelectedNodeId = useQuestionCollectionStore(
+  const setSelectedNodeId = useCollectionStore(
     (s) => s.setSelectedCollectionId,
   );
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);

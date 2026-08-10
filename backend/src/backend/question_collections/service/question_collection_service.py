@@ -17,6 +17,7 @@ from backend.question_collections.model import (
     QuestionCollection,
     QuestionCollectionLink,
 )
+from backend.question_collections.schema import QuestionCollectionRead
 from backend.shared import ID
 from backend.utils import convert_uuid
 
@@ -65,6 +66,46 @@ class QuestionCollectionService(Generic[ProfileT]):
         except SQLAlchemyError as e:
             self._session.rollback()
             raise QuestionCollectionOperationError("delete", str(e)) from e
+
+    async def search_collections(
+        self,
+        owner: ProfileT,
+        *,
+        collection_id: ID | None = None,
+        title: str | None = None,
+        offset: int | None = None,
+        limit: int | None = 10,
+    ) -> Sequence[QuestionCollection]:
+        owner_id = self._require_profile_id(owner)
+        try:
+            stmt = select(QuestionCollection).where(
+                QuestionCollection.owner_id == owner_id,
+            )
+
+            if collection_id is not None:
+                stmt = stmt.where(
+                    QuestionCollection.id == convert_uuid(collection_id),
+                )
+
+            if title:
+                stmt = stmt.where(
+                    QuestionCollection.title.ilike(f"%{title}%")  # type: ignore[attr-defined]
+                )
+
+            stmt = stmt.order_by(
+                QuestionCollection.created_at.desc()  # type: ignore[attr-defined]
+            )
+
+            if offset is not None:
+                stmt = stmt.offset(offset)
+
+            if limit is not None:
+                stmt = stmt.limit(limit)
+
+            return self._session.exec(stmt).all()
+
+        except SQLAlchemyError as e:
+            raise QuestionCollectionOperationError("retrieve", str(e)) from e
 
     async def update_collection(
         self,
@@ -212,6 +253,27 @@ class QuestionCollectionService(Generic[ProfileT]):
                 "remove question from",
                 str(e),
             ) from e
+
+    async def get_collection_read(
+        self,
+        collection_id: UUID | str,
+    ) -> QuestionCollectionRead | None:
+        collection = self.get_collection(collection_id)
+        if collection is None:
+            return None
+
+        questions = await self.get_all_questions(collection.id)
+        question_ids = [q.id for q in questions if q.id is not None]
+
+        return QuestionCollectionRead(
+            id=collection.id,  # type: ignore
+            owner_id=collection.owner_id,  # type: ignore
+            title=collection.title,
+            parent_id=collection.parent_id,
+            created_at=collection.created_at,
+            updated_at=collection.updated_at,
+            question_ids=question_ids,
+        )
 
     def reconstruct_path(self, collection: QuestionCollection) -> str:
         parts: list[str] = []

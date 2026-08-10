@@ -1,21 +1,26 @@
+import asyncio
 from collections.abc import Sequence
 from uuid import UUID
 
-from backend.developer.exceptions import DeveloperAccessDenied
-from backend.developer.model import DeveloperProfile
-from backend.developer.services.developer_profile_service import DeveloperProfileService
-from backend.question_collections import QuestionCollection, QuestionCollectionService
-from backend.question_collections.exceptions import QuestionCollectionNotFoundError
-from backend.question_collections.model import (
-    QuestionCollectionLink,
-)
-from backend.shared import ID
+from backend.developer.access import QuestionCollectionAccessService
 from backend.developer.actions import (
     DeveloperCollectionAction,
     DeveloperCollectionPolicy,
 )
+from backend.developer.exceptions import DeveloperAccessDenied
+from backend.developer.model import DeveloperProfile
+from backend.developer.services.developer_profile_service import DeveloperProfileService
 from backend.question import Question
-from backend.developer.access import QuestionCollectionAccessService
+from backend.question_collections.exceptions import QuestionCollectionNotFoundError
+from backend.question_collections.model import (
+    QuestionCollection,
+    QuestionCollectionLink,
+)
+from backend.question_collections.schema import QuestionCollectionRead
+from backend.question_collections.service.question_collection_service import (
+    QuestionCollectionService,
+)
+from backend.shared import ID
 
 
 class DeveloperCollectionService:
@@ -50,6 +55,27 @@ class DeveloperCollectionService:
             parent = self._require_collection(parent_id)
 
         return await self._collections.create_collection(owner, title, parent)
+
+    async def search_collections(
+        self,
+        user_id: ID,
+        *,
+        collection_id: ID | None = None,
+        title: str | None = None,
+        offset: int | None = None,
+        limit: int | None = 10,
+    ) -> Sequence[QuestionCollectionRead]:
+        owner = await self._developer_profiles.get_profile(user_id)
+        collections = await self._collections.search_collections(
+            owner, collection_id=collection_id, title=title, offset=offset, limit=limit
+        )
+        collection_reads = await asyncio.gather(
+            *(self._collections.get_collection_read(c.id) for c in collections if c.id)
+        )
+        
+
+
+        return [collection for collection in collection_reads if collection is not None]
 
     async def get_collection(
         self,

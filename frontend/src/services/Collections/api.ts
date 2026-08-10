@@ -6,7 +6,9 @@ import type {
   ListCollectionsParams,
   QuestionCollection,
   QuestionCollectionLink,
+  QuestionCollectionRead,
   QuestionId,
+  SearchCollectionsParams,
   UpdateCollectionPayload,
 } from "./types";
 
@@ -47,6 +49,20 @@ export default class CollectionsApi {
     const response = await api.get<QuestionCollection>(
       `${this.base}/${encodeURIComponent(collectionId)}`,
       { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
+  static async searchCollections(
+    token: string,
+    params: SearchCollectionsParams = {},
+  ): Promise<QuestionCollectionRead[]> {
+    const response = await api.get<QuestionCollectionRead[]>(
+      `${this.base}/search`,
+      {
+        params,
+        headers: this.authHeaders(token),
+      },
     );
     return response.data;
   }

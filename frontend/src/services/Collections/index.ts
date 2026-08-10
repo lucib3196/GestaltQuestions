@@ -7,6 +7,8 @@ export type {
   ListCollectionsParams,
   QuestionCollection,
   QuestionCollectionLink,
+  QuestionCollectionRead,
   QuestionId,
+  SearchCollectionsParams,
   UpdateCollectionPayload,
 } from "./types";

@@ -3,11 +3,10 @@ import { useMemo } from "react";
 import { createMyQuestionTableColumns } from "../config/columns";
 import { useDeveloperQuestionsTableRows } from "../hooks/hooks";
 import { QuestionTableLayout } from "./QuestionTableLayout";
-import { QuestionTableStoreProvider } from "./QuestionTableStoreProvider";
 import type { QuestionTableViewProps } from "./types";
 import { useQuestionTableQuery } from "./useQuestionTableQuery";
 
-function DeveloperQuestionsTableContent({
+export default function DeveloperQuestionsTable({
   onQuestionSelect,
   baseQuery,
 }: QuestionTableViewProps) {
@@ -21,16 +20,7 @@ function DeveloperQuestionsTableContent({
     <QuestionTableLayout
       columns={columns}
       questions={questions}
-      showDelete={false}
       onQuestionSelect={onQuestionSelect}
     />
-  );
-}
-
-export function DeveloperQuestionsTable(props: QuestionTableViewProps) {
-  return (
-    <QuestionTableStoreProvider>
-      <DeveloperQuestionsTableContent {...props} />
-    </QuestionTableStoreProvider>
   );
 }
