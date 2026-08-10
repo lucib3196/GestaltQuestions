@@ -1,9 +1,10 @@
-import { SearchBar } from "../../../components/SearchBar";
-import { ToolBarActions, ClearFilters } from "./ToolBarActions";
 import { useState } from "react";
 import { useEffect, useRef } from "react";
-import { CollectionPopUp } from "../components/CollectionsPopUp";
+
+import { SearchBar } from "../../../components/SearchBar";
 import { useQuestionTableContext } from "../../QuestionTables";
+import { CollectionPopUp } from "../components/CollectionsPopUp";
+import { ClearFilters, ToolBarActions } from "./ToolBarActions";
 
 export function ToolBar() {
   const searchTitle = useQuestionTableContext((s) => s.search);

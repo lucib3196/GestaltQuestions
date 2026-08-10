@@ -7,7 +7,6 @@ import type { QuestionTableState, QuestionTableStore } from "./types";
 type QuestionTableStoreApi = ReturnType<typeof createQuestionTableStore>;
 const QuestionTableContext = createContext<QuestionTableStoreApi | null>(null);
 
-
 type QuestionTableProviderProps = {
   children: ReactNode;
   initialState?: Partial<QuestionTableState>;
@@ -41,5 +40,3 @@ export function useQuestionTableContext<T>(
 
   return useStore(store, selector);
 }
-
-

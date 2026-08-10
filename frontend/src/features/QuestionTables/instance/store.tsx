@@ -8,9 +8,7 @@ export function createQuestionTableStore(
   return createStore<QuestionTableStore>((set) => ({
     selectedIDs: [],
     visibleColumns: {},
-    filters: {
-
-    },
+    filters: {},
     search: "",
     limit: 50,
     offset: 0,

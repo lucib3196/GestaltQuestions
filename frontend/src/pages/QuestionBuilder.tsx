@@ -1,10 +1,11 @@
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useCollectionStore } from "../features/QuestionCollections/instance/context";
+
 import { ComponentPlayGround } from "../features/ComponentPlayGround";
 import { CreateNewQuestion as CreateQuestion } from "../features/CreateNewQuestion";
-import { DeveloperQuestionsTable } from "../features/QuestionTables";
+import { useCollectionStore } from "../features/QuestionCollections/instance/context";
 import QuestionCollections from "../features/QuestionCollections/QuestionCollections";
-import { useEffect, useState } from "react";
+import { DeveloperQuestionsTable } from "../features/QuestionTables";
 import type { QuestionTableSearchParams } from "../services";
 
 export default function QuestionBuilderPage() {
@@ -76,9 +77,7 @@ export function QuestionsListPage() {
   const navigate = useNavigate();
   const [, setShowAllQuestions] = useState<boolean>(true);
   const [baseQuery, setBaseQuery] = useState<QuestionTableSearchParams>({});
-  const selectedCollection = useCollectionStore(
-    (s) => s.selectedCollectionId,
-  );
+  const selectedCollection = useCollectionStore((s) => s.selectedCollectionId);
   const setSelectedCollection = useCollectionStore(
     (s) => s.setSelectedCollectionId,
   );

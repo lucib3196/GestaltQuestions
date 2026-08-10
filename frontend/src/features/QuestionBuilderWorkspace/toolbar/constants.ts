@@ -1,8 +1,8 @@
-import type { ToolbarActionConfig } from "./types";
+import { BsCollectionFill } from "react-icons/bs";
 import { FaCopy, FaDownload, FaFilter } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
-import { BsCollectionFill } from "react-icons/bs";
+import type { ToolbarActionConfig } from "./types";
 export const QUESTION_TABLE_TOOLBAR_ACTIONS: ToolbarActionConfig[] = [
   {
     id: "copy",

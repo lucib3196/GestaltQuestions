@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useAuth } from "../../Auth";
-import { useCollectionStore } from "../instance/context";
 
 import { CollectionsApi } from "../../../services";
+import { useAuth } from "../../Auth";
+import { useCollectionStore } from "../instance/context";
 
 export default function useCreateCollection() {
   const { user } = useAuth();

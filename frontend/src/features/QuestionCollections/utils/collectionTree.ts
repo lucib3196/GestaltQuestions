@@ -1,9 +1,9 @@
-import type { QuestionCollection, CollectionId } from "../../../services";
+import type { CollectionId, QuestionCollection } from "../../../services";
+import type { CollectionQuestion } from "../../../services";
 import type {
   NormalizedCollections,
   QuestionCollectionTreeNode,
 } from "../instance/types";
-import type { CollectionQuestion } from "../../../services";
 import { toCollectionTreeNode, toQuestionTreeNode } from "./collectionQuestion";
 export function normalizeCollections(
   collections: QuestionCollection[],

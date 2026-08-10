@@ -1,13 +1,14 @@
-import { SearchBar } from "../../../components/SearchBar";
+import { useDebounce } from "@uidotdev/usehooks";
 import { useMemo, useState } from "react";
+
+import { SearchBar } from "../../../components/SearchBar";
 import type { QuestionCollectionRead } from "../../../services";
-import { useSearchCollections } from "../hooks/useSearchCollections";
+import { useAuth } from "../../Auth";
+import { useAddQuestionToCollection } from "../../QuestionCollections/hooks/useAddQuestions";
 import useCreateCollection from "../../QuestionCollections/hooks/useCreateCollection";
 import { useQuestionTableContext } from "../../QuestionTables";
+import { useSearchCollections } from "../hooks/useSearchCollections";
 import { CollectionResults } from "./CollectionResult";
-import { useDebounce } from "@uidotdev/usehooks";
-import { useAddQuestionToCollection } from "../../QuestionCollections/hooks/useAddQuestions";
-import { useAuth } from "../../Auth";
 type CollectionPopUpProps = {
   onClose?: () => void;
 };

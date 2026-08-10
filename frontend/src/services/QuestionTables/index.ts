@@ -1,8 +1,5 @@
 export type { QuestionRuntimeLanguage } from "../QuestionRuntime";
-export {
-  default as QuestionTablesApi,
-  QUESTION_TABLE_ENDPOINTS,
-} from "./api";
+export { QUESTION_TABLE_ENDPOINTS, default as QuestionTablesApi } from "./api";
 export type {
   QuestionTableRow,
   QuestionTableSearchParams,

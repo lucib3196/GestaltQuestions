@@ -1,5 +1,6 @@
-import type { QuestionCollectionRead } from "../../../services";
 import clsx from "clsx";
+
+import type { QuestionCollectionRead } from "../../../services";
 type Props = {
   collection: QuestionCollectionRead;
   selectedCollections: Set<string>;

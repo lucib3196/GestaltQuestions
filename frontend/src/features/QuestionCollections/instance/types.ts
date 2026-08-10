@@ -1,9 +1,9 @@
+import type { ResourceTreeNode } from "../../../components/ResourceTree/type";
 import type {
   CollectionId,
   CollectionQuestion,
   QuestionCollection,
 } from "../../../services";
-import type { ResourceTreeNode } from "../../../components/ResourceTree/type";
 
 export type QuestionCollectionTreeNode =
   | ResourceTreeNode<"collection", QuestionCollection>

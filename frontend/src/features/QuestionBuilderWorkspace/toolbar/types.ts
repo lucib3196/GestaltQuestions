@@ -1,6 +1,6 @@
+import type { IconType } from "react-icons";
 
 import type { UserRole } from "../../Auth";
-import type { IconType } from "react-icons";
 
 export type ToolbarActionId =
   | "copy"
@@ -17,4 +17,3 @@ export type ToolbarActionConfig = {
   requiresSelection?: boolean;
   variant?: "default" | "danger";
 };
-

@@ -1,7 +1,7 @@
 import type {
-  QuestionCollection,
   CollectionId,
   CollectionQuestion,
+  QuestionCollection,
 } from "../../../services";
 import type { QuestionCollectionTreeNode } from "../instance/types";
 

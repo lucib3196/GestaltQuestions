@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { GripVertical } from "lucide-react";
 import React, {
-  useState,
   type ComponentPropsWithoutRef,
   type ReactNode,
+  useState,
 } from "react";
 
 type DraggableContainerProps = Omit<
@@ -107,11 +107,13 @@ export function DraggableContainer({
         isDropTarget &&
           "border-accent bg-accent/10 text-text shadow-sm ring-2 ring-accent/25",
       )}
-      style={{
-        ...style,
-        "--draggable-handle-offset": handleOffsetValue,
-        transform: `translate(${position.x}px, ${position.y}px)`,
-      } as React.CSSProperties}
+      style={
+        {
+          ...style,
+          "--draggable-handle-offset": handleOffsetValue,
+          transform: `translate(${position.x}px, ${position.y}px)`,
+        } as React.CSSProperties
+      }
     >
       <button
         type="button"

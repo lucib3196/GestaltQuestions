@@ -1,9 +1,10 @@
-import { useCollectionStore } from "../instance/context";
+import { useState } from "react";
+
 import type { ResourceTreeProps } from "../../../components/ResourceTree/ResourceTree";
 import { ResourceTree } from "../../../components/ResourceTree/ResourceTree";
-import type { QuestionCollectionTreeNode } from "../instance/types";
-import { useState } from "react";
 import { useUpdateCollectionParent } from "../hooks/useUpdateCollection";
+import { useCollectionStore } from "../instance/context";
+import type { QuestionCollectionTreeNode } from "../instance/types";
 import CollectionNode from "./CollectionNode";
 
 type QuestionCollectionDirectoryProps = {
@@ -18,9 +19,7 @@ export function QuestionCollectionDirectory({
   onToggleNode,
 }: QuestionCollectionDirectoryProps) {
   const { updateCollectionParent } = useUpdateCollectionParent();
-  const selectedNodeId = useCollectionStore(
-    (s) => s.selectedCollectionId,
-  );
+  const selectedNodeId = useCollectionStore((s) => s.selectedCollectionId);
   const setSelectedNodeId = useCollectionStore(
     (s) => s.setSelectedCollectionId,
   );

@@ -27,5 +27,3 @@ export type QuestionTableBaseActions = {
 };
 
 export type QuestionTableStore = QuestionTableState & QuestionTableBaseActions;
-
-

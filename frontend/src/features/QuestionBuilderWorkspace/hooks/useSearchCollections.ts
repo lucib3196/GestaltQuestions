@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { CollectionsApi } from "../../../services";
+
 import type {
   QuestionCollectionRead,
   SearchCollectionsParams,
 } from "../../../services";
+import { CollectionsApi } from "../../../services";
 import { useAuth } from "../../Auth";
 
 export function useSearchCollections(title: string) {
@@ -44,7 +45,9 @@ export function useSearchCollections(title: string) {
         if (!cancelled) {
           setCollections([]);
           setError(
-            err instanceof Error ? err.message : "Unable to search collections.",
+            err instanceof Error
+              ? err.message
+              : "Unable to search collections.",
           );
         }
       } finally {

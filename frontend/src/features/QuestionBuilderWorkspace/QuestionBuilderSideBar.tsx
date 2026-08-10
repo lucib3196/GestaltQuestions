@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 
 import { SearchBar } from "../../components/SearchBar";
 import type { QuestionTableSearchParams } from "../../services";
-import QuestionCollections from "../QuestionCollections/QuestionCollections";
 import QuestionCollectionToolBar from "../QuestionCollections/components/CollectionToolBar";
 import { useCollectionStore } from "../QuestionCollections/instance/context";
+import QuestionCollections from "../QuestionCollections/QuestionCollections";
 import { useSearchCollections } from "./hooks/useSearchCollections";
 
 const COLLECTIONS_PER_PAGE = 5;

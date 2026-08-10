@@ -8,7 +8,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { type FormEvent, useState } from "react";
 
 import { DraggableContainer } from "../../../components/DraggableContainer";
 import type { RenderNodeProps } from "../../../components/ResourceTree/ResourceTree";
