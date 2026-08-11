@@ -7,6 +7,7 @@ export type ToolBarActionsProps<TId extends string> = {
   roles?: UserRole[];
   isActionDisabled?: (action: ToolBarActionConfig<TId>) => boolean;
   variant?: "inline" | "toolbar";
+  renderActionPopup?: (action: ToolBarActionConfig<TId>) => React.ReactNode;
 };
 
 const toolbarActionsClassByVariant: Record<
@@ -34,6 +35,7 @@ export default function ToolBarActions<TId extends string>({
   roles = ["developer"],
   isActionDisabled,
   variant = "toolbar",
+  renderActionPopup,
 }: ToolBarActionsProps<TId>) {
   const visibleActions = actions.filter(
     (action) =>
@@ -47,18 +49,22 @@ export default function ToolBarActions<TId extends string>({
       {visibleActions.map((action) => {
         const Icon = action.icon;
         const disabled = isActionDisabled?.(action) ?? false;
+        const popup = renderActionPopup?.(action);
 
         return (
-          <button
-            key={action.id}
-            type="button"
-            disabled={disabled}
-            onClick={actionHandlers[action.id]}
-            className={toolbarButtonClass(action.variant)}
-          >
-            {Icon ? <Icon className="h-4 w-4" /> : null}
-            {action.label}
-          </button>
+          <div key={action.id} className="relative inline-flex">
+            <button
+              key={action.id}
+              type="button"
+              disabled={disabled}
+              onClick={actionHandlers[action.id]}
+              className={toolbarButtonClass(action.variant)}
+            >
+              {Icon ? <Icon className="h-4 w-4" /> : null}
+              {action.label}
+            </button>
+            {popup}
+          </div>
         );
       })}
     </div>

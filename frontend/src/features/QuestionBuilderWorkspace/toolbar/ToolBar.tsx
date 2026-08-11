@@ -5,7 +5,7 @@ import { useQuestionTableContext } from "../../QuestionTables";
 import { CollectionPopUp } from "../components/CollectionsPopUp";
 import { WorkspaceToolBarActions } from "./ToolBarActions";
 import type { WorkspaceToolbarPopupActionId } from "./constants";
-import { QuestionTableColumnVisibility } from "../../QuestionTables";
+import { QuestionTableFilterPanel } from "../../QuestionTables";
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
 
 function CollectionPreview() {
@@ -31,8 +31,7 @@ export function ToolBar() {
   const [openPopup, setOpenPopup] =
     useState<WorkspaceToolbarPopupActionId | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const cols = useQuestionTableContext((s) => s.columns);
-
+  
   //   Handle mouse down events when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -55,22 +54,13 @@ export function ToolBar() {
       <QuestionSearch />
 
       <WorkspaceToolBarActions
+      popUp={openPopup}
         onOpenPopUp={(id) =>
           setOpenPopup((current) => (current === id ? null : id))
         }
       />
 
-      {openPopup === "tableFilters" && (
-        <div className="absolute right-4 top-20 z-20 mt-2 w-64">
-          <QuestionTableColumnVisibility columns={cols} />
-        </div>
-      )}
-
-      {openPopup === "collections" && (
-        <div className="absolute right-0 top-20 z-20 mt-3 w-[min(36rem,calc(100vw-2rem))]">
-          <CollectionPopUp onClose={() => setOpenPopup(null)} />
-        </div>
-      )}
+     
     </div>
   );
 }

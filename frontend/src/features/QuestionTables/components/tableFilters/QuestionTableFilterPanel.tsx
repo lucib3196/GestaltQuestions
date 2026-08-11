@@ -1,13 +1,13 @@
 import type { QuestionTableColumn } from "../../config/columns";
 import { useQuestionTableContext } from "../../instance/context";
 
-type QuestionTableColumnVisibilityProps = {
+type QuestionTableFilterPanelProps = {
   columns: QuestionTableColumn[];
 };
 
-export function QuestionTableColumnVisibility({
+export function QuestionTableFilterPanel({
   columns,
-}: QuestionTableColumnVisibilityProps) {
+}: QuestionTableFilterPanelProps) {
   const visibleColumns = useQuestionTableContext((s) => s.visibleColumns);
   const setColumnVisible = useQuestionTableContext((s) => s.setColumnVisible);
 
