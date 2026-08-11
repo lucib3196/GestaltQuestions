@@ -12,7 +12,6 @@ from backend.developer.access import QuestionAccessService
 from backend.question import Status
 from backend.question_access import QuestionAccessAdapter
 from backend.question_access.model import QuestionAccess
-from backend.src.main import app
 from app_test.shared.factories import make_user  # noqa: F401
 
 
