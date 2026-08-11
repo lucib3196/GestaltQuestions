@@ -1,11 +1,8 @@
 import { useState } from "react";
 import { useEffect, useRef } from "react";
 import { QuestionSearch } from "../../QuestionTables/components/searchBar/searchBar";
-import { useQuestionTableContext } from "../../QuestionTables";
-import { CollectionPopUp } from "../components/CollectionsPopUp";
 import { WorkspaceToolBarActions } from "./ToolBarActions";
 import type { WorkspaceToolbarPopupActionId } from "./constants";
-import { QuestionTableFilterPanel } from "../../QuestionTables";
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
 
 function CollectionPreview() {
@@ -31,7 +28,7 @@ export function ToolBar() {
   const [openPopup, setOpenPopup] =
     useState<WorkspaceToolbarPopupActionId | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  
+
   //   Handle mouse down events when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -54,13 +51,11 @@ export function ToolBar() {
       <QuestionSearch />
 
       <WorkspaceToolBarActions
-      popUp={openPopup}
+        popUp={openPopup}
         onOpenPopUp={(id) =>
           setOpenPopup((current) => (current === id ? null : id))
         }
       />
-
-     
     </div>
   );
 }
