@@ -8,7 +8,9 @@ import {
 } from "./constants";
 import { QuestionTableFilterPanel } from "../../QuestionTables";
 import { CollectionPopUp } from "../components/CollectionsPopUp";
-
+import { useCopyQuestion } from "../../QuestionBuilder/hooks";
+import { useDownloadQuestions } from "../../QuestionBuilder/hooks";
+import { useDeleteQuestion } from "../../QuestionBuilder/hooks";
 type Props = {
   popUp: WorkspaceToolbarActionId | null;
   onOpenPopUp: (id: WorkspaceToolbarPopupActionId | null) => void;
@@ -19,10 +21,14 @@ export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
   const hasSelection = selectedQuestionIds.length > 0;
   const cols = useQuestionTableContext((s) => s.columns);
 
+  const { copyQuestion } = useCopyQuestion();
+  const { downLoadQuestions } = useDownloadQuestions();
+  const { deleteQuestion } = useDeleteQuestion();
+
   const actionHandlers: Record<WorkspaceToolbarActionId, () => void> = {
-    copy: () => console.log("Copy", selectedQuestionIds),
-    download: () => console.log("Download", selectedQuestionIds),
-    delete: () => console.log("Delete", selectedQuestionIds),
+    copy: async () => copyQuestion(selectedQuestionIds),
+    download: async () => downLoadQuestions(selectedQuestionIds),
+    delete: async () => deleteQuestion(selectedQuestionIds),
     tableFilters: () => onOpenPopUp("tableFilters"),
     collections: () => onOpenPopUp("collections"),
   };

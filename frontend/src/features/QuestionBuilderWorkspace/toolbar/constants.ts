@@ -40,7 +40,7 @@ export const WORKSPACE_TOOLBAR_ACTIONS = [
     variant: "danger",
     requiresSelection: true,
     allowedRoles: ["developer"],
-    active: true,
+    active: false,
   },
   {
     id: "collections",
