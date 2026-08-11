@@ -19,14 +19,17 @@ class Thread(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.now)
 
     user: "User" = Relationship(back_populates="threads")
-    user_id: UUID = Field(foreign_key="user.id")
-    messages: list["Message"] = Relationship(back_populates="thread")
+    user_id: UUID = Field(foreign_key="user.id", ondelete="CASCADE")
+    messages: list["Message"] = Relationship(
+        back_populates="thread",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )
 
 
 class Message(SQLModel, table=True):
     id: UUID | None = Field(default_factory=uuid4, primary_key=True)
 
-    thread_id: UUID = Field(foreign_key="thread.id")
+    thread_id: UUID = Field(foreign_key="thread.id", ondelete="CASCADE")
     role: str
     content: list[dict[str, Any]] = Field(sa_column=Column(JSONType))
     created_at: datetime = Field(default_factory=datetime.now)

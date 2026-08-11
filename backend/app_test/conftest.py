@@ -2,11 +2,20 @@ import contextlib
 import os
 from collections.abc import Generator
 from typing import Any
-from backend.chat import model
+
 import firebase_admin
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
 
+from backend.auth import (
+    InstitutionDB,
+    Role,
+    RoleDB,
+    UserDB,
+    UserRoles,
+    ValidInstitutions,
+)
+from backend.chat.model import Message, Thread  # noqa: F401
 from backend.core import initialize_firebase_app
 from backend.core.logging import (
     in_test_ctx,
@@ -14,8 +23,6 @@ from backend.core.logging import (
 )
 from backend.question import QuestionDB
 from backend.question.services.qtype import QuestionQTypeDB
-
-# ===== Database Fixtures =========================================================
 
 
 # ===== Engine Fixtures ===========================================================
@@ -51,14 +58,54 @@ def _clean_db(db_session, test_engine) -> None:
     SQLModel.metadata.create_all(test_engine)
 
 
+# -----------------------------------
+# ---------DB seeding----------------
+# -----------------------------------
+
+
 @pytest.fixture()
-def seed_qtypes(db_session):
+def seed_qtypes(db_session) -> None:
     QuestionQTypeDB(db_session).seed_types()
+
+
+@pytest.fixture
+def institution_db(db_session) -> InstitutionDB:
+    return InstitutionDB(db_session)
+
+
+@pytest.fixture
+def seed_institution(institution_db):
+    async def _seed(institution: ValidInstitutions = ValidInstitutions.CPP):
+        return await institution_db.create_institution(institution)
+
+    return _seed
+
+
+@pytest.fixture
+def role_manager(db_session) -> RoleDB:
+    return RoleDB(db_session)
+
+
+@pytest.fixture
+def seed_roles(db_session: Session):
+    roles = [
+        Role(name=UserRoles.STUDENT.value),
+        Role(name=UserRoles.ADMIN.value),
+        Role(name=UserRoles.DEVELOPER.value),
+    ]
+    db_session.add_all(roles)
+    db_session.commit()
+    return roles
 
 
 @pytest.fixture
 def question_db(db_session, seed_qtypes) -> QuestionDB:
     return QuestionDB(db_session)
+
+
+@pytest.fixture
+def user_db(db_session) -> UserDB:
+    return UserDB(db_session)
 
 
 # ===== Logging / Test Context Fixtures ===========================================
@@ -70,8 +117,8 @@ def mark_logs_in_test():
     in_test_ctx.reset(token)
 
 
-# Firebase 
-def normalize_storage_emulator_host()->bool:
+# Firebase
+def normalize_storage_emulator_host() -> bool:
     host = os.environ.get("STORAGE_EMULATOR_HOST")
     if not host or host == "...":
         return False
@@ -79,7 +126,8 @@ def normalize_storage_emulator_host()->bool:
         os.environ["STORAGE_EMULATOR_HOST"] = f"http://{host}"
     return True
 
-def storage_params()-> list[str]:
+
+def storage_params() -> list[str]:
     firebase_enabled = (
         os.environ.get("RUN_FIREBASE_STORAGE_TESTS") == "1"
         and os.environ.get("FIREBASE_AUTH_EMULATOR_HOST")
@@ -88,6 +136,7 @@ def storage_params()-> list[str]:
     if firebase_enabled:
         return ["local", "cloud"]
     return ["local"]
+
 
 @pytest.fixture(scope="session")
 def firebase_app_for_tests() -> Generator[Any]:

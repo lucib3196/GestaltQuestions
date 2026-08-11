@@ -1,19 +1,30 @@
+from typing import Any, Protocol
+
 import pytest
-from src.model.question import Question, QuestionData
+
+from backend.developer import DeveloperProfile
+from backend.question import Question
+
+
+class MakeQuestion(Protocol):
+    def __call__(
+        self,
+        owner: DeveloperProfile | None = None,
+        **overrides: Any,
+    ) -> Question: ...
 
 
 @pytest.fixture
-def make_question(question_db):
-    async def make(
-        **overrides,
-    ) -> Question:
-        defaults = {
-            "title": "Sample Question",
-            "ai_generated": True,
-            "isAdaptive": False,
-        }
-
-        data = QuestionData.model_validate(defaults | overrides)
-        return await question_db.create_question(data)
+def make_question(db_session) -> MakeQuestion:
+    def make(owner: DeveloperProfile | None = None, **overrides) -> Question:
+        question = Question(
+            title=overrides.pop("title", "Owned question"),
+            created_by=owner,
+            **overrides,
+        )
+        db_session.add(question)
+        db_session.commit()
+        db_session.refresh(question)
+        return question
 
     return make

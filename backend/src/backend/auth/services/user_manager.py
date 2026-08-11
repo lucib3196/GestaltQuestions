@@ -18,7 +18,7 @@ from backend.auth.exceptions import (
 from backend.auth.model import Institution, Role, User
 from backend.auth.schemas import UserCreate, UserRead, UserRoles, ValidInstitutions
 from backend.core import logger
-from backend.shared.schema import ID
+from backend.shared import ID
 
 from .institution import InstitutionDB
 from .role import RoleDB
@@ -26,13 +26,11 @@ from .user import UserDB
 
 
 class UserManager:
-    def __init__(
-        self, udb: UserDB, rm: RoleDB, inst: InstitutionDB, session: Session
-    ) -> None:
+    def __init__(self, session: Session) -> None:
         """Initialize user and role repositories for the provided session."""
-        self.udb = udb
-        self.rm = rm
-        self.ins = inst
+        self.udb = UserDB(session)
+        self.rm = RoleDB(session)
+        self.ins = InstitutionDB(session)
         self.session = session
 
     async def create_user(

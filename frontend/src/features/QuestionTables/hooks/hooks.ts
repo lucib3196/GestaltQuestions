@@ -7,7 +7,9 @@ import {
 import { type QuestionTableRow } from "../../../services";
 import { useAuth } from "../../Auth";
 
-export function useAllQuestions(params?: QuestionTableSearchParams) {
+export function usePublishedQuestionsTableRows(
+  params?: QuestionTableSearchParams,
+) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [questions, setQuestions] = useState<QuestionTableRow[]>([]);
@@ -43,7 +45,10 @@ export function useAllQuestions(params?: QuestionTableSearchParams) {
   return { questions, loading, error };
 }
 
-export function useMyQuestions(params?: QuestionTableSearchParams) {
+export function useDeveloperQuestionsTableRows(
+  params?: QuestionTableSearchParams,
+  refreshKey?: number,
+) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +66,10 @@ export function useMyQuestions(params?: QuestionTableSearchParams) {
 
       try {
         const token = await user.getIdToken();
-        const data = await QuestionTablesApi.searchMyQuestions(token, params);
+        const data = await QuestionTablesApi.searchDeveloperQuestions(
+          token,
+          params,
+        );
         if (!cancelled) setQuestions(data);
       } catch (err) {
         if (!cancelled) {
@@ -78,6 +86,6 @@ export function useMyQuestions(params?: QuestionTableSearchParams) {
     return () => {
       cancelled = true;
     };
-  }, [user, params]);
+  }, [user, params, refreshKey]);
   return { questions, loading, error };
 }

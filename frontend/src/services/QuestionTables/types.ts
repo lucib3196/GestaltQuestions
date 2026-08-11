@@ -11,6 +11,8 @@ export type QuestionTableSearchParams = {
   topic?: string | null;
   language?: QuestionRuntimeLanguage | QuestionRuntimeLanguage[] | null;
   institution?: ValidInstitutions | null;
+  collection_id?: string | null;
+  collection_title?: string | null;
   isAdaptive?: boolean | null;
   limit?: number;
   offset?: number;
@@ -18,7 +20,7 @@ export type QuestionTableSearchParams = {
 
 export type QuestionTableRow = {
   question_id: string;
-  owner_id: string;
+  user_id: string;
   developer_profile_id: string;
   title: string;
   institution_id: string;
@@ -28,6 +30,8 @@ export type QuestionTableRow = {
   topics: string[];
   question_type: QuestionType[];
   available_runtimes: QuestionRuntimeLanguage[];
+  collection_id?: string | null;
+  collection_title?: string | null;
   created_at: string;
   updated_at: string | null;
   isAdaptive: boolean | null;

@@ -1,31 +1,28 @@
+from collections.abc import Sequence
+
 from fastapi import APIRouter
 
-from backend.api.deps import CurrentUser, TableQueryDependency
 from backend.question_views.schema import QuestionSearchParams, QuestionTableRow
 
-router = APIRouter(prefix="/question-tables", tags=["question-tables"])
+from .dependencies import TableQueryDependecy
+
+router = APIRouter(prefix="/question-tables", tags=["Question Tables"])
 
 
 @router.post("/search")
 async def search_questions(
-    service: TableQueryDependency,
+    service: TableQueryDependecy,
     params: QuestionSearchParams | None = None,
-) -> list[QuestionTableRow]:
+) -> Sequence[QuestionTableRow]:
     return service.search(params)
 
 
 @router.post("/published/search")
 async def search_published_questions(
-    service: TableQueryDependency,
+    service: TableQueryDependecy,
     params: QuestionSearchParams | None = None,
-) -> list[QuestionTableRow]:
-    return service.search_published_questions(params)
-
-
-@router.post("/me/search")
-async def search_my_questions(
-    current_user: CurrentUser,
-    service: TableQueryDependency,
-    params: QuestionSearchParams | None = None,
-) -> list[QuestionTableRow]:
-    return service.search_user_questions(current_user, params)
+) -> Sequence[QuestionTableRow]:
+    params = (params or QuestionSearchParams()).model_copy(
+        update={"published": True, "status": None}
+    )
+    return service.search(params)

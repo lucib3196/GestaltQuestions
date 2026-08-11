@@ -13,16 +13,9 @@ from backend.auth.services import user_manager as user_manager_module
 
 
 @pytest.fixture
-def seed_institution(institution_db):
-    async def _seed(institution: ValidInstitutions = ValidInstitutions.CPP):
-        return await institution_db.create_institution(institution)
-
-    return _seed
-
-
-@pytest.fixture
 def user_mng(
-    monkeypatch: pytest.MonkeyPatch, db_session, role_manager, institution_db, user_db
+    monkeypatch: pytest.MonkeyPatch,
+    db_session,
 ) -> UserManager:
     def fake_auth(email: str, display_name: str, uid: str, password: str):
         return {
@@ -34,9 +27,6 @@ def user_mng(
 
     monkeypatch.setattr(user_manager_module.auth, "create_user", fake_auth)
     return UserManager(
-        udb=user_db,
-        rm=role_manager,
-        inst=institution_db,
         session=db_session,
     )
 

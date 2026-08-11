@@ -15,7 +15,7 @@ from backend.auth.exceptions import (
 from backend.auth.model import User
 from backend.auth.schemas import UserCreate, UserUpdate
 from backend.core import logger
-from backend.shared.schema import ID
+from backend.shared import ID
 from backend.utils import convert_uuid
 
 

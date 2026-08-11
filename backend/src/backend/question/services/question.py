@@ -182,9 +182,7 @@ class QuestionDB:
         question_data = q.model_dump(exclude=set(self.metadata_rel))
         relationship_data = await self.get_question_relationship_data(q)
 
-        payload = QuestionRead(**question_data, **relationship_data)
-
-        return payload
+        return QuestionRead(**question_data, **relationship_data)
 
     async def update_question(
         self,
