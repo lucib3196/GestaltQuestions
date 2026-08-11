@@ -31,11 +31,20 @@ export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
   const { downLoadQuestions } = useDownloadQuestions();
   const { deleteQuestion } = useDeleteQuestion();
   const { removeQuestionsFromCollection } = useRemoveQuestionsFromCollection();
+  const refreshQuestions = useQuestionTableContext((s) => s.refreshQuestions);
 
   const actionHandlers: Record<WorkspaceToolbarActionId, () => void> = {
-    copy: async () => copyQuestion(selectedQuestionIds),
-    download: async () => downLoadQuestions(selectedQuestionIds),
-    delete: async () => deleteQuestion(selectedQuestionIds),
+    copy: async () => {
+      await copyQuestion(selectedQuestionIds);
+      refreshQuestions();
+    },
+    download: async () => {
+      await downLoadQuestions(selectedQuestionIds);
+    },
+    delete: async () => {
+      await deleteQuestion(selectedQuestionIds);
+      refreshQuestions();
+    },
     removeFromCollection: async () => {
       if (!selectedCollectionId) return;
 
@@ -43,7 +52,10 @@ export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
         selectedCollectionId,
         selectedQuestionIds,
         {
-          onSuccess: clearSelectedIds,
+          onSuccess: () => {
+            clearSelectedIds();
+            refreshQuestions();
+          },
         },
       );
     },

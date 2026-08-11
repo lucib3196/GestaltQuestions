@@ -8,6 +8,7 @@ type TableColumnVisibility = Record<string, boolean>;
 
 export type QuestionTableState = {
   selectedIDs: string[];
+  refreshKey: number;
   visibleColumns: TableColumnVisibility;
   columns: QuestionTableColumn[];
   filters: TableFilterValues;
@@ -19,6 +20,7 @@ export type QuestionTableState = {
 export type QuestionTableBaseActions = {
   setQuestionTableColumns: (col: QuestionTableColumn[]) => void;
   setSelectedIDs: (ids: string[]) => void;
+  refreshQuestions: () => void;
   toggleSelectedId: (id: string) => void;
   clearSelectedIds: () => void;
 
@@ -34,19 +36,26 @@ export type QuestionTableBaseActions = {
 
 export type QuestionTableStore = QuestionTableState & QuestionTableBaseActions;
 
+const initialState: QuestionTableState = {
+  selectedIDs: [],
+  refreshKey: 0,
+  visibleColumns: {},
+  columns: [],
+  filters: {},
+  search: "",
+  limit: 50,
+  offset: 0,
+};
+
 export function createQuestionTableStore(
-  initial?: Partial<QuestionTableState>,
+  preloaded?: Partial<QuestionTableState>,
 ) {
   return createStore<QuestionTableStore>((set) => ({
-    selectedIDs: [],
-    visibleColumns: {},
-    columns: [],
-    filters: {},
-    search: "",
-    limit: 50,
-    offset: 0,
-    ...initial,
+    ...initialState,
+    ...preloaded,
     setQuestionTableColumns: (col) => set({ columns: col }),
+    refreshQuestions: () =>
+      set((state) => ({ refreshKey: state.refreshKey + 1 })),
     setSelectedIDs: (selectedIds) => set({ selectedIDs: selectedIds }),
     toggleSelectedId: (id) =>
       set((state) => ({

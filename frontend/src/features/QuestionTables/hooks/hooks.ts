@@ -47,6 +47,7 @@ export function usePublishedQuestionsTableRows(
 
 export function useDeveloperQuestionsTableRows(
   params?: QuestionTableSearchParams,
+  refreshKey?: number,
 ) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -85,6 +86,6 @@ export function useDeveloperQuestionsTableRows(
     return () => {
       cancelled = true;
     };
-  }, [user, params]);
+  }, [user, params, refreshKey]);
   return { questions, loading, error };
 }

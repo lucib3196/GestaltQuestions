@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import { createMyQuestionTableColumns } from "../config/columns";
 import { useDeveloperQuestionsTableRows } from "../hooks/hooks";
@@ -12,11 +12,15 @@ export default function DeveloperQuestionsTable({
 }: QuestionTableViewProps) {
   const columns = useMemo(() => createMyQuestionTableColumns(), []);
   const setColumns = useQuestionTableContext((s) => s.setQuestionTableColumns);
-  setColumns(columns);
   const query = useQuestionTableQuery(columns, baseQuery);
+  const refreshKey = useQuestionTableContext((s) => s.refreshKey);
+
+  useEffect(() => {
+    setColumns(columns);
+  }, [columns, setColumns]);
 
   // POST /developer/tables/questions/search
-  const { questions } = useDeveloperQuestionsTableRows(query);
+  const { questions } = useDeveloperQuestionsTableRows(query, refreshKey);
 
   return (
     <QuestionTableLayout
