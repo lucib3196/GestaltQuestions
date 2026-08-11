@@ -5,7 +5,7 @@ import { CollectionProvider } from "../QuestionCollections/instance/context";
 import { useCollectionStore } from "../QuestionCollections/instance/context";
 import DeveloperQuestionsTable from "../QuestionTables/tables/DeveloperQuestionsTable";
 import { QuestionTableStoreProvider } from "../QuestionTables/tables/QuestionTableStoreProvider";
-import QuestionBuilderSideBar from "./QuestionBuilderSideBar";
+import QuestionBuilderSideBar from "./sidebar/QuestionBuilderSideBar";
 import {
   createMyQuestionTableColumns,
   useQuestionTableContext,

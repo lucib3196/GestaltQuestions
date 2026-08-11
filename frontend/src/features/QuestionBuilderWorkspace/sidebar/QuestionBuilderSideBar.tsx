@@ -1,13 +1,12 @@
 import clsx from "clsx";
 import { ChevronLeft, ChevronRight, Grid2X2 } from "lucide-react";
 import { useEffect, useState } from "react";
-
-import { SearchBar } from "../../components/SearchBar";
-import type { QuestionTableSearchParams } from "../../services";
-import QuestionCollectionToolBar from "../QuestionCollections/components/CollectionToolBar";
-import { useCollectionStore } from "../QuestionCollections/instance/context";
-import QuestionCollections from "../QuestionCollections/QuestionCollections";
-import { useSearchCollections } from "./hooks/useSearchCollections";
+import { SearchBar } from "../../../components/SearchBar";
+import type { QuestionTableSearchParams } from "../../../services";
+import QuestionCollectionToolBar from "../../QuestionCollections/components/CollectionToolBar";
+import { useCollectionStore } from "../../QuestionCollections/instance/context";
+import QuestionCollections from "../../QuestionCollections/QuestionCollections";
+import { useSearchCollections } from "../hooks/useSearchCollections";
 
 const COLLECTIONS_PER_PAGE = 5;
 
