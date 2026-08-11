@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import json
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Literal
+from typing import Any, Literal
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
 
 from backend.core import logger
+from backend.developer.access import QuestionAccessService
+from backend.developer.actions import DeveloperQuestionAction, DeveloperQuestionPolicy
 from backend.developer.exceptions import (
     DeveloperProfileError,
 )
@@ -28,9 +30,6 @@ from backend.question_manager.exceptions import (
 from backend.question_manager.services.manager import QuestionManager
 from backend.shared import ID
 from backend.storage import FileData
-
-from backend.developer.actions import DeveloperQuestionPolicy, DeveloperQuestionAction
-from backend.developer.access import QuestionAccessService
 
 
 class DeveloperQuestionService:

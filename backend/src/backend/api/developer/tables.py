@@ -52,5 +52,3 @@ async def search_my_collection_questions(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(e),
         ) from e
-
-

@@ -1,12 +1,16 @@
+from collections.abc import Sequence
+from typing import Literal
+
 from sqlalchemy import TextClause, text
 from sqlmodel import Session
 
-from backend.question_views.schema import QuestionSearchParams, QuestionTableRow
-from backend.question_views.schema import QuestionTableSearchContext
-from collections.abc import Sequence
+from backend.question_views.schema import (
+    QuestionSearchParams,
+    QuestionTableRow,
+    QuestionTableSearchContext,
+)
+
 from .table_filter_builder import QuestionTableFilterBuilder
-from typing import Literal
-from typing import Sequence
 
 VALID_VIEWS = Literal["dashboard_with_collections"]
 
@@ -61,7 +65,7 @@ class TableQueryService:
         return statement.bindparams(**query_params)
 
     def _distinct_query(self, where_sql: str):
-        statement = text(f"""
+        return text(f"""
             SELECT *
             FROM (
                 SELECT
@@ -78,7 +82,6 @@ class TableQueryService:
             LIMIT :limit
             OFFSET :offset
         """)
-        return statement
 
 
 if __name__ == "__main__":

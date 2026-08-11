@@ -4,7 +4,6 @@ from fastapi import Depends
 
 from backend.question import QuestionDB, QuestionQueryService
 from backend.question_manager import QuestionManager
-from backend.question_views.service.table_query_service import TableQueryService
 
 from .core import SessionDep
 from .storage import StorageDependency
@@ -26,8 +25,6 @@ def get_question_query(
 
 
 QuestionQueryDependency = Annotated[QuestionQueryService, Depends(get_question_query)]
-
-
 
 
 def get_question_manager(

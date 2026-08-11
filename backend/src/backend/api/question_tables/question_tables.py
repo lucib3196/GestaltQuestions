@@ -1,7 +1,10 @@
+from collections.abc import Sequence
+
 from fastapi import APIRouter
-from .dependencies import TableQueryDependecy
+
 from backend.question_views.schema import QuestionSearchParams, QuestionTableRow
-from typing import Sequence
+
+from .dependencies import TableQueryDependecy
 
 router = APIRouter(prefix="/question-tables", tags=["Question Tables"])
 

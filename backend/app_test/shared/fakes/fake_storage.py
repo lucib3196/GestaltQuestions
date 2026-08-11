@@ -1,7 +1,3 @@
-from types import SimpleNamespace
-from uuid import uuid4
-
-
 class FakeStorage:
     def __init__(self) -> None:
         pass

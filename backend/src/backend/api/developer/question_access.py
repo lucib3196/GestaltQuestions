@@ -58,5 +58,3 @@ async def get_my_question_access_decision(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to check question access",
         ) from e
-
-

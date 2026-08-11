@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID, uuid4
+
 from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, text
-from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, SQLModel
 
 from backend.access_policy import AccessLevel

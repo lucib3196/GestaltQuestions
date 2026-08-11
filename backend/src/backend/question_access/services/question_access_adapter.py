@@ -5,11 +5,11 @@ from sqlmodel import Session, select
 
 from backend.access_policy import (
     AccessLevel,
+    ProfileT,
     ResourceAccessAdapter,
     ResourceAccessOperationError,
     ResourceAccessValidationError,
 )
-from backend.access_policy import ProfileT
 from backend.question import Question
 from backend.question.schema import Status
 from backend.question_access.model import QuestionAccess

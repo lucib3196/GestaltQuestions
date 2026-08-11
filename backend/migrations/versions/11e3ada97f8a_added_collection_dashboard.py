@@ -5,18 +5,16 @@ Revises: f4f353fa4d1f
 Create Date: 2026-08-06 12:01:01.953423
 
 """
-from typing import Sequence, Union
+
+from collections.abc import Sequence
 
 from alembic import op
-import sqlalchemy as sa
-import sqlmodel
-
 
 # revision identifiers, used by Alembic.
-revision: str = '11e3ada97f8a'
-down_revision: Union[str, Sequence[str], None] = 'f4f353fa4d1f'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+revision: str = "11e3ada97f8a"
+down_revision: str | Sequence[str] | None = "f4f353fa4d1f"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 query = """
 CREATE OR REPLACE VIEW dashboard_with_collections AS
@@ -29,6 +27,7 @@ FROM
     LEFT JOIN question_collection_link qcl ON qcl.question_id = qt.question_id
     LEFT JOIN question_collection qc ON qcl.collection_id = qc.id
 """
+
 
 def upgrade() -> None:
     """Upgrade schema."""

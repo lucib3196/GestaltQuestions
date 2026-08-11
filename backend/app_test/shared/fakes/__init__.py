@@ -1,4 +1,4 @@
-from .fake_user_manager import FakeUserManager
 from .fake_storage import FakeStorage
+from .fake_user_manager import FakeUserManager
 
-__all__ = ["FakeUserManager", "FakeStorage"]
+__all__ = ["FakeStorage", "FakeUserManager"]

@@ -6,18 +6,17 @@ Create Date: 2026-08-06 16:21:50.467907
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
 import sqlmodel
-from sqlalchemy.dialects import postgresql
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "7b7110ab28cc"
-down_revision: Union[str, Sequence[str], None] = None
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | Sequence[str] | None = None
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -160,19 +159,19 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("question_id", "topic_id"),
     )
     op.create_table(
-            "question_qtype_link",
-            sa.Column("question_id", sa.Uuid(), nullable=False),
-            sa.Column("qtype_id", sa.Uuid(), nullable=False),
-            sa.ForeignKeyConstraint(
-                ["question_id"],
-                ["question.id"],
-            ),
-            sa.ForeignKeyConstraint(
-                ["qtype_id"],
-                ["question_type.id"],
-            ),
-            sa.PrimaryKeyConstraint("question_id", "qtype_id"),
-        )
+        "question_qtype_link",
+        sa.Column("question_id", sa.Uuid(), nullable=False),
+        sa.Column("qtype_id", sa.Uuid(), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["question_id"],
+            ["question.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["qtype_id"],
+            ["question_type.id"],
+        ),
+        sa.PrimaryKeyConstraint("question_id", "qtype_id"),
+    )
     # ### end Alembic commands ###
 
 

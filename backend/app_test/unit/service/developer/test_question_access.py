@@ -1,22 +1,16 @@
 from types import SimpleNamespace
-from unittest.mock import MagicMock
 
 import pytest
 from sqlmodel import select
 
-from app_test.shared.factories import (
-    make_developer_profile,
-    make_user,
-    make_question,
-)  # noqa: F401
-from app_test.shared.fakes import FakeUserManager, FakeStorage
+from app_test.shared.fakes import FakeStorage, FakeUserManager
 from backend.access_policy import AccessLevel
 from backend.auth import UserRoles
 from backend.chat.model import Message, Thread  # noqa: F401
 from backend.developer import DeveloperProfileService
+from backend.developer.access import QuestionAccessService
 from backend.question import Status
 from backend.question_access import QuestionAccessAdapter
-from backend.developer.access import QuestionAccessService
 from backend.question_access.model import QuestionAccess
 
 

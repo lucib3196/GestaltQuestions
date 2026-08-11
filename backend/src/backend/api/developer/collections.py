@@ -1,11 +1,9 @@
-import backend.question_collections.schema
 from collections.abc import Sequence
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from starlette import status
-
 
 from backend.api.dependencies.users import CurrentUser
 from backend.developer.exceptions import DeveloperAccessDenied
@@ -17,7 +15,6 @@ from backend.question_collections import (
     QuestionCollectionLink,
     QuestionCollectionNotFoundError,
 )
-from backend.question_views.schema import QuestionSearchParams, QuestionTableRow
 from backend.question_collections.schema import QuestionCollectionRead
 from backend.shared import ID
 

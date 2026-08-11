@@ -1,12 +1,11 @@
+from collections.abc import Sequence
 from enum import StrEnum
 from typing import Any
-from uuid import UUID
-from dataclasses import dataclass
 
-from backend.question_views.schema import QuestionSearchParams
-from typing import List, Dict
-from collections.abc import Sequence
-from backend.question_views.schema import QuestionTableSearchContext
+from backend.question_views.schema import (
+    QuestionSearchParams,
+    QuestionTableSearchContext,
+)
 
 
 class QuestionTableFilterBuilder:
@@ -15,8 +14,8 @@ class QuestionTableFilterBuilder:
     ) -> None:
         self.params = params
         self.context = context
-        self.clauses: List[str] = []
-        self.query_params: Dict[str, Any] = {
+        self.clauses: list[str] = []
+        self.query_params: dict[str, Any] = {
             "limit": params.limit,
             "offset": params.offset,
         }
@@ -122,11 +121,11 @@ class QuestionTableFilterBuilder:
                 developer_profile_id=self.context.developer_profile_id,
             )
 
-    def add_is_adaptive(self):
+    def add_is_adaptive(self) -> None:
         if self.params.isAdaptive is not None:
             self.add('"isAdaptive" = :isAdaptive', isAdaptive=self.params.isAdaptive)
 
-    def add_institution(self):
+    def add_institution(self) -> None:
         if not self.params.institution:
             return
         self.add("institution = :institution", institution=self.params.institution.name)

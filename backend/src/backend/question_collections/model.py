@@ -1,10 +1,10 @@
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import Index, UniqueConstraint, text
-from sqlmodel import Field, Relationship, SQLModel
 from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, text
+from sqlmodel import Field, Relationship, SQLModel
+
 from backend.access_policy import AccessLevel
 
 

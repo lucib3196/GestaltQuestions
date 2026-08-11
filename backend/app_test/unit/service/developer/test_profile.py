@@ -18,8 +18,7 @@ def fake_storage():
 
 @pytest.fixture
 def fake_user_manager():
-    manager = FakeUserManager()
-    return manager
+    return FakeUserManager()
 
 
 @pytest.fixture

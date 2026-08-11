@@ -12,7 +12,6 @@ from backend.auth import User, UserRoles
 from backend.developer import DeveloperCollectionService
 from backend.developer.access import QuestionCollectionAccessService
 from backend.developer.exceptions import DeveloperAccessDenied
-from backend.developer.model import DeveloperProfile
 from backend.developer.services.developer_profile_service import DeveloperProfileService
 from backend.question_collections import (
     QuestionCollection,

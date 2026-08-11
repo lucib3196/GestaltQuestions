@@ -72,8 +72,6 @@ class DeveloperCollectionService:
         collection_reads = await asyncio.gather(
             *(self._collections.get_collection_read(c.id) for c in collections if c.id)
         )
-        
-
 
         return [collection for collection in collection_reads if collection is not None]
 

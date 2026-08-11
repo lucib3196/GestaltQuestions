@@ -4,11 +4,9 @@ from .questions import (
     QuestionDBDependency,
     QuestionManagerDependency,
     QuestionQueryDependency,
-
     get_question_database,
     get_question_manager,
     get_question_query,
-
 )
 from .runtime import (
     QuestionRuntimeDBDependency,
