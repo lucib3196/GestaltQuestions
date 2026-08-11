@@ -9,6 +9,7 @@ export type QuestionCollectionState = {
   normalizedCollection: NormalizedCollections;
   // Handles any selected and the current expanded collections
   selectedCollectionId: CollectionId | null;
+  selectedCollection: QuestionCollection | null;
   expandedCollectionIds: Set<CollectionId>;
   selectedCollectionIds: Set<CollectionId>;
 };
@@ -29,6 +30,7 @@ const initialState: QuestionCollectionState = {
     childIdsByParentId: {},
   },
   selectedCollectionId: null,
+  selectedCollection: null,
 
   expandedCollectionIds: new Set(),
   selectedCollectionIds: new Set(),
@@ -48,7 +50,12 @@ export function createCollectionStore(
     },
 
     setSelectedCollectionId: (collectionId) => {
-      set({ selectedCollectionId: collectionId });
+      set((state) => ({
+        selectedCollectionId: collectionId,
+        selectedCollection: collectionId
+          ? state.normalizedCollection.byId[collectionId]
+          : null,
+      }));
     },
   }));
 }
