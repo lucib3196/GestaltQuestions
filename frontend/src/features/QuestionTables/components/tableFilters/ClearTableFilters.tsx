@@ -1,5 +1,6 @@
-import { useQuestionTableContext } from "../../instance/context";
 import { FaFilter } from "react-icons/fa";
+
+import { useQuestionTableContext } from "../../instance/context";
 
 export function ClearTableFilters() {
   const clearFilters = useQuestionTableContext((s) => s.clearFilters);

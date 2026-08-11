@@ -1,6 +1,6 @@
 from datetime import datetime
 from uuid import UUID, uuid4
-
+from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, text
 from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, SQLModel
 
@@ -25,7 +25,13 @@ class QuestionAccess(SQLModel, table=True):
     )
     id: UUID | None = Field(default_factory=uuid4, primary_key=True, index=True)
     # Maps the question id and the developer who has access
-    question_id: UUID = Field(foreign_key="question.id")
+    question_id: UUID = Field(
+        sa_column=Column(
+            ForeignKey("question.id", ondelete="CASCADE"),
+            nullable=False,
+            primary_key=True,
+        ),
+    )
     developer_id: UUID = Field(foreign_key="developer_profile.id")
     # Defines the access level
     access_level: AccessLevel

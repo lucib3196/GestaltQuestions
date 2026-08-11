@@ -7,7 +7,8 @@ export type ToolbarActionId =
   | "download"
   | "delete"
   | "columns"
-  | "collections";
+  | "collections"
+  | "removeFromCollection";
 
 export type ToolbarActionConfig = {
   id: ToolbarActionId;

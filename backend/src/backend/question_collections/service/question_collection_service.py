@@ -3,12 +3,13 @@ from datetime import UTC, datetime
 from typing import Generic
 from uuid import UUID
 
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, select
 
 from backend.access_policy import ProfileT
 from backend.question import Question
 from backend.question_collections.exceptions import (
+    QuestionAlreadyInCollectionError,
     QuestionCollectionNotFoundError,
     QuestionCollectionOperationError,
     QuestionCollectionValidationError,
@@ -199,6 +200,9 @@ class QuestionCollectionService(Generic[ProfileT]):
             self._session.commit()
             self._session.refresh(link)
             return link
+        except IntegrityError as e:
+            self._session.rollback()
+            raise QuestionAlreadyInCollectionError() from e
         except SQLAlchemyError as e:
             self._session.rollback()
             raise QuestionCollectionOperationError("add question to", str(e)) from e

@@ -11,6 +11,7 @@ from backend.api.dependencies.users import CurrentUser
 from backend.developer.exceptions import DeveloperAccessDenied
 from backend.question import Question
 from backend.question_collections import (
+    QuestionAlreadyInCollectionError,
     QuestionCollection,
     QuestionCollectionError,
     QuestionCollectionLink,
@@ -203,6 +204,8 @@ async def add_question_to_collection(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
     except QuestionCollectionNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
+    except QuestionAlreadyInCollectionError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e)) from e
     except QuestionCollectionError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

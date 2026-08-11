@@ -5,22 +5,24 @@ import { toast } from "react-toastify";
 import { CollectionsApi } from "../../../services";
 import { useAuth } from "../../Auth";
 
-type AddQuestionToCollectionOptions = {
+type RemoveQuestionsFromCollectionOptions = {
   onSuccess?: () => void;
 };
 
-export function useAddQuestionToCollection() {
+export function useRemoveQuestionsFromCollection() {
   const { user } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const addQuestionToCollection = async (
-    collectionIds: string[],
+  const removeQuestionsFromCollection = async (
+    collectionId: string,
     questionIds: string[],
-    options?: AddQuestionToCollectionOptions,
+    options?: RemoveQuestionsFromCollectionOptions,
   ) => {
     if (!user) {
-      setError("Sign in to add questions to collections.");
+      const message = "Sign in to remove questions from collections.";
+      setError(message);
+      toast.error(message);
       return [];
     }
 
@@ -30,13 +32,9 @@ export function useAddQuestionToCollection() {
     try {
       const token = await user.getIdToken();
 
-      const pairs = collectionIds.flatMap((collectionId) =>
-        questionIds.map((questionId) => [collectionId, questionId] as const),
-      );
-
       const results = await Promise.all(
-        pairs.map(([collectionId, questionId]) =>
-          CollectionsApi.addQuestionToCollection(
+        questionIds.map((questionId) =>
+          CollectionsApi.removeQuestionFromCollection(
             token,
             collectionId,
             questionId,
@@ -44,7 +42,7 @@ export function useAddQuestionToCollection() {
         ),
       );
 
-      toast.success("Questions added to collections successfully.");
+      toast.success("Questions removed from collection successfully.");
       options?.onSuccess?.();
 
       return results;
@@ -55,7 +53,7 @@ export function useAddQuestionToCollection() {
           ? err.response.data.detail
           : err instanceof Error
             ? err.message
-            : "Unable to add questions to collections.";
+            : "Unable to remove questions from collection.";
 
       setError(message);
       toast.error(message);
@@ -65,5 +63,5 @@ export function useAddQuestionToCollection() {
     }
   };
 
-  return { addQuestionToCollection, loading, error };
+  return { removeQuestionsFromCollection, loading, error };
 }

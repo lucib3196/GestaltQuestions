@@ -1,5 +1,5 @@
-import { useQuestionTableContext } from "../../instance/context";
 import { SearchBar } from "../../../../components/SearchBar";
+import { useQuestionTableContext } from "../../instance/context";
 
 export function QuestionSearch() {
   const searchTitle = useQuestionTableContext((s) => s.search);

@@ -1,16 +1,18 @@
-import { useQuestionTableContext } from "../../QuestionTables";
-import { ClearTableFilters } from "../../QuestionTables/components/tableFilters/ClearTableFilters";
-import { ToolBarActions } from "../../QuestionTables";
-import {
-  type WorkspaceToolbarActionId,
-  type WorkspaceToolbarPopupActionId,
-  WORKSPACE_TOOLBAR_ACTIONS,
-} from "./constants";
-import { QuestionTableFilterPanel } from "../../QuestionTables";
-import { CollectionPopUp } from "../components/CollectionsPopUp";
 import { useCopyQuestion } from "../../QuestionBuilder/hooks";
 import { useDownloadQuestions } from "../../QuestionBuilder/hooks";
 import { useDeleteQuestion } from "../../QuestionBuilder/hooks";
+import { useRemoveQuestionsFromCollection } from "../../QuestionCollections/hooks/useRemoveQuestions";
+import { useCollectionStore } from "../../QuestionCollections/instance/context";
+import { useQuestionTableContext } from "../../QuestionTables";
+import { ToolBarActions } from "../../QuestionTables";
+import { QuestionTableFilterPanel } from "../../QuestionTables";
+import { ClearTableFilters } from "../../QuestionTables/components/tableFilters/ClearTableFilters";
+import { CollectionPopUp } from "../components/CollectionsPopUp";
+import {
+  WORKSPACE_TOOLBAR_ACTIONS,
+  type WorkspaceToolbarActionId,
+  type WorkspaceToolbarPopupActionId,
+} from "./constants";
 type Props = {
   popUp: WorkspaceToolbarActionId | null;
   onOpenPopUp: (id: WorkspaceToolbarPopupActionId | null) => void;
@@ -18,17 +20,33 @@ type Props = {
 
 export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
   const selectedQuestionIds = useQuestionTableContext((s) => s.selectedIDs);
+  const clearSelectedIds = useQuestionTableContext((s) => s.clearSelectedIds);
+  const selectedCollectionId = useCollectionStore(
+    (s) => s.selectedCollectionId,
+  );
   const hasSelection = selectedQuestionIds.length > 0;
   const cols = useQuestionTableContext((s) => s.columns);
 
   const { copyQuestion } = useCopyQuestion();
   const { downLoadQuestions } = useDownloadQuestions();
   const { deleteQuestion } = useDeleteQuestion();
+  const { removeQuestionsFromCollection } = useRemoveQuestionsFromCollection();
 
   const actionHandlers: Record<WorkspaceToolbarActionId, () => void> = {
     copy: async () => copyQuestion(selectedQuestionIds),
     download: async () => downLoadQuestions(selectedQuestionIds),
     delete: async () => deleteQuestion(selectedQuestionIds),
+    removeFromCollection: async () => {
+      if (!selectedCollectionId) return;
+
+      await removeQuestionsFromCollection(
+        selectedCollectionId,
+        selectedQuestionIds,
+        {
+          onSuccess: clearSelectedIds,
+        },
+      );
+    },
     tableFilters: () => onOpenPopUp("tableFilters"),
     collections: () => onOpenPopUp("collections"),
   };
@@ -40,7 +58,8 @@ export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
         actionHandlers={actionHandlers}
         roles={["developer"]}
         isActionDisabled={(action) =>
-          Boolean(action.requiresSelection && !hasSelection)
+          Boolean(action.requiresSelection && !hasSelection) ||
+          (action.id === "removeFromCollection" && !selectedCollectionId)
         }
         variant="inline"
         renderActionPopup={(action) => {

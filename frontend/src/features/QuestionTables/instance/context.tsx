@@ -1,8 +1,11 @@
 import { createContext, type ReactNode, useContext, useRef } from "react";
 import { useStore } from "zustand";
 
-import { createQuestionTableStore } from "./store";
-import type { QuestionTableState, QuestionTableStore } from "./types";
+import {
+  createQuestionTableStore,
+  type QuestionTableState,
+  type QuestionTableStore,
+} from "./store";
 
 type QuestionTableStoreApi = ReturnType<typeof createQuestionTableStore>;
 const QuestionTableContext = createContext<QuestionTableStoreApi | null>(null);

@@ -10,6 +10,11 @@ class QuestionCollectionNotFoundError(QuestionCollectionError, LookupError):
         super().__init__(message)
 
 
+class QuestionAlreadyInCollectionError(QuestionCollectionError):
+    def __init__(self) -> None:
+        super().__init__("Question is already in this collection.")
+
+
 class QuestionCollectionValidationError(QuestionCollectionError, ValueError):
     def __init__(self, reason: str) -> None:
         super().__init__(f"Invalid question collection request: {reason}")

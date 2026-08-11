@@ -1,5 +1,5 @@
-import type { ToolBarActionConfig } from "./types";
 import type { UserRole } from "../../../Auth";
+import type { ToolBarActionConfig } from "./types";
 
 export type ToolBarActionsProps<TId extends string> = {
   actions: readonly ToolBarActionConfig<TId>[];

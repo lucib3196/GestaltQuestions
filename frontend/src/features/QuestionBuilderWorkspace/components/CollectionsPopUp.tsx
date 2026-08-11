@@ -3,7 +3,6 @@ import { useState } from "react";
 
 import { SearchBar } from "../../../components/SearchBar";
 import type { QuestionCollectionRead } from "../../../services";
-
 import { useAddQuestionToCollection } from "../../QuestionCollections/hooks/useAddQuestions";
 import useCreateCollection from "../../QuestionCollections/hooks/useCreateCollection";
 import { useQuestionTableContext } from "../../QuestionTables";
@@ -79,19 +78,23 @@ function Header({
 type CollectionPopUpProps = {
   onClose?: () => void;
 };
-
 export function CollectionPopUp({ onClose }: CollectionPopUpProps) {
+  const selectedQuestions = useQuestionTableContext((s) => s.selectedIDs);
+  const setSelectedQuestions = useQuestionTableContext((s) => s.setSelectedIDs);
+
   const [title, setTitle] = useState<string>("");
-  const debouncedTitle = useDebounce(title, 250);
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<
     Set<string>
   >(() => new Set());
+
+  const debouncedTitle = useDebounce(title, 250);
   const { collections, loading, error } = useSearchCollections(debouncedTitle);
-  const selectedQuestions = useQuestionTableContext((s) => s.selectedIDs);
-  const { addQuestionToCollection } = useAddQuestionToCollection();
+  const { addQuestionToCollection, loading: addingQuestions } =
+    useAddQuestionToCollection();
 
   const selectedCount = selectedCollectionIds.size;
-  const canAddQuestions = selectedCount > 0 && selectedQuestions.length > 0;
+  const canAddQuestions =
+    selectedCount > 0 && selectedQuestions.length > 0 && !addingQuestions;
 
   function toggleCollection(collection: QuestionCollectionRead) {
     if (!collection.id) return;
@@ -113,6 +116,13 @@ export function CollectionPopUp({ onClose }: CollectionPopUpProps) {
     await addQuestionToCollection(
       Array.from(selectedCollectionIds),
       selectedQuestions,
+      {
+        onSuccess: () => {
+          setSelectedCollectionIds(new Set());
+          setSelectedQuestions([]);
+          onClose?.();
+        },
+      },
     );
   }
 
@@ -158,7 +168,7 @@ export function CollectionPopUp({ onClose }: CollectionPopUpProps) {
           onClick={addQuestionsToCollections}
           className="rounded-md bg-approval px-4 py-2 text-sm font-semibold text-approval-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Add Question to Collection
+          {addingQuestions ? "Adding..." : "Add Question to Collection"}
         </button>
       </div>
     </div>

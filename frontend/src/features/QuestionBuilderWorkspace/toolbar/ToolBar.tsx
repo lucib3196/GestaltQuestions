@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useEffect, useRef } from "react";
-import { QuestionSearch } from "../../QuestionTables/components/searchBar/searchBar";
-import { WorkspaceToolBarActions } from "./ToolBarActions";
-import type { WorkspaceToolbarPopupActionId } from "./constants";
+
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
+import { QuestionSearch } from "../../QuestionTables/components/searchBar/searchBar";
+import type { WorkspaceToolbarPopupActionId } from "./constants";
+import { WorkspaceToolBarActions } from "./ToolBarActions";
 
 function CollectionPreview() {
   const selectedCollection = useCollectionStore((s) => s.selectedCollection);

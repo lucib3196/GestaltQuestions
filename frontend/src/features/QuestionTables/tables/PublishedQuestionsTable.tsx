@@ -2,8 +2,8 @@ import { useMemo } from "react";
 
 import { createAllQuestionTableColumns } from "../config/columns";
 import { usePublishedQuestionsTableRows } from "../hooks/hooks";
-import { QuestionTableLayout } from "./QuestionTableLayout";
 import { useQuestionTableContext } from "../instance/context";
+import { QuestionTableLayout } from "./QuestionTableLayout";
 import type { QuestionTableViewProps } from "./types";
 import { useQuestionTableQuery } from "./useQuestionTableQuery";
 

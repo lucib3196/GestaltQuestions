@@ -1,4 +1,5 @@
 from .exceptions import (
+    QuestionAlreadyInCollectionError,
     QuestionCollectionError,
     QuestionCollectionNotFoundError,
     QuestionCollectionOperationError,
@@ -17,6 +18,7 @@ __all__ = [
     "QuestionCollection",
     "QuestionCollectionAccess",
     "QuestionCollectionAdapter",
+    "QuestionAlreadyInCollectionError",
     "QuestionCollectionError",
     "QuestionCollectionLink",
     "QuestionCollectionNotFoundError",
