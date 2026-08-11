@@ -48,7 +48,7 @@ export function ToolBar() {
           }
         />
       </div>
-      <ClearFilters disabled={false} clearFilters={() => {}} />
+      <ClearFilters disabled={false} clearFilters={() => { }} />
 
       {openPopup === "columns" && (
         <div className="absolute right-4 top-20 z-20 mt-2 w-64">
