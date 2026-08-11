@@ -29,14 +29,16 @@ def test_add_developer_role_then_set_profile(
     )
     asyncio.run(user_manager.set_user_institution(ValidInstitutions.CPP, user))
 
-    role_response = api_client.post(f"/users/dev/{user.id}/role")
+    role_response = api_client.post(
+        f"/users/{user.id}/roles", json={"role": "developer"}
+    )
 
     assert role_response.status_code == 200
     role_data = role_response.json()
     UserRead.model_validate(role_data)
     assert UserRoles.DEVELOPER.value in role_data["roles"]
 
-    profile_response = api_client.post(f"/users/dev/{user.id}")
+    profile_response = api_client.post(f"/developer/roles/{user.id}")
 
     assert profile_response.status_code == 200
     profile_data = profile_response.json()

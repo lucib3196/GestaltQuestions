@@ -33,14 +33,15 @@ async def check_my_status(
     return access
 
 
-@router.post("/{id}")
-async def check_status(access_policy: DeveloperRoleAccess, id: ID) -> None:
+@router.get("/{id}")
+async def check_status(access_policy: DeveloperRoleAccess, id: ID) -> AccessDecision:
     access = await access_policy.evaluate(id)
     if not access.allowed:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"Not allowed {access.reason}",
         )
+    return access
 
 
 @router.post("/{user_id}")
