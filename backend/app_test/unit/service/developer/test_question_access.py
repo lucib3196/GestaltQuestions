@@ -3,7 +3,6 @@ from types import SimpleNamespace
 import pytest
 from sqlmodel import select
 
-
 from app_test.shared.fakes import FakeStorage, FakeUserManager
 from backend.access_policy import AccessLevel
 from backend.auth import UserRoles

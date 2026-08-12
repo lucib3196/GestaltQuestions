@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
-
+from sqlalchemy.orm import Mapped
 from sqlmodel import Field, Relationship, SQLModel
 
 from .schemas import ValidInstitutions
@@ -42,7 +42,7 @@ class User(SQLModel, table=True):
     username: str | None = Field(default=None, unique=True)
     email: str = Field(index=True, unique=True)
 
-    roles: list["Role"] = Relationship(back_populates="users", link_model=UserRoleLink)
+    roles: Mapped[list["Role"]] = Relationship(back_populates="users", link_model=UserRoleLink)
 
     institution_id: UUID | None = Field(default=None, foreign_key="institution.id")
     institution: Optional["Institution"] = Relationship(back_populates="users")

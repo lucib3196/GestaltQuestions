@@ -1,6 +1,5 @@
 import pytest
 
-
 from backend.developer import DeveloperProfile
 from backend.question_collections import (
     QuestionCollection,

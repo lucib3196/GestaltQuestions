@@ -178,6 +178,7 @@ def get_settings_pretty_print(mode: Literal["str", "json"] = "json") -> str:
         },
         "services_configured": {
             "database": bool(app_settings.DATABASE_URL),
+            "database_url": app_settings.DATABASE_URL,
             "firebase_credentials": bool(app_settings.FIREBASE_CRED),
             "storage_bucket": bool(app_settings.STORAGE_BUCKET),
             "sandbox_url": bool(app_settings.SANDBOX_URL),
