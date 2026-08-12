@@ -6,6 +6,7 @@ from sqlmodel import Session, SQLModel, create_engine
 from backend.auth import (
     InstitutionDB,
     Role,
+    RoleDB,
     UserDB,
     UserRoles,
     ValidInstitutions,
@@ -78,6 +79,9 @@ def seed_roles(db_session: Session):
     db_session.commit()
     return roles
 
+@pytest.fixture
+def role_db(db_session: Session)->RoleDB:
+    return RoleDB(db_session)
 
 @pytest.fixture
 def user_db(db_session) -> UserDB:
