@@ -49,7 +49,7 @@ export function ToolBar() {
       ref={containerRef}
     >
       <CollectionPreview />
-      <QuestionSearch />
+      <QuestionSearch  />
 
       <WorkspaceToolBarActions
         popUp={openPopup}

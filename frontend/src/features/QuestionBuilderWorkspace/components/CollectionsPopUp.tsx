@@ -48,7 +48,7 @@ function SearchCollections({
       <label className="text-sm font-medium text-text-muted">
         Find Collections
       </label>
-      <SearchBar value={title} setValue={setTitle} />
+      <SearchBar value={title} setValue={setTitle} placeholder="Search collections by title" />
     </div>
   );
 }
