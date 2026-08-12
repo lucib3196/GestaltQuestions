@@ -49,9 +49,11 @@ def upgrade() -> None:
     )
     with op.batch_alter_table("question_attempt_link", schema=None) as batch_op:
         batch_op.create_index(
-            batch_op.f("ix_question_attempt_link_id"), ["id"], unique=False
+            batch_op.f("ix_question_attempt_link_id"),
+            ["id"],
+            unique=False,
+            if_not_exists=True,
         )
-
     with op.batch_alter_table("message", schema=None) as batch_op:
         batch_op.drop_constraint(
             batch_op.f("message_thread_id_fkey"), type_="foreignkey"
