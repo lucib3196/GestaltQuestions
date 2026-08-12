@@ -1,10 +1,6 @@
 import pytest
 
-from app_test.shared.factories import (  # noqa: F401
-    make_developer_profile,
-    make_question,
-    make_user,
-)
+
 from backend.developer import DeveloperProfile
 from backend.question_collections import (
     QuestionCollection,

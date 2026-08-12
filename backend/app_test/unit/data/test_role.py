@@ -7,8 +7,8 @@ TEST_ROLES = [UserRoles.ADMIN, UserRoles.STUDENT, UserRoles.DEVELOPER]
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("role", TEST_ROLES)
-async def test_create_role(role_manager, role) -> None:
-    created = await role_manager.create_role(role)
+async def test_create_role(role_db, role) -> None:
+    created = await role_db.create_role(role)
 
     assert created is not None
     assert isinstance(created, Role)
@@ -17,20 +17,20 @@ async def test_create_role(role_manager, role) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("role", TEST_ROLES)
-async def test_does_role_exist(role_manager, role) -> None:
-    assert await role_manager.does_role_exist(role) is False
+async def test_does_role_exist(role_db, role) -> None:
+    assert await role_db.does_role_exist(role) is False
 
-    await role_manager.create_role(role)
+    await role_db.create_role(role)
 
-    assert await role_manager.does_role_exist(role) is True
+    assert await role_db.does_role_exist(role) is True
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("role", TEST_ROLES)
-async def test_get_role(role_manager, role) -> None:
-    await role_manager.create_role(role)
+async def test_get_role(role_db, role) -> None:
+    await role_db.create_role(role)
 
-    found = await role_manager.get_role(role)
+    found = await role_db.get_role(role)
 
     assert found is not None
     assert found.name == role.value
@@ -38,18 +38,18 @@ async def test_get_role(role_manager, role) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("role", TEST_ROLES)
-async def test_get_role_data(role_manager, role) -> None:
-    await role_manager.create_role(role)
+async def test_get_role_data(role_db, role) -> None:
+    await role_db.create_role(role)
 
-    found = await role_manager.get_role_data(role.value)
+    found = await role_db.get_role_data(role.value)
 
     assert found is not None
     assert found.name == role.value
 
 
 @pytest.mark.asyncio
-async def test_seed_roles(role_manager) -> None:
-    await role_manager.seed_roles()
+async def test_seed_roles(role_db) -> None:
+    await role_db.seed_roles()
 
     for role in UserRoles:
-        assert await role_manager.does_role_exist(role) is True
+        assert await role_db.does_role_exist(role) is True
