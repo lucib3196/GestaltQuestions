@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Sequence
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
@@ -61,6 +62,7 @@ class QuestionCollectionAdapter(
     async def build_access(
         self,
         resource: QuestionCollection,
+        granted_by: DeveloperProfile,
         profile: DeveloperProfile,
         level: AccessLevel,
     ) -> QuestionCollectionAccess:
@@ -68,6 +70,7 @@ class QuestionCollectionAdapter(
 
         try:
             access = QuestionCollectionAccess(
+                granted_by_id=granted_by.id,
                 collection_id=resource.id,  # type: ignore[arg-type]
                 developer_id=profile.id,
                 access_level=level,
@@ -133,6 +136,37 @@ class QuestionCollectionAdapter(
                 "remove access",
                 resource_id=self._resource_id(resource),
                 profile_id=str(target.id),
+                details=str(e),
+            ) from e
+
+    async def list_access_granted_to(
+        self, profile: DeveloperProfile
+    ) -> Sequence[QuestionCollectionAccess]:
+        try:
+            stmt = select(QuestionCollectionAccess).where(
+                QuestionCollectionAccess.developer_id == profile.id,
+                QuestionCollectionAccess.access_level != AccessLevel.OWNER,
+            )
+            return list(self._session.exec(stmt).all())
+        except SQLAlchemyError as e:
+            raise self._operation_error(
+                "list access",
+                profile_id=str(profile.id),
+                details=str(e),
+            ) from e
+
+    async def list_access_granted_by(
+        self, profile: DeveloperProfile
+    ) -> Sequence[QuestionCollectionAccess]:
+        try:
+            stmt = select(QuestionCollectionAccess).where(
+                QuestionCollectionAccess.granted_by_id == profile.id,
+            )
+            return list(self._session.exec(stmt).all())
+        except SQLAlchemyError as e:
+            raise self._operation_error(
+                "list access",
+                profile_id=str(profile.id),
                 details=str(e),
             ) from e
 

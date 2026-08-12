@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Sequence
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
@@ -55,13 +56,18 @@ class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Ques
             ) from e
 
     async def build_access(
-        self, resource: Question, profile: ProfileT, level: AccessLevel
+        self,
+        resource: Question,
+        granted_by: ProfileT,
+        profile: ProfileT,
+        level: AccessLevel,
     ) -> QuestionAccess:
         self._validate_resource(resource)
 
         try:
             qaccess = QuestionAccess(
                 question_id=resource.id,  # type: ignore
+                granted_by_id=granted_by.id,
                 developer_id=profile.id,
                 access_level=level,
             )
@@ -121,6 +127,37 @@ class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Ques
                 "remove access",
                 resource_id=self._resource_id(resource),
                 profile_id=str(target.id),
+                details=str(e),
+            ) from e
+
+    async def list_access_granted_to(
+        self, profile: ProfileT
+    ) -> Sequence[QuestionAccess]:
+        try:
+            stmt = select(QuestionAccess).where(
+                QuestionAccess.developer_id == profile.id,
+                QuestionAccess.access_level != AccessLevel.OWNER,
+            )
+            return list(self._session.exec(stmt).all())
+        except SQLAlchemyError as e:
+            raise self._operation_error(
+                "list access",
+                profile_id=str(profile.id),
+                details=str(e),
+            ) from e
+
+    async def list_access_granted_by(
+        self, profile: ProfileT
+    ) -> Sequence[QuestionAccess]:
+        try:
+            stmt = select(QuestionAccess).where(
+                QuestionAccess.granted_by_id == profile.id,
+            )
+            return list(self._session.exec(stmt).all())
+        except SQLAlchemyError as e:
+            raise self._operation_error(
+                "list access",
+                profile_id=str(profile.id),
                 details=str(e),
             ) from e
 

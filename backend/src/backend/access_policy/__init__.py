@@ -17,6 +17,7 @@ from .schema import (
     AccessModelT,
     Profile,
     ProfileT,
+    ResourceAccessRevokeResult,
     ResourceProtocol,
     ResourceT,
 )
@@ -47,6 +48,7 @@ __all__ = [
     "ResourceAccessDenied",
     "ResourceAccessError",
     "ResourceAccessOperationError",
+    "ResourceAccessRevokeResult",
     "ResourceAccessService",
     "ResourceAccessValidationError",
     "ResourceProtocol",

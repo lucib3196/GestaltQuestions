@@ -79,6 +79,12 @@ class QuestionCollectionAccess(SQLModel, table=True):
             nullable=False,
         ),
     )
+    # Defines who granted who to what
+    granted_by_id: UUID | None = Field(
+        default=None,
+        foreign_key="developer_profile.id",
+    )
+
     developer_id: UUID = Field(foreign_key="developer_profile.id")
     access_level: AccessLevel
 

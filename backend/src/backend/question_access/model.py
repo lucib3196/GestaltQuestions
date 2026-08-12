@@ -32,6 +32,12 @@ class QuestionAccess(SQLModel, table=True):
             primary_key=True,
         ),
     )
+    # Defines who granted the access
+    granted_by_id: UUID | None = Field(
+        default=None,
+        foreign_key="developer_profile.id",
+    )
+    # Defines the person who has the access
     developer_id: UUID = Field(foreign_key="developer_profile.id")
     # Defines the access level
     access_level: AccessLevel
