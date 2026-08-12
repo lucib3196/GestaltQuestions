@@ -6,7 +6,7 @@ from fastapi.responses import Response
 
 from backend.api.deps import StorageDependency
 
-router = APIRouter(prefix="/images", tags=["images"])
+router = APIRouter(prefix="/images", tags=["Images"])
 
 
 @router.get("/firebase")

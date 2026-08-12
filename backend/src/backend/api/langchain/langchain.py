@@ -7,7 +7,7 @@ from fastapi.routing import APIRouter
 from langgraph_sdk import get_client
 from pydantic import BaseModel
 
-router = APIRouter(prefix="/agents", tags=["ai"])
+router = APIRouter(prefix="/agents", tags=["AI"])
 
 LANGGRAPH_STREAM_URL = "http://host.docker.internal:2024"
 client = get_client(url=LANGGRAPH_STREAM_URL)

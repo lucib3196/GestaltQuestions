@@ -15,7 +15,7 @@ from .dependencies import DeveloperProfileDependency, DeveloperRoleAccess
 router = APIRouter(
     prefix="/roles",
     tags=[
-        "users",
+        "Users",
     ],
 )
 

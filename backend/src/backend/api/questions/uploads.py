@@ -7,7 +7,7 @@ from backend.utils import safe_dir_name
 
 router = APIRouter(
     prefix="/questions/upload",
-    tags=["questions", "upload", "files"],
+    tags=["Questions", "Upload", "Files"],
 )
 
 

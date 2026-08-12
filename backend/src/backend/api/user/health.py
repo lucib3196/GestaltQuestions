@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from backend.core import get_settings
 
-router = APIRouter(prefix="/users", tags=["health"])
+router = APIRouter(prefix="/users", tags=["Health"])
 
 
 class LogInPayload(BaseModel):

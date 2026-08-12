@@ -13,7 +13,7 @@ from backend.chat.schema import MessageCreate
 from backend.core import get_settings
 
 load_dotenv()
-router = APIRouter(prefix="/threads", tags=["threads"])
+router = APIRouter(prefix="/threads", tags=["Threads"])
 
 settings = get_settings()
 client = get_client(

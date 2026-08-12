@@ -21,7 +21,7 @@ from .dependencies import DevQManager
 
 router = APIRouter(
     prefix="/questions",
-    tags=["questions"],
+    tags=["Questions"],
 )
 
 
