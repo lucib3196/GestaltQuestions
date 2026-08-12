@@ -2,7 +2,6 @@ from types import SimpleNamespace
 
 import pytest
 
-
 from app_test.shared.fakes import FakeStorage, FakeUserManager
 from backend.auth import User, UserRoles
 from backend.developer import DeveloperCollectionService
@@ -28,7 +27,7 @@ def developer_profile_service(
 ) -> DeveloperProfileService:
     return DeveloperProfileService(
         session=db_session,
-        storage=FakeStorage(),# type: ignore[arg-type]
+        storage=FakeStorage(),  # type: ignore[arg-type]
         user_manager=fake_user_manager,  # type: ignore[arg-type]
     )
 
