@@ -44,8 +44,7 @@ def upgrade() -> None:
             ["user.id"],
         ),
         sa.PrimaryKeyConstraint("id", "question_id", "user_id"),
-        if_not_exists=True
-        
+        if_not_exists=True,
     )
     with op.batch_alter_table("question_attempt_link", schema=None) as batch_op:
         batch_op.create_index(

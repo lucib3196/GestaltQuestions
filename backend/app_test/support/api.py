@@ -1,12 +1,10 @@
 import asyncio
-from collections.abc import Generator
 from contextlib import asynccontextmanager
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app_test.conftest import storage_params
 from backend.api.deps import (
     get_session,
     get_storage_manager,
@@ -15,14 +13,8 @@ from backend.api.deps import (
 )
 from backend.api.developer.dependencies import get_developer_profile_service
 from backend.auth import InstitutionDB, RoleDB, UserManager
-from backend.core import get_settings
-from backend.developer.services import (
-    DeveloperProfileService,
-)
-from backend.storage import FbStorage, LocalStorage, Storage
+from backend.developer.services import DeveloperProfileService
 from src.main import get_application
-
-settings = get_settings()
 
 
 @asynccontextmanager
@@ -33,19 +25,6 @@ async def on_startup_test(app: FastAPI):
 @pytest.fixture
 def user_manager(db_session) -> UserManager:
     return UserManager(db_session)
-
-
-@pytest.fixture(params=storage_params())
-def raw_storage(request: pytest.FixtureRequest) -> Generator[Storage]:
-    if request.param == "cloud":
-        request.getfixturevalue("firebase_app_for_tests")
-        storage = FbStorage(settings.STORAGE_BUCKET)  # type: ignore
-        storage._hard_delete()
-        yield storage
-        storage._hard_delete()
-        return
-
-    yield LocalStorage()
 
 
 @pytest.fixture(scope="function")

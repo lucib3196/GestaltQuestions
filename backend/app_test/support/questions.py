@@ -8,10 +8,12 @@ from backend.storage import FileData, Storage
 
 
 @pytest.fixture
-def question_manager(
-    raw_storage: Storage,
-    question_db: QuestionDB,
-) -> QuestionManager:
+def question_db(db_session, seed_qtypes) -> QuestionDB:
+    return QuestionDB(db_session)
+
+
+@pytest.fixture
+def question_manager(raw_storage, question_db) -> QuestionManager:
     return QuestionManager(storage=raw_storage, qdb=question_db)
 
 
