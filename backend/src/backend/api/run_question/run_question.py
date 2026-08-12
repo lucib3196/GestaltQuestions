@@ -9,7 +9,7 @@ from backend.shared import ID
 
 router = APIRouter(
     prefix="/questions/{qid}/runtimes",
-    tags=["questions", "runtime"],
+    tags=["Questions", "Runtime"],
 )
 
 

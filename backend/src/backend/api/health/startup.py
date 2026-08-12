@@ -5,7 +5,7 @@ from starlette import status
 
 from backend.api.deps import SessionDep, SettingDependency
 
-router = APIRouter(tags=["health"], prefix="/health")
+router = APIRouter(tags=["Health"], prefix="/health")
 
 
 @router.get("/live", status_code=status.HTTP_200_OK)

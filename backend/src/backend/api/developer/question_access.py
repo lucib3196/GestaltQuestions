@@ -11,7 +11,7 @@ from .dependencies import QuestionAccessDependency
 
 router = APIRouter(
     prefix="/question-access",
-    tags=["Question-Access"],
+    tags=["Question Access"],
 )
 
 

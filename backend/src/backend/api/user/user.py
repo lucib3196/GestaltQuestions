@@ -16,7 +16,7 @@ from backend.auth import (
 from backend.core import logger
 from backend.shared import ID
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 class LoginRequest(BaseModel):

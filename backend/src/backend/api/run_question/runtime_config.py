@@ -15,7 +15,7 @@ from backend.question_runtime.schema import (
 
 router = APIRouter(
     prefix="/questions/{qid}/runtimes",
-    tags=["questions", "runtime-config"],
+    tags=["Questions", "Runtime Config"],
 )
 
 

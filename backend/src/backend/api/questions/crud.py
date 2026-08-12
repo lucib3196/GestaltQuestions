@@ -11,7 +11,7 @@ from backend.shared import ID
 router = APIRouter(
     prefix="/questions",
     tags=[
-        "questions",
+        "Questions",
     ],
 )
 

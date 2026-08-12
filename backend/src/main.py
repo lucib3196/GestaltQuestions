@@ -19,6 +19,31 @@ from backend.question import QuestionQTypeDB
 settings = get_settings()
 
 
+def tags_meta():
+    tags_metadata = [
+        {"name": "AI", "description": "AI agent chat and streaming endpoints."},
+        {"name": "Collections", "description": "Manage developer question collections."},
+        {"name": "Developer", "description": "Developer workspace routes and tools."},
+        {"name": "Developer Tables", "description": "Search developer-owned question tables."},
+        {"name": "Files", "description": "General file upload and storage helpers."},
+        {"name": "Health", "description": "Service, database, Firebase, and settings health checks."},
+        {"name": "Images", "description": "Retrieve stored image assets."},
+        {"name": "Profile", "description": "Manage developer profiles."},
+        {"name": "Question Access", "description": "Check access permissions for questions."},
+        {"name": "Question Tables", "description": "Search question table views."},
+        {"name": "Questions", "description": "Create, retrieve, filter, and manage questions."},
+        {"name": "Runtime", "description": "Run question runtimes and render question bundles."},
+        {
+            "name": "Runtime Config",
+            "description": "List, create, and sync question runtime configurations.",
+        },
+        {"name": "Threads", "description": "Manage user chat threads and messages."},
+        {"name": "Upload", "description": "Upload question archives and extracted files."},
+        {"name": "Users", "description": "Create, authenticate, and manage users and roles."},
+    ]
+    return sorted(tags_metadata, key=lambda tag: tag["name"].lower())
+
+
 async def seed_database(session: Session) -> None:
     await RoleDB(session).seed_roles()
     logger.info("[Initialization] Roles Created/verified Successfully")
@@ -48,7 +73,10 @@ def add_routes(app: FastAPI, routes: list[APIRouter] = ALL_ROUTES) -> None:
 
 
 def get_application(test_mode: bool = False):
-    app = FastAPI(title=settings.PROJECT_NAME or "", lifespan=on_startup)
+
+    app = FastAPI(
+        title=settings.PROJECT_NAME or "", lifespan=on_startup, openapi_tags=tags_meta()
+    )
     add_routes(app)
 
     app.add_middleware(
