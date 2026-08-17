@@ -3,8 +3,10 @@ from sqlalchemy import or_
 from sqlmodel import Session, col, select
 from backend.auth import Institution, User, UserReadError, UserRoles, Role
 from typing import List
-
-
+from dataclasses import dataclass
+from backend.shared import ID
+from backend.utils.database.core import convert_uuid
+from backend.auth import ValidInstitutions
 
 class UserLookup:
     def __init__(self, session: Session):
@@ -15,6 +17,7 @@ class UserLookup:
         roles: List[UserRoles],
         *,
         query: str | None = None,
+        exclude_id: ID | None = None,
         institution: Institution | None = None,
         offset: int = 0,
         limit: int = 100,
@@ -33,6 +36,10 @@ class UserLookup:
                 )
             if institution:
                 stmt = stmt.where(User.institution == institution)
+
+            if exclude_id:
+                stmt = stmt.where(User.id != convert_uuid(exclude_id))
+
             stmt = stmt.offset(offset).limit(limit)
             return self._session.exec(stmt).all()
         except Exception as e:

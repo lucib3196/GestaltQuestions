@@ -1,4 +1,16 @@
+export { CollectionAccessApi, QuestionAccessApi } from "./Access";
+export type {
+  AccessLevel,
+  CollectionAccess,
+  QuestionAccess,
+  ResourceAccessRevokeResult,
+  ShareableAccessLevel,
+  ShareAccessPayload,
+  UpdateShareAccessPayload,
+} from "./Access";
 export * from "./Collections";
+export { UserLookupApi } from "./UserLookup";
+export type { DeveloperLookupParams, UserDetailRead } from "./UserLookup";
 export * from "./questionAPI";
 export type {
   QuestionRunAnswerMap,

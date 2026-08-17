@@ -8,6 +8,7 @@ from backend.api.dependencies.core import SessionDep
 from backend.api.dependencies.storage import StorageDependency
 from backend.api.dependencies.users import UserManagerDependeny
 from backend.auth import UserRoles
+from backend.auth.services.user_lookup import UserLookup
 from backend.developer import DeveloperCollectionService, DeveloperQuestionService
 from backend.developer.access import (
     QuestionAccessService,
@@ -34,6 +35,16 @@ def get_developer_role_access(user_manager: UserManagerDependeny) -> RoleAccessP
 DeveloperRoleAccess = Annotated[
     RoleAccessPolicy,
     Depends(get_developer_role_access),
+]
+
+
+def get_user_lookup(session: SessionDep) -> UserLookup:
+    return UserLookup(session)
+
+
+UserLookupDependency = Annotated[
+    UserLookup,
+    Depends(get_user_lookup),
 ]
 
 

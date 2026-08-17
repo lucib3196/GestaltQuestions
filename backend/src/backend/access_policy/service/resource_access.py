@@ -346,9 +346,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
     ) -> Sequence[AccessModelT]: ...
 
     @overload
-    async def list_access_shared_by(
-        self, requester: ID
-    ) -> Sequence[AccessModelT]: ...
+    async def list_access_shared_by(self, requester: ID) -> Sequence[AccessModelT]: ...
 
     async def list_access_shared_by(
         self, requester: ProfileT | ID
