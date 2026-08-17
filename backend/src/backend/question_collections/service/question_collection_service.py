@@ -6,7 +6,7 @@ from uuid import UUID
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, select
 
-from backend.access_policy import ProfileT
+from backend.authorization import ProfileT
 from backend.question import Question, QuestionNotFoundError
 from backend.question_collections.exceptions import (
     QuestionAlreadyInCollectionError,
@@ -57,7 +57,7 @@ class QuestionCollectionService(Generic[ProfileT]):
 
     async def delete_collection(
         self, owner: ProfileT, collection: QuestionCollection | ID
-    ) -> bool :
+    ) -> bool:
         collection = self.get_collection(collection)
         owner_id = self._require_profile_id(owner)
 

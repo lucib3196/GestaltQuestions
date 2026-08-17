@@ -8,7 +8,7 @@ from sqlmodel import Relationship, SQLModel
 from .schema import QType, Status
 
 if TYPE_CHECKING:
-    from backend.auth.model import DeveloperProfile
+    from backend.accounts.model import DeveloperProfile
 
 
 # Association tables for many-to-many relationships.

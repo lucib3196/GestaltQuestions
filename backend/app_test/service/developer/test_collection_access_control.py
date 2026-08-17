@@ -8,7 +8,7 @@ async def test_other_cannot_view_collection(
     developer_collection_service,
     collection_owner,
     collection_other,
-):
+) -> None:
     collection = await developer_collection_service.create_collection(
         collection_owner.user,
         title="Private Collection",
@@ -27,7 +27,7 @@ async def test_other_cannot_update_collection(
     question_collection_service,
     collection_owner,
     collection_other,
-):
+) -> None:
     collection = await developer_collection_service.create_collection(
         collection_owner.user,
         title="Original Title",
@@ -51,7 +51,7 @@ async def test_other_cannot_add_question_to_collection(
     collection_owner,
     collection_other,
     make_question,
-):
+) -> None:
     collection = await developer_collection_service.create_collection(
         collection_owner.user,
         title="Private Collection",
@@ -74,7 +74,7 @@ async def test_other_cannot_remove_question_from_collection(
     question_collection_service,
     collection_owner_with_question,
     collection_other,
-):
+) -> None:
     collection = await developer_collection_service.create_collection(
         collection_owner_with_question.user,
         title="Private Collection",
@@ -103,7 +103,7 @@ async def test_other_cannot_delete_collection(
     question_collection_service,
     collection_owner,
     collection_other,
-):
+) -> None:
     collection = await developer_collection_service.create_collection(
         collection_owner.user,
         title="Private Collection",

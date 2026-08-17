@@ -1,4 +1,4 @@
-from backend.auth.exceptions import AuthError
+from backend.accounts.exceptions import AuthError
 
 
 class DeveloperAccessDenied(AuthError, PermissionError):

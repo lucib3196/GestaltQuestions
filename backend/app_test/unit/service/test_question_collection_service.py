@@ -4,7 +4,7 @@
 # from backend.question_collections.schema import QuestionCollectionCreate
 # import pytest
 # from uuid import uuid4
-# from backend.auth.model import DeveloperProfile, User
+# from backend.accounts.model import DeveloperProfile, User
 
 
 # @pytest.fixture

@@ -1,11 +1,10 @@
 import pytest
 from sqlmodel import Session
-from backend.auth import UserRoles
-from app_test.fakes import FakeStorage, FakeUserManager
-from backend.developer import DeveloperCollectionService, DeveloperProfileService
-from backend.developer.services.developer_profile_service import DeveloperProfileService
-from backend.developer.access import QuestionCollectionAccessService
 
+from app_test.fakes import FakeStorage, FakeUserManager
+from backend.accounts import UserRoles
+from backend.developer import DeveloperCollectionService, DeveloperProfileService
+from backend.developer.access import QuestionCollectionAccessService
 
 
 @pytest.fixture

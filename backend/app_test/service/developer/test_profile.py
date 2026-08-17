@@ -4,10 +4,10 @@ from uuid import uuid4
 import pytest
 
 from app_test.fakes import FakeStorage, FakeUserManager
-from backend.access_policy import ProfileOperationError
-from backend.auth import (
+from backend.accounts import (
     UserRoles,
 )
+from backend.authorization import ProfileOperationError
 from backend.developer import DeveloperProfile, DeveloperProfileService
 
 

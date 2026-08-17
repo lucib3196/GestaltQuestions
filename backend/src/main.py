@@ -10,8 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRouter
 from sqlmodel import Session
 
+from backend.accounts import InstitutionDB
 from backend.api import ALL_ROUTES
-from backend.auth import InstitutionDB, RoleDB
+from backend.authorization.roles import RoleDB
 from backend.core import get_settings, initialize_firebase_app, logger
 from backend.database import engine
 from backend.question import QuestionQTypeDB

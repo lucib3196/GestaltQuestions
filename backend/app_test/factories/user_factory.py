@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from backend.auth import User
+from backend.accounts import User
 from backend.developer import DeveloperProfile
 
 

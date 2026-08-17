@@ -3,8 +3,8 @@ from typing import Any
 
 import pytest
 
-from backend.auth import UserRoles, ValidInstitutions
-from backend.auth.services.user_lookup import UserLookup
+from backend.accounts import UserRoles, ValidInstitutions
+from backend.accounts.users import UserLookup
 
 MOCK_USER_LOOKUP_DATA: list[dict[str, Any]] = [
     {

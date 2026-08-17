@@ -2,20 +2,20 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from backend.access_policy import RoleAccessPolicy
+from backend.accounts.users import UserLookup
 from backend.api.dependencies import QuestionManagerDependency
 from backend.api.dependencies.core import SessionDep
 from backend.api.dependencies.storage import StorageDependency
 from backend.api.dependencies.users import UserManagerDependeny
-from backend.auth import UserRoles
-from backend.auth.services.user_lookup import UserLookup
+from backend.authorization import RoleAccessPolicy
+from backend.authorization.roles import UserRoles
 from backend.developer import DeveloperCollectionService, DeveloperQuestionService
 from backend.developer.access import (
     QuestionAccessService,
     QuestionCollectionAccessService,
 )
-from backend.developer.services import DeveloperProfileService
-from backend.developer.services.developer_question_table import DeveloperTables
+from backend.developer.profiles import DeveloperProfileService
+from backend.developer.questions import DeveloperTables
 from backend.question_access import QuestionAccessAdapter
 from backend.question_collections import (
     QuestionCollectionAdapter,

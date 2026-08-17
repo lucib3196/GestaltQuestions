@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
-from backend.access_policy import (
+from backend.authorization import (
     AccessLevel,
     ProfileT,
     ResourceAccessAdapter,

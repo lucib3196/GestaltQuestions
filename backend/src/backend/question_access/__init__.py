@@ -1,4 +1,4 @@
-from backend.access_policy import AccessLevel
+from backend.authorization import AccessLevel
 
 from .exceptions import (
     QuestionAccessControlError,

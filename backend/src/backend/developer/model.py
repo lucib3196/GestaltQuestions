@@ -4,7 +4,7 @@ from uuid import UUID, uuid4
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from backend.auth import User
+    from backend.accounts import User
     from backend.question import Question
 
 

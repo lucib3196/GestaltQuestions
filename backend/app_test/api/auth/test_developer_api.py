@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from sqlmodel import select
 
-from backend.auth import (
+from backend.accounts import (
     UserCreate,
     UserRead,
     UserRoles,

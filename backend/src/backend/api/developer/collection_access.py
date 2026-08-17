@@ -4,8 +4,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from starlette import status
 
-from backend.access_policy import AccessLevel, ResourceAccessRevokeResult
 from backend.api.dependencies.users import CurrentUser
+from backend.authorization import AccessLevel, ResourceAccessRevokeResult
 from backend.question_collections import QuestionCollectionAccess
 from backend.question_collections.exceptions import QuestionCollectionError
 from backend.shared import ID

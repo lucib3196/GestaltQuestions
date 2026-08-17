@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException
 from starlette import status
 
-from backend.auth import UserManager
+from backend.accounts import UserManager
 
 from .auth import FireBaseToken
 from .core import SessionDep

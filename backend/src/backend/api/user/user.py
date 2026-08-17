@@ -3,16 +3,16 @@ from firebase_admin import auth
 from pydantic import BaseModel
 from starlette import status
 
-from backend.api.deps import CurrentUser, FireBaseToken, UserManagerDependeny
-from backend.auth import (
+from backend.accounts import (
     CreateUserFullPayload,
     UpdateUserInstitution,
-    UpdateUserRole,
     User,
     UserInstResponse,
     UserNotFound,
     UserRead,
 )
+from backend.api.deps import CurrentUser, FireBaseToken, UserManagerDependeny
+from backend.authorization.roles import UpdateUserRole
 from backend.core import logger
 from backend.shared import ID
 

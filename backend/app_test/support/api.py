@@ -5,6 +5,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from backend.accounts import InstitutionDB, RoleDB, UserManager
 from backend.api.deps import (
     get_session,
     get_storage_manager,
@@ -12,8 +13,7 @@ from backend.api.deps import (
     get_user_mng,
 )
 from backend.api.developer.dependencies import get_developer_profile_service
-from backend.auth import InstitutionDB, RoleDB, UserManager
-from backend.developer.services import DeveloperProfileService
+from backend.developer.profiles import DeveloperProfileService
 from src.main import get_application
 
 

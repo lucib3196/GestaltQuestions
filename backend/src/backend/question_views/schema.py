@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from backend.auth import ValidInstitutions
+from backend.accounts import ValidInstitutions
 from backend.question import QType, Status
 from backend.question_runtime.model import RuntimeLanguage
 

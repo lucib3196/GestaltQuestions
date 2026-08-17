@@ -4,10 +4,10 @@ from .actions import (
     DeveloperQuestionAction,
     DeveloperQuestionPolicy,
 )
+from .collections import DeveloperCollectionService
 from .model import DeveloperProfile
-from .services.developer_collection_service import DeveloperCollectionService
-from .services.developer_profile_service import DeveloperProfileService
-from .services.developer_question_service import DeveloperQuestionService
+from .profiles import DeveloperProfileService
+from .questions import DeveloperQuestionService
 
 __all__ = [
     "DeveloperCollectionAction",

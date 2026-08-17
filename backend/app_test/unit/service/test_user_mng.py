@@ -1,7 +1,7 @@
 import pytest
 
 from app_test.unit.shared import USERS
-from backend.auth import (
+from backend.accounts import (
     User,
     UserCreate,
     UserCreateError,
@@ -9,7 +9,7 @@ from backend.auth import (
     UserRoles,
     ValidInstitutions,
 )
-from backend.auth.services import user_manager as user_manager_module
+from backend.accounts.users import service as user_manager_module
 
 
 @pytest.fixture

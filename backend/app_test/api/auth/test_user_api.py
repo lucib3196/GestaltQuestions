@@ -4,7 +4,7 @@ from uuid import uuid4
 import pytest
 from firebase_admin import auth
 
-from backend.auth import UserInstResponse, UserRead, UserRoles, ValidInstitutions
+from backend.accounts import UserInstResponse, UserRead, UserRoles, ValidInstitutions
 
 
 @pytest.fixture

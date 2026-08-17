@@ -3,7 +3,7 @@ from collections.abc import Generator
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
 
-from backend.auth import (
+from backend.accounts import (
     InstitutionDB,
     Role,
     RoleDB,

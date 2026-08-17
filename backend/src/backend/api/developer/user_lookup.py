@@ -3,8 +3,9 @@ from collections.abc import Sequence
 from fastapi import APIRouter, HTTPException, Query
 from starlette import status
 
+from backend.accounts import UserDetailRead, UserReadError
 from backend.api.dependencies.users import CurrentUser
-from backend.auth import UserDetailRead, UserReadError, UserRoles
+from backend.authorization.roles import UserRoles
 
 from .dependencies import UserLookupDependency
 

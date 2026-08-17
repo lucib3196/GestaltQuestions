@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, text
 from sqlmodel import Field, Relationship, SQLModel
 
-from backend.access_policy import AccessLevel
+from backend.authorization import AccessLevel
 
 
 class QuestionCollection(SQLModel, table=True):

@@ -1,11 +1,12 @@
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
-from sqlmodel import SQLModel
 
 # Import all the models
 from backend.auth.model import *  # type: ignore
+from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
+
 from backend.chat.model import *  # type: ignore
 from backend.core import get_settings
 from backend.developer.model import *  # type: ignore

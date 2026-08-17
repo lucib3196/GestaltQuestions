@@ -2,11 +2,10 @@ from dataclasses import dataclass
 
 import pytest
 
-from backend.auth import User
+from backend.accounts import User
 from backend.developer import (
     DeveloperProfile,
 )
-
 from backend.question import Question
 from backend.question_collections import (
     QuestionCollectionAdapter,
