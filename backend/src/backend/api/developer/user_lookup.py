@@ -5,7 +5,7 @@ from starlette import status
 
 from backend.api.dependencies.users import CurrentUser
 from backend.auth import UserDetailRead, UserReadError, UserRoles
-from backend.auth import ValidInstitutions
+
 from .dependencies import UserLookupDependency
 
 router = APIRouter(

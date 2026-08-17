@@ -1,3 +1,6 @@
+from uuid import UUID
+
+
 class QuestionDBError(Exception):
     """Base exception for question persistence errors."""
 
@@ -8,6 +11,12 @@ class QuestionValidationError(QuestionDBError):
 
 class QuestionNotFoundError(QuestionDBError):
     """Raised when a question cannot be found."""
+
+    def __init__(self, question_id: str | UUID | None = None) -> None:
+        message = ""
+        if question_id:
+            message += f"Question {question_id!s} not found. May not exist"
+        super().__init__(message)
 
 
 class QuestionStorageTypeError(QuestionDBError):

@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Protocol, TypeVar, runtime_checkable
 from uuid import UUID
-from typing import Generic
 
 
 @dataclass
@@ -29,7 +28,7 @@ AccessModelT = TypeVar("AccessModelT", bound=AccessModelProtocol)
 
 
 @dataclass
-class ResourceAccessResult(Generic[AccessModelT]):
+class ResourceAccessResult[AccessModelT: AccessModelProtocol]:
     allowed: bool
     access: AccessModelT | None
     reason: str
@@ -55,6 +54,7 @@ class Profile(Protocol):
 
 
 ProfileT = TypeVar("ProfileT", bound=Profile)
+
 
 @runtime_checkable
 class ResourceProtocol(Protocol):

@@ -1,9 +1,9 @@
 from types import SimpleNamespace
 
 import pytest
+from app_test.fakes import FakeStorage, FakeUserManager
 from sqlmodel import select
 
-from app_test.shared.fakes import FakeStorage, FakeUserManager
 from backend.access_policy import AccessLevel
 from backend.auth import UserRoles
 from backend.chat.model import Message, Thread  # noqa: F401

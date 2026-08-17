@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from app_test.shared.fakes import FakeStorage, FakeUserManager
+from app_test.fakes import FakeStorage, FakeUserManager
 from backend.access_policy import ProfileOperationError
 from backend.auth import (
     UserRoles,

@@ -1,4 +1,5 @@
-from typing import Generic, Sequence, overload
+from collections.abc import Sequence
+from typing import Generic, overload
 
 from backend.access_policy.exceptions import (
     AccessPolicyError,
@@ -9,18 +10,17 @@ from backend.access_policy.exceptions import (
 from backend.access_policy.schema import (
     AccessDecision,
     AccessLevel,
-    ResourceAccessRevokeResult,
-    ResourceAccessResult,
     AccessModelT,
-    ProfileT,
-    ResourceT,
     Profile,
+    ProfileT,
+    ResourceAccessResult,
+    ResourceAccessRevokeResult,
     ResourceProtocol,
+    ResourceT,
 )
 from backend.access_policy.service.profile_service import ProfileService
 from backend.access_policy.service.resource_adapter import ResourceAccessAdapter
 from backend.shared import ID
-from backend.access_policy.schema import AccessDecision
 
 
 class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
@@ -273,7 +273,29 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
         except Exception as e:
             raise self._operation_error("update", requester, resource, str(e)) from e
 
+    @overload
     async def has_access(
+        self, requester: ID, resource: ID, minimum_level: AccessLevel = AccessLevel.VIEW
+    ) -> AccessDecision: ...
+    @overload
+    async def has_access(
+        self,
+        requester: ProfileT,
+        resource: ResourceT,
+        minimum_level: AccessLevel = AccessLevel.VIEW,
+    ) -> AccessDecision: ...
+
+    async def has_access(
+        self,
+        requester: ID | ProfileT,
+        resource: ID | ResourceT,
+        minimum_level: AccessLevel = AccessLevel.VIEW,
+    ) -> AccessDecision:
+        requester_profile = await self._resolve_profile(requester)
+        resource_model = await self._resolve_resource(resource)
+        return await self._has_access(requester_profile, resource_model, minimum_level)
+
+    async def _has_access(
         self,
         requester: ProfileT,
         resource: ResourceT,

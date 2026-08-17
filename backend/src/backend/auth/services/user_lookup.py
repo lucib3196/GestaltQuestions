@@ -1,20 +1,26 @@
 from collections.abc import Sequence
+
 from sqlalchemy import or_
 from sqlmodel import Session, col, select
-from backend.auth import Institution, User, UserReadError, UserRoles, Role
-from typing import List
-from dataclasses import dataclass
+
+from backend.auth import (
+    Institution,
+    Role,
+    User,
+    UserReadError,
+    UserRoles,
+)
 from backend.shared import ID
 from backend.utils.database.core import convert_uuid
-from backend.auth import ValidInstitutions
+
 
 class UserLookup:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         self._session = session
 
     def find_users(
         self,
-        roles: List[UserRoles],
+        roles: list[UserRoles],
         *,
         query: str | None = None,
         exclude_id: ID | None = None,

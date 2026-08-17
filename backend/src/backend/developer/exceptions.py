@@ -8,13 +8,13 @@ class DeveloperAccessDenied(AuthError, PermissionError):
         self,
         reason: str,
         user_id: str | None = None,
-        question_id: str | None = None,
+        resource_id: str | None = None,
     ) -> None:
         message = "Developer access denied"
         if user_id:
             message += f" for user {user_id}"
-        if question_id:
-            message += f" on question {question_id}"
+        if resource_id:
+            message += f" on resource {resource_id}"
         if reason:
             message += f": {reason}"
         super().__init__(message)

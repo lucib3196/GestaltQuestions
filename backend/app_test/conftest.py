@@ -4,6 +4,8 @@ pytest_plugins = [
     "app_test.support.storage",
     "app_test.support.api",
     "app_test.support.questions",
+    "app_test.support.developer",
+    "app_test.support.question_collections",
     # Factories
     "app_test.factories.question_factory",
     "app_test.factories.user_factory",

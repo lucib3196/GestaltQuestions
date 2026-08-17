@@ -219,6 +219,8 @@ class DeveloperQuestionService:
     ) -> None:
         """Require the access level mapped to a developer question action."""
         required_level = self._policy.required_level(action)
-        await self._question_access.has_access_by_id(
+        access = await self._question_access.has_access(
             user_id, question_id, required_level
         )
+        if not access.allowed:
+            raise Exception(f"Access not allowed {access.reason}")

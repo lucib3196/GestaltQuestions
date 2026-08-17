@@ -74,7 +74,7 @@ def lookup_users(make_user, seed_roles, seed_institution):
     return users
 
 
-def test_find_users_returns_any_matching_role(db_session, lookup_users):
+def test_find_users_returns_any_matching_role(db_session, lookup_users) -> None:
     users = UserLookup(db_session).find_users(
         roles=[UserRoles.DEVELOPER],
     )
@@ -85,7 +85,7 @@ def test_find_users_returns_any_matching_role(db_session, lookup_users):
     }
 
 
-def test_find_users_filters_by_query(db_session, lookup_users):
+def test_find_users_filters_by_query(db_session, lookup_users) -> None:
     users = UserLookup(db_session).find_users(
         roles=[UserRoles.STUDENT, UserRoles.DEVELOPER],
         query="liam",
@@ -94,7 +94,7 @@ def test_find_users_filters_by_query(db_session, lookup_users):
     assert [user.email for user in users] == ["liam.devstudent@example.com"]
 
 
-def test_find_users_filters_by_institution(db_session, lookup_users):
+def test_find_users_filters_by_institution(db_session, lookup_users) -> None:
     ucr = lookup_users[0].institution
 
     users = UserLookup(db_session).find_users(

@@ -1,4 +1,5 @@
-from typing import Generic, Sequence
+from collections.abc import Sequence
+from typing import Generic
 
 from backend.access_policy.schema import (
     AccessLevel,
@@ -6,14 +7,14 @@ from backend.access_policy.schema import (
     ProfileT,
     ResourceT,
 )
-from backend.shared import ID
 from backend.access_policy.service.resource_access import ResourceAccessService
+from backend.shared import ID
 
 
 class ResourceSharingService(Generic[AccessModelT, ProfileT, ResourceT]):
     def __init__(
         self, access_service: ResourceAccessService[AccessModelT, ProfileT, ResourceT]
-    ):
+    ) -> None:
         self._access_service = access_service
 
     async def share_with_user(
@@ -23,7 +24,7 @@ class ResourceSharingService(Generic[AccessModelT, ProfileT, ResourceT]):
         resource_id: ID,
         level: AccessLevel,
     ) -> AccessModelT:
-        return await self._access_service.grant_access_by_id(
+        return await self._access_service.grant_access(
             owner_user_id,
             target_user_id,
             resource_id,
@@ -37,7 +38,7 @@ class ResourceSharingService(Generic[AccessModelT, ProfileT, ResourceT]):
         resource_id: ID,
         level: AccessLevel,
     ) -> AccessModelT:
-        return await self._access_service.update_access_by_id(
+        return await self._access_service.update_access(
             owner_user_id,
             target_user_id,
             resource_id,
@@ -50,7 +51,7 @@ class ResourceSharingService(Generic[AccessModelT, ProfileT, ResourceT]):
         target_user_id: ID,
         resource_id: ID,
     ) -> None:
-        await self._access_service.revoke_access_by_id(
+        await self._access_service.revoke_access(
             owner_user_id,
             target_user_id,
             resource_id,
@@ -61,3 +62,6 @@ class ResourceSharingService(Generic[AccessModelT, ProfileT, ResourceT]):
         user_id: ID,
     ) -> Sequence[AccessModelT]:
         return await self._access_service.list_access_shared_with(user_id)
+
+    async def list_shared_by_me(self, user_id: ID) -> Sequence[AccessModelT]:
+        return await self._access_service.list_access_shared_by(user_id)

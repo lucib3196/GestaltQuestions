@@ -28,7 +28,7 @@ class QuestionCollection(SQLModel, table=True):
     )
     children: list["QuestionCollection"] = Relationship(
         back_populates="parent",
-        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+        sa_relationship_kwargs={"cascade": "all, delete"},
     )
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

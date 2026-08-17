@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from starlette import status
@@ -8,7 +10,6 @@ from backend.question_access.exceptions import QuestionAccessError
 from backend.question_access.model import AccessLevel, QuestionAccess
 from backend.shared import ID
 
-from typing import Sequence
 from .dependencies import QuestionAccessDependency
 
 router = APIRouter(

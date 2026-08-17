@@ -47,11 +47,11 @@ class DeveloperCollectionAction(StrEnum):
 class DeveloperCollectionPolicy:
     _ACTION_ACCESS = {
         DeveloperCollectionAction.VIEW: AccessLevel.VIEW,
-        DeveloperCollectionAction.CREATE_CHILD: AccessLevel.EDIT,
-        DeveloperCollectionAction.UPDATE: AccessLevel.EDIT,
-        DeveloperCollectionAction.DELETE: AccessLevel.FULL,
         DeveloperCollectionAction.ADD_QUESTION: AccessLevel.EDIT,
         DeveloperCollectionAction.REMOVE_QUESTION: AccessLevel.EDIT,
+        DeveloperCollectionAction.DELETE: AccessLevel.FULL,
+        DeveloperCollectionAction.UPDATE: AccessLevel.FULL,
+        DeveloperCollectionAction.CREATE_CHILD: AccessLevel.FULL,
         DeveloperCollectionAction.SHARE: AccessLevel.FULL,
     }
 

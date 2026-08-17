@@ -2,8 +2,8 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
+from app_test.fakes import FakeUserManager
 
-from app_test.shared.fakes.fake_user_manager import FakeUserManager
 from backend.access_policy.exceptions import AccessPolicyDenied
 from backend.access_policy.service.access_policy import RoleAccessPolicy
 from backend.auth import UserRoles
