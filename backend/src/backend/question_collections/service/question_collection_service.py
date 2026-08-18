@@ -197,7 +197,7 @@ class QuestionCollectionService(Generic[ProfileT]):
                 str(e),
             ) from e
 
-    async def get_all_questions(
+    async def get_questions_for_collections(
         self, collection: QuestionCollection | ID
     ) -> Sequence[Question]:
         collection = self.get_collection(collection)
@@ -218,11 +218,25 @@ class QuestionCollectionService(Generic[ProfileT]):
                 str(e),
             ) from e
 
+    async def get_collections_for_question(
+        self, question: Question | ID
+    ) -> Sequence[QuestionCollection]:
+        question = self.get_question(question)
+        stmt = (
+            select(QuestionCollection)
+            .join(
+                QuestionCollectionLink,
+                QuestionCollectionLink.collection_id == QuestionCollection.id,  # type: ignore
+            )
+            .where(QuestionCollectionLink.question_id == question.id)
+        )
+        return list(self._session.exec(stmt).all())
+
     async def get_collection_detail_read(
         self, collection: QuestionCollection | ID
     ) -> QuestionCollectionRead:
         collection = self.get_collection(collection)
-        questions = await self.get_all_questions(collection)
+        questions = await self.get_questions_for_collections(collection)
         question_ids = [q.id for q in questions if q.id is not None]
         return QuestionCollectionRead.from_collection(
             collection=collection,

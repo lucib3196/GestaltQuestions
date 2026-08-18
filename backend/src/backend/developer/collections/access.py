@@ -1,8 +1,6 @@
-from backend.authorization import ResourceAccessAdapter, ResourceAccessService
+from backend.authorization.resources import ResourceAccessAdapter, ResourceAccessService
 from backend.developer.model import DeveloperProfile
 from backend.developer.profiles import DeveloperProfileService
-from backend.question import Question
-from backend.question_access.model import QuestionAccess
 from backend.question_collections.model import (
     QuestionCollection,
     QuestionCollectionAccess,
@@ -19,17 +17,6 @@ class QuestionCollectionAccessService(
         adapter: ResourceAccessAdapter[
             QuestionCollectionAccess, DeveloperProfile, QuestionCollection
         ],
-        profile_service: DeveloperProfileService,
-    ) -> None:
-        super().__init__(adapter=adapter, profile_service=profile_service)
-
-
-class QuestionAccessService(
-    ResourceAccessService[QuestionAccess, DeveloperProfile, Question]
-):
-    def __init__(
-        self,
-        adapter: ResourceAccessAdapter[QuestionAccess, DeveloperProfile, Question],
         profile_service: DeveloperProfileService,
     ) -> None:
         super().__init__(adapter=adapter, profile_service=profile_service)

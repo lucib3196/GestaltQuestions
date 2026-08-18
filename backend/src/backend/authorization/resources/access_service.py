@@ -61,7 +61,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
     async def _check_access(
         self, requester: ProfileT, resource: ResourceT
     ) -> ResourceAccessResult[AccessModelT]:
-        access = await self._retrieve_access(requester, resource)
+        access = await self.retrieve_access(requester, resource)
         if access is None:
             return ResourceAccessResult(
                 allowed=False,
@@ -75,7 +75,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
             reason=f"{self._adapter.name} access exists",
         )
 
-    async def _retrieve_access(
+    async def retrieve_access(
         self, requester: ProfileT, resource: ResourceT
     ) -> AccessModelT | None:
         try:
@@ -302,7 +302,7 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
         minimum_level: AccessLevel = AccessLevel.VIEW,
     ) -> AccessDecision:
         try:
-            access = await self._retrieve_access(requester, resource)
+            access = await self.retrieve_access(requester, resource)
             if access is not None:
                 has_level = (
                     self._ACCESS_LEVEL_RANK[access.access_level]

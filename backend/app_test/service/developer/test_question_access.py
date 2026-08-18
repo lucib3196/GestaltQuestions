@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 import pytest
+from backend.developer.access import QuestionAccessService
 from sqlmodel import select
 
 from app_test.fakes import FakeStorage, FakeUserManager
@@ -8,7 +9,6 @@ from backend.accounts import UserRoles
 from backend.authorization import AccessLevel
 from backend.chat.model import Message, Thread  # noqa: F401
 from backend.developer import DeveloperProfileService
-from backend.developer.access import QuestionAccessService
 from backend.question import Status
 from backend.question_access import QuestionAccessAdapter
 from backend.question_access.model import QuestionAccess

@@ -2,7 +2,6 @@ from enum import StrEnum
 
 from backend.authorization import AccessLevel
 
-
 class DeveloperQuestionAction(StrEnum):
     VIEW = "view"
     COPY = "copy"

@@ -3,9 +3,9 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_create_collection_with_parent(
-    question_collection_service, creator
+    question_collection_service, collection_owner
 ) -> None:
-    profile = creator.profile
+    profile = collection_owner.profile
     parent = await question_collection_service.create_collection(
         profile, title="ParentCollection"
     )
@@ -21,19 +21,19 @@ async def test_create_collection_with_parent(
 @pytest.mark.asyncio
 async def test_update_collection_can_move_collection_under_parent(
     question_collection_service,
-    creator,
+    collection_owner,
 ) -> None:
     child = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Child",
     )
     parent = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Parent",
     )
 
     updated = await question_collection_service.update_collection(
-        creator.profile,
+        collection_owner.profile,
         child,
         parent=parent,
     )
@@ -47,15 +47,15 @@ async def test_update_collection_can_move_collection_under_parent(
 @pytest.mark.asyncio
 async def test_create_collection_with_parent_adds_child_to_parent(
     question_collection_service,
-    creator,
+    collection_owner,
 ) -> None:
     parent = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Parent",
     )
 
     child = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Child",
         parent=parent,
     )
@@ -69,20 +69,20 @@ async def test_create_collection_with_parent_adds_child_to_parent(
 @pytest.mark.asyncio
 async def test_update_collection_can_remove_parent(
     question_collection_service,
-    creator,
+    collection_owner,
 ) -> None:
     parent = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Parent",
     )
     child = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Child",
         parent=parent,
     )
 
     updated = await question_collection_service.update_collection(
-        creator.profile,
+        collection_owner.profile,
         child,
         parent=None,
     )
@@ -95,20 +95,20 @@ async def test_update_collection_can_remove_parent(
 @pytest.mark.asyncio
 async def test_update_collection_title_does_not_remove_existing_parent(
     question_collection_service,
-    creator,
+    collection_owner,
 ) -> None:
     parent = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Parent",
     )
     child = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Child",
         parent=parent,
     )
 
     updated = await question_collection_service.update_collection(
-        creator.profile,
+        collection_owner.profile,
         child,
         title="Updated Child",
     )

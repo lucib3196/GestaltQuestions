@@ -5,38 +5,38 @@ from backend.question_collections.exceptions import QuestionCollectionDeleteErro
 
 
 @pytest.mark.asyncio
-async def test_create_child_collection_raises_when_parent_belongs_to_other_profile(
+async def test_create_child_collection_raises_when_parent_belongs_to_collection_other_profile(
     question_collection_service,
-    creator,
-    other,
+    collection_owner,
+    collection_other,
 ) -> None:
     parent = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Creator Parent",
     )
 
     with pytest.raises(QuestionCollectionValidationError):
         await question_collection_service.create_collection(
-            other.profile,
+            collection_other.profile,
             title="Other Child",
             parent=parent,
         )
 
 
 @pytest.mark.asyncio
-async def test_update_collection_raises_when_collection_belongs_to_other_profile(
+async def test_update_collection_raises_when_collection_belongs_to_collection_other_profile(
     question_collection_service,
-    creator,
-    other,
+    collection_owner,
+    collection_other,
 ) -> None:
     collection = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Creator Collection",
     )
 
     with pytest.raises(QuestionCollectionValidationError):
         await question_collection_service.update_collection(
-            other.profile,
+            collection_other.profile,
             collection,
             title="Other Update",
         )
@@ -46,19 +46,19 @@ async def test_update_collection_raises_when_collection_belongs_to_other_profile
 
 
 @pytest.mark.asyncio
-async def test_delete_collection_raises_when_collection_belongs_to_other_profile(
+async def test_delete_collection_raises_when_collection_belongs_to_collection_other_profile(
     question_collection_service,
-    creator,
-    other,
+    collection_owner,
+    collection_other,
 ) -> None:
     collection = await question_collection_service.create_collection(
-        creator.profile,
+        collection_owner.profile,
         title="Creator Collection",
     )
 
     with pytest.raises(QuestionCollectionDeleteError):
         await question_collection_service.delete_collection(
-            other.profile,
+            collection_other.profile,
             collection,
         )
 

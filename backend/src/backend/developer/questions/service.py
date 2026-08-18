@@ -8,12 +8,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
 
 from backend.core import logger
-from backend.developer.access import QuestionAccessService
 from backend.developer.exceptions import (
     DeveloperProfileError,
 )
 from backend.developer.model import DeveloperProfile
 from backend.developer.profiles import DeveloperProfileService
+from backend.developer.questions.access import QuestionAccessService
 from backend.developer.questions.actions import (
     DeveloperQuestionAction,
     DeveloperQuestionPolicy,

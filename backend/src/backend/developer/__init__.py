@@ -1,9 +1,5 @@
-from .actions import (
-    DeveloperCollectionAction,
-    DeveloperCollectionPolicy,
-    DeveloperQuestionAction,
-    DeveloperQuestionPolicy,
-)
+from .collections.actions import DeveloperCollectionAction, DeveloperCollectionPolicy
+from .questions.actions import DeveloperQuestionAction, DeveloperQuestionPolicy
 from .collections import DeveloperCollectionService
 from .model import DeveloperProfile
 from .profiles import DeveloperProfileService

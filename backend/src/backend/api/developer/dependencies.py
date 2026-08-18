@@ -1,5 +1,9 @@
 from typing import Annotated
 
+from backend.developer.access import (
+    QuestionAccessService,
+    QuestionCollectionAccessService,
+)
 from fastapi import Depends
 
 from backend.accounts.users import UserLookup
@@ -10,10 +14,6 @@ from backend.api.dependencies.users import UserManagerDependeny
 from backend.authorization import RoleAccessPolicy
 from backend.authorization.roles import UserRoles
 from backend.developer import DeveloperCollectionService, DeveloperQuestionService
-from backend.developer.access import (
-    QuestionAccessService,
-    QuestionCollectionAccessService,
-)
 from backend.developer.profiles import DeveloperProfileService
 from backend.developer.questions import DeveloperTables
 from backend.question_access import QuestionAccessAdapter
