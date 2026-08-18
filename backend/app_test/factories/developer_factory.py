@@ -1,11 +1,10 @@
 from typing import Any, Protocol
-from uuid import uuid4
-from app_test.fakes import FakeStorage, FakeUserManager
+
 import pytest
 
-from backend.accounts import User
+from backend.accounts import User, UserManager
 from backend.developer import DeveloperProfile, DeveloperProfileService
-from backend.accounts import UserRoles
+from app_test.fakes import FakeStorage
 
 
 class MakeDeveloperProfile(Protocol):
@@ -33,24 +32,28 @@ def make_developer_profile(db_session) -> MakeDeveloperProfile:
 
 class MakeDeveloperProfileService(Protocol):
     def __call__(
-        self, *, storage: None | FakeStorage, user_manager: None | FakeUserManager
+        self,
+        *,
+        storage: FakeStorage | None = None,
+        user_manager: UserManager | Any | None = None,
     ) -> DeveloperProfileService: ...
 
 
 @pytest.fixture
-def make_developer_profile_service(db_session) -> MakeDeveloperProfileService:
-    def make(*, storage=None, user_manager=None) -> DeveloperProfileService:
-        if user_manager is None:
-            user_manager = FakeUserManager()
-            user_manager.roles = [UserRoles.DEVELOPER]
+def make_developer_profile_service(
+    db_session, user_manager: UserManager
+) -> MakeDeveloperProfileService:
+    default_user_manager = user_manager
 
-        if storage is None:
-            storage = FakeStorage()
-
+    def make(
+        *,
+        storage: FakeStorage | None = None,
+        user_manager: UserManager | Any | None = None,
+    ) -> DeveloperProfileService:
         return DeveloperProfileService(
             session=db_session,
-            storage=storage,   # type: ignore[arg-type]
-            user_manager=user_manager,   # type: ignore[arg-type]
+            storage=storage or FakeStorage(),  # type: ignore[arg-type]
+            user_manager=user_manager or default_user_manager,  # type: ignore[arg-type]
         )
 
     return make

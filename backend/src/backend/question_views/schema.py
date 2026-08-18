@@ -56,4 +56,4 @@ class QuestionTableRow(BaseModel):
 class QuestionTableSearchContext:
     owner_id: UUID | None = None
     developer_profile_id: UUID | None = None
-    collection_owner_id: UUID | None = None
+    dev_owner_id: UUID | None = None

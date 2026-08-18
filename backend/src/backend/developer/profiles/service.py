@@ -33,7 +33,7 @@ class DeveloperProfileService(ProfileService[DeveloperProfile]):
         self._user_manager = user_manager
         policy = RoleAccessPolicy(
             self._user_manager,
-            allowed_roles=[UserRoles.DEVELOPER, UserRoles.STUDENT],
+            allowed_roles=[UserRoles.DEVELOPER],
             access_name="Developer",
         )
         super().__init__(policy)

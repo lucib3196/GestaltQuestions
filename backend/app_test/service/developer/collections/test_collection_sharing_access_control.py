@@ -67,18 +67,18 @@ async def run_collection_action(
 async def test_shared_collection_access_level_controls_collection_actions(
     collection_sharing,
     developer_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
     level,
     action,
     allowed,
 ):
     collection = await developer_collection_service.create_collection(
-        collection_owner.user.id,
+        dev_owner.user.id,
         "SharedCollection",
     )
     await collection_sharing.share_with_user(
-        collection_owner.user.id,
+        dev_owner.user.id,
         collection_other.user.id,
         collection.id,
         level=level,
@@ -117,7 +117,7 @@ async def test_shared_collection_access_level_controls_question_actions(
     collection_sharing,
     developer_collection_service,
     question_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
     make_question,
     level,
@@ -125,13 +125,13 @@ async def test_shared_collection_access_level_controls_question_actions(
     allowed,
 ):
     collection = await developer_collection_service.create_collection(
-        collection_owner.user.id,
+        dev_owner.user.id,
         "SharedCollection",
     )
-    question = make_question(collection_owner.profile, title="Shared Question")
+    question = make_question(dev_owner.profile, title="Shared Question")
 
     await collection_sharing.share_with_user(
-        collection_owner.user.id,
+        dev_owner.user.id,
         collection_other.user.id,
         collection.id,
         level=level,
@@ -139,7 +139,7 @@ async def test_shared_collection_access_level_controls_question_actions(
 
     if action == "remove_question":
         await developer_collection_service.add_question(
-            collection_owner.user.id,
+            dev_owner.user.id,
             collection.id,
             question.id,
         )

@@ -7,11 +7,11 @@ from backend.question_collections.exceptions import QuestionCollectionDeleteErro
 @pytest.mark.asyncio
 async def test_create_child_collection_raises_when_parent_belongs_to_collection_other_profile(
     question_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
 ) -> None:
     parent = await question_collection_service.create_collection(
-        collection_owner.profile,
+        dev_owner.profile,
         title="Creator Parent",
     )
 
@@ -26,11 +26,11 @@ async def test_create_child_collection_raises_when_parent_belongs_to_collection_
 @pytest.mark.asyncio
 async def test_update_collection_raises_when_collection_belongs_to_collection_other_profile(
     question_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
 ) -> None:
     collection = await question_collection_service.create_collection(
-        collection_owner.profile,
+        dev_owner.profile,
         title="Creator Collection",
     )
 
@@ -48,11 +48,11 @@ async def test_update_collection_raises_when_collection_belongs_to_collection_ot
 @pytest.mark.asyncio
 async def test_delete_collection_raises_when_collection_belongs_to_collection_other_profile(
     question_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
 ) -> None:
     collection = await question_collection_service.create_collection(
-        collection_owner.profile,
+        dev_owner.profile,
         title="Creator Collection",
     )
 

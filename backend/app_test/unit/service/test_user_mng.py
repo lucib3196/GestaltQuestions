@@ -12,23 +12,7 @@ from backend.accounts import (
 from backend.accounts.users import service as user_manager_module
 
 
-@pytest.fixture
-def user_mng(
-    monkeypatch: pytest.MonkeyPatch,
-    db_session,
-) -> UserManager:
-    def fake_auth(email: str, display_name: str, uid: str, password: str):
-        return {
-            "email": email,
-            "display_name": display_name,
-            "uid": uid,
-            "password": password,
-        }
 
-    monkeypatch.setattr(user_manager_module.auth, "create_user", fake_auth)
-    return UserManager(
-        session=db_session,
-    )
 
 
 @pytest.fixture

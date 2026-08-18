@@ -4,6 +4,7 @@ from backend.authorization.resources import (
     ResourceAccessDenied,
     ResourceAccessValidationError,
 )
+from backend.authorization.profiles.exceptions import ProfileAccessDenied
 
 SHAREABLE_ACCESS_LEVELS = [
     AccessLevel.VIEW,
@@ -13,15 +14,33 @@ SHAREABLE_ACCESS_LEVELS = [
 
 
 @pytest.mark.asyncio
+async def test_grant_access_denied_for_non_developers(
+    collection_sharing, developer_collection_service, dev_owner, student_user
+):
+    owner_user_id = dev_owner.user.id
+    collection = await developer_collection_service.create_collection(
+        owner_user_id, "SharedCollection"
+    )
+    with pytest.raises(ProfileAccessDenied) as exc:
+        await collection_sharing.share_with_user(
+            dev_owner.user.id,
+            student_user.id,
+            collection.id,
+            level=AccessLevel.VIEW,
+        )
+        print(exc, "Exception")
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("level", SHAREABLE_ACCESS_LEVELS)
 async def test_grant_access_allows_requester_to_access_shared_collection(
     collection_sharing,
     developer_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
     level,
 ):
-    owner_user_id = collection_owner.user.id
+    owner_user_id = dev_owner.user.id
     requester_user_id = collection_other.user.id
 
     collection = await developer_collection_service.create_collection(
@@ -42,7 +61,7 @@ async def test_grant_access_allows_requester_to_access_shared_collection(
 
     assert shared_access.collection_id == collection.id
     assert shared_access.developer_id == collection_other.profile.id
-    assert shared_access.granted_by_id == collection_owner.profile.id
+    assert shared_access.granted_by_id == dev_owner.profile.id
     assert shared_access.access_level == level
 
     access_after_sharing = await developer_collection_service.check_access(
@@ -56,11 +75,11 @@ async def test_grant_access_allows_requester_to_access_shared_collection(
 async def test_update_access_changes_existing_shared_access_level(
     collection_sharing,
     developer_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
     level,
 ):
-    owner_user_id = collection_owner.user.id
+    owner_user_id = dev_owner.user.id
     requester_user_id = collection_other.user.id
 
     collection = await developer_collection_service.create_collection(
@@ -82,7 +101,7 @@ async def test_update_access_changes_existing_shared_access_level(
 
     assert updated_access.collection_id == collection.id
     assert updated_access.developer_id == collection_other.profile.id
-    assert updated_access.granted_by_id == collection_owner.profile.id
+    assert updated_access.granted_by_id == dev_owner.profile.id
     assert updated_access.access_level == level
 
 
@@ -91,11 +110,11 @@ async def test_update_access_changes_existing_shared_access_level(
 async def test_revoke_access_removes_requester_access_to_shared_collection(
     collection_sharing,
     developer_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
     level,
 ):
-    owner_user_id = collection_owner.user.id
+    owner_user_id = dev_owner.user.id
     requester_user_id = collection_other.user.id
 
     collection = await developer_collection_service.create_collection(
@@ -129,18 +148,18 @@ async def test_revoke_access_removes_requester_access_to_shared_collection(
 async def test_non_owner_cannot_share_collection(
     collection_sharing,
     developer_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
 ):
     collection = await developer_collection_service.create_collection(
-        collection_owner.user.id,
+        dev_owner.user.id,
         "SharedCollection",
     )
 
     with pytest.raises(ResourceAccessDenied):
         await collection_sharing.share_with_user(
             collection_other.user.id,
-            collection_owner.user.id,
+            dev_owner.user.id,
             collection.id,
             level=AccessLevel.VIEW,
         )
@@ -151,11 +170,11 @@ async def test_non_owner_cannot_share_collection(
 async def test_list_shared_with_me_includes_shared_collection_access(
     collection_sharing,
     developer_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
     level,
 ):
-    owner_user_id = collection_owner.user.id
+    owner_user_id = dev_owner.user.id
     requester_user_id = collection_other.user.id
 
     collection = await developer_collection_service.create_collection(
@@ -178,7 +197,7 @@ async def test_list_shared_with_me_includes_shared_collection_access(
         if access.collection_id == collection.id
     )
     assert shared_access.developer_id == collection_other.profile.id
-    assert shared_access.granted_by_id == collection_owner.profile.id
+    assert shared_access.granted_by_id == dev_owner.profile.id
     assert shared_access.access_level == level
 
 
@@ -187,11 +206,11 @@ async def test_list_shared_with_me_includes_shared_collection_access(
 async def test_owner_access_level_cannot_be_granted_to_another_user(
     collection_sharing,
     developer_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
     grant_action,
 ):
-    owner_user_id = collection_owner.user.id
+    owner_user_id = dev_owner.user.id
     requester_user_id = collection_other.user.id
 
     collection = await developer_collection_service.create_collection(
@@ -231,4 +250,3 @@ async def test_owner_access_level_cannot_be_granted_to_another_user(
         assert requester_access.access.access_level == AccessLevel.VIEW
     else:
         assert requester_access.allowed is False
-

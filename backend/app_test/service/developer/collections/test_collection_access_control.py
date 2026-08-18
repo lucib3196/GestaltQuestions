@@ -2,15 +2,14 @@ import pytest
 
 from backend.developer.exceptions import DeveloperAccessDenied
 
-
 @pytest.mark.asyncio
 async def test_other_cannot_view_collection(
     developer_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
 ) -> None:
     collection = await developer_collection_service.create_collection(
-        collection_owner.user,
+        dev_owner.user,
         title="Private Collection",
     )
 
@@ -25,11 +24,11 @@ async def test_other_cannot_view_collection(
 async def test_other_cannot_update_collection(
     developer_collection_service,
     question_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
 ) -> None:
     collection = await developer_collection_service.create_collection(
-        collection_owner.user,
+        dev_owner.user,
         title="Original Title",
     )
 
@@ -48,12 +47,12 @@ async def test_other_cannot_update_collection(
 async def test_other_cannot_add_question_to_collection(
     developer_collection_service,
     question_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
     make_question,
 ) -> None:
     collection = await developer_collection_service.create_collection(
-        collection_owner.user,
+        dev_owner.user,
         title="Private Collection",
     )
     question = make_question(collection_other.profile, title="Other User Question")
@@ -72,16 +71,16 @@ async def test_other_cannot_add_question_to_collection(
 async def test_other_cannot_remove_question_from_collection(
     developer_collection_service,
     question_collection_service,
-    collection_owner_with_question,
+    dev_owner_with_question,
     collection_other,
 ) -> None:
     collection = await developer_collection_service.create_collection(
-        collection_owner_with_question.user,
+        dev_owner_with_question.user,
         title="Private Collection",
     )
-    question = collection_owner_with_question.question
+    question = dev_owner_with_question.question
     await developer_collection_service.add_question(
-        collection_owner_with_question.user,
+        dev_owner_with_question.user,
         collection.id,
         question.id,
     )
@@ -101,11 +100,11 @@ async def test_other_cannot_remove_question_from_collection(
 async def test_other_cannot_delete_collection(
     developer_collection_service,
     question_collection_service,
-    collection_owner,
+    dev_owner,
     collection_other,
 ) -> None:
     collection = await developer_collection_service.create_collection(
-        collection_owner.user,
+        dev_owner.user,
         title="Private Collection",
     )
 

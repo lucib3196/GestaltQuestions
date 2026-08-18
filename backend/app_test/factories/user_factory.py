@@ -13,7 +13,7 @@ class MakeUser(Protocol):
 
 @pytest.fixture
 def make_user(db_session) -> MakeUser:
-    def make(**overrides):
+    def make(**overrides) -> User:
         user = User(
             id=overrides.pop("id", uuid4()),
             first_name=overrides.pop("first_name", "Test"),
@@ -27,5 +27,3 @@ def make_user(db_session) -> MakeUser:
         return user
 
     return make
-
-

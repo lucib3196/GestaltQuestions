@@ -23,7 +23,7 @@ async def on_startup_test(app: FastAPI):
 
 
 @pytest.fixture
-def user_manager(db_session) -> UserManager:
+def user_manager_api(db_session) -> UserManager:
     return UserManager(db_session)
 
 
@@ -39,7 +39,7 @@ def api_client(db_session, user_manager, raw_storage):
         yield db_session
 
     def override_get_user_manager():
-        return user_manager
+        return user_manager_api
 
     def override_get_developer_profile_service():
         return DeveloperProfileService(

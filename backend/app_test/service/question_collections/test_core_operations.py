@@ -6,9 +6,9 @@ from backend.question_collections import QuestionCollection
 @pytest.mark.asyncio
 @pytest.mark.parametrize("title", ["Physics", "Math", "Engineering"])
 async def test_create_collection(
-    question_collection_service, title, collection_owner
+    question_collection_service, title, dev_owner
 ) -> None:
-    profile = collection_owner.profile
+    profile = dev_owner.profile
     collection = await question_collection_service.create_collection(profile, title)
 
     assert isinstance(collection, QuestionCollection)
@@ -20,9 +20,9 @@ async def test_create_collection(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("title", ["Physics", "Math", "Engineering"])
 async def test_update_collection(
-    question_collection_service, title, collection_owner
+    question_collection_service, title, dev_owner
 ) -> None:
-    profile = collection_owner.profile
+    profile = dev_owner.profile
     collection = await question_collection_service.create_collection(
         profile, title="OriginalTitle"
     )

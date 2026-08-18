@@ -10,10 +10,10 @@ from backend.question_collections import (
 @pytest.mark.asyncio
 @pytest.mark.parametrize("title", ["Physics", "Math", "Engineering"])
 async def test_create_collection(
-    developer_collection_service, collection_owner, title
+    developer_collection_service, dev_owner, title
 ) -> None:
-    user = collection_owner.user
-    profile = collection_owner.profile
+    user = dev_owner.user
+    profile = dev_owner.profile
     collection = await developer_collection_service.create_collection(user, title)
 
     assert isinstance(collection, QuestionCollection)
@@ -25,9 +25,9 @@ async def test_create_collection(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("title", ["Physics", "Math", "Engineering"])
 async def test_update_collection(
-    developer_collection_service, title, collection_owner
+    developer_collection_service, title, dev_owner
 ) -> None:
-    user = collection_owner.user
+    user = dev_owner.user
     collection = await developer_collection_service.create_collection(
         user, title="OriginalTitle"
     )
@@ -46,10 +46,10 @@ async def test_update_collection(
 
 @pytest.mark.asyncio
 async def test_add_question(
-    developer_collection_service, collection_owner_with_question
+    developer_collection_service, dev_owner_with_question
 ) -> None:
-    user = collection_owner_with_question.user
-    question = collection_owner_with_question.question
+    user = dev_owner_with_question.user
+    question = dev_owner_with_question.question
     collection = await developer_collection_service.create_collection(
         user, title="MyCollection"
     )
@@ -66,10 +66,10 @@ async def test_add_question(
 async def test_remove_question(
     developer_collection_service,
     question_collection_service,
-    collection_owner_with_question,
+    dev_owner_with_question,
 ) -> None:
-    user = collection_owner_with_question.user
-    question = collection_owner_with_question.question
+    user = dev_owner_with_question.user
+    question = dev_owner_with_question.question
     collection = await developer_collection_service.create_collection(
         user, title="MyCollection"
     )
@@ -87,9 +87,9 @@ async def test_remove_question(
 async def test_delete_collection(
     developer_collection_service,
     question_collection_service,
-    collection_owner,
+    dev_owner,
 ) -> None:
-    user = collection_owner.user
+    user = dev_owner.user
     collection = await developer_collection_service.create_collection(
         user, title="MyCollection"
     )
@@ -102,8 +102,8 @@ async def test_delete_collection(
 
 
 @pytest.mark.asyncio
-async def test_check_access(developer_collection_service, collection_owner) -> None:
-    user = collection_owner.user
+async def test_check_access(developer_collection_service, dev_owner) -> None:
+    user = dev_owner.user
     collection = await developer_collection_service.create_collection(
         user, "MyCollection"
     )

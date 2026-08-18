@@ -358,7 +358,7 @@ class QuestionCollectionService(Generic[ProfileT]):
             )
 
     @staticmethod
-    def _validate_collection_owner(
+    def _validate_dev_owner(
         collection: QuestionCollection,
         owner_id: UUID,
     ) -> None:
