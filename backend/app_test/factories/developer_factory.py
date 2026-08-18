@@ -2,9 +2,9 @@ from typing import Any, Protocol
 
 import pytest
 
+from app_test.fakes import FakeStorage
 from backend.accounts import User, UserManager
 from backend.developer import DeveloperProfile, DeveloperProfileService
-from app_test.fakes import FakeStorage
 
 
 class MakeDeveloperProfile(Protocol):

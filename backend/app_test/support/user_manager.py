@@ -1,6 +1,8 @@
-from backend.accounts.users import service as user_manager_module, UserManager
-from backend.accounts import UserRoles, Role, User
 import pytest
+
+from backend.accounts import Role, User, UserRoles
+from backend.accounts.users import UserManager
+from backend.accounts.users import service as user_manager_module
 
 
 # Create a User Manager which patches the create user to prevent a firebase call
@@ -25,7 +27,6 @@ def user_manager(
 
 @pytest.fixture
 def student_user(make_user) -> User:
-    user = make_user(
+    return make_user(
         email="student@email.com", roles=[Role(name=UserRoles.STUDENT.value)]
     )
-    return user

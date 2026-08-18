@@ -7,6 +7,8 @@ from sqlmodel import Session, select
 from backend.authorization import (
     AccessLevel,
     ProfileT,
+)
+from backend.authorization.resources import (
     ResourceAccessAdapter,
     ResourceAccessOperationError,
     ResourceAccessValidationError,

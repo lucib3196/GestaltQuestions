@@ -12,9 +12,6 @@ from backend.accounts import (
 from backend.accounts.users import service as user_manager_module
 
 
-
-
-
 @pytest.fixture
 def make_user(user_mng: UserManager):
     async def _make_user(**overrides) -> User:

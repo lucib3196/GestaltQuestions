@@ -5,8 +5,8 @@ from pydantic import BaseModel, Field
 
 from backend.core import logger
 from backend.question import QuestionRead
-from backend.question_attempt.schema import QuizData
 from backend.question.manager import QuestionManager
+from backend.question_attempt.schema import QuizData
 from backend.question_rendering.parser import TemplateParser
 from backend.question_runtime.exceptions import (
     MissingRuntimeOutputError,

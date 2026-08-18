@@ -2,7 +2,7 @@ import pytest
 
 
 @pytest.mark.asyncio
-async def test_user(dev_owner, collection_other, user_manager):
+async def test_user(dev_owner, collection_other, user_manager) -> None:
     user_id = dev_owner.user.id
 
     print("User", dev_owner.user.roles)

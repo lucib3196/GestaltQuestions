@@ -4,7 +4,6 @@ from uuid import uuid4
 import pytest
 
 from backend.accounts import User
-from backend.developer import DeveloperProfile
 
 
 class MakeUser(Protocol):

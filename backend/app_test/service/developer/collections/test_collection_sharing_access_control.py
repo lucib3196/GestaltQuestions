@@ -72,7 +72,7 @@ async def test_shared_collection_access_level_controls_collection_actions(
     level,
     action,
     allowed,
-):
+) -> None:
     collection = await developer_collection_service.create_collection(
         dev_owner.user.id,
         "SharedCollection",
@@ -123,7 +123,7 @@ async def test_shared_collection_access_level_controls_question_actions(
     level,
     action,
     allowed,
-):
+) -> None:
     collection = await developer_collection_service.create_collection(
         dev_owner.user.id,
         "SharedCollection",

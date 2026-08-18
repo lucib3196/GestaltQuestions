@@ -25,6 +25,7 @@ def fake_user_manager():
 def developer_profile_service(make_developer_profile_service):
     return make_developer_profile_service()
 
+
 @pytest.mark.asyncio
 async def test_generate_storage_path_uses_institution_slug(
     developer_profile_service: DeveloperProfileService,

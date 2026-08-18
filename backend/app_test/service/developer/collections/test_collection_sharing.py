@@ -1,10 +1,11 @@
 import pytest
+
 from backend.authorization import AccessLevel
+from backend.authorization.profiles.exceptions import ProfileAccessDenied
 from backend.authorization.resources import (
     ResourceAccessDenied,
     ResourceAccessValidationError,
 )
-from backend.authorization.profiles.exceptions import ProfileAccessDenied
 
 SHAREABLE_ACCESS_LEVELS = [
     AccessLevel.VIEW,
@@ -16,7 +17,7 @@ SHAREABLE_ACCESS_LEVELS = [
 @pytest.mark.asyncio
 async def test_grant_access_denied_for_non_developers(
     collection_sharing, developer_collection_service, dev_owner, student_user
-):
+) -> None:
     owner_user_id = dev_owner.user.id
     collection = await developer_collection_service.create_collection(
         owner_user_id, "SharedCollection"
@@ -39,7 +40,7 @@ async def test_grant_access_allows_requester_to_access_shared_collection(
     dev_owner,
     collection_other,
     level,
-):
+) -> None:
     owner_user_id = dev_owner.user.id
     requester_user_id = collection_other.user.id
 
@@ -78,7 +79,7 @@ async def test_update_access_changes_existing_shared_access_level(
     dev_owner,
     collection_other,
     level,
-):
+) -> None:
     owner_user_id = dev_owner.user.id
     requester_user_id = collection_other.user.id
 
@@ -113,7 +114,7 @@ async def test_revoke_access_removes_requester_access_to_shared_collection(
     dev_owner,
     collection_other,
     level,
-):
+) -> None:
     owner_user_id = dev_owner.user.id
     requester_user_id = collection_other.user.id
 
@@ -150,7 +151,7 @@ async def test_non_owner_cannot_share_collection(
     developer_collection_service,
     dev_owner,
     collection_other,
-):
+) -> None:
     collection = await developer_collection_service.create_collection(
         dev_owner.user.id,
         "SharedCollection",
@@ -173,7 +174,7 @@ async def test_list_shared_with_me_includes_shared_collection_access(
     dev_owner,
     collection_other,
     level,
-):
+) -> None:
     owner_user_id = dev_owner.user.id
     requester_user_id = collection_other.user.id
 
@@ -209,7 +210,7 @@ async def test_owner_access_level_cannot_be_granted_to_another_user(
     dev_owner,
     collection_other,
     grant_action,
-):
+) -> None:
     owner_user_id = dev_owner.user.id
     requester_user_id = collection_other.user.id
 

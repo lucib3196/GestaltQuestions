@@ -80,7 +80,10 @@ async def test_remove_question(
     )
 
     assert removed is True
-    assert await question_collection_service.get_questions_for_collections(collection.id) == []
+    assert (
+        await question_collection_service.get_questions_for_collections(collection.id)
+        == []
+    )
 
 
 @pytest.mark.asyncio

@@ -170,9 +170,7 @@ async def test_grant_access(
         AccessLevel.FULL,
     ],
 )
-async def test_update_access(
-    developer_question_access, owned_question, level
-) -> None:
+async def test_update_access(developer_question_access, owned_question, level) -> None:
     qaccess = await developer_question_access.grant_access(
         owned_question.owner.id,
         owned_question.requester.id,

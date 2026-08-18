@@ -25,7 +25,6 @@ class QuestionAccessService(
         self._collection_access = collection_access
         self._collection_service = collection_service
 
-
     # Overrides the retrieve access from the base, calls the baseclass implementation
     async def retrieve_access(
         self, requester: DeveloperProfile, resource: Question
