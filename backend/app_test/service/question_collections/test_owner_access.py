@@ -1,7 +1,7 @@
 import pytest
 
-from backend.question_collections import QuestionCollectionValidationError
-from backend.question_collections.exceptions import QuestionCollectionDeleteError
+from backend.question.collections import QuestionCollectionValidationError
+from backend.question.collections.exceptions import QuestionCollectionDeleteError
 
 
 @pytest.mark.asyncio

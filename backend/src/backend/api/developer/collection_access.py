@@ -6,8 +6,8 @@ from starlette import status
 
 from backend.api.dependencies.users import CurrentUser
 from backend.authorization import AccessLevel, ResourceAccessRevokeResult
-from backend.question_collections import QuestionCollectionAccess
-from backend.question_collections.exceptions import QuestionCollectionError
+from backend.question.collections import QuestionCollectionAccess
+from backend.question.collections.exceptions import QuestionCollectionError
 from backend.shared import ID
 
 from .dependencies import QuestionCollectionAccessDependency

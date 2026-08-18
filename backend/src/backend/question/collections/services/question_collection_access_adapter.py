@@ -11,7 +11,7 @@ from backend.authorization import (
     ResourceAccessValidationError,
 )
 from backend.developer.model import DeveloperProfile
-from backend.question_collections.model import (
+from backend.question.collections.models import (
     QuestionCollection,
     QuestionCollectionAccess,
 )

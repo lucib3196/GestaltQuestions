@@ -8,14 +8,14 @@ from starlette import status
 from backend.api.dependencies.users import CurrentUser
 from backend.developer.exceptions import DeveloperAccessDenied
 from backend.question import Question
-from backend.question_collections import (
+from backend.question.collections import (
     QuestionAlreadyInCollectionError,
     QuestionCollection,
     QuestionCollectionError,
     QuestionCollectionLink,
     QuestionCollectionNotFoundError,
 )
-from backend.question_collections.schema import QuestionCollectionRead
+from backend.question.collections.schema import QuestionCollectionRead
 from backend.shared import ID
 
 from .dependencies import DevCollectionManager

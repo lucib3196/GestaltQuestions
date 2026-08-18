@@ -1,7 +1,7 @@
-# from backend.question_collections.service.question_collection_service import (
+# from backend.question.collections.services.question_collection_service import (
 #     QuestionCollectionService,
 # )
-# from backend.question_collections.schema import QuestionCollectionCreate
+# from backend.question.collections.schema import QuestionCollectionCreate
 # import pytest
 # from uuid import uuid4
 # from backend.accounts.model import DeveloperProfile, User

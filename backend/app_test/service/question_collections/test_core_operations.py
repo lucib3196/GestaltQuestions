@@ -1,6 +1,6 @@
 import pytest
 
-from backend.question_collections import QuestionCollection
+from backend.question.collections import QuestionCollection
 
 
 @pytest.mark.asyncio

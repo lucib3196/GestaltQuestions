@@ -5,11 +5,11 @@ from uuid import UUID
 import pytest
 
 from backend.question import QuestionCreate, QuestionUpdate
-from backend.question_manager.exceptions import (
+from backend.question.manager.exceptions import (
     FileOperationError,
     QuestionNotFoundError,
 )
-from backend.question_manager.services.manager import QuestionManager
+from backend.question.manager.services.manager import QuestionManager
 from backend.storage import FileData
 from backend.utils import safe_dir_name
 

@@ -2,12 +2,12 @@ from collections.abc import Sequence
 from uuid import UUID
 
 from backend.developer.model import DeveloperProfile
-from backend.question_views.schema import (
+from backend.question.views.schema import (
     QuestionSearchParams,
     QuestionTableRow,
     QuestionTableSearchContext,
 )
-from backend.question_views.service.table_query_service import TableQueryService
+from backend.question.views.services.table_query_service import TableQueryService
 
 
 class DeveloperTables:

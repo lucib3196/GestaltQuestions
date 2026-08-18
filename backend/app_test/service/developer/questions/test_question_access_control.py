@@ -6,7 +6,7 @@ from sqlmodel import select
 from backend.authorization import AccessLevel
 from backend.chat.model import Message, Thread  # noqa: F401
 from backend.question import Status
-from backend.question_access.model import QuestionAccess
+from backend.question.access.models import QuestionAccess
 
 
 @pytest.fixture

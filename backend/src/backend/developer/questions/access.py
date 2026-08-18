@@ -4,8 +4,8 @@ from backend.developer.collections.access import QuestionCollectionAccessService
 from backend.developer.model import DeveloperProfile
 from backend.developer.profiles import DeveloperProfileService
 from backend.question import Question
-from backend.question_access.model import QuestionAccess
-from backend.question_collections import (
+from backend.question.access.models import QuestionAccess
+from backend.question.collections import (
     QuestionCollectionAccess,
     QuestionCollectionService,
 )

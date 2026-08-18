@@ -1,7 +1,7 @@
 from backend.authorization.resources import ResourceAccessAdapter, ResourceAccessService
 from backend.developer.model import DeveloperProfile
 from backend.developer.profiles import DeveloperProfileService
-from backend.question_collections.model import (
+from backend.question.collections.models import (
     QuestionCollection,
     QuestionCollectionAccess,
 )

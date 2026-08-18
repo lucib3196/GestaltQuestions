@@ -8,18 +8,18 @@ from sqlmodel import Session, select
 
 from backend.authorization import ProfileT
 from backend.question import Question, QuestionNotFoundError
-from backend.question_collections.exceptions import (
+from backend.question.collections.exceptions import (
     QuestionAlreadyInCollectionError,
     QuestionCollectionDeleteError,
     QuestionCollectionNotFoundError,
     QuestionCollectionOperationError,
     QuestionCollectionValidationError,
 )
-from backend.question_collections.model import (
+from backend.question.collections.models import (
     QuestionCollection,
     QuestionCollectionLink,
 )
-from backend.question_collections.schema import QuestionCollectionRead
+from backend.question.collections.schema import QuestionCollectionRead
 from backend.shared import ID
 from backend.utils import convert_uuid
 

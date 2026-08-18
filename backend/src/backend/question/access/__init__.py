@@ -6,7 +6,7 @@ from .exceptions import (
     QuestionAccessError,
     QuestionAccessValidationError,
 )
-from .model import QuestionAccess
+from .models import QuestionAccess
 from .services import QuestionAccessAdapter
 
 __all__ = [

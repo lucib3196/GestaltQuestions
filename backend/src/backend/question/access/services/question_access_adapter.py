@@ -12,8 +12,8 @@ from backend.authorization import (
     ResourceAccessValidationError,
 )
 from backend.question import Question
+from backend.question.access.models import QuestionAccess
 from backend.question.schema import Status
-from backend.question_access.model import QuestionAccess
 from backend.shared import ID
 from backend.utils import convert_uuid
 

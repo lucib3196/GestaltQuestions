@@ -2,8 +2,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from backend.accounts import User
-from backend.accounts import Role, UserRoles
+from backend.accounts import Role, User, UserRoles
 from backend.developer import (
     DeveloperCollectionService,
     DeveloperProfile,
@@ -13,7 +12,6 @@ from backend.developer.collections import CollectionSharing
 from backend.developer.collections.access import QuestionCollectionAccessService
 from backend.developer.questions.access import QuestionAccessService
 from backend.question import Question
-
 
 # Actor test data
 

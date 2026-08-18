@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from enum import StrEnum
 from typing import Any
 
-from backend.question_views.schema import (
+from backend.question.views.schema import (
     QuestionSearchParams,
     QuestionTableSearchContext,
 )

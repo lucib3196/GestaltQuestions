@@ -3,7 +3,7 @@ import pytest
 from backend.developer import (
     DeveloperProfile,
 )
-from backend.question_collections import (
+from backend.question.collections import (
     QuestionCollectionAdapter,
     QuestionCollectionService,
 )

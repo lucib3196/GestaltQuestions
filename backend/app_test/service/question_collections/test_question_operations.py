@@ -1,6 +1,6 @@
 import pytest
 
-from backend.question_collections import QuestionAlreadyInCollectionError
+from backend.question.collections import QuestionAlreadyInCollectionError
 
 
 @pytest.mark.asyncio

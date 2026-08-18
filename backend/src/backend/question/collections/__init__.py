@@ -1,27 +1,36 @@
 from .exceptions import (
     QuestionAlreadyInCollectionError,
+    QuestionCollectionDeleteError,
     QuestionCollectionError,
     QuestionCollectionNotFoundError,
     QuestionCollectionOperationError,
     QuestionCollectionValidationError,
 )
-from .model import (
+from .models import (
     QuestionCollection,
     QuestionCollectionAccess,
     QuestionCollectionLink,
 )
-from .service.question_collection_access_adapter import QuestionCollectionAdapter
-from .service.question_collection_service import QuestionCollectionService
+from .schema import (
+    QuestionCollectionCreate,
+    QuestionCollectionRead,
+    QuestionCollectionUpdate,
+)
+from .services import QuestionCollectionAdapter, QuestionCollectionService
 
 __all__ = [
     "QuestionAlreadyInCollectionError",
     "QuestionCollection",
     "QuestionCollectionAccess",
     "QuestionCollectionAdapter",
+    "QuestionCollectionCreate",
+    "QuestionCollectionDeleteError",
     "QuestionCollectionError",
     "QuestionCollectionLink",
     "QuestionCollectionNotFoundError",
     "QuestionCollectionOperationError",
+    "QuestionCollectionRead",
     "QuestionCollectionService",
+    "QuestionCollectionUpdate",
     "QuestionCollectionValidationError",
 ]

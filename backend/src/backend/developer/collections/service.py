@@ -1,6 +1,5 @@
-from backend.developer.collections.access import QuestionCollectionAccessService
-
 from backend.accounts import User
+from backend.developer.collections.access import QuestionCollectionAccessService
 from backend.developer.collections.actions import (
     DeveloperCollectionAction,
     DeveloperCollectionPolicy,
@@ -9,11 +8,11 @@ from backend.developer.exceptions import DeveloperAccessDenied
 from backend.developer.model import DeveloperProfile
 from backend.developer.profiles import DeveloperProfileService
 from backend.question import Question
-from backend.question_collections.model import (
+from backend.question.collections.models import (
     QuestionCollection,
     QuestionCollectionLink,
 )
-from backend.question_collections.service.question_collection_service import (
+from backend.question.collections.services.question_collection_service import (
     _UNSET,
     QuestionCollectionService,
     _UnsetType,

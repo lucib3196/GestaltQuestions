@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from backend.question import QType, QuestionCreate, QuestionDB
-from backend.question_manager.services.manager import QuestionManager
+from backend.question.manager.services.manager import QuestionManager
 from backend.storage import FileData, Storage
 
 

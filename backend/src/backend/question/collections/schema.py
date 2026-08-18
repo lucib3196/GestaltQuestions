@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from backend.question_collections.model import QuestionCollection
+from backend.question.collections.models import QuestionCollection
 
 
 class QuestionCollectionCreate(BaseModel):

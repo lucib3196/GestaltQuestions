@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 from fastapi import APIRouter
 
-from backend.question_views.schema import QuestionSearchParams, QuestionTableRow
+from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
 
 from .dependencies import TableQueryDependecy
 

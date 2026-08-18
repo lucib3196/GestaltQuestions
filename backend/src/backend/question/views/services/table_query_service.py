@@ -4,7 +4,7 @@ from typing import Literal
 from sqlalchemy import TextClause, text
 from sqlmodel import Session
 
-from backend.question_views.schema import (
+from backend.question.views.schema import (
     QuestionSearchParams,
     QuestionTableRow,
     QuestionTableSearchContext,

@@ -3,8 +3,8 @@ from backend.authorization.resources import (
     ResourceSharingService,
 )
 from backend.developer.model import DeveloperProfile
-from backend.question_access.model import QuestionAccess
 from backend.question import Question
+from backend.question.access.models import QuestionAccess
 
 
 class QuestionSharing(

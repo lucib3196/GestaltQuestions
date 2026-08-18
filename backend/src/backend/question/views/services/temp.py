@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import TextClause, text
 from sqlmodel import Session
 
-from backend.question_views.schema import QuestionSearchParams, QuestionTableRow
+from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
 from backend.shared import ID
 from backend.utils import convert_uuid
 

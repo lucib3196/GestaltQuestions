@@ -1,7 +1,7 @@
 import pytest
 
 from backend.authorization import AccessLevel
-from backend.question_collections import (
+from backend.question.collections import (
     QuestionCollection,
     QuestionCollectionNotFoundError,
 )
