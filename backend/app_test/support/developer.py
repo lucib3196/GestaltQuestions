@@ -1,23 +1,14 @@
 import pytest
 from backend.developer.collections.access import QuestionCollectionAccessService
-from sqlmodel import Session
 from backend.developer.collections import CollectionSharing
-from app_test.fakes import FakeStorage, FakeUserManager
-from backend.accounts import UserRoles
 from backend.developer import DeveloperCollectionService, DeveloperProfileService
 
 
 @pytest.fixture
 def developer_profile_service(
-    db_session: Session,
+    make_developer_profile_service,
 ) -> DeveloperProfileService:
-    user_manager = FakeUserManager()
-    user_manager.roles = [UserRoles.DEVELOPER]
-    return DeveloperProfileService(
-        session=db_session,
-        storage=FakeStorage(),  # type: ignore[arg-type]
-        user_manager=user_manager,  # type: ignore[arg-type]
-    )
+    return make_developer_profile_service()
 
 
 @pytest.fixture

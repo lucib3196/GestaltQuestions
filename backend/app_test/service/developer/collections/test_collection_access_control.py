@@ -65,7 +65,7 @@ async def test_other_cannot_add_question_to_collection(
             question.id,
         )
 
-    assert await question_collection_service.get_all_questions(collection.id) == []
+    assert await question_collection_service.get_questions_for_collections(collection.id) == []
 
 
 @pytest.mark.asyncio
@@ -93,7 +93,7 @@ async def test_other_cannot_remove_question_from_collection(
             question.id,
         )
 
-    questions = await question_collection_service.get_all_questions(collection.id)
+    questions = await question_collection_service.get_questions_for_collections(collection.id)
     assert [existing.id for existing in questions] == [question.id]
 
 

@@ -1,4 +1,4 @@
-from backend.authorization import ResourceAccessService, ResourceSharingService
+from backend.authorization.resources import ResourceAccessService, ResourceSharingService
 from backend.developer.model import DeveloperProfile
 from backend.question_collections.model import (
     QuestionCollection,

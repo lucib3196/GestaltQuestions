@@ -2,6 +2,7 @@ from collections.abc import Sequence
 from typing import Generic
 
 from backend.authorization.resources.access_service import ResourceAccessService
+from backend.authorization import ResourceAccessRevokeResult
 from backend.authorization.types import (
     AccessLevel,
     AccessModelT,
@@ -50,8 +51,8 @@ class ResourceSharingService(Generic[AccessModelT, ProfileT, ResourceT]):
         owner_user_id: ID,
         target_user_id: ID,
         resource_id: ID,
-    ) -> None:
-        await self._access_service.revoke_access(
+    ) -> ResourceAccessRevokeResult:
+        return await self._access_service.revoke_access(
             owner_user_id,
             target_user_id,
             resource_id,

@@ -49,8 +49,8 @@ def make_developer_profile_service(db_session) -> MakeDeveloperProfileService:
 
         return DeveloperProfileService(
             session=db_session,
-            storage=storage,  # type: ignore
-            user_manager=user_manager,  # type: ignore
+            storage=storage,   # type: ignore[arg-type]
+            user_manager=user_manager,   # type: ignore[arg-type]
         )
 
     return make

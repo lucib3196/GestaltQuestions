@@ -82,7 +82,6 @@ class QuestionCollectionService(Generic[ProfileT]):
     ) -> QuestionCollection:
         owner_id = self._require_profile_id(owner)
         collection = self.get_collection(collection)
-        self._validate_collection_owner(collection, owner_id)
 
         if not isinstance(parent, _UnsetType):
             self._validate_parent(parent, owner_id)

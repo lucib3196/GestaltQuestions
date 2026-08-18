@@ -18,7 +18,7 @@ class DeveloperCollectionPolicy:
         DeveloperCollectionAction.VIEW: AccessLevel.VIEW,
         DeveloperCollectionAction.ADD_QUESTION: AccessLevel.EDIT,
         DeveloperCollectionAction.REMOVE_QUESTION: AccessLevel.EDIT,
-        DeveloperCollectionAction.DELETE: AccessLevel.FULL,
+        DeveloperCollectionAction.DELETE: AccessLevel.OWNER,
         DeveloperCollectionAction.UPDATE: AccessLevel.FULL,
         DeveloperCollectionAction.CREATE_CHILD: AccessLevel.FULL,
         DeveloperCollectionAction.SHARE: AccessLevel.FULL,

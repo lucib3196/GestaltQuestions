@@ -158,7 +158,7 @@ def get_dev_collection_manager(
     collection_access: QuestionCollectionAccessDependency,
 ) -> DeveloperCollectionService:
     return DeveloperCollectionService(
-        developer_profiles=profile,
+        profile_service=profile,
         collections=collections,
         collection_access=collection_access,
     )
