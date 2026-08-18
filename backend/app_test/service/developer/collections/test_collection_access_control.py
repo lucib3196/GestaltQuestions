@@ -7,7 +7,7 @@ from backend.developer.exceptions import DeveloperAccessDenied
 async def test_other_cannot_view_collection(
     developer_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
 ) -> None:
     collection = await developer_collection_service.create_collection(
         dev_owner.user,
@@ -16,7 +16,7 @@ async def test_other_cannot_view_collection(
 
     with pytest.raises(DeveloperAccessDenied):
         await developer_collection_service.get_collection(
-            collection_other.user,
+            dev_other.user,
             collection.id,
         )
 
@@ -26,7 +26,7 @@ async def test_other_cannot_update_collection(
     developer_collection_service,
     question_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
 ) -> None:
     collection = await developer_collection_service.create_collection(
         dev_owner.user,
@@ -35,7 +35,7 @@ async def test_other_cannot_update_collection(
 
     with pytest.raises(DeveloperAccessDenied):
         await developer_collection_service.update_collection(
-            collection_other.user,
+            dev_other.user,
             collection.id,
             title="Other User Edit",
         )
@@ -49,18 +49,18 @@ async def test_other_cannot_add_question_to_collection(
     developer_collection_service,
     question_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
     make_question,
 ) -> None:
     collection = await developer_collection_service.create_collection(
         dev_owner.user,
         title="Private Collection",
     )
-    question = make_question(collection_other.profile, title="Other User Question")
+    question = make_question(dev_other.profile, title="Other User Question")
 
     with pytest.raises(DeveloperAccessDenied):
         await developer_collection_service.add_question(
-            collection_other.user,
+            dev_other.user,
             collection.id,
             question.id,
         )
@@ -76,7 +76,7 @@ async def test_other_cannot_remove_question_from_collection(
     developer_collection_service,
     question_collection_service,
     dev_owner_with_question,
-    collection_other,
+    dev_other,
 ) -> None:
     collection = await developer_collection_service.create_collection(
         dev_owner_with_question.user,
@@ -91,7 +91,7 @@ async def test_other_cannot_remove_question_from_collection(
 
     with pytest.raises(DeveloperAccessDenied):
         await developer_collection_service.remove_question(
-            collection_other.user,
+            dev_other.user,
             collection.id,
             question.id,
         )
@@ -107,7 +107,7 @@ async def test_other_cannot_delete_collection(
     developer_collection_service,
     question_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
 ) -> None:
     collection = await developer_collection_service.create_collection(
         dev_owner.user,
@@ -116,7 +116,7 @@ async def test_other_cannot_delete_collection(
 
     with pytest.raises(DeveloperAccessDenied):
         await developer_collection_service.delete_collection(
-            collection_other.user,
+            dev_other.user,
             collection.id,
         )
 

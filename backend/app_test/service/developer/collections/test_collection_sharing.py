@@ -38,11 +38,11 @@ async def test_grant_access_allows_requester_to_access_shared_collection(
     collection_sharing,
     developer_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
     level,
 ) -> None:
     owner_user_id = dev_owner.user.id
-    requester_user_id = collection_other.user.id
+    requester_user_id = dev_other.user.id
 
     collection = await developer_collection_service.create_collection(
         owner_user_id, "SharedCollection"
@@ -61,7 +61,7 @@ async def test_grant_access_allows_requester_to_access_shared_collection(
     )
 
     assert shared_access.collection_id == collection.id
-    assert shared_access.developer_id == collection_other.profile.id
+    assert shared_access.developer_id == dev_other.profile.id
     assert shared_access.granted_by_id == dev_owner.profile.id
     assert shared_access.access_level == level
 
@@ -77,11 +77,11 @@ async def test_update_access_changes_existing_shared_access_level(
     collection_sharing,
     developer_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
     level,
 ) -> None:
     owner_user_id = dev_owner.user.id
-    requester_user_id = collection_other.user.id
+    requester_user_id = dev_other.user.id
 
     collection = await developer_collection_service.create_collection(
         owner_user_id, "SharedCollection"
@@ -101,7 +101,7 @@ async def test_update_access_changes_existing_shared_access_level(
     )
 
     assert updated_access.collection_id == collection.id
-    assert updated_access.developer_id == collection_other.profile.id
+    assert updated_access.developer_id == dev_other.profile.id
     assert updated_access.granted_by_id == dev_owner.profile.id
     assert updated_access.access_level == level
 
@@ -112,11 +112,11 @@ async def test_revoke_access_removes_requester_access_to_shared_collection(
     collection_sharing,
     developer_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
     level,
 ) -> None:
     owner_user_id = dev_owner.user.id
-    requester_user_id = collection_other.user.id
+    requester_user_id = dev_other.user.id
 
     collection = await developer_collection_service.create_collection(
         owner_user_id, "SharedCollection"
@@ -150,7 +150,7 @@ async def test_non_owner_cannot_share_collection(
     collection_sharing,
     developer_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
 ) -> None:
     collection = await developer_collection_service.create_collection(
         dev_owner.user.id,
@@ -159,7 +159,7 @@ async def test_non_owner_cannot_share_collection(
 
     with pytest.raises(ResourceAccessDenied):
         await collection_sharing.share_with_user(
-            collection_other.user.id,
+            dev_other.user.id,
             dev_owner.user.id,
             collection.id,
             level=AccessLevel.VIEW,
@@ -172,11 +172,11 @@ async def test_list_shared_with_me_includes_shared_collection_access(
     collection_sharing,
     developer_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
     level,
 ) -> None:
     owner_user_id = dev_owner.user.id
-    requester_user_id = collection_other.user.id
+    requester_user_id = dev_other.user.id
 
     collection = await developer_collection_service.create_collection(
         owner_user_id, "SharedCollection"
@@ -197,7 +197,7 @@ async def test_list_shared_with_me_includes_shared_collection_access(
         for access in shared_with_requester
         if access.collection_id == collection.id
     )
-    assert shared_access.developer_id == collection_other.profile.id
+    assert shared_access.developer_id == dev_other.profile.id
     assert shared_access.granted_by_id == dev_owner.profile.id
     assert shared_access.access_level == level
 
@@ -208,11 +208,11 @@ async def test_owner_access_level_cannot_be_granted_to_another_user(
     collection_sharing,
     developer_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
     grant_action,
 ) -> None:
     owner_user_id = dev_owner.user.id
-    requester_user_id = collection_other.user.id
+    requester_user_id = dev_other.user.id
 
     collection = await developer_collection_service.create_collection(
         owner_user_id, "SharedCollection"

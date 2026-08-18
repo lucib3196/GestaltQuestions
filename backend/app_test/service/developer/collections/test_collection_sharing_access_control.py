@@ -68,7 +68,7 @@ async def test_shared_collection_access_level_controls_collection_actions(
     collection_sharing,
     developer_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
     level,
     action,
     allowed,
@@ -79,7 +79,7 @@ async def test_shared_collection_access_level_controls_collection_actions(
     )
     await collection_sharing.share_with_user(
         dev_owner.user.id,
-        collection_other.user.id,
+        dev_other.user.id,
         collection.id,
         level=level,
     )
@@ -88,7 +88,7 @@ async def test_shared_collection_access_level_controls_collection_actions(
         await run_collection_action(
             developer_collection_service,
             action,
-            collection_other.user.id,
+            dev_other.user.id,
             collection.id,
         )
     else:
@@ -96,7 +96,7 @@ async def test_shared_collection_access_level_controls_collection_actions(
             await run_collection_action(
                 developer_collection_service,
                 action,
-                collection_other.user.id,
+                dev_other.user.id,
                 collection.id,
             )
 
@@ -118,7 +118,7 @@ async def test_shared_collection_access_level_controls_question_actions(
     developer_collection_service,
     question_collection_service,
     dev_owner,
-    collection_other,
+    dev_other,
     make_question,
     level,
     action,
@@ -132,7 +132,7 @@ async def test_shared_collection_access_level_controls_question_actions(
 
     await collection_sharing.share_with_user(
         dev_owner.user.id,
-        collection_other.user.id,
+        dev_other.user.id,
         collection.id,
         level=level,
     )
@@ -148,7 +148,7 @@ async def test_shared_collection_access_level_controls_question_actions(
         await run_collection_action(
             developer_collection_service,
             action,
-            collection_other.user.id,
+            dev_other.user.id,
             collection.id,
             question.id,
         )
@@ -157,7 +157,7 @@ async def test_shared_collection_access_level_controls_question_actions(
             await run_collection_action(
                 developer_collection_service,
                 action,
-                collection_other.user.id,
+                dev_other.user.id,
                 collection.id,
                 question.id,
             )
