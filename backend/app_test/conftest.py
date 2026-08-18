@@ -9,4 +9,5 @@ pytest_plugins = [
     # Factories
     "app_test.factories.question_factory",
     "app_test.factories.user_factory",
+    "app_test.factories.developer_factory"
 ]

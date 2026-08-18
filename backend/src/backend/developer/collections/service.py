@@ -1,4 +1,4 @@
-from backend.developer.access import QuestionCollectionAccessService
+from backend.developer.collections.access import QuestionCollectionAccessService
 
 from backend.accounts import User
 from backend.developer.collections.actions import (

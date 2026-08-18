@@ -1,9 +1,10 @@
 from typing import Annotated
 
-from backend.developer.access import (
-    QuestionAccessService,
+from backend.developer.collections.access import (
     QuestionCollectionAccessService,
 )
+from backend.developer.questions.access import QuestionAccessService
+
 from fastapi import Depends
 
 from backend.accounts.users import UserLookup

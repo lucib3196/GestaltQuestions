@@ -1,7 +1,7 @@
 import pytest
-from backend.developer.access import QuestionCollectionAccessService
+from backend.developer.collections.access import QuestionCollectionAccessService
 from sqlmodel import Session
-
+from backend.developer.collections import CollectionSharing
 from app_test.fakes import FakeStorage, FakeUserManager
 from backend.accounts import UserRoles
 from backend.developer import DeveloperCollectionService, DeveloperProfileService
@@ -38,3 +38,8 @@ def developer_collection_service(
         collections=question_collection_service,
         collection_access=collection_access,
     )
+
+
+@pytest.fixture
+def collection_sharing(collection_access) -> CollectionSharing:
+    return CollectionSharing(access_service=collection_access)

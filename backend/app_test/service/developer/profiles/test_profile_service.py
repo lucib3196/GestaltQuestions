@@ -22,13 +22,8 @@ def fake_user_manager():
 
 
 @pytest.fixture
-def developer_profile_service(db_session, fake_user_manager, fake_storage):
-    return DeveloperProfileService(
-        session=db_session,
-        storage=fake_storage,
-        user_manager=fake_user_manager,
-    )
-
+def developer_profile_service(make_developer_profile_service):
+    return make_developer_profile_service()
 
 @pytest.mark.asyncio
 async def test_generate_storage_path_uses_institution_slug(
