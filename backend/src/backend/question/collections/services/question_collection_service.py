@@ -290,7 +290,6 @@ class QuestionCollectionService(Generic[ProfileT]):
         collection_id: ID,
     ) -> QuestionCollection | None:
         owner_id = self._require_profile_id(owner)
-
         try:
             stmt = select(QuestionCollection).where(
                 QuestionCollection.id == convert_uuid(collection_id),

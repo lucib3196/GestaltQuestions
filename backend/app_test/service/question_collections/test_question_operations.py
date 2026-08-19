@@ -35,7 +35,7 @@ async def test_get_all_questions_returns_added_questions(
     await question_collection_service.add_question(collection, question_1)
     await question_collection_service.add_question(collection, question_2)
 
-    questions = await question_collection_service.get_all_questions(collection)
+    questions = await question_collection_service.get_questions_for_collections(collection)
 
     question_ids = {question.id for question in questions}
     assert question_ids == {question_1.id, question_2.id}
@@ -83,7 +83,7 @@ async def test_remove_question_unlinks_question_from_collection(
         collection,
         dev_owner_with_question.question,
     )
-    questions = await question_collection_service.get_all_questions(collection)
+    questions = await question_collection_service.get_questions_for_collections(collection)
 
     assert removed is True
     assert questions == []
