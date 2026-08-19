@@ -7,10 +7,13 @@ from typing import Any, Literal
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
 
+from backend.accounts import User
 from backend.core import logger
-from backend.developer.exceptions import DeveloperProfileError
-from backend.developer.model import DeveloperProfile
-from backend.developer.profiles import DeveloperProfileService
+from backend.developer import (
+    DeveloperProfile,
+    DeveloperProfileError,
+    DeveloperProfileService,
+)
 from backend.developer.questions.access import QuestionAccessService
 from backend.developer.questions.actions import (
     DeveloperQuestionAction,
@@ -225,3 +228,14 @@ class DeveloperQuestionService:
         )
         if not access.allowed:
             raise Exception(f"Access not allowed {access.reason}")
+
+    async def check_access(self, user: User | ID, question_id: ID):
+        return await self._question_access.check_access(
+            self._resolve_user_id(user), question_id
+        )
+
+    @staticmethod
+    def _resolve_user_id(user: User | ID) -> ID:
+        if isinstance(user, User):
+            return user.id
+        return user

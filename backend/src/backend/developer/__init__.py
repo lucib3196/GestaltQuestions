@@ -1,3 +1,5 @@
+from backend.developer.exceptions import DeveloperProfileError
+
 from .collections import DeveloperCollectionService
 from .collections.actions import DeveloperCollectionAction, DeveloperCollectionPolicy
 from .model import DeveloperProfile
@@ -10,6 +12,7 @@ __all__ = [
     "DeveloperCollectionPolicy",
     "DeveloperCollectionService",
     "DeveloperProfile",
+    "DeveloperProfileError",
     "DeveloperProfileService",
     "DeveloperQuestionAction",
     "DeveloperQuestionPolicy",

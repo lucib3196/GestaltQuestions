@@ -54,13 +54,6 @@ __all__ = [
 
 
 def __getattr__(name: str):
-    if name in {"AccessPolicy", "RoleAccessPolicy"}:
-        from .policies import AccessPolicy, RoleAccessPolicy
-
-        return {"AccessPolicy": AccessPolicy, "RoleAccessPolicy": RoleAccessPolicy}[
-            name
-        ]
-
     if name in {
         "ProfileAccessDenied",
         "ProfileError",
@@ -83,6 +76,13 @@ def __getattr__(name: str):
             "ProfileOperationError": ProfileOperationError,
             "ProfileService": ProfileService,
         }[name]
+
+    if name in {"AccessPolicy", "RoleAccessPolicy"}:
+        from .policies import AccessPolicy, RoleAccessPolicy
+
+        return {"AccessPolicy": AccessPolicy, "RoleAccessPolicy": RoleAccessPolicy}[
+            name
+        ]
 
     if name in {
         "ResourceAccessAdapter",

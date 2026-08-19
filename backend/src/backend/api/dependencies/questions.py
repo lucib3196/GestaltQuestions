@@ -2,8 +2,9 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from backend.question import QuestionDB, QuestionQueryService
 from backend.question.manager import QuestionManager
+from backend.question.services.question import QuestionDB
+from backend.question.services.question_table import QuestionQueryService
 
 from .core import SessionDep
 from .storage import StorageDependency
