@@ -1,9 +1,8 @@
-import asyncio
 from typing import Any
-
+from backend.accounts import Role
 import pytest
-
-from backend.accounts import UserRoles, ValidInstitutions
+from sqlalchemy import select
+from backend.accounts import UserRoles, ValidInstitutions, Institution
 from backend.accounts.users import UserLookup
 
 MOCK_USER_LOOKUP_DATA: list[dict[str, Any]] = [
@@ -51,12 +50,44 @@ MOCK_USER_LOOKUP_DATA: list[dict[str, Any]] = [
 
 
 @pytest.fixture
-def lookup_users(make_user, seed_roles, seed_institution):
-    roles_by_name = {role.name: role for role in seed_roles}
-    institutions_by_name = {
-        institution: asyncio.run(seed_institution(institution))
-        for institution in ValidInstitutions
+def roles_by_name(db_session):
+    return {
+        role.name: role
+        for role in db_session.scalars(
+            select(Role).where(
+                Role.name.in_( # type: ignore
+                    [
+                        UserRoles.STUDENT.value,
+                        UserRoles.DEVELOPER.value,
+                        UserRoles.ADMIN.value,
+                        UserRoles.TEACHER.value,
+                    ]
+                )
+            )
+        ).all()
     }
+
+
+@pytest.fixture
+def institutions_by_name(db_session):
+    institution_names = [
+        ValidInstitutions.CPP.value,
+        ValidInstitutions.UCR.value,
+        ValidInstitutions.NORCO.value,
+    ]
+
+    return {
+        institution.name: institution
+        for institution in db_session.scalars(
+            select(Institution).where(Institution.name.in_(institution_names)) # type: ignore
+        ).all()
+    }
+
+
+@pytest.fixture
+def lookup_users(make_user, roles_by_name, institutions_by_name):
+    roles_by_name = roles_by_name
+    institutions_by_name = institutions_by_name
 
     users = []
     for user_data in MOCK_USER_LOOKUP_DATA:
