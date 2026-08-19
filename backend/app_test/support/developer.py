@@ -10,8 +10,11 @@ from backend.developer import (
 )
 from backend.developer.collections import CollectionSharing
 from backend.developer.collections.access import QuestionCollectionAccessService
+from backend.developer.questions import DeveloperQuestionService
 from backend.developer.questions.access import QuestionAccessService
+from backend.developer.questions.sharing import QuestionSharing
 from backend.question import Question
+from backend.question.access import QuestionAccessAdapter
 
 # Actor test data
 
@@ -106,15 +109,37 @@ def collection_sharing(collection_access) -> CollectionSharing:
 
 
 @pytest.fixture
+def question_adapter(db_session) -> QuestionAccessAdapter:
+    return QuestionAccessAdapter(db_session)
+
+
+@pytest.fixture
 def developer_question_access(
     developer_profile_service,
-    question_collection_adapter,
+    question_adapter,
     question_collection_service,
     developer_collection_service,
 ) -> QuestionAccessService:
     return QuestionAccessService(
-        adapter=question_collection_adapter,
+        adapter=question_adapter,
         profile_service=developer_profile_service,
         collection_access=developer_collection_service,
         collection_service=question_collection_service,
     )
+
+
+@pytest.fixture
+def developer_question_service(
+    db_session, question_manager, developer_profile_service, developer_question_access
+) -> DeveloperQuestionService:
+    return DeveloperQuestionService(
+        db_session,
+        question_manager,
+        developer_profile_service,
+        developer_question_access,
+    )
+
+
+@pytest.fixture
+def developer_question_sharing(developer_question_access) -> QuestionSharing:
+    return QuestionSharing(developer_question_access)

@@ -1,7 +1,7 @@
 import pytest
 
 from backend.authorization import AccessLevel
-from backend.authorization.profiles.exceptions import ProfileAccessDenied
+from backend.authorization.profiles import ProfileAccessDenied
 from backend.authorization.resources import (
     ResourceAccessDenied,
     ResourceAccessValidationError,
