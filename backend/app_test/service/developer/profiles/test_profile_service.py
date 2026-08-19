@@ -20,8 +20,12 @@ def fake_user_manager():
 
 
 @pytest.fixture
-def developer_profile_service(make_developer_profile_service):
-    return make_developer_profile_service()
+def developer_profile_service(
+    make_developer_profile_service, fake_storage, fake_user_manager
+):
+    return make_developer_profile_service(
+        storage=fake_storage, user_manager=fake_user_manager
+    )
 
 
 @pytest.mark.asyncio
