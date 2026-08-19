@@ -1,16 +1,15 @@
 from collections.abc import Generator
-
+import pytest_asyncio
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
 
 from backend.accounts import (
     InstitutionDB,
     Role,
-    RoleDB,
     UserDB,
     UserRoles,
-    ValidInstitutions,
 )
+from backend.authorization.roles.repository import RoleDB
 from backend.chat.model import Message, Thread  # noqa: F401
 from backend.core.logging import in_test_ctx, logger
 from backend.question.services.qtype import QuestionQTypeDB
@@ -59,16 +58,12 @@ def seed_qtypes(db_session) -> None:
 def institution_db(db_session) -> InstitutionDB:
     return InstitutionDB(db_session)
 
-
-@pytest.fixture
-def seed_institution(institution_db):
-    async def _seed(institution: ValidInstitutions = ValidInstitutions.CPP):
-        return await institution_db.create_institution(institution)
-
-    return _seed
+@pytest_asyncio.fixture(autouse=True)
+async def seed_institution(institution_db: InstitutionDB):
+    await institution_db.seed_institution()
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def seed_roles(db_session: Session):
     roles = [
         Role(name=UserRoles.STUDENT.value),

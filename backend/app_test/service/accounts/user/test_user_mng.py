@@ -13,7 +13,7 @@ from backend.accounts.users import service as user_manager_module
 
 
 @pytest.fixture
-def make_user(user_mng: UserManager):
+def make_user(user_manager: UserManager):
     async def _make_user(**overrides) -> User:
         defaults = {
             "first_name": "Luciano",
@@ -23,8 +23,8 @@ def make_user(user_mng: UserManager):
             "password": "1234",
         }
         data = UserCreate(**(defaults | overrides))
-        user = await user_mng.create_user(data)
-        assert user is not None
+        user = await user_manager.create_user(data)
+
         return user
 
     return _make_user
@@ -33,7 +33,7 @@ def make_user(user_mng: UserManager):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_data", USERS)
 async def test_create_user_assigns_default_student_role(
-    make_user, user_data, seed_roles
+    make_user, user_data,
 ) -> None:
     user = await make_user(**user_data)
 
@@ -45,7 +45,7 @@ async def test_create_user_assigns_default_student_role(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_data", USERS)
 async def test_create_user_auth_failed(
-    make_user, user_mng: UserManager, user_data, seed_roles, monkeypatch
+    make_user, user_manager: UserManager, user_data, monkeypatch
 ) -> None:
     def fake_auth(*args, **kwargs) -> bool:
         return False  # triggers assert response failure
@@ -60,11 +60,11 @@ async def test_create_user_auth_failed(
 
 @pytest.mark.asyncio
 async def test_add_role_to_user_does_not_duplicate_role(
-    make_user, seed_roles, user_mng
+    make_user, user_manager
 ) -> None:
     user = await make_user()
 
-    updated = await user_mng.add_role_to_user(UserRoles.STUDENT, user)
+    updated = await user_manager.add_role_to_user(UserRoles.STUDENT, user)
     role_names = [role.name for role in updated.roles]
 
     assert role_names.count(UserRoles.STUDENT.value) == 1
@@ -72,12 +72,11 @@ async def test_add_role_to_user_does_not_duplicate_role(
 
 @pytest.mark.asyncio
 async def test_set_user_institution_by_id(
-    make_user, seed_roles, seed_institution, user_mng
+    make_user, user_manager
 ) -> None:
-    await seed_institution(ValidInstitutions.CPP)
     user = await make_user()
 
-    updated = await user_mng.set_user_institution(ValidInstitutions.CPP, user.id)
+    updated = await user_manager.set_user_institution(ValidInstitutions.CPP, user.id)
 
     assert updated.institution is not None
     assert updated.institution.name == ValidInstitutions.CPP
@@ -85,7 +84,7 @@ async def test_set_user_institution_by_id(
 
 @pytest.mark.asyncio
 async def test_delete_user_removes_db_user_and_calls_firebase(
-    make_user, seed_roles, user_mng, monkeypatch
+    make_user, user_manager, monkeypatch
 ) -> None:
     deleted = {}
 
@@ -95,7 +94,7 @@ async def test_delete_user_removes_db_user_and_calls_firebase(
     monkeypatch.setattr(user_manager_module.auth, "delete_user", fake_delete_user)
 
     user = await make_user()
-    await user_mng.delete_user(user.id)
+    await user_manager.delete_user(user.id)
 
-    assert await user_mng.get_user(user.id) is None
+    assert await user_manager.get_user(user.id) is None
     assert deleted["uid"] == user.id

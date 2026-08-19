@@ -4,7 +4,8 @@ from uuid import UUID
 
 import pytest
 
-from backend.question import QuestionCreate, QuestionUpdate
+from app_test.factories.question_factory import MakeQuestionPayload
+from backend.question import QuestionUpdate
 from backend.question.manager.exceptions import (
     FileOperationError,
     QuestionNotFoundError,
@@ -35,18 +36,20 @@ async def assert_file_is_unreadable(
 @pytest.mark.asyncio
 async def test_create_question_sets_storage_path(
     question_manager: QuestionManager,
-    question_payload: QuestionCreate,
+    make_question_payload: MakeQuestionPayload,
     storage_base_path: str,
 ) -> None:
+    payload = make_question_payload()
+
     question = await question_manager.create_question(
-        question_payload,
+        payload.question,
         storage_base_path,
     )
 
     assert question.id
     assert question.storage_path == expected_question_path(
         storage_base_path,
-        question_payload.title,
+        payload.question.title,
         question.id,
     )
     assert await question_manager.qdb.get_question(question.id) == question
@@ -55,20 +58,21 @@ async def test_create_question_sets_storage_path(
 @pytest.mark.asyncio
 async def test_create_question_saves_initial_files(
     question_manager: QuestionManager,
-    question_payload: QuestionCreate,
-    question_files: list[FileData],
+    make_question_payload: MakeQuestionPayload,
     storage_base_path: str,
 ) -> None:
+    payload = make_question_payload()
+
     question = await question_manager.create_question(
-        question_payload,
+        payload.question,
         storage_base_path=storage_base_path,
-        files=question_files,
+        files=payload.files,
     )
 
     stored_files = await question_manager.get_question_files(question.id)
 
     assert {PurePosixPath(path).name for path in stored_files} == {
-        file.filename for file in question_files
+        file.filename for file in payload.files or []
     }
 
 
@@ -82,16 +86,17 @@ async def test_create_question_saves_initial_files(
 )
 async def test_read_write_and_delete_question_file(
     question_manager: QuestionManager,
-    question_payload: QuestionCreate,
-    question_files: list[FileData],
+    make_question_payload: MakeQuestionPayload,
     storage_base_path: str,
     filename: str,
     new_content: str | dict[str, str],
 ) -> None:
+    payload = make_question_payload()
+
     question = await question_manager.create_question(
-        question_payload,
+        payload.question,
         storage_base_path=storage_base_path,
-        files=question_files,
+        files=payload.files,
     )
 
     await question_manager.write_file(question.id, filename, new_content)
@@ -104,6 +109,7 @@ async def test_read_write_and_delete_question_file(
         assert raw.decode() == new_content
 
     await question_manager.delete_file(question.id, filename)
+    assert question.id
 
     await assert_file_is_unreadable(question_manager, question.id, filename)
 
@@ -111,11 +117,13 @@ async def test_read_write_and_delete_question_file(
 @pytest.mark.asyncio
 async def test_upload_files_adds_files_to_existing_question(
     question_manager: QuestionManager,
-    question_payload: QuestionCreate,
+    make_question_payload: MakeQuestionPayload,
     storage_base_path: str,
 ) -> None:
+    payload = make_question_payload(files=None)
+
     question = await question_manager.create_question(
-        question_payload,
+        payload.question,
         storage_base_path=storage_base_path,
     )
     uploaded = [
@@ -137,11 +145,13 @@ async def test_upload_files_adds_files_to_existing_question(
 @pytest.mark.asyncio
 async def test_update_question_meta_updates_database_only(
     question_manager: QuestionManager,
-    question_payload: QuestionCreate,
+    make_question_payload: MakeQuestionPayload,
     storage_base_path: str,
 ) -> None:
+    payload = make_question_payload()
+
     question = await question_manager.create_question(
-        question_payload,
+        payload.question,
         storage_base_path=storage_base_path,
     )
 
@@ -157,14 +167,15 @@ async def test_update_question_meta_updates_database_only(
 @pytest.mark.asyncio
 async def test_delete_question_removes_database_record_and_storage(
     question_manager: QuestionManager,
-    question_payload: QuestionCreate,
-    question_files: list[FileData],
+    make_question_payload: MakeQuestionPayload,
     storage_base_path: str,
 ) -> None:
+    payload = make_question_payload()
+
     question = await question_manager.create_question(
-        question_payload,
+        payload.question,
         storage_base_path=storage_base_path,
-        files=question_files,
+        files=payload.files,
     )
     storage_path = question.storage_path
 

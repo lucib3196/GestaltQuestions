@@ -24,21 +24,3 @@ def storage_base_path(raw_storage: Storage, tmp_path: Path) -> str:
     return "developers/user-1"
 
 
-# @pytest.fixture
-# def question_payload() -> QuestionCreate:
-#     return QuestionCreate(
-#         title="Bernoulli Equation",
-#         topics=["fluid-dynamics"],
-#         qType=[QType.MC],
-#         ai_generated=False,
-#         isAdaptive=False,
-#     )
-
-
-# @pytest.fixture
-# def question_files() -> list[FileData]:
-#     return [
-#         FileData(filename="question.html", content="<p>Question</p>"),
-#         FileData(filename="solution.html", content="<p>Solution</p>"),
-#         FileData(filename="meta.json", content={"difficulty": "easy"}),
-#     ]
