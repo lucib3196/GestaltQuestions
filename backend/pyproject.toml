@@ -79,7 +79,9 @@ ignore = [
 ]
 [tool.ruff.lint.pycodestyle]
 max-line-length = 88
-
+[tool.ruff.lint.isort]
+combine-as-imports = true
+split-on-trailing-comma = false
 
 [dependency-groups]
 dev = [

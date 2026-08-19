@@ -10,9 +10,7 @@ from backend.api.dependencies.users import UserManagerDependeny
 from backend.authorization import RoleAccessPolicy
 from backend.authorization.roles import UserRoles
 from backend.developer import DeveloperCollectionService, DeveloperQuestionService
-from backend.developer.collections.access import (
-    QuestionCollectionAccessService,
-)
+from backend.developer.collections.access import QuestionCollectionAccessService
 from backend.developer.profiles import DeveloperProfileService
 from backend.developer.questions import DeveloperTables
 from backend.developer.questions.access import QuestionAccessService

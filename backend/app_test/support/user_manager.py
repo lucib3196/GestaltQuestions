@@ -1,8 +1,7 @@
 import pytest
 
 from backend.accounts import Role, User, UserRoles
-from backend.accounts.users import UserManager
-from backend.accounts.users import service as user_manager_module
+from backend.accounts.users import UserManager, service as user_manager_module
 
 
 # Create a User Manager which patches the create user to prevent a firebase call

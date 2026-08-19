@@ -2,8 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Field as SQLField
-from sqlmodel import Relationship, SQLModel
+from sqlmodel import Field as SQLField, Relationship, SQLModel
 
 from .schema import QType, Status
 

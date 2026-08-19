@@ -26,12 +26,7 @@ from backend.accounts.exceptions import (
     UserValidationError,
 )
 from backend.accounts.institutions import InstitutionDB
-from backend.accounts.model import (
-    Institution,
-    Role,
-    User,
-    UserRoleLink,
-)
+from backend.accounts.model import Institution, Role, User, UserRoleLink
 from backend.accounts.schemas import (
     CreateUserFullPayload,
     InstitutionRead,
@@ -45,12 +40,7 @@ from backend.accounts.schemas import (
     ValidInstitutions,
 )
 from backend.accounts.users import UserDB, UserManager
-from backend.authorization.roles import (
-    RoleDB,
-    RoleRead,
-    UpdateUserRole,
-    UserRoles,
-)
+from backend.authorization.roles import RoleDB, RoleRead, UpdateUserRole, UserRoles
 from backend.authorization.roles.exceptions import (
     RoleAssignmentError,
     RoleCreateError,

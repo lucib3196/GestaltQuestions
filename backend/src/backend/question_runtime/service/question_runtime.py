@@ -13,10 +13,7 @@ from backend.question_runtime.exceptions import (
     RuntimeExecutionError,
 )
 from backend.question_runtime.model import RuntimeLanguage
-from backend.question_runtime.schema import (
-    QuestionFiles,
-    RuntimeExecutionConfig,
-)
+from backend.question_runtime.schema import QuestionFiles, RuntimeExecutionConfig
 from backend.sandbox_client import SandboxClient
 from backend.shared import ID
 

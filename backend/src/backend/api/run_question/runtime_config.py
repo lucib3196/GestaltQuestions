@@ -8,10 +8,7 @@ from backend.api.deps import (
     QuestionRuntimeDBDependency,
     QuestionRuntimeSyncDependency,
 )
-from backend.question_runtime.schema import (
-    QuestionRuntimeCreate,
-    QuestionRuntimeRead,
-)
+from backend.question_runtime.schema import QuestionRuntimeCreate, QuestionRuntimeRead
 
 router = APIRouter(
     prefix="/questions/{qid}/runtimes",

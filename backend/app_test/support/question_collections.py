@@ -1,8 +1,6 @@
 import pytest
 
-from backend.developer import (
-    DeveloperProfile,
-)
+from backend.developer import DeveloperProfile
 from backend.question.collections import (
     QuestionCollectionAdapter,
     QuestionCollectionService,

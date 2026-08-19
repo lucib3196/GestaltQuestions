@@ -4,9 +4,7 @@ from uuid import uuid4
 import pytest
 
 from app_test.fakes import FakeStorage, FakeUserManager
-from backend.accounts import (
-    UserRoles,
-)
+from backend.accounts import UserRoles
 from backend.authorization import ProfileOperationError
 from backend.developer import DeveloperProfile, DeveloperProfileService
 

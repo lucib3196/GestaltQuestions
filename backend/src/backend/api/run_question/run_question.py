@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Query
 
-from backend.api.deps import (
-    QuestionRuntimeServiceDependency,
-)
+from backend.api.deps import QuestionRuntimeServiceDependency
 from backend.question_runtime.model import RuntimeLanguage
 from backend.question_runtime.service.question_runtime import RenderedQuestionBundle
 from backend.shared import ID

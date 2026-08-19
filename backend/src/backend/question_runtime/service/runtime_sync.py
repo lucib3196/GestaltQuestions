@@ -1,7 +1,4 @@
-from backend.question_runtime.model import (
-    QuestionRunTime,
-    RuntimeConfigSource,
-)
+from backend.question_runtime.model import QuestionRunTime, RuntimeConfigSource
 from backend.shared import ID
 from backend.storage import FileData
 from backend.utils import normalize_content

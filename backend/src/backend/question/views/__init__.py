@@ -1,8 +1,4 @@
-from .schema import (
-    QuestionSearchParams,
-    QuestionTableRow,
-    QuestionTableSearchContext,
-)
+from .schema import QuestionSearchParams, QuestionTableRow, QuestionTableSearchContext
 from .services import TableQueryService
 
 __all__ = [

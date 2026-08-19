@@ -6,11 +6,7 @@ from .exceptions import (
     QuestionCollectionOperationError,
     QuestionCollectionValidationError,
 )
-from .models import (
-    QuestionCollection,
-    QuestionCollectionAccess,
-    QuestionCollectionLink,
-)
+from .models import QuestionCollection, QuestionCollectionAccess, QuestionCollectionLink
 from .schema import (
     QuestionCollectionCreate,
     QuestionCollectionRead,

@@ -8,9 +8,7 @@ from backend.authorization import RoleAccessPolicy
 from backend.authorization.profiles.service import ProfileService
 from backend.authorization.roles import UserRoles
 from backend.core import logger
-from backend.developer.exceptions import (
-    DeveloperProfileNotSet,
-)
+from backend.developer.exceptions import DeveloperProfileNotSet
 from backend.developer.model import DeveloperProfile
 from backend.shared import ID
 from backend.storage.services import Storage

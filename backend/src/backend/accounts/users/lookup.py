@@ -3,12 +3,7 @@ from collections.abc import Sequence
 from sqlalchemy import or_
 from sqlmodel import Session, col, select
 
-from backend.accounts import (
-    Institution,
-    Role,
-    User,
-    UserReadError,
-)
+from backend.accounts import Institution, Role, User, UserReadError
 from backend.authorization.roles import UserRoles
 from backend.shared import ID
 from backend.utils.database.core import convert_uuid
