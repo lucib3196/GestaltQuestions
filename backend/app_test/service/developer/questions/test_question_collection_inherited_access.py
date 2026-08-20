@@ -2,12 +2,18 @@ import pytest
 
 
 @pytest.mark.asyncio
-async def test_user(dev_owner, collection_other, user_manager) -> None:
-    user_id = dev_owner.user.id
-
-    print("User", dev_owner.user.roles)
-
-    roles = await user_manager.get_user_role(user_id)
-    print(roles)
-
-    print("Other ", await user_manager.get_user_role(collection_other.user.id))
+async def test_inherited_access_level(
+    developer_collection_service,
+    collection_sharing,
+    make_question,
+    dev_owner,
+    dev_other,
+    developer_question_access,
+):
+    collection = await developer_collection_service.create_collection(
+        dev_owner.user, title="SharedCollection"
+    )
+    question1 = make_question(dev_owner.profile, title="Question1")
+    question2 = make_question(dev_owner.profile, title="Question2")
+    collection_sharing.share_with_user()
+    

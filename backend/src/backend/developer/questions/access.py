@@ -49,6 +49,7 @@ class QuestionAccessService(
     async def _get_inherited_collection_access(
         self, requester: DeveloperProfile, question: Question
     ) -> AccessLevel | None:
+        # TODO: Replace with a batch access check if questions commonly belong to many shared collections.
         if self._collection_access is None or self._collection_service is None:
             return None
         collections = await self._collection_service.get_collections_for_question(

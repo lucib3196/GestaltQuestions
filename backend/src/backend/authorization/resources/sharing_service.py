@@ -15,42 +15,42 @@ class ResourceSharingService(Generic[AccessModelT, ProfileT, ResourceT]):
 
     async def share_with_user(
         self,
-        owner_user_id: ID,
-        target_user_id: ID,
-        resource_id: ID,
+        owner: ID | ProfileT,
+        target: ID | ProfileT,
+        resource: ID | ResourceT,
         level: AccessLevel,
     ) -> AccessModelT:
         return await self._access_service.grant_access(
-            owner_user_id,
-            target_user_id,
-            resource_id,
+            owner,
+            target,
+            resource,
             level,
         )
 
     async def update_user_access(
         self,
-        owner_user_id: ID,
-        target_user_id: ID,
-        resource_id: ID,
+        owner: ID | ProfileT,
+        target: ID | ProfileT,
+        resource: ID | ResourceT,
         level: AccessLevel,
     ) -> AccessModelT:
         return await self._access_service.update_access(
-            owner_user_id,
-            target_user_id,
-            resource_id,
+            owner,
+            target,
+            resource,
             level,
         )
 
     async def unshare_with_user(
         self,
-        owner_user_id: ID,
-        target_user_id: ID,
-        resource_id: ID,
+        owner: ID | ProfileT,
+        target: ID | ProfileT,
+        resource: ID | ResourceT,
     ) -> ResourceAccessRevokeResult:
         return await self._access_service.revoke_access(
-            owner_user_id,
-            target_user_id,
-            resource_id,
+            owner,
+            target,
+            resource,
         )
 
     async def list_shared_with_me(

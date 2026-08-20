@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Generic, overload
+from typing import Generic
 
 from backend.authorization.exceptions import AccessPolicyError
 from backend.authorization.profiles.service import ProfileService
@@ -39,15 +39,6 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
         self._adapter = adapter
         self._profile_service = profile_service
 
-    @overload
-    async def check_access(
-        self, requester: ID, resource: ID
-    ) -> ResourceAccessResult[AccessModelT]: ...
-
-    @overload
-    async def check_access(
-        self, requester: ProfileT, resource: ResourceT
-    ) -> ResourceAccessResult[AccessModelT]: ...
     async def check_access(
         self, requester: ID | ProfileT, resource: ResourceT | ID
     ) -> ResourceAccessResult[AccessModelT]:
@@ -103,23 +94,6 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
         except Exception as e:
             raise self._operation_error("retrieve", requester, resource, str(e)) from e
 
-    @overload
-    async def grant_access(
-        self,
-        owner: ProfileT,
-        requester: ProfileT,
-        resource: ResourceT,
-        level: AccessLevel,
-    ) -> AccessModelT: ...
-    @overload
-    async def grant_access(
-        self,
-        owner: ID,
-        requester: ID,
-        resource: ID,
-        level: AccessLevel,
-    ) -> AccessModelT: ...
-
     async def grant_access(
         self,
         owner: ProfileT | ID,
@@ -160,16 +134,6 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
             raise
         except Exception as e:
             raise self._operation_error("grant", requester, resource, str(e)) from e
-
-    @overload
-    async def revoke_access(
-        self, owner: ProfileT, target: ProfileT, resource: ResourceT
-    ) -> ResourceAccessRevokeResult: ...
-
-    @overload
-    async def revoke_access(
-        self, owner: ID, target: ID, resource: ID
-    ) -> ResourceAccessRevokeResult: ...
 
     async def revoke_access(
         self, owner: ProfileT | ID, target: ProfileT | ID, resource: ResourceT | ID
@@ -218,24 +182,6 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
         except Exception as e:
             raise self._operation_error("revoke", target, resource, str(e)) from e
 
-    @overload
-    async def update_access(
-        self,
-        owner: ProfileT,
-        requester: ProfileT,
-        resource: ResourceT,
-        level: AccessLevel,
-    ) -> AccessModelT: ...
-
-    @overload
-    async def update_access(
-        self,
-        owner: ID,
-        requester: ID,
-        resource: ID,
-        level: AccessLevel,
-    ) -> AccessModelT: ...
-
     async def update_access(
         self,
         owner: ProfileT | ID,
@@ -272,18 +218,6 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
             raise
         except Exception as e:
             raise self._operation_error("update", requester, resource, str(e)) from e
-
-    @overload
-    async def has_access(
-        self, requester: ID, resource: ID, minimum_level: AccessLevel = AccessLevel.VIEW
-    ) -> AccessDecision: ...
-    @overload
-    async def has_access(
-        self,
-        requester: ProfileT,
-        resource: ResourceT,
-        minimum_level: AccessLevel = AccessLevel.VIEW,
-    ) -> AccessDecision: ...
 
     async def has_access(
         self,
@@ -336,16 +270,6 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
         except Exception as e:
             raise self._operation_error("check", requester, resource, str(e)) from e
 
-    @overload
-    async def list_access_shared_with(
-        self, requester: ProfileT
-    ) -> Sequence[AccessModelT]: ...
-
-    @overload
-    async def list_access_shared_with(
-        self, requester: ID
-    ) -> Sequence[AccessModelT]: ...
-
     async def list_access_shared_with(
         self, requester: ProfileT | ID
     ) -> Sequence[AccessModelT]:
@@ -361,14 +285,6 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
                 profile_id=str(requester_profile.id),
                 details=str(e),
             ) from e
-
-    @overload
-    async def list_access_shared_by(
-        self, requester: ProfileT
-    ) -> Sequence[AccessModelT]: ...
-
-    @overload
-    async def list_access_shared_by(self, requester: ID) -> Sequence[AccessModelT]: ...
 
     async def list_access_shared_by(
         self, requester: ProfileT | ID
