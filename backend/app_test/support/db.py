@@ -1,14 +1,10 @@
 from collections.abc import Generator
-import pytest_asyncio
+
 import pytest
+import pytest_asyncio
 from sqlmodel import Session, SQLModel, create_engine
 
-from backend.accounts import (
-    InstitutionDB,
-    Role,
-    UserDB,
-    UserRoles,
-)
+from backend.accounts import InstitutionDB, Role, UserDB, UserRoles
 from backend.authorization.roles.repository import RoleDB
 from backend.chat.model import Message, Thread  # noqa: F401
 from backend.core.logging import in_test_ctx, logger
@@ -58,8 +54,9 @@ def seed_qtypes(db_session) -> None:
 def institution_db(db_session) -> InstitutionDB:
     return InstitutionDB(db_session)
 
+
 @pytest_asyncio.fixture(autouse=True)
-async def seed_institution(institution_db: InstitutionDB):
+async def seed_institution(institution_db: InstitutionDB) -> None:
     await institution_db.seed_institution()
 
 

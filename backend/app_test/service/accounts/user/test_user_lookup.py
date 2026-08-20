@@ -1,8 +1,9 @@
 from typing import Any
-from backend.accounts import Role
+
 import pytest
 from sqlalchemy import select
-from backend.accounts import UserRoles, ValidInstitutions, Institution
+
+from backend.accounts import Institution, Role, UserRoles, ValidInstitutions
 from backend.accounts.users import UserLookup
 
 MOCK_USER_LOOKUP_DATA: list[dict[str, Any]] = [
@@ -55,7 +56,7 @@ def roles_by_name(db_session):
         role.name: role
         for role in db_session.scalars(
             select(Role).where(
-                Role.name.in_( # type: ignore
+                Role.name.in_(  # type: ignore
                     [
                         UserRoles.STUDENT.value,
                         UserRoles.DEVELOPER.value,
@@ -79,7 +80,7 @@ def institutions_by_name(db_session):
     return {
         institution.name: institution
         for institution in db_session.scalars(
-            select(Institution).where(Institution.name.in_(institution_names)) # type: ignore
+            select(Institution).where(Institution.name.in_(institution_names))  # type: ignore
         ).all()
     }
 

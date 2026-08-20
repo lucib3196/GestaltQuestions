@@ -23,9 +23,8 @@ def make_user(user_manager: UserManager):
             "password": "1234",
         }
         data = UserCreate(**(defaults | overrides))
-        user = await user_manager.create_user(data)
+        return await user_manager.create_user(data)
 
-        return user
 
     return _make_user
 
@@ -33,7 +32,8 @@ def make_user(user_manager: UserManager):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("user_data", USERS)
 async def test_create_user_assigns_default_student_role(
-    make_user, user_data,
+    make_user,
+    user_data,
 ) -> None:
     user = await make_user(**user_data)
 
@@ -71,9 +71,7 @@ async def test_add_role_to_user_does_not_duplicate_role(
 
 
 @pytest.mark.asyncio
-async def test_set_user_institution_by_id(
-    make_user, user_manager
-) -> None:
+async def test_set_user_institution_by_id(make_user, user_manager) -> None:
     user = await make_user()
 
     updated = await user_manager.set_user_institution(ValidInstitutions.CPP, user.id)

@@ -22,5 +22,3 @@ def storage_base_path(raw_storage: Storage, tmp_path: Path) -> str:
     if raw_storage.get_storage_type() == "local":
         return (tmp_path / "developers" / "user-1").as_posix()
     return "developers/user-1"
-
-
