@@ -9,7 +9,10 @@ from backend.developer import (
     DeveloperProfileService,
 )
 from backend.developer.collections import CollectionSharing
-from backend.developer.collections.access import QuestionCollectionAccessService
+from backend.developer.collections.access import (
+    QuestionCollectionAccessService,
+    QuestionCollectionAccessReader,
+)
 from backend.developer.questions import DeveloperQuestionService
 from backend.developer.questions.access import QuestionAccessService
 from backend.developer.questions.sharing import QuestionSharing
@@ -114,17 +117,18 @@ def question_adapter(db_session) -> QuestionAccessAdapter:
 
 
 @pytest.fixture
+def collection_access_reader(db_session) -> QuestionCollectionAccessReader:
+    return QuestionCollectionAccessReader(db_session)
+
+
+@pytest.fixture
 def developer_question_access(
-    developer_profile_service,
-    question_adapter,
-    question_collection_service,
-    developer_collection_service,
+    developer_profile_service, question_adapter, collection_access_reader
 ) -> QuestionAccessService:
     return QuestionAccessService(
         adapter=question_adapter,
         profile_service=developer_profile_service,
-        collection_access=developer_collection_service,
-        collection_service=question_collection_service,
+        access_reader=collection_access_reader,
     )
 
 

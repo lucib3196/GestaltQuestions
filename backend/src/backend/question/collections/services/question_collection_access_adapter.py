@@ -4,8 +4,8 @@ from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
-from backend.authorization import (
-    AccessLevel,
+from backend.authorization import AccessLevel
+from backend.authorization.resources import (
     ResourceAccessAdapter,
     ResourceAccessOperationError,
     ResourceAccessValidationError,

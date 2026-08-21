@@ -2,10 +2,10 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Generic
 from uuid import UUID
-
+from backend.authorization import AccessLevel
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, select
-
+from backend.core import logger
 from backend.authorization import ProfileT
 from backend.question import Question, QuestionNotFoundError
 from backend.question.collections.exceptions import (
@@ -18,6 +18,7 @@ from backend.question.collections.exceptions import (
 from backend.question.collections.models import (
     QuestionCollection,
     QuestionCollectionLink,
+    QuestionCollectionAccess,
 )
 from backend.question.collections.schema import QuestionCollectionRead
 from backend.shared import ID
@@ -50,7 +51,29 @@ class QuestionCollectionService(Generic[ProfileT]):
             self._session.add(collection)
             self._session.commit()
             self._session.refresh(collection)
+            await self.assign_owner(owner, collection)
             return collection
+        except SQLAlchemyError as e:
+            self._session.rollback()
+            raise QuestionCollectionOperationError("create", str(e)) from e
+
+    async def assign_owner(
+        self, owner: ProfileT, collection: QuestionCollection
+    ) -> QuestionCollectionAccess:
+        try:
+
+            assert collection.id
+            access = QuestionCollectionAccess(
+                collection_id=collection.id,
+                developer_id=owner.id,
+                granted_by_id=None,
+                access_level=AccessLevel.OWNER,
+            )
+            self._session.add(access)
+            self._session.commit()
+            self._session.refresh(access)
+            logger.debug("Added access okay to collection {access}")
+            return access
         except SQLAlchemyError as e:
             self._session.rollback()
             raise QuestionCollectionOperationError("create", str(e)) from e
