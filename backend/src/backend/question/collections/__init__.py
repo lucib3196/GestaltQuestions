@@ -12,7 +12,11 @@ from .schema import (
     QuestionCollectionRead,
     QuestionCollectionUpdate,
 )
-from .services import QuestionCollectionAdapter, QuestionCollectionService
+from .services import (
+    QuestionCollectionAdapter,
+    QuestionCollectionReader,
+    QuestionCollectionService,
+)
 
 __all__ = [
     "QuestionAlreadyInCollectionError",
@@ -26,6 +30,7 @@ __all__ = [
     "QuestionCollectionNotFoundError",
     "QuestionCollectionOperationError",
     "QuestionCollectionRead",
+    "QuestionCollectionReader",
     "QuestionCollectionService",
     "QuestionCollectionUpdate",
     "QuestionCollectionValidationError",

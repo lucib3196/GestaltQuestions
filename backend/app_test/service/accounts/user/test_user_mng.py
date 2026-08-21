@@ -25,7 +25,6 @@ def make_user(user_manager: UserManager):
         data = UserCreate(**(defaults | overrides))
         return await user_manager.create_user(data)
 
-
     return _make_user
 
 

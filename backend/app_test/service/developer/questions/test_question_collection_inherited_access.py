@@ -1,6 +1,5 @@
 import pytest
 
-
 from backend.authorization import AccessLevel
 
 SHAREABLE_ACCESS_LEVELS = [
