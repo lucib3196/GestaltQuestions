@@ -97,7 +97,7 @@ def add_routes(app: FastAPI, routes: list[APIRouter] = ALL_ROUTES) -> None:
         app.include_router(r)
 
 
-def get_application()->FastAPI:
+def get_application() -> FastAPI:
 
     app = FastAPI(
         title=settings.PROJECT_NAME or "", lifespan=on_startup, openapi_tags=tags_meta()

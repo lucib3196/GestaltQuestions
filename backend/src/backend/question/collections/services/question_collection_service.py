@@ -2,11 +2,12 @@ from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Generic
 from uuid import UUID
-from backend.authorization import AccessLevel
+
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, select
+
+from backend.authorization import AccessLevel, ProfileT
 from backend.core import logger
-from backend.authorization import ProfileT
 from backend.question import Question, QuestionNotFoundError
 from backend.question.collections.exceptions import (
     QuestionAlreadyInCollectionError,
@@ -17,12 +18,12 @@ from backend.question.collections.exceptions import (
 )
 from backend.question.collections.models import (
     QuestionCollection,
-    QuestionCollectionLink,
     QuestionCollectionAccess,
+    QuestionCollectionLink,
 )
-from backend.question.collections.schema import QuestionCollectionRead
 from backend.shared import ID
 from backend.utils import convert_uuid
+from backend.question.collections.services import QuestionCollectionReader
 
 
 class _UnsetType:
@@ -32,8 +33,12 @@ class _UnsetType:
 _UNSET = _UnsetType()
 
 
-class QuestionCollectionService(Generic[ProfileT]):
+class QuestionCollectionService(
+    QuestionCollectionReader[ProfileT],
+    Generic[ProfileT],
+):
     def __init__(self, session: Session) -> None:
+        super().__init__(session)
         self._session = session
 
     async def create_collection(
@@ -61,7 +66,6 @@ class QuestionCollectionService(Generic[ProfileT]):
         self, owner: ProfileT, collection: QuestionCollection
     ) -> QuestionCollectionAccess:
         try:
-
             assert collection.id
             access = QuestionCollectionAccess(
                 collection_id=collection.id,
@@ -161,24 +165,6 @@ class QuestionCollectionService(Generic[ProfileT]):
             self._session.rollback()
             raise QuestionCollectionOperationError("add question to", str(e)) from e
 
-    def get_collection(self, collection: QuestionCollection | ID) -> QuestionCollection:
-        collection_id = (
-            collection.id if isinstance(collection, QuestionCollection) else collection
-        )
-
-        if collection_id is None:
-            raise QuestionCollectionNotFoundError()
-
-        db_collection = self._session.get(
-            QuestionCollection,
-            convert_uuid(collection_id),
-        )
-
-        if db_collection is None:
-            raise QuestionCollectionNotFoundError(str(collection_id))
-
-        return db_collection
-
     def get_question(self, question: Question | ID) -> Question:
         if isinstance(question, Question):
             return question
@@ -219,129 +205,6 @@ class QuestionCollectionService(Generic[ProfileT]):
                 str(e),
             ) from e
 
-    async def get_questions_for_collections(
-        self, collection: QuestionCollection | ID
-    ) -> Sequence[Question]:
-        collection = self.get_collection(collection)
-
-        try:
-            stmt = (
-                select(Question)
-                .join(
-                    QuestionCollectionLink,
-                    QuestionCollectionLink.question_id == Question.id,  # type: ignore
-                )
-                .where(QuestionCollectionLink.collection_id == collection.id)
-            )
-            return self._session.exec(stmt).all()
-        except SQLAlchemyError as e:
-            raise QuestionCollectionOperationError(
-                "retrieve questions from",
-                str(e),
-            ) from e
-
-    async def get_collections_for_question(
-        self, question: Question | ID
-    ) -> Sequence[QuestionCollection]:
-        question = self.get_question(question)
-        stmt = (
-            select(QuestionCollection)
-            .join(
-                QuestionCollectionLink,
-                QuestionCollectionLink.collection_id == QuestionCollection.id,  # type: ignore
-            )
-            .where(QuestionCollectionLink.question_id == question.id)
-        )
-        return list(self._session.exec(stmt).all())
-
-    async def get_collection_detail_read(
-        self, collection: QuestionCollection | ID
-    ) -> QuestionCollectionRead:
-        collection = self.get_collection(collection)
-        questions = await self.get_questions_for_collections(collection)
-        question_ids = [q.id for q in questions if q.id is not None]
-        return QuestionCollectionRead.from_collection(
-            collection=collection,
-            question_ids=question_ids,
-        )
-
-    #  Searching
-
-    async def search_collections(
-        self,
-        owner: ProfileT,
-        *,
-        collection_id: ID | None = None,
-        title: str | None = None,
-        offset: int | None = None,
-        limit: int | None = 10,
-    ) -> Sequence[QuestionCollection]:
-        owner_id = self._require_profile_id(owner)
-        try:
-            stmt = select(QuestionCollection).where(
-                QuestionCollection.owner_id == owner_id,
-            )
-
-            if collection_id is not None:
-                stmt = stmt.where(
-                    QuestionCollection.id == convert_uuid(collection_id),
-                )
-
-            if title:
-                stmt = stmt.where(
-                    QuestionCollection.title.ilike(f"%{title}%")  # type: ignore[attr-defined]
-                )
-
-            stmt = stmt.order_by(
-                QuestionCollection.created_at.desc()  # type: ignore[attr-defined]
-            )
-
-            if offset is not None:
-                stmt = stmt.offset(offset)
-
-            if limit is not None:
-                stmt = stmt.limit(limit)
-
-            return self._session.exec(stmt).all()
-
-        except SQLAlchemyError as e:
-            raise QuestionCollectionOperationError("retrieve", str(e)) from e
-
-    def get_collection_by_owner(
-        self,
-        owner: ProfileT,
-        collection_id: ID,
-    ) -> QuestionCollection | None:
-        owner_id = self._require_profile_id(owner)
-        try:
-            stmt = select(QuestionCollection).where(
-                QuestionCollection.id == convert_uuid(collection_id),
-                QuestionCollection.owner_id == owner_id,
-            )
-            return self._session.exec(stmt).first()
-        except SQLAlchemyError as e:
-            raise QuestionCollectionOperationError("retrieve", str(e)) from e
-
-    def list_collections_by_owner(
-        self,
-        owner: ProfileT,
-        offset: int | None = None,
-        limit: int | None = 10,
-    ) -> Sequence[QuestionCollection]:
-        try:
-            owner_id = self._require_profile_id(owner)
-            stmt = (
-                select(QuestionCollection)
-                .where(
-                    QuestionCollection.owner_id == owner_id,
-                )
-                .order_by(QuestionCollection.created_at.desc())  # type: ignore[attr-defined]
-                .offset(offset)
-                .limit(limit)
-            )
-            return self._session.exec(stmt).all()
-        except SQLAlchemyError as e:
-            raise QuestionCollectionOperationError("retrieve", str(e)) from e
 
     def reconstruct_path(self, collection: QuestionCollection) -> str:
         parts: list[str] = []

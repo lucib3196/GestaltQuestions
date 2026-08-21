@@ -54,7 +54,6 @@ async def create_collection(
         return await collections.create_collection(
             current_user,
             title=payload.title,
-            parent_id=payload.parent_id,
         )
     except DeveloperAccessDenied as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
@@ -67,17 +66,18 @@ async def create_collection(
 
 @router.get(
     "/",
-    response_model=list[QuestionCollection],
     status_code=status.HTTP_200_OK,
 )
 async def get_collections(
     current_user: CurrentUser,
     collections: DevCollectionManager,
     offset: int | None = None,
-    limit: int | None = 100,
-) -> Sequence[QuestionCollection]:
+    limit: int | None = 10,
+) -> Sequence[QuestionCollection] | Sequence[QuestionCollectionRead]:
     try:
-        return await collections.list_collections(current_user, offset, limit)
+        return await collections.list_collections_from_owner(
+            current_user, offset, limit
+        )
     except DeveloperAccessDenied as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
     except QuestionCollectionError as e:
@@ -99,7 +99,7 @@ async def search_collections(
     title: str | None = None,
     offset: int | None = None,
     limit: int | None = 10,
-) -> Sequence[QuestionCollectionRead]:
+) -> Sequence[QuestionCollectionRead] | Sequence[QuestionCollection]:
     try:
         return await collections.search_collections(
             current_user,
@@ -220,7 +220,9 @@ async def get_collection_questions(
     collections: DevCollectionManager,
 ) -> Sequence[Question]:
     try:
-        return await collections.get_all_questions(current_user, collection_id)
+        return await collections.get_questions_in_collection(
+            current_user, collection_id
+        )
     except DeveloperAccessDenied as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
     except QuestionCollectionNotFoundError as e:
@@ -238,7 +240,7 @@ async def remove_question_from_collection(
     question_id: ID,
     current_user: CurrentUser,
     collections: DevCollectionManager,
-) -> bool:
+) -> bool | None:
     try:
         return await collections.remove_question(
             current_user,

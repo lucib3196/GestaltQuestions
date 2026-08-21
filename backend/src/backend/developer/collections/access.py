@@ -3,7 +3,6 @@ from sqlmodel import Session, col, select
 
 from backend.authorization import AccessLevel
 from backend.authorization.resources import ResourceAccessAdapter, ResourceAccessService
-
 from backend.developer.model import DeveloperProfile
 from backend.developer.profiles import DeveloperProfileService
 from backend.question import Question

@@ -25,6 +25,7 @@ class QuestionCollectionRead(BaseModel):
     created_at: datetime
     updated_at: datetime
     question_ids: list[UUID] = Field(default_factory=list)
+    subcollections_len: int 
 
     @classmethod
     def from_collection(
@@ -40,4 +41,5 @@ class QuestionCollectionRead(BaseModel):
             created_at=collection.created_at,
             updated_at=collection.updated_at,
             question_ids=question_ids or [],
+            subcollections_len = len(collection.children)
         )

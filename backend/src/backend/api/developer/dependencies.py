@@ -21,6 +21,10 @@ from backend.question.collections import (
 )
 from backend.question.views.services.table_query_service import TableQueryService
 
+from backend.developer.collections.access import (
+    QuestionCollectionAccessReader,
+)
+
 
 def get_developer_role_access(user_manager: UserManagerDependeny) -> RoleAccessPolicy:
     return RoleAccessPolicy(
@@ -77,8 +81,11 @@ QuestionAccessAdapterDependency = Annotated[
 def get_question_access(
     adapter: QuestionAccessAdapterDependency,
     profile: DeveloperProfileDependency,
+    session: SessionDep,
 ) -> QuestionAccessService:
-    return QuestionAccessService(adapter, profile)
+    return QuestionAccessService(
+        adapter, profile, access_reader=QuestionCollectionAccessReader(session)
+    )
 
 
 QuestionAccessDependency = Annotated[
