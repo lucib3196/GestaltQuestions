@@ -24,7 +24,7 @@ def test_database_health(api_client) -> None:
 def test_firebase_health(
     api_client,
 ) -> None:
-    response = api_client.get("health/firebase")
+    response = api_client.get("/health/firebase")
 
     assert response.status_code == 200
 

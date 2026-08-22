@@ -5,10 +5,11 @@ from sqlmodel import Session, select
 
 from backend.accounts.users import UserManager
 from backend.authorization import RoleAccessPolicy
+from backend.authorization.profiles.exceptions import ProfileAccessDenied, ProfileNotSet
 from backend.authorization.profiles.service import ProfileService
 from backend.authorization.roles import UserRoles
 from backend.core import logger
-from backend.developer.exceptions import DeveloperProfileNotSet
+from backend.developer.exceptions import DeveloperAccessDenied, DeveloperProfileNotSet
 from backend.developer.model import DeveloperProfile
 from backend.shared import ID
 from backend.storage.services import Storage
@@ -106,9 +107,14 @@ class DeveloperProfileService(ProfileService[DeveloperProfile]):
     async def get_or_create_profile(self, user_id: ID) -> DeveloperProfile:
         try:
             profile = await self.get_profile(user_id)
-        except DeveloperProfileNotSet:
+        except (DeveloperProfileNotSet, ProfileNotSet):
             logger.info("Creating developer profile for user %s", user_id)
             profile = await self.set_profile(user_id)
+        except ProfileAccessDenied as e:
+            raise DeveloperAccessDenied(
+                reason=str(e),
+                user_id=str(user_id),
+            ) from e
 
         if not profile.storage_path:
             logger.info(

@@ -115,5 +115,5 @@ async def create_developer_profile_by_id(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create developer profile",
+            detail=f"Failed to create developer profile {e}",
         ) from e

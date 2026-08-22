@@ -28,6 +28,7 @@ async def test_create_developer_profile_by_id(
     )
 
     response = api_client.post(f"/developer/profile/{created_user.id}")
+    print("Detail", response.json())
 
     assert response.status_code == 200
     profile_data = response.json()
@@ -68,6 +69,6 @@ async def test_create_developer_profile_by_id_returns_403_when_role_is_not_devel
     )
 
     response = api_client.post(f"/developer/profile/{created_user.id}")
-
+    print("Detail", response.json())
     assert response.status_code == 403
     assert "Developer access requires one of: developer" in response.json()["detail"]
