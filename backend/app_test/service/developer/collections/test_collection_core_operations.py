@@ -5,12 +5,13 @@ from backend.question.collections import (
     QuestionCollection,
     QuestionCollectionNotFoundError,
 )
+from backend.developer.collections import DeveloperCollectionService
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("title", ["Physics", "Math", "Engineering"])
 async def test_create_collection(
-    developer_collection_service, dev_owner, title
+    developer_collection_service: DeveloperCollectionService, dev_owner, title
 ) -> None:
     user = dev_owner.user
     profile = dev_owner.profile
@@ -63,8 +64,36 @@ async def test_add_question(
 
 
 @pytest.mark.asyncio
+async def test_get_questions_in_collection_returns_added_questions(
+    developer_collection_service: DeveloperCollectionService,
+    dev_owner,
+    make_question,
+) -> None:
+    user = dev_owner.user
+    collection = await developer_collection_service.create_collection(
+        user,
+        title="Practice",
+    )
+    question_1 = make_question(dev_owner.profile, title="Question 1")
+    question_2 = make_question(dev_owner.profile, title="Question 2")
+    unrelated_question = make_question(dev_owner.profile, title="Unrelated")
+
+    await developer_collection_service.add_question(user, collection.id, question_1.id)
+    await developer_collection_service.add_question(user, collection.id, question_2.id)
+
+    questions = await developer_collection_service.get_questions_in_collection(
+        user,
+        collection.id,
+    )
+
+    question_ids = {question.id for question in questions}
+    assert question_ids == {question_1.id, question_2.id}
+    assert unrelated_question.id not in question_ids
+
+
+@pytest.mark.asyncio
 async def test_remove_question(
-    developer_collection_service,
+    developer_collection_service: DeveloperCollectionService,
     question_collection_service,
     dev_owner_with_question,
 ) -> None:
@@ -80,10 +109,7 @@ async def test_remove_question(
     )
 
     assert removed is True
-    assert (
-        await question_collection_service.get_questions_for_collections(collection.id)
-        == []
-    )
+    assert question_collection_service.get_questions_in_collection(collection) == []
 
 
 @pytest.mark.asyncio

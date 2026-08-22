@@ -21,7 +21,6 @@ def test_database_health(api_client) -> None:
     assert data.get("database") == "connected"
 
 
-@pytest.mark.usefixtures("firebase_app_for_tests")
 def test_firebase_health(
     api_client,
 ) -> None:

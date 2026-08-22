@@ -4,6 +4,7 @@ import pytest
 
 from backend.authorization import AccessLevel
 from backend.developer.collections import DeveloperCollectionService
+from backend.question.collections import QuestionCollectionService
 from backend.developer.exceptions import DeveloperAccessDenied
 
 
@@ -66,7 +67,7 @@ async def run_collection_action(
 )
 async def test_shared_collection_access_level_controls_collection_actions(
     collection_sharing,
-    developer_collection_service,
+    developer_collection_service: DeveloperCollectionService,
     dev_owner,
     dev_other,
     level,
@@ -115,8 +116,8 @@ async def test_shared_collection_access_level_controls_collection_actions(
 )
 async def test_shared_collection_access_level_controls_question_actions(
     collection_sharing,
-    developer_collection_service,
-    question_collection_service,
+    developer_collection_service: DeveloperCollectionService,
+    question_collection_service: QuestionCollectionService,
     dev_owner,
     dev_other,
     make_question,
@@ -162,9 +163,7 @@ async def test_shared_collection_access_level_controls_question_actions(
                 question.id,
             )
 
-    questions = await question_collection_service.get_questions_for_collections(
-        collection.id
-    )
+    questions = question_collection_service.get_questions_in_collection(collection)
     question_ids = [existing.id for existing in questions]
 
     if action == "add_question":
