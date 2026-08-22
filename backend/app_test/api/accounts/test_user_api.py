@@ -44,11 +44,11 @@ def create_user_via_api(api_client, request_payload: CreateUserFullPayload) -> U
 )
 def test_create_user(
     api_client,
-    build_user_api_payload,
+    build_user_payload,
     role: UserRoles,
     institution: ValidInstitutions | None,
 ) -> None:
-    request_payload = build_user_api_payload(role=role, institution=institution)
+    request_payload = build_user_payload(role=role, institution=institution)
 
     created_user = create_user_via_api(api_client, request_payload)
 
@@ -62,9 +62,9 @@ def test_create_user(
 
 def test_create_user_defaults_to_student_role(
     api_client,
-    build_user_api_payload,
+    build_user_payload,
 ) -> None:
-    request_payload = build_user_api_payload()
+    request_payload = build_user_payload()
 
     created_user = create_user_via_api(api_client, request_payload)
 
@@ -76,8 +76,8 @@ def test_create_user_defaults_to_student_role(
     )
 
 
-def test_get_user_roles(api_client, build_user_api_payload) -> None:
-    request_payload = build_user_api_payload()
+def test_get_user_roles(api_client, build_user_payload) -> None:
+    request_payload = build_user_payload()
 
     created_user = create_user_via_api(api_client, request_payload)
     assert created_user.id is not None
@@ -93,8 +93,8 @@ def test_get_user_roles(api_client, build_user_api_payload) -> None:
     assert role_response.email == created_user.email
 
 
-def test_get_user_by_id(api_client, build_user_api_payload) -> None:
-    request_payload = build_user_api_payload(
+def test_get_user_by_id(api_client, build_user_payload) -> None:
+    request_payload = build_user_payload(
         role=UserRoles.TEACHER,
         institution=ValidInstitutions.UCR,
     )
@@ -123,7 +123,7 @@ def test_get_user_by_id_returns_404_for_missing_user(api_client) -> None:
     assert response.json()["detail"] == f"User '{missing_user_id}' not found"
 
 
-def test_delete_user_by_id(api_client, build_user_api_payload, monkeypatch) -> None:
+def test_delete_user_by_id(api_client, build_user_payload, monkeypatch) -> None:
     deleted = {}
 
     def fake_delete_user(uid) -> None:
@@ -131,7 +131,7 @@ def test_delete_user_by_id(api_client, build_user_api_payload, monkeypatch) -> N
 
     monkeypatch.setattr(user_manager_module.auth, "delete_user", fake_delete_user)
 
-    request_payload = build_user_api_payload()
+    request_payload = build_user_payload()
     created_user = create_user_via_api(api_client, request_payload)
     assert created_user.id is not None
 
@@ -155,8 +155,8 @@ def test_delete_user_by_id_returns_404_for_missing_user(api_client) -> None:
     assert response.json()["detail"] == f"User '{missing_user_id}' not found"
 
 
-def test_get_user_roles_by_id(api_client, build_user_api_payload) -> None:
-    request_payload = build_user_api_payload(role=UserRoles.TEACHER)
+def test_get_user_roles_by_id(api_client, build_user_payload) -> None:
+    request_payload = build_user_payload(role=UserRoles.TEACHER)
     created_user = create_user_via_api(api_client, request_payload)
     assert created_user.id is not None
 
@@ -180,8 +180,8 @@ def test_get_user_roles_by_id_returns_404_for_missing_user(api_client) -> None:
     assert response.json()["detail"] == f"User '{missing_user_id}' not found"
 
 
-def test_add_user_role(api_client, build_user_api_payload) -> None:
-    request_payload = build_user_api_payload(role=UserRoles.STUDENT)
+def test_add_user_role(api_client, build_user_payload) -> None:
+    request_payload = build_user_payload(role=UserRoles.STUDENT)
     created_user = create_user_via_api(api_client, request_payload)
     assert created_user.id is not None
 

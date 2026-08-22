@@ -7,6 +7,7 @@ from typing import Mapping
 from backend.accounts import User
 
 
+
 class MakeUser(Protocol):
     def __call__(self, **overrides: Any) -> User: ...
 
@@ -29,7 +30,7 @@ def make_user(db_session) -> MakeUser:
     return make
 
 
-class BuildUserAPIPayload(Protocol):
+class BuildUserPayload(Protocol):
     def __call__(
         self,
         *,
@@ -38,7 +39,7 @@ class BuildUserAPIPayload(Protocol):
         institution: ValidInstitutions | None = None,
     ) -> CreateUserFullPayload: ...
 @pytest.fixture
-def build_user_api_payload() -> BuildUserAPIPayload:
+def build_user_payload() -> BuildUserPayload:
     def build(
         *,
         user_overrides: Mapping[str, Any] | None = None,

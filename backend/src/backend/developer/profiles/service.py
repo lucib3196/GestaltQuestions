@@ -13,6 +13,20 @@ from backend.developer.model import DeveloperProfile
 from backend.shared import ID
 from backend.storage.services import Storage
 from backend.utils import convert_uuid
+from backend.accounts.model import Institution
+
+
+def format_institution_slug(inst: Institution) -> str:
+    institution_name = (
+        inst.name.value
+        if inst and hasattr(inst.name, "value")
+        else (inst.name if inst else "untitled_institution")
+    )
+    institution_slug = (
+        re.sub(r"[^a-z0-9_-]+", "_", institution_name.lower()).strip("_")
+        or "untitled_institution"
+    )
+    return institution_slug
 
 
 class DeveloperProfileService(ProfileService[DeveloperProfile]):
@@ -119,15 +133,8 @@ class DeveloperProfileService(ProfileService[DeveloperProfile]):
             raise self._operation_error(
                 "generate storage path", str(user_id), "User institution not defined"
             )
-        institution_name = (
-            institution.name.value
-            if institution and hasattr(institution.name, "value")
-            else (institution.name if institution else "untitled_institution")
-        )
-        institution_slug = (
-            re.sub(r"[^a-z0-9_-]+", "_", institution_name.lower()).strip("_")
-            or "untitled_institution"
-        )
+
+        institution_slug = format_institution_slug(institution)
 
         logger.debug("Generated developer storage path for user %s", user_id)
         return f"{institution_slug}/developers/{user.id}/"
