@@ -37,6 +37,10 @@ class UserUpdate(UserBase):
 
 
 class UserRead(UserBase):
+    id: UUID | None = Field(
+        default=None,
+        json_schema_extra={"readOnly": True},
+    )
     email: str | None = None
     roles: list[UserRoles | str] = Field(..., default_factory=list)
     institution: ValidInstitutions | None = None
@@ -44,6 +48,7 @@ class UserRead(UserBase):
     @classmethod
     def from_model(cls, user: User) -> UserRead:
         return cls(
+            id=user.id,
             first_name=user.first_name,
             last_name=user.last_name,
             username=user.username,

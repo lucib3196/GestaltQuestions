@@ -60,21 +60,14 @@ async def seed_institution(institution_db: InstitutionDB) -> None:
     await institution_db.seed_institution()
 
 
-@pytest.fixture(autouse=True)
-def seed_roles(db_session: Session):
-    roles = [
-        Role(name=UserRoles.STUDENT.value),
-        Role(name=UserRoles.ADMIN.value),
-        Role(name=UserRoles.DEVELOPER.value),
-    ]
-    db_session.add_all(roles)
-    db_session.commit()
-    return roles
-
-
 @pytest.fixture
 def role_db(db_session: Session) -> RoleDB:
     return RoleDB(db_session)
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def seed_roles(role_db: RoleDB):
+    await role_db.seed_roles()
 
 
 @pytest.fixture

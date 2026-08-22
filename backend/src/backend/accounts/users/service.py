@@ -13,12 +13,17 @@ from backend.accounts.exceptions import (
     UserNotFound,
     UserReadError,
 )
+from backend.authorization.roles import (
+    RoleNotFound,
+    RoleAssignmentError,
+    UserRoles,
+)
+from backend.authorization.roles.repository import RoleDB
 from backend.accounts.institutions.repository import InstitutionDB
 from backend.accounts.model import Institution, Role, User
 from backend.accounts.schemas import UserCreate, UserRead, ValidInstitutions
 from backend.accounts.users.repository import UserDB
-from backend.authorization.roles import RoleAssignmentError, RoleDB, RoleNotFound
-from backend.authorization.roles.schemas import UserRoles
+
 from backend.core import logger
 from backend.shared import ID
 

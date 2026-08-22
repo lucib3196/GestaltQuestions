@@ -1,10 +1,12 @@
+from typing import Any
+
 import requests
 from fastapi import APIRouter, Body
 from pydantic import BaseModel
 
 from backend.core import get_settings
 
-router = APIRouter(prefix="/users", tags=["Health"])
+router = APIRouter(prefix="/users", tags=["User Health"])
 
 
 class LogInPayload(BaseModel):
@@ -12,15 +14,18 @@ class LogInPayload(BaseModel):
     password: str
 
 
+LOGIN_TEST_BODY = Body(
+    example={
+        "email": "user@example.com",
+        "password": "string",
+    }
+)
+
+
 @router.post("/login_test")
 def emulator_login(
-    login: LogInPayload = Body(
-        example={
-            "email": "user@example.com",
-            "password": "string",
-        }
-    ),
-):
+    login: LogInPayload = LOGIN_TEST_BODY,
+) -> dict[str, Any]:
     """Testing endpoint for login using password and email
 
     Args:
