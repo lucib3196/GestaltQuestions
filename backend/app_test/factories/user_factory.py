@@ -1,23 +1,20 @@
 from typing import Any, Protocol
 from uuid import uuid4
-
+from backend.accounts import CreateUserFullPayload, UserCreate, ValidInstitutions
+from backend.authorization.roles import UserRoles
 import pytest
+from typing import Mapping
+from backend.accounts import User
 
-from backend.auth import User
-from backend.developer import DeveloperProfile
 
 
 class MakeUser(Protocol):
     def __call__(self, **overrides: Any) -> User: ...
 
 
-class MakeDeveloperProfile(Protocol):
-    def __call__(self, user: User, **overrides: Any) -> DeveloperProfile: ...
-
-
 @pytest.fixture
 def make_user(db_session) -> MakeUser:
-    def make(**overrides):
+    def make(**overrides) -> User:
         user = User(
             id=overrides.pop("id", uuid4()),
             first_name=overrides.pop("first_name", "Test"),
@@ -33,20 +30,36 @@ def make_user(db_session) -> MakeUser:
     return make
 
 
+class BuildUserPayload(Protocol):
+    def __call__(
+        self,
+        *,
+        user_overrides: Mapping[str, Any] | None = None,
+        role: UserRoles = UserRoles.STUDENT,
+        institution: ValidInstitutions | None = None,
+    ) -> CreateUserFullPayload: ...
 @pytest.fixture
-def make_developer_profile(db_session) -> MakeDeveloperProfile:
-    def make(user: User, **overrides) -> DeveloperProfile:
-        profile = DeveloperProfile(
-            user_id=user.id,
-            storage_path=overrides.pop(
-                "storage_path",
-                f"ucr/developers/{user.id}/",
-            ),
-            **overrides,
-        )
-        db_session.add(profile)
-        db_session.commit()
-        db_session.refresh(profile)
-        return profile
+def build_user_payload() -> BuildUserPayload:
+    def build(
+        *,
+        user_overrides: Mapping[str, Any] | None = None,
+        role: UserRoles = UserRoles.STUDENT,
+        institution: ValidInstitutions | None = None,
+    ) -> CreateUserFullPayload:
+        unique = uuid4().hex
 
-    return make
+        default_user = {
+            "first_name": "Ada",
+            "last_name": "Lovelace",
+            "username": f"ada_{unique}",
+            "password": "test-password-123",
+            "email": f"ada_{unique}@example.com",
+        }
+
+        return CreateUserFullPayload(
+            user=UserCreate(**{**default_user, **(user_overrides or {})}),
+            role=role,
+            institution=institution,
+        )
+
+    return build

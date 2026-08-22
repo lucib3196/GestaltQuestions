@@ -3,12 +3,7 @@ from typing import Any, Protocol
 
 import pytest
 
-from app_test import (
-    FileData,
-    Question,
-    QuestionData,
-    QuestionManager,
-)
+from app_test import FileData, Question, QuestionData, QuestionManager
 
 
 class MakeQuestionFactory(Protocol):

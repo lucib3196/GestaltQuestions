@@ -1,10 +1,10 @@
-import asyncio
 from contextlib import asynccontextmanager
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from backend.accounts import UserManager
 from backend.api.deps import (
     get_session,
     get_storage_manager,
@@ -12,8 +12,7 @@ from backend.api.deps import (
     get_user_mng,
 )
 from backend.api.developer.dependencies import get_developer_profile_service
-from backend.auth import InstitutionDB, RoleDB, UserManager
-from backend.developer.services import DeveloperProfileService
+from backend.developer.profiles import DeveloperProfileService
 from src.main import get_application
 
 
@@ -22,15 +21,13 @@ async def on_startup_test(app: FastAPI):
     yield
 
 
-@pytest.fixture
-def user_manager(db_session) -> UserManager:
-    return UserManager(db_session)
+# @pytest.fixture
+# def user_manager_api(db_session) -> UserManager:
+#     return UserManager(db_session)
 
 
 @pytest.fixture(scope="function")
 def api_client(db_session, user_manager, raw_storage):
-    asyncio.run(RoleDB(db_session).seed_roles())
-    asyncio.run(InstitutionDB(db_session).seed_institution())
 
     app = get_application()
     app.router.lifespan_context = on_startup_test

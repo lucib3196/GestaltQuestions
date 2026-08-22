@@ -15,6 +15,7 @@ export type QuestionCollection = {
 
 export type QuestionCollectionRead = QuestionCollection & {
   question_ids: QuestionId[];
+  subcollections_len: number
 };
 
 export type QuestionCollectionLink = {

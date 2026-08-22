@@ -1,6 +1,10 @@
 import { createStore } from "zustand";
 
-import type { CollectionId, QuestionCollection } from "../../../services";
+import type {
+  CollectionId,
+  QuestionCollection,
+  QuestionCollectionRead,
+} from "../../../services";
 import { normalizeCollections } from "../utils/collectionTree";
 import type { NormalizedCollections } from "./types";
 
@@ -9,14 +13,14 @@ export type QuestionCollectionState = {
   normalizedCollection: NormalizedCollections;
   // Handles any selected and the current expanded collections
   selectedCollectionId: CollectionId | null;
-  selectedCollection: QuestionCollection | null;
+  selectedCollection: QuestionCollection | QuestionCollectionRead | null;
   expandedCollectionIds: Set<CollectionId>;
   selectedCollectionIds: Set<CollectionId>;
 };
 
 type QuestionCollectionActions = {
   // Gets the raw collection and normalizes it for me
-  setNormalizeCollection: (collections: QuestionCollection[]) => void;
+  setNormalizeCollection: (collections: QuestionCollectionRead[]) => void;
   setSelectedCollectionId: (collectionId: CollectionId | null) => void;
 };
 

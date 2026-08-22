@@ -9,7 +9,7 @@ from sqlmodel import Field, Relationship, SQLModel
 JSONType = JSON().with_variant(JSONB, "postgresql")
 
 if TYPE_CHECKING:
-    from backend.auth.model import User
+    from backend.accounts.model import User
 
 
 class Thread(SQLModel, table=True):

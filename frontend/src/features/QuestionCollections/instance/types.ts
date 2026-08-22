@@ -3,14 +3,15 @@ import type {
   CollectionId,
   CollectionQuestion,
   QuestionCollection,
+  QuestionCollectionRead,
 } from "../../../services";
 
 export type QuestionCollectionTreeNode =
-  | ResourceTreeNode<"collection", QuestionCollection>
+  | ResourceTreeNode<"collection", QuestionCollectionRead>
   | ResourceTreeNode<"question", CollectionQuestion>;
 
 export type NormalizedCollections = {
-  byId: Record<CollectionId, QuestionCollection>;
+  byId: Record<CollectionId, QuestionCollectionRead>;
   rootIds: CollectionId[];
 
   childIdsByParentId: Record<CollectionId, CollectionId[]>;

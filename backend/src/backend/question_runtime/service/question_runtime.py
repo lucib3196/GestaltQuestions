@@ -5,18 +5,15 @@ from pydantic import BaseModel, Field
 
 from backend.core import logger
 from backend.question import QuestionRead
+from backend.question.manager import QuestionManager
 from backend.question_attempt.schema import QuizData
-from backend.question_manager import QuestionManager
 from backend.question_rendering.parser import TemplateParser
 from backend.question_runtime.exceptions import (
     MissingRuntimeOutputError,
     RuntimeExecutionError,
 )
 from backend.question_runtime.model import RuntimeLanguage
-from backend.question_runtime.schema import (
-    QuestionFiles,
-    RuntimeExecutionConfig,
-)
+from backend.question_runtime.schema import QuestionFiles, RuntimeExecutionConfig
 from backend.sandbox_client import SandboxClient
 from backend.shared import ID
 

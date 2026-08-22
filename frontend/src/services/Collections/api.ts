@@ -34,8 +34,8 @@ export default class CollectionsApi {
   static async getCollections(
     token: string,
     params: ListCollectionsParams = {},
-  ): Promise<QuestionCollection[]> {
-    const response = await api.get<QuestionCollection[]>(`${this.base}/`, {
+  ): Promise<QuestionCollectionRead[]> {
+    const response = await api.get<QuestionCollectionRead[]>(`${this.base}/`, {
       params,
       headers: this.authHeaders(token),
     });

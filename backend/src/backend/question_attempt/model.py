@@ -4,8 +4,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import Column, DateTime, func
 from sqlalchemy.types import JSON
-from sqlmodel import Field as SQLField
-from sqlmodel import SQLModel
+from sqlmodel import Field as SQLField, SQLModel
 
 from .schema import QuizData
 

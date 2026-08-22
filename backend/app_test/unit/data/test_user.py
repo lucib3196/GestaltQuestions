@@ -2,7 +2,7 @@ import pytest
 from pydantic import ValidationError
 
 from app_test.unit.shared import INVALID_USERS, USERS
-from backend.auth import User, UserCreate, UserDB, UserUpdate
+from backend.accounts import User, UserCreate, UserDB, UserUpdate
 from backend.core import logger
 
 

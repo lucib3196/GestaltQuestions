@@ -2,25 +2,28 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from backend.access_policy import RoleAccessPolicy
+from backend.accounts.users import UserLookup
 from backend.api.dependencies import QuestionManagerDependency
 from backend.api.dependencies.core import SessionDep
 from backend.api.dependencies.storage import StorageDependency
 from backend.api.dependencies.users import UserManagerDependeny
-from backend.auth import UserRoles
+from backend.authorization import RoleAccessPolicy
+from backend.authorization.roles import UserRoles
 from backend.developer import DeveloperCollectionService, DeveloperQuestionService
-from backend.developer.access import (
-    QuestionAccessService,
-    QuestionCollectionAccessService,
-)
-from backend.developer.services import DeveloperProfileService
-from backend.developer.services.developer_question_table import DeveloperTables
-from backend.question_access import QuestionAccessAdapter
-from backend.question_collections import (
+from backend.developer.collections.access import QuestionCollectionAccessService
+from backend.developer.profiles import DeveloperProfileService
+from backend.developer.questions import DeveloperTables
+from backend.developer.questions.access import QuestionAccessService
+from backend.question.access import QuestionAccessAdapter
+from backend.question.collections import (
     QuestionCollectionAdapter,
     QuestionCollectionService,
 )
-from backend.question_views.service.table_query_service import TableQueryService
+from backend.question.views.services.table_query_service import TableQueryService
+
+from backend.developer.collections.access import (
+    QuestionCollectionAccessReader,
+)
 
 
 def get_developer_role_access(user_manager: UserManagerDependeny) -> RoleAccessPolicy:
@@ -34,6 +37,16 @@ def get_developer_role_access(user_manager: UserManagerDependeny) -> RoleAccessP
 DeveloperRoleAccess = Annotated[
     RoleAccessPolicy,
     Depends(get_developer_role_access),
+]
+
+
+def get_user_lookup(session: SessionDep) -> UserLookup:
+    return UserLookup(session)
+
+
+UserLookupDependency = Annotated[
+    UserLookup,
+    Depends(get_user_lookup),
 ]
 
 
@@ -68,8 +81,11 @@ QuestionAccessAdapterDependency = Annotated[
 def get_question_access(
     adapter: QuestionAccessAdapterDependency,
     profile: DeveloperProfileDependency,
+    session: SessionDep,
 ) -> QuestionAccessService:
-    return QuestionAccessService(adapter, profile)
+    return QuestionAccessService(
+        adapter, profile, access_reader=QuestionCollectionAccessReader(session)
+    )
 
 
 QuestionAccessDependency = Annotated[
@@ -146,7 +162,7 @@ def get_dev_collection_manager(
     collection_access: QuestionCollectionAccessDependency,
 ) -> DeveloperCollectionService:
     return DeveloperCollectionService(
-        developer_profiles=profile,
+        profile_service=profile,
         collections=collections,
         collection_access=collection_access,
     )
