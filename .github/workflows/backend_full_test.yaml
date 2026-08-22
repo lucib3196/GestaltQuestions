@@ -1,16 +1,16 @@
-name: Backend API Startup
+name: Backend FULL 
 # Only triggers if there is a backend change
 on:
   # Run on all changes to backend or this file
   push:
     paths: 
       - 'backend/**'
-      - '.github/workflows/backend_api_startup.yml'
+      - '.github/workflows/backend_full_test.yml'
     branches: ["main", "dev"]
   pull_request:
     paths: 
       - 'backend/**'
-      - '.github/workflows/backend_api_startup.yml'
+      - '.github/workflows/backend_full_test.yml'
     branches: ["main", "dev"]
 
 jobs:
