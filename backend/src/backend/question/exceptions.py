@@ -39,5 +39,9 @@ class QuestionDeleteError(QuestionDBError):
     """Raised when a question cannot be deleted."""
 
 
+class QuestionExportError(QuestionDBError):
+    """Raised when question export/download data cannot be prepared."""
+
+
 class QuestionPathError(QuestionDBError):
     """Raised when a question path cannot be read or updated."""

@@ -1,8 +1,12 @@
+from uuid import uuid4
+
 import pytest
 
 from app_test.factories.question_factory import MakeQuestion
 from app_test.support.developer import DeveloperActor
 from backend.accounts import Role, UserRoles, ValidInstitutions
+from backend.question import QuestionNotFoundError, QuestionReadError
+from backend.question.models import Question
 from backend.question.reader.question_reader import QuestionReader
 from backend.question_runtime.model import QuestionRunTime, RuntimeLanguage
 
@@ -90,3 +94,27 @@ def test_get_question_info_includes_runtime_languages(
         RuntimeLanguage.PYTHON,
         RuntimeLanguage.JAVASCRIPT,
     }
+
+
+def test_get_question_raises_not_found_for_missing_id(reader: QuestionReader):
+    missing_id = uuid4()
+
+    with pytest.raises(QuestionNotFoundError, match=str(missing_id)):
+        reader.get_question(missing_id)
+
+
+def test_get_question_info_raises_not_found_for_missing_id(reader: QuestionReader):
+    missing_id = uuid4()
+
+    with pytest.raises(QuestionNotFoundError, match=str(missing_id)):
+        reader.get_question_info(missing_id)
+
+
+def test_get_question_raises_read_error_for_unsaved_question_instance(
+    reader: QuestionReader,
+):
+    question = Question(title="Unsaved question")
+    question.id = None
+
+    with pytest.raises(QuestionReadError, match="does not have an id"):
+        reader.get_question(question)
