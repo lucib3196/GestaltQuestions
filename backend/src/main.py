@@ -10,8 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRouter
 from sqlmodel import Session
 
+from backend.accounts import InstitutionDB
 from backend.api import ALL_ROUTES
-from backend.auth import InstitutionDB, RoleDB
+from backend.authorization.roles.repository import RoleDB
 from backend.core import get_settings, initialize_firebase_app, logger
 from backend.database import engine
 from backend.question import QuestionQTypeDB
@@ -96,7 +97,7 @@ def add_routes(app: FastAPI, routes: list[APIRouter] = ALL_ROUTES) -> None:
         app.include_router(r)
 
 
-def get_application(test_mode: bool = False):
+def get_application() -> FastAPI:
 
     app = FastAPI(
         title=settings.PROJECT_NAME or "", lifespan=on_startup, openapi_tags=tags_meta()

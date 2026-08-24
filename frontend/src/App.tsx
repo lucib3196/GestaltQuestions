@@ -11,7 +11,11 @@ import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
+import { UserLookUp } from "./features/UserLookUp/UserLookUp";
 
+function Test(){
+  return <div><UserLookUp/></div>
+}
 function App() {
   return (
     <>
@@ -25,7 +29,7 @@ function App() {
             <Route path="/questions" element={<PublishedQuestions />} />
             <Route path="/questions/:qid" element={<GeneralQuestionRender />} />
 
-            {/* <Route path="/test" element={<Test />}></Route> */}
+            <Route path="/test" element={<Test />}></Route>
 
             {/* Non User Specific */}
 

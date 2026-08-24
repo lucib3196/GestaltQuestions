@@ -4,10 +4,7 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from backend.core import get_settings, logger
 
-from .exceptions import (
-    DatabaseConfigError,
-    DatabaseInitializationError,
-)
+from .exceptions import DatabaseConfigError, DatabaseInitializationError
 
 app_settings = get_settings()
 

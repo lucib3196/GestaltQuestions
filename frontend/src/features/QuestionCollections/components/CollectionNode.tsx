@@ -70,6 +70,8 @@ function ExpandCollectionButton({
 
 type CollectionTitleSectionProps = {
   title: string;
+  questionCount: number;
+  subcollectionCount: number;
   isDropTarget: boolean;
   isEditing: boolean;
   draftTitle: string;
@@ -82,6 +84,8 @@ type CollectionTitleSectionProps = {
 
 function CollectionTitleSection({
   title,
+  questionCount,
+  subcollectionCount,
   isDropTarget,
   isEditing,
   draftTitle,
@@ -130,6 +134,20 @@ function CollectionTitleSection({
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate">{title}</span>
+        <span className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-normal text-text-soft">
+          {subcollectionCount > 0 ? (
+            <span className="inline-flex items-center gap-1">
+              
+              {subcollectionCount}{" "}
+              {subcollectionCount === 1
+                ? "inner collection"
+                : "inner collections"}
+            </span>
+          ) : null}
+          <span className="inline-flex items-center gap-1">
+            {questionCount} {questionCount === 1 ? "question" : "questions"}
+          </span>
+        </span>
         {isDropTarget ? <DropTargetMessage /> : null}
       </span>
     </button>
@@ -250,6 +268,15 @@ export default function CollectionNode({
     await deleteCollection(nodeId);
   }
 
+  const questionCount =
+    props.node.kind === "collection"
+      ? (props.node.data?.question_ids.length ?? 0)
+      : 0;
+  const subcollectionCount =
+    props.node.kind === "collection"
+      ? (props.node.data?.subcollections_len ?? 0)
+      : 0;
+
   return (
     <DraggableContainer
       id={nodeId}
@@ -278,6 +305,8 @@ export default function CollectionNode({
 
       <CollectionTitleSection
         title={props.node.label}
+        questionCount={questionCount}
+        subcollectionCount={subcollectionCount}
         isDropTarget={isDropTarget}
         isEditing={isEditing}
         draftTitle={draftTitle}

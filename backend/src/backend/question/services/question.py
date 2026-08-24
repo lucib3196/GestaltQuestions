@@ -30,8 +30,7 @@ from backend.question.schema import (
     Status,
 )
 from backend.shared import ID
-from backend.utils import convert_uuid
-from backend.utils import database_generics as gdb
+from backend.utils import convert_uuid, database_generics as gdb
 
 from .qtype import QuestionQTypeDB
 

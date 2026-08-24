@@ -8,10 +8,7 @@ from backend.question_runtime.exceptions import (
     InvalidFilePayloadError,
 )
 from backend.question_runtime.model import RuntimeConfigSource, RuntimeLanguage
-from backend.question_runtime.schema import (
-    QuestionRuntimeCreate,
-    RunTimeConfig,
-)
+from backend.question_runtime.schema import QuestionRuntimeCreate, RunTimeConfig
 
 
 class QuestionRunTimeResolver:

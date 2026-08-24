@@ -100,3 +100,16 @@ class QuestionTableRow(BaseModel):
 class QuestionFilter(BaseModel):
     title: str
     status: Status | None = None
+
+
+class QuestionInfo(BaseModel):
+    id: UUID | str
+    title: str
+    topic: str | list[str]
+    isAdaptive: bool
+    createdBy: str | None
+    institution: str | None
+    qType: str | list[str]
+    codelang: str | list[str]
+
+    model_config = ConfigDict(extra="ignore")

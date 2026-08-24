@@ -1,4 +1,4 @@
-import type { CollectionId, QuestionCollection } from "../../../services";
+import type { CollectionId, QuestionCollection ,QuestionCollectionRead} from "../../../services";
 import type { CollectionQuestion } from "../../../services";
 import type {
   NormalizedCollections,
@@ -6,9 +6,9 @@ import type {
 } from "../instance/types";
 import { toCollectionTreeNode, toQuestionTreeNode } from "./collectionQuestion";
 export function normalizeCollections(
-  collections: QuestionCollection[],
+  collections: QuestionCollectionRead[],
 ): NormalizedCollections {
-  const byId: Record<CollectionId, QuestionCollection> = {};
+  const byId: Record<CollectionId, QuestionCollectionRead> = {};
   const rootIds: CollectionId[] = [];
   const childIdsByParentId: Record<CollectionId, CollectionId[]> = {};
 

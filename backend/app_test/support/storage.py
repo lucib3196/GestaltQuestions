@@ -1,4 +1,5 @@
 from collections.abc import Generator
+from pathlib import Path
 
 import pytest
 
@@ -9,8 +10,26 @@ from backend.storage import FbStorage, LocalStorage, Storage
 settings = get_settings()
 
 
+class TestLocalStorage(LocalStorage):
+    def __init__(self, root: Path) -> None:
+        super().__init__()
+        self.root = root
+
+    def _resolve(self, target: str) -> Path:
+        path = Path(self._to_storage_path(target))
+        if path.is_absolute():
+            return path.resolve()
+        return (self.root / path).resolve()
+
+    def is_dir(self, target: str) -> bool:
+        return self._resolve(target).is_dir()
+
+
 @pytest.fixture(params=storage_params())
-def raw_storage(request: pytest.FixtureRequest) -> Generator[Storage]:
+def raw_storage(
+    request: pytest.FixtureRequest,
+    tmp_path: Path,
+) -> Generator[Storage]:
     if request.param == "cloud":
         request.getfixturevalue("firebase_app_for_tests")
         storage = FbStorage(settings.STORAGE_BUCKET)  # type: ignore[arg-type]
@@ -19,4 +38,4 @@ def raw_storage(request: pytest.FixtureRequest) -> Generator[Storage]:
         storage._hard_delete()
         return
 
-    yield LocalStorage()
+    yield TestLocalStorage(tmp_path)

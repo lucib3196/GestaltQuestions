@@ -18,6 +18,7 @@ from backend.utils.data import (
 from backend.utils.database import (
     convert_uuid,
     filter_conditional,
+    generics as database_generics,
     get_all_model_relationship_data,
     get_all_model_relationships,
     get_or_create_many,
@@ -29,7 +30,6 @@ from backend.utils.database import (
     safe_python_type,
     string_condition,
 )
-from backend.utils.database import generics as database_generics
 from backend.utils.media import encode_image, handle_image_data, write_image_data
 from backend.utils.testing import prepare_file_uploads
 

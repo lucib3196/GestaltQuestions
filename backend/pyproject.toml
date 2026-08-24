@@ -73,11 +73,15 @@ select = [
 ignore = [
     "ANN101", # missing self annotation
     "ANN102", # missing cls annotation
-    "ANN401" # Dynamically typed expressions (typing.Any)
+    "ANN401", # Dynamically typed expressions (typing.Any),
+    "D103", #Missing docstring
+    "E501", # Line too long
 ]
 [tool.ruff.lint.pycodestyle]
 max-line-length = 88
-
+[tool.ruff.lint.isort]
+combine-as-imports = true
+split-on-trailing-comma = false
 
 [dependency-groups]
 dev = [

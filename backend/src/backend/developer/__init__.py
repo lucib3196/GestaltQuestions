@@ -1,19 +1,19 @@
-from .actions import (
-    DeveloperCollectionAction,
-    DeveloperCollectionPolicy,
-    DeveloperQuestionAction,
-    DeveloperQuestionPolicy,
-)
+from backend.developer.exceptions import DeveloperProfileError
+
+from .collections import DeveloperCollectionService
+from .collections.actions import DeveloperCollectionAction, DeveloperCollectionPolicy
 from .model import DeveloperProfile
-from .services.developer_collection_service import DeveloperCollectionService
-from .services.developer_profile_service import DeveloperProfileService
-from .services.developer_question_service import DeveloperQuestionService
+from .profiles import DeveloperProfileService
+from .questions import DeveloperQuestionService
+from .questions.actions import DeveloperQuestionAction, DeveloperQuestionPolicy
+
 
 __all__ = [
     "DeveloperCollectionAction",
     "DeveloperCollectionPolicy",
     "DeveloperCollectionService",
     "DeveloperProfile",
+    "DeveloperProfileError",
     "DeveloperProfileService",
     "DeveloperQuestionAction",
     "DeveloperQuestionPolicy",

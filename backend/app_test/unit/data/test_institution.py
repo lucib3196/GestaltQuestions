@@ -1,6 +1,10 @@
 import pytest
 
-from backend.auth import InstitutionDB, InstitutionValidationError, ValidInstitutions
+from backend.accounts import (
+    InstitutionDB,
+    InstitutionValidationError,
+    ValidInstitutions,
+)
 
 
 @pytest.fixture

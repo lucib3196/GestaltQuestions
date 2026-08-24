@@ -42,6 +42,8 @@ class LocalStorage(Storage):
     def read(self, target: str | Path | Blob) -> bytes | None:
         storage_path = self._to_storage_path(target)
         path = self._resolve(storage_path)
+        if not path.is_file():
+            return None
         return path.read_bytes()
 
     def write(

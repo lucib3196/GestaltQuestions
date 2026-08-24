@@ -30,12 +30,7 @@ from .threads import (
     get_message_db,
     get_thread_db,
 )
-from .users import (
-    CurrentUser,
-    UserManagerDependeny,
-    get_current_user_id,
-    get_user_mng,
-)
+from .users import CurrentUser, UserManagerDependeny, get_current_user_id, get_user_mng
 
 __all__ = [
     "CurrentUser",
