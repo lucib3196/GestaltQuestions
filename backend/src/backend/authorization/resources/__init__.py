@@ -8,6 +8,7 @@ from .exceptions import (
     ResourceAccessOperationError,
     ResourceAccessValidationError,
 )
+from .resource_authorization import ResourceAuthorizer
 from .sharing_service import ResourceSharingService
 
 __all__ = [
@@ -19,5 +20,6 @@ __all__ = [
     "ResourceAccessRevokeResult",
     "ResourceAccessService",
     "ResourceAccessValidationError",
+    "ResourceAuthorizer",
     "ResourceSharingService",
 ]

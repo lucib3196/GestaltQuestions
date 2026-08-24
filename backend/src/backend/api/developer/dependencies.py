@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from backend.developer.authorization import DeveloperQuestionAuthorizer
 from fastapi import Depends
 
 from backend.accounts.users import UserLookup
@@ -11,11 +12,11 @@ from backend.authorization import RoleAccessPolicy
 from backend.authorization.policies import RoleAccessPolicy
 from backend.authorization.roles import UserRoles
 from backend.developer import DeveloperCollectionService, DeveloperQuestionService
-from backend.developer.authorization import DeveloperQuestionAuthorizer
 from backend.developer.collections.access import (
     QuestionCollectionAccessReader,
     QuestionCollectionAccessService,
 )
+from backend.developer.collections.authorizer import DeveloperCollectionAuthorizer
 from backend.developer.profiles import DeveloperProfileService
 from backend.developer.questions import DeveloperTables
 from backend.developer.questions.access import QuestionAccessService
@@ -141,6 +142,22 @@ QuestionCollectionAccessDependency = Annotated[
 ]
 
 
+def get_developer_collection_authorizer(
+    collection_access: QuestionCollectionAccessDependency,
+    profile: DeveloperProfileDependency,
+) -> DeveloperCollectionAuthorizer:
+    return DeveloperCollectionAuthorizer(
+        collection_access=collection_access,
+        profile=profile,
+    )
+
+
+CollectionAuthorizer = Annotated[
+    DeveloperCollectionAuthorizer,
+    Depends(get_developer_collection_authorizer),
+]
+
+
 def get_dev_question_manager(
     session: SessionDep,
     qm: QuestionManagerDependency,
@@ -169,14 +186,12 @@ DeveloperTablesDependency = Annotated[
 
 
 def get_dev_collection_manager(
-    profile: DeveloperProfileDependency,
     collections: QuestionCollectionServiceDependency,
-    collection_access: QuestionCollectionAccessDependency,
+    authorizer: CollectionAuthorizer,
 ) -> DeveloperCollectionService:
     return DeveloperCollectionService(
-        profile_service=profile,
         collections=collections,
-        collection_access=collection_access,
+        authorizer=authorizer,
     )
 
 

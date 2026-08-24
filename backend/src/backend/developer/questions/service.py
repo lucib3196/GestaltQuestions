@@ -14,11 +14,7 @@ from backend.developer import (
     DeveloperProfileError,
     DeveloperProfileService,
 )
-from backend.developer.questions.access import QuestionAccessService
-from backend.developer.questions.actions import (
-    DeveloperQuestionAction,
-    DeveloperQuestionPolicy,
-)
+from backend.developer.questions.actions import DeveloperQuestionAction
 from backend.question.access.exceptions import QuestionAccessDenied
 from backend.question.manager.exceptions import (
     DeveloperQuestionServiceError,
@@ -35,6 +31,8 @@ from backend.question.schema import (
 from backend.shared import ID
 from backend.storage import FileData
 
+from .authorizer import DeveloperQuestionAuthorizer
+
 
 class DeveloperQuestionService:
     """Gate developer question actions and coordinate developer-owned question data."""
@@ -44,14 +42,13 @@ class DeveloperQuestionService:
         session: Session,
         question_manager: QuestionManager,
         developer_profiles: DeveloperProfileService,
-        question_access: QuestionAccessService,
+        authorizer: DeveloperQuestionAuthorizer,
     ) -> None:
 
         self._session = session
         self._question_manager = question_manager
         self._developer_profiles = developer_profiles
-        self._question_access = question_access
-        self._policy = DeveloperQuestionPolicy()
+        self._authorizer = authorizer
 
     # ------------------------------------------------------------------
     # Question Lifecycle
@@ -75,7 +72,9 @@ class DeveloperQuestionService:
 
     async def copy_question(self, qid: ID, user_id: ID):
         """Create a copy question under the developer profile and assign ownership."""
-        await self._require_action(user_id, qid, DeveloperQuestionAction.COPY)
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.COPY
+        )
         profile = await self._developer_profiles.get_or_create_profile(user_id)
         storage_path = self._require_profile_storage_path(user_id, profile)
 
@@ -86,7 +85,9 @@ class DeveloperQuestionService:
         self, user_id: ID, qid: ID, method: Literal["full", "simple"] = "simple"
     ) -> Question | QuestionRead:
         """Retrieve a question after checking developer question control."""
-        await self._require_action(user_id, qid, DeveloperQuestionAction.VIEW)
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.VIEW
+        )
         if method == "full":
             q = await self._question_manager.qdb.get_question_data(qid)
         else:
@@ -97,12 +98,16 @@ class DeveloperQuestionService:
 
     async def update_question(self, user_id: ID, qid: ID, update: QuestionUpdate):
         """Update question metadata after checking developer question control."""
-        await self._require_action(user_id, qid, DeveloperQuestionAction.UPDATE)
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.UPDATE
+        )
         return await self._question_manager.update_question_meta(qid, update)
 
     async def delete_question(self, user_id: ID, qid: ID) -> bool:
         """Delete a question and its storage after checking developer question control."""
-        await self._require_action(user_id, qid, DeveloperQuestionAction.DELETE)
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.DELETE
+        )
         return await self._question_manager.delete_question(qid)
 
     # Filtering
@@ -130,7 +135,9 @@ class DeveloperQuestionService:
         self, user_id: ID, qid: ID
     ) -> dict[str, bytes | bytearray]:
         try:
-            await self._require_action(user_id, qid, DeveloperQuestionAction.DOWNLOAD)
+            await self._authorizer.require_action(
+                user_id, qid, DeveloperQuestionAction.DOWNLOAD
+            )
             qfiles = await self._question_manager.get_question_filedata(qid)
             file_payload: dict[str, bytes | bytearray] = {}
             for f in qfiles:
@@ -158,31 +165,43 @@ class DeveloperQuestionService:
 
     async def get_question_files(self, user_id: ID, qid: ID) -> Sequence[str]:
         """List stored files for a controlled question."""
-        await self._require_action(user_id, qid, DeveloperQuestionAction.READ_FILE)
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.READ_FILE
+        )
         return await self._question_manager.get_question_files(qid)
 
     async def get_question_filedata(self, user_id: ID, qid: ID) -> Sequence[FileData]:
-        await self._require_action(user_id, qid, DeveloperQuestionAction.READ_FILE)
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.READ_FILE
+        )
         return await self._question_manager.get_question_filedata(qid)
 
     async def read_file(self, user_id: ID, qid: ID, filename: str) -> bytes | None:
         """Read a stored question file after checking developer question control."""
-        await self._require_action(user_id, qid, DeveloperQuestionAction.READ_FILE)
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.READ_FILE
+        )
         return await self._question_manager.read_file(qid, filename)
 
     async def write_file(self, user_id: ID, qid: ID, filename: str, data: Any):
         """Write or replace a question file after checking developer question control."""
-        await self._require_action(user_id, qid, DeveloperQuestionAction.WRITE_FILE)
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.WRITE_FILE
+        )
         return await self._question_manager.write_file(qid, filename, data)
 
     async def delete_file(self, user_id: ID, qid: ID, filename: str):
         """Delete a question file after checking developer question control."""
-        await self._require_action(user_id, qid, DeveloperQuestionAction.DELETE_FILE)
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.DELETE_FILE
+        )
         return await self._question_manager.delete_file(qid, filename)
 
     async def upload_files(self, user_id: ID, qid: ID, files: list[FileData]):
         """Upload files to a question after checking developer question control."""
-        await self._require_action(user_id, qid, DeveloperQuestionAction.UPLOAD_FILES)
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.UPLOAD_FILES
+        )
         return await self._question_manager.upload_files(qid, files)
 
     def _require_profile_storage_path(
@@ -216,23 +235,6 @@ class DeveloperQuestionService:
             raise DeveloperProfileError(
                 "assign question creator", str(user_id), str(e)
             ) from e
-
-    # Determines the level of action required by the user
-    async def _require_action(
-        self, user_id: ID, question_id: ID, action: DeveloperQuestionAction
-    ) -> None:
-        """Require the access level mapped to a developer question action."""
-        required_level = self._policy.required_level(action)
-        access = await self._question_access.has_access(
-            user_id, question_id, required_level
-        )
-        if not access.allowed:
-            raise Exception(f"Access not allowed {access.reason}")
-
-    async def check_access(self, user: User | ID, question_id: ID):
-        return await self._question_access.check_access(
-            self._resolve_user_id(user), question_id
-        )
 
     @staticmethod
     def _resolve_user_id(user: User | ID) -> ID:

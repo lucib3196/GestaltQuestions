@@ -2,14 +2,9 @@ from collections.abc import Sequence
 from typing import Literal
 
 from backend.accounts import User
-from backend.developer.collections.access import QuestionCollectionAccessService
-from backend.developer.collections.actions import (
-    DeveloperCollectionAction,
-    DeveloperCollectionPolicy,
-)
-from backend.developer.exceptions import DeveloperAccessDenied
+from backend.developer.collections.actions import DeveloperCollectionAction
+from backend.developer.collections.authorizer import DeveloperCollectionAuthorizer
 from backend.developer.model import DeveloperProfile
-from backend.developer.profiles import DeveloperProfileService
 from backend.question import Question
 from backend.question.collections.models import (
     QuestionCollection,
@@ -27,19 +22,16 @@ from backend.shared import ID
 class DeveloperCollectionService:
     def __init__(
         self,
-        profile_service: DeveloperProfileService,
         collections: QuestionCollectionService[DeveloperProfile],
-        collection_access: QuestionCollectionAccessService,
+        authorizer: DeveloperCollectionAuthorizer,
     ) -> None:
-        self._profile_service = profile_service
         self._collections = collections
-        self._access = collection_access
-        self._policy = DeveloperCollectionPolicy()
+        self._authorizer = authorizer
 
     async def create_collection(
         self, user: User | ID, title: str
     ) -> QuestionCollection:
-        owner = await self._resolve_profile(user)
+        owner = await self._authorizer.resolve_profile(user)
         return await self._collections.create_collection(owner, title)
 
     async def get_collection(
@@ -70,7 +62,7 @@ class DeveloperCollectionService:
                 parent = await self.get_collection(user, parent_id)
 
         return await self._collections.update_collection(
-            await self._resolve_profile(user),
+            await self._authorizer.resolve_profile(user),
             collection_id,
             title,
             parent,
@@ -97,7 +89,7 @@ class DeveloperCollectionService:
             user, collection_id, DeveloperCollectionAction.DELETE
         )
         return await self._collections.delete_collection(
-            await self._resolve_profile(user), collection_id
+            await self._authorizer.resolve_profile(user), collection_id
         )
 
     async def list_collections_from_owner(
@@ -108,7 +100,10 @@ class DeveloperCollectionService:
         method: Literal["default", "detail-read"] = "detail-read",
     ) -> Sequence[QuestionCollection] | Sequence[QuestionCollectionRead]:
         return await self._collections.list_collections_by_owner(
-            await self._resolve_profile(user), offset=offset, limit=limit, method=method
+            await self._authorizer.resolve_profile(user),
+            offset=offset,
+            limit=limit,
+            method=method,
         )
 
     async def search_collections(
@@ -120,7 +115,7 @@ class DeveloperCollectionService:
         limit: int | None = 10,
     ):
         return await self._collections.search_collections_from_owner(
-            await self._resolve_profile(user),
+            await self._authorizer.resolve_profile(user),
             collection_id=collection_id,
             title=title,
             offset=offset,
@@ -136,40 +131,17 @@ class DeveloperCollectionService:
             self._collections.get_collection(collection)
         )
 
-    async def _resolve_profile(
-        self, user: User | DeveloperProfile | ID
-    ) -> DeveloperProfile:
-        if isinstance(user, DeveloperProfile):
-            return user
-        return await self._profile_service.get_profile(self._resolve_user_id(user))
-
     async def _require_action(
         self,
         user: User | ID | DeveloperProfile,
         collection: ID | QuestionCollection,
         action: DeveloperCollectionAction,
     ) -> None:
-        user_id = self._resolve_user_id(user)
-        required_level = self._policy.required_level(action)
-        decision = await self._access.has_access(user_id, collection, required_level)
-        if not decision.allowed:
-            raise DeveloperAccessDenied(
-                reason=decision.reason,
-                user_id=str(user_id),
-                resource_id=str(collection),
-            )
+        await self._authorizer.require_action(user, collection, action)
 
     async def check_access(
         self,
         user: User | ID,
         collection_id: ID,
     ):
-        return await self._access.check_access(
-            self._resolve_user_id(user), collection_id
-        )
-
-    @staticmethod
-    def _resolve_user_id(user: User | DeveloperProfile | ID) -> ID:
-        if isinstance(user, User | DeveloperProfile):
-            return user.id
-        return user
+        return await self._authorizer.check_access(user, collection_id)
