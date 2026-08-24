@@ -7,7 +7,7 @@ import type {
 } from "../../../services";
 
 export type QuestionCollectionTreeNode =
-  | ResourceTreeNode<"collection", QuestionCollectionRead>
+  | ResourceTreeNode<"collection", QuestionCollectionRead|QuestionCollection>
   | ResourceTreeNode<"question", CollectionQuestion>;
 
 export type NormalizedCollections = {
