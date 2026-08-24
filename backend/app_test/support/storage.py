@@ -26,7 +26,10 @@ class TestLocalStorage(LocalStorage):
 
 
 @pytest.fixture(params=storage_params())
-def raw_storage(request: pytest.FixtureRequest, tmp_path: Path) -> Generator[Storage]:
+def raw_storage(
+    request: pytest.FixtureRequest,
+    tmp_path: Path,
+) -> Generator[Storage]:
     if request.param == "cloud":
         request.getfixturevalue("firebase_app_for_tests")
         storage = FbStorage(settings.STORAGE_BUCKET)  # type: ignore[arg-type]

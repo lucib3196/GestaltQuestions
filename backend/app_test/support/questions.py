@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from sqlmodel import Session
 
 from backend.question import QuestionDB
 from backend.question.manager.services.manager import QuestionManager
@@ -8,12 +9,12 @@ from backend.storage import Storage
 
 
 @pytest.fixture
-def question_db(db_session, seed_qtypes) -> QuestionDB:
+def question_db(db_session: Session, seed_qtypes: None) -> QuestionDB:  # noqa: ARG001
     return QuestionDB(db_session)
 
 
 @pytest.fixture
-def question_manager(raw_storage, question_db) -> QuestionManager:
+def question_manager(raw_storage: Storage, question_db: QuestionDB) -> QuestionManager:
     return QuestionManager(storage=raw_storage, qdb=question_db)
 
 

@@ -6,11 +6,11 @@ import pytest
 from backend.authorization.profiles import ProfileAccessDenied
 from backend.question import Question, QuestionFilter, QuestionUpdate
 from backend.storage import FileData
-
+from backend.developer import DeveloperQuestionService
 
 @pytest.mark.asyncio
 async def test_create_question_with_files(
-    developer_question_service,
+    developer_question_service:DeveloperQuestionService,
     dev_owner,
     make_question_payload,
 ) -> None:

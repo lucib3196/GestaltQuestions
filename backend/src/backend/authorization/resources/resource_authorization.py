@@ -48,7 +48,7 @@ class ResourceAuthorizer(Generic[AccessModelT, ProfileT, ResourceT, ActionT]):
     ) -> None:
         profile = await self.resolve_profile(requester)
         required_level = self._policy.required_level(action)
-        decision = await self._access.has_access(profile.id, resource, required_level)
+        decision = await self._access.has_access(profile, resource, required_level)
         if not decision.allowed:
             raise self._denied_error(
                 decision.reason,
@@ -62,7 +62,7 @@ class ResourceAuthorizer(Generic[AccessModelT, ProfileT, ResourceT, ActionT]):
         resource: ResourceT | ID,
     ):
         profile = await self.resolve_profile(requester)
-        return await self._access.check_access(profile.id, resource)
+        return await self._access.check_access(profile, resource)
 
     async def resolve_profile(self, requester: User | ID | ProfileT) -> ProfileT:
         if isinstance(requester, Profile):
