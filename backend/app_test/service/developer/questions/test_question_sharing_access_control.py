@@ -163,7 +163,7 @@ async def test_shared_question_access_level_controls_question_actions(
             question.id,
         )
     else:
-        with pytest.raises(Exception, match="Access not allowed"):
+        with pytest.raises(Exception, match="Question access denied"):
             await run_question_action(
                 developer_question_service,
                 action,

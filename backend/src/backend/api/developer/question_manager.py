@@ -121,50 +121,8 @@ async def copy_question(
         ) from e
 
 
-# @router.post("/{question_id}/download")
-# async def download_question_as_zip(
-#     question_id: ID,
-#     current_user: CurrentUser,
-#     dev_q_manager: DevQManager,
-# ):
-#     try:
-#         q = await dev_q_manager.get_question(current_user, question_id)
-#         payload = await dev_q_manager.prepare_question_download(
-#             current_user, question_id
-#         )
-#         response = download_zip(payload, folder_name=q.title or "Untitled Questions")
-#         return Response(
-#             content=response,
-#             media_type="application/zip",
-#             headers={"Content-Disposition": f'attachment; filename="{q.title}.zip"'},
-#         )
-#     except Exception as e:
-#         raise HTTPException(
-#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
-#         ) from e
 
 
-@router.post("/{question_id}/{filename}/download")
-async def donwload_question_file(
-    question_id: ID,
-    filename: str,
-    current_user: CurrentUser,
-    dev_q_manager: DevQManager,
-):
-    try:
-        await dev_q_manager.get_question(current_user, question_id)
-        content = await dev_q_manager.read_file(current_user, question_id, filename)
-        if content is None:
-            content = b""
-        return Response(
-            content=content,
-            media_type="application/octet-stream",
-            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
-        ) from e
 
 
 @router.get("/{question_id}/files")

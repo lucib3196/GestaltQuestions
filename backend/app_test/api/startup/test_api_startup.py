@@ -20,8 +20,14 @@ def test_database_health(api_client) -> None:
 
 def test_firebase_health(
     api_client,
+    raw_storage,
 ) -> None:
     response = api_client.get("/health/firebase")
+
+    if raw_storage.get_storage_type() == "local":
+        assert response.status_code == 503
+        assert response.json()["detail"] == "Firebase Admin app is not initialized"
+        return
 
     assert response.status_code == 200
 

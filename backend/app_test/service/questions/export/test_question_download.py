@@ -46,3 +46,41 @@ async def test_download_prepares_zip_payload(
     info = json.loads(download.files["info2.json"].decode("utf-8"))
     assert info["id"] == str(question.id)
     assert info["title"] == question.title
+
+
+@pytest.mark.asyncio
+async def test_download_file_returns_single_file_content(
+    question_manager: QuestionManager,
+    make_question_payload: MakeQuestionPayload,
+    downloader: QuestionDownload,
+    storage_base_path: str,
+) -> None:
+    payload = make_question_payload()
+    question = await question_manager.create_question(
+        payload.question,
+        storage_base_path,
+        payload.files,
+    )
+
+    content = await downloader.download_file(question, "solution.html")
+
+    assert content == b"<p>Solution</p>"
+
+
+@pytest.mark.asyncio
+async def test_download_file_returns_empty_bytes_when_file_is_missing(
+    question_manager: QuestionManager,
+    make_question_payload: MakeQuestionPayload,
+    downloader: QuestionDownload,
+    storage_base_path: str,
+) -> None:
+    payload = make_question_payload()
+    question = await question_manager.create_question(
+        payload.question,
+        storage_base_path,
+        payload.files,
+    )
+
+    content = await downloader.download_file(question, "missing.html")
+
+    assert content == b""

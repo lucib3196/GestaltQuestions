@@ -33,3 +33,25 @@ async def download_question_as_zip(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
         ) from e
+
+
+@router.post("/{question_id}/{filename}/download")
+async def donwload_question_file(
+    question_id: ID,
+    filename: str,
+    current_user: CurrentUser,
+    downloader: ExporterDep,
+):
+    try:
+        content = await downloader.download_question_file(
+            current_user, question_id, filename
+        )
+        return Response(
+            content=content,
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
+        ) from e
