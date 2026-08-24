@@ -8,9 +8,14 @@ from backend.api.dependencies.core import SessionDep
 from backend.api.dependencies.storage import StorageDependency
 from backend.api.dependencies.users import UserManagerDependeny
 from backend.authorization import RoleAccessPolicy
+from backend.authorization.policies import RoleAccessPolicy
 from backend.authorization.roles import UserRoles
 from backend.developer import DeveloperCollectionService, DeveloperQuestionService
-from backend.developer.collections.access import QuestionCollectionAccessService
+from backend.developer.authorization import DeveloperQuestionAuthorizer
+from backend.developer.collections.access import (
+    QuestionCollectionAccessReader,
+    QuestionCollectionAccessService,
+)
 from backend.developer.profiles import DeveloperProfileService
 from backend.developer.questions import DeveloperTables
 from backend.developer.questions.access import QuestionAccessService
@@ -20,10 +25,6 @@ from backend.question.collections import (
     QuestionCollectionService,
 )
 from backend.question.views.services.table_query_service import TableQueryService
-
-from backend.developer.collections.access import (
-    QuestionCollectionAccessReader,
-)
 
 
 def get_developer_role_access(user_manager: UserManagerDependeny) -> RoleAccessPolicy:
@@ -91,6 +92,17 @@ def get_question_access(
 QuestionAccessDependency = Annotated[
     QuestionAccessService,
     Depends(get_question_access),
+]
+
+
+def get_developer_question_authorizer(
+    question_access: QuestionAccessDependency, profile: DeveloperProfileDependency
+) -> DeveloperQuestionAuthorizer:
+    return DeveloperQuestionAuthorizer(question_access=question_access, profile=profile)
+
+
+QuestionAuthorizer = Annotated[
+    DeveloperQuestionAuthorizer, Depends(get_developer_question_authorizer)
 ]
 
 

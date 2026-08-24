@@ -1,18 +1,19 @@
-from typing import Any, Sequence
+from collections.abc import Sequence
 from uuid import UUID
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
-from backend.question.schema import QuestionInfo
+
 from backend.question import QuestionNotFoundError, QuestionReadError
 from backend.question.models import Question
+from backend.question.schema import QuestionInfo
 from backend.question_runtime.model import QuestionRunTime
 from backend.shared import ID
 from backend.utils import convert_uuid
 
 
 class QuestionReader:
-    def __init__(self, session: Session):
+    def __init__(self, session: Session) -> None:
         self._session = session
 
     def get_question(self, question: Question | ID) -> Question:

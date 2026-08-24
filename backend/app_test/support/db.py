@@ -4,7 +4,7 @@ import pytest
 import pytest_asyncio
 from sqlmodel import Session, SQLModel, create_engine
 
-from backend.accounts import InstitutionDB, Role, UserDB, UserRoles
+from backend.accounts import InstitutionDB, UserDB
 from backend.authorization.roles.repository import RoleDB
 from backend.chat.model import Message, Thread  # noqa: F401
 from backend.core.logging import in_test_ctx, logger
@@ -66,7 +66,7 @@ def role_db(db_session: Session) -> RoleDB:
 
 
 @pytest_asyncio.fixture(autouse=True)
-async def seed_roles(role_db: RoleDB):
+async def seed_roles(role_db: RoleDB) -> None:
     await role_db.seed_roles()
 
 

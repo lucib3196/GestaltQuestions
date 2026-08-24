@@ -1,26 +1,25 @@
+import asyncio
 from collections.abc import Sequence
-from typing import Generic
+from typing import Generic, Literal
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
 from backend.authorization import ProfileT
 from backend.question import Question
-from backend.question.collections.exceptions import QuestionCollectionOperationError
-from backend.question.collections.models import (
-    QuestionCollection,
-    QuestionCollectionLink,
-)
-from backend.shared import ID
-from backend.utils import convert_uuid
-from backend.question.collections.schema import QuestionCollectionRead
-from .utils import require_profile_id
 from backend.question.collections.exceptions import (
     QuestionCollectionNotFoundError,
     QuestionCollectionOperationError,
 )
-from typing import Literal
-import asyncio
+from backend.question.collections.models import (
+    QuestionCollection,
+    QuestionCollectionLink,
+)
+from backend.question.collections.schema import QuestionCollectionRead
+from backend.shared import ID
+from backend.utils import convert_uuid
+
+from .utils import require_profile_id
 
 
 class QuestionCollectionReader(Generic[ProfileT]):
@@ -124,10 +123,9 @@ class QuestionCollectionReader(Generic[ProfileT]):
             collections = self._session.exec(stmt).all()
             if method == "default":
                 return collections
-            else:
-                return await asyncio.gather(
-                    *[self.get_collection_detail_read(c) for c in collections]
-                )
+            return await asyncio.gather(
+                *[self.get_collection_detail_read(c) for c in collections]
+            )
 
         except SQLAlchemyError as e:
             raise QuestionCollectionOperationError("retrieve", str(e)) from e
@@ -171,10 +169,9 @@ class QuestionCollectionReader(Generic[ProfileT]):
             collections = self._session.exec(stmt).all()
             if method == "default":
                 return collections
-            else:
-                return await asyncio.gather(
-                    *[self.get_collection_detail_read(c) for c in collections]
-                )
+            return await asyncio.gather(
+                *[self.get_collection_detail_read(c) for c in collections]
+            )
 
         except SQLAlchemyError as e:
             raise QuestionCollectionOperationError("retrieve", str(e)) from e

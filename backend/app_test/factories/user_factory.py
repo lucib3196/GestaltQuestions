@@ -1,4 +1,5 @@
-from typing import Any, Mapping, Protocol
+from collections.abc import Mapping
+from typing import Any, Protocol
 from uuid import uuid4
 
 import pytest

@@ -4,7 +4,6 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from backend.accounts import UserManager
 from backend.api.deps import (
     get_session,
     get_storage_manager,

@@ -24,7 +24,7 @@ async def test_download_prepares_zip_payload(
     make_question_payload: MakeQuestionPayload,
     downloader: QuestionDownload,
     storage_base_path: str,
-):
+) -> None:
     payload = make_question_payload()
     question = await question_manager.create_question(
         payload.question,

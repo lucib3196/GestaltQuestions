@@ -31,7 +31,7 @@ async def test_owner_gets_owner_access_through_question_collection(
     collection_access_reader,
     collection_question,
     dev_owner,
-):
+) -> None:
     _, question = collection_question
 
     access = collection_access_reader.get_access_for_question_in_collection(
@@ -48,7 +48,7 @@ async def test_developer_without_collection_access_gets_no_question_access(
     collection_access_reader,
     collection_question,
     dev_other,
-):
+) -> None:
     _, question = collection_question
 
     access = collection_access_reader.get_access_for_question_in_collection(
@@ -66,7 +66,7 @@ async def test_reader_returns_shared_collection_access_for_question(
     collection_question,
     dev_owner,
     dev_other,
-):
+) -> None:
     collection, question = collection_question
 
     await collection_sharing.share_with_user(
@@ -93,7 +93,7 @@ async def test_reader_ignores_access_to_collection_that_does_not_contain_questio
     developer_collection_service,
     dev_owner,
     dev_other,
-):
+) -> None:
     _, question = collection_question
     unrelated_collection = await developer_collection_service.create_collection(
         dev_owner.user,
@@ -123,7 +123,7 @@ async def test_reader_returns_highest_access_when_question_is_in_multiple_collec
     developer_collection_service,
     dev_owner,
     dev_other,
-):
+) -> None:
     view_collection, question = collection_question
     full_collection = await developer_collection_service.create_collection(
         dev_owner.user,

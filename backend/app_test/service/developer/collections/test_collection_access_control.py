@@ -1,13 +1,13 @@
 import pytest
 
-from backend.developer.exceptions import DeveloperAccessDenied
 from backend.developer.collections import DeveloperCollectionService
+from backend.developer.exceptions import DeveloperAccessDenied
 from backend.question.collections import QuestionCollectionService
 
 
 @pytest.mark.asyncio
 async def test_other_cannot_view_collection(
-    developer_collection_service:DeveloperCollectionService,
+    developer_collection_service: DeveloperCollectionService,
     dev_owner,
     dev_other,
 ) -> None:
@@ -25,7 +25,7 @@ async def test_other_cannot_view_collection(
 
 @pytest.mark.asyncio
 async def test_other_cannot_update_collection(
-    developer_collection_service:DeveloperCollectionService,
+    developer_collection_service: DeveloperCollectionService,
     question_collection_service,
     dev_owner,
     dev_other,
@@ -48,8 +48,8 @@ async def test_other_cannot_update_collection(
 
 @pytest.mark.asyncio
 async def test_other_cannot_add_question_to_collection(
-    developer_collection_service:DeveloperCollectionService,
-    question_collection_service:QuestionCollectionService,
+    developer_collection_service: DeveloperCollectionService,
+    question_collection_service: QuestionCollectionService,
     dev_owner,
     dev_other,
     make_question,
@@ -67,10 +67,7 @@ async def test_other_cannot_add_question_to_collection(
             question.id,
         )
 
-    assert (
-        question_collection_service.get_questions_in_collection(collection)
-        == []
-    )
+    assert question_collection_service.get_questions_in_collection(collection) == []
 
 
 @pytest.mark.asyncio
@@ -100,7 +97,7 @@ async def test_other_cannot_get_questions_in_collection(
 @pytest.mark.asyncio
 async def test_other_cannot_remove_question_from_collection(
     developer_collection_service: DeveloperCollectionService,
-    question_collection_service:QuestionCollectionService,
+    question_collection_service: QuestionCollectionService,
     dev_owner_with_question,
     dev_other,
 ) -> None:
@@ -122,9 +119,7 @@ async def test_other_cannot_remove_question_from_collection(
             question.id,
         )
 
-    questions = question_collection_service.get_questions_in_collection(
-        collection
-    )
+    questions = question_collection_service.get_questions_in_collection(collection)
     assert [existing.id for existing in questions] == [question.id]
 
 

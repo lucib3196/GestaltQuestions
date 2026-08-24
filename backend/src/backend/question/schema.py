@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from enum import StrEnum
 from uuid import UUID
-from typing import List
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -105,11 +105,11 @@ class QuestionFilter(BaseModel):
 class QuestionInfo(BaseModel):
     id: UUID | str
     title: str
-    topic: str | List[str]
+    topic: str | list[str]
     isAdaptive: bool
     createdBy: str | None
     institution: str | None
-    qType: str | List[str]
-    codelang: str | List[str]
+    qType: str | list[str]
+    codelang: str | list[str]
 
     model_config = ConfigDict(extra="ignore")

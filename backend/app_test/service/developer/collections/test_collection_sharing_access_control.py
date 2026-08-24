@@ -4,8 +4,8 @@ import pytest
 
 from backend.authorization import AccessLevel
 from backend.developer.collections import DeveloperCollectionService
-from backend.question.collections import QuestionCollectionService
 from backend.developer.exceptions import DeveloperAccessDenied
+from backend.question.collections import QuestionCollectionService
 
 
 # Utility

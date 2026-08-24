@@ -40,8 +40,7 @@ from backend.accounts.schemas import (
     ValidInstitutions,
 )
 from backend.accounts.users import UserDB, UserManager
-from backend.authorization.roles.repository import RoleDB
-from backend.authorization.roles import  RoleRead, UpdateUserRole, UserRoles
+from backend.authorization.roles import RoleRead, UpdateUserRole, UserRoles
 from backend.authorization.roles.exceptions import (
     RoleAssignmentError,
     RoleCreateError,
@@ -50,6 +49,7 @@ from backend.authorization.roles.exceptions import (
     RoleReadError,
     RoleSeedError,
 )
+from backend.authorization.roles.repository import RoleDB
 
 __all__ = [
     "AuthDatabaseError",

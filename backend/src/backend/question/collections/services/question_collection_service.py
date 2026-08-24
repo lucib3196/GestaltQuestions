@@ -1,10 +1,9 @@
-from collections.abc import Sequence
 from datetime import UTC, datetime
 from typing import Generic
 from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from backend.authorization import AccessLevel, ProfileT
 from backend.core import logger
@@ -21,9 +20,8 @@ from backend.question.collections.models import (
     QuestionCollectionAccess,
     QuestionCollectionLink,
 )
-from backend.shared import ID
-from backend.utils import convert_uuid
 from backend.question.collections.services import QuestionCollectionReader
+from backend.shared import ID
 
 
 class _UnsetType:
@@ -204,7 +202,6 @@ class QuestionCollectionService(
                 "remove question from",
                 str(e),
             ) from e
-
 
     def reconstruct_path(self, collection: QuestionCollection) -> str:
         parts: list[str] = []

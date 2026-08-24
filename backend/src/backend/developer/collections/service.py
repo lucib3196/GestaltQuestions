@@ -1,3 +1,6 @@
+from collections.abc import Sequence
+from typing import Literal
+
 from backend.accounts import User
 from backend.developer.collections.access import QuestionCollectionAccessService
 from backend.developer.collections.actions import (
@@ -13,15 +16,12 @@ from backend.question.collections.models import (
     QuestionCollectionLink,
 )
 from backend.question.collections.schema import QuestionCollectionRead
-from typing import Literal
 from backend.question.collections.services.question_collection_service import (
     _UNSET,
     QuestionCollectionService,
     _UnsetType,
 )
 from backend.shared import ID
-
-from typing import Sequence
 
 
 class DeveloperCollectionService:
@@ -105,8 +105,8 @@ class DeveloperCollectionService:
         user: User | ID,
         offset: int | None = None,
         limit: int | None = 10,
-        method: Literal["default","detail-read"] = "detail-read"
-    ) -> Sequence[QuestionCollection]|Sequence[QuestionCollectionRead]:
+        method: Literal["default", "detail-read"] = "detail-read",
+    ) -> Sequence[QuestionCollection] | Sequence[QuestionCollectionRead]:
         return await self._collections.list_collections_by_owner(
             await self._resolve_profile(user), offset=offset, limit=limit, method=method
         )

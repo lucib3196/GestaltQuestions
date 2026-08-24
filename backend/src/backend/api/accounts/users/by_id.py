@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
 
-from backend.accounts import UpdateUserInstitution, User, UserInstResponse, UserRead
+from backend.accounts import User, UserRead
 from backend.api.deps import UserManagerDependeny
 from backend.authorization.roles import UpdateUserRole
 from backend.core import logger

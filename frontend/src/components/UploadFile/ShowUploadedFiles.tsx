@@ -1,3 +1,4 @@
+import { Button } from "../Button";
 import { SelectedFiles } from "../SelectedFiles";
 
 type ShowUploadedFilesVariant = "default" | "editorPanel";
@@ -5,6 +6,7 @@ type ShowUploadedFilesVariant = "default" | "editorPanel";
 export default function ShowUploadedFiles({
   files,
   onRemove,
+  onSubmit,
   message,
 }: {
   files: File[];
@@ -13,5 +15,23 @@ export default function ShowUploadedFiles({
   variant?: ShowUploadedFilesVariant;
   message?: string;
 }) {
-  return <SelectedFiles files={files} onRemove={onRemove} message={message} />;
+  if (files.length === 0) return null;
+
+  return (
+    <div>
+      <SelectedFiles files={files} onRemove={onRemove} message={message} />
+
+      {onSubmit && (
+        <div className="border-t border-border px-5 pb-4">
+          <Button
+            type="button"
+            name="Upload Files"
+            onClick={onSubmit}
+            color="editorAction"
+            size="sm"
+          />
+        </div>
+      )}
+    </div>
+  );
 }

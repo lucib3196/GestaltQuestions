@@ -30,7 +30,7 @@ def owner(make_user, make_developer_profile) -> DeveloperActor:
 def test_get_question_info_includes_expected_fields(
     reader: QuestionReader,
     make_question: MakeQuestion,
-):
+) -> None:
     question = make_question(title="Reader Question")
 
     data = reader.get_question_info(question)
@@ -48,7 +48,7 @@ def test_get_question_info_includes_owner_fields(
     reader: QuestionReader,
     make_question: MakeQuestion,
     owner: DeveloperActor,
-):
+) -> None:
     question = make_question(owner.profile, title="Owned Reader Question")
 
     data = reader.get_question_info(question)
@@ -63,7 +63,7 @@ def test_get_question_info_includes_runtime_languages(
     db_session,
     reader: QuestionReader,
     make_question: MakeQuestion,
-):
+) -> None:
     question = make_question(title="Runtime Reader Question")
     assert question.id is not None
 
@@ -96,14 +96,16 @@ def test_get_question_info_includes_runtime_languages(
     }
 
 
-def test_get_question_raises_not_found_for_missing_id(reader: QuestionReader):
+def test_get_question_raises_not_found_for_missing_id(reader: QuestionReader) -> None:
     missing_id = uuid4()
 
     with pytest.raises(QuestionNotFoundError, match=str(missing_id)):
         reader.get_question(missing_id)
 
 
-def test_get_question_info_raises_not_found_for_missing_id(reader: QuestionReader):
+def test_get_question_info_raises_not_found_for_missing_id(
+    reader: QuestionReader,
+) -> None:
     missing_id = uuid4()
 
     with pytest.raises(QuestionNotFoundError, match=str(missing_id)):
@@ -112,7 +114,7 @@ def test_get_question_info_raises_not_found_for_missing_id(reader: QuestionReade
 
 def test_get_question_raises_read_error_for_unsaved_question_instance(
     reader: QuestionReader,
-):
+) -> None:
     question = Question(title="Unsaved question")
     question.id = None
 

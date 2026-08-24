@@ -3,6 +3,7 @@ import re
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
+from backend.accounts.model import Institution
 from backend.accounts.users import UserManager
 from backend.authorization import RoleAccessPolicy
 from backend.authorization.profiles.exceptions import ProfileAccessDenied, ProfileNotSet
@@ -14,7 +15,6 @@ from backend.developer.model import DeveloperProfile
 from backend.shared import ID
 from backend.storage.services import Storage
 from backend.utils import convert_uuid
-from backend.accounts.model import Institution
 
 
 def format_institution_slug(inst: Institution) -> str:
@@ -23,11 +23,10 @@ def format_institution_slug(inst: Institution) -> str:
         if inst and hasattr(inst.name, "value")
         else (inst.name if inst else "untitled_institution")
     )
-    institution_slug = (
+    return (
         re.sub(r"[^a-z0-9_-]+", "_", institution_name.lower()).strip("_")
         or "untitled_institution"
     )
-    return institution_slug
 
 
 class DeveloperProfileService(ProfileService[DeveloperProfile]):

@@ -1,11 +1,11 @@
 import pytest
 
 from backend.authorization import AccessLevel
+from backend.developer.collections import DeveloperCollectionService
 from backend.question.collections import (
     QuestionCollection,
     QuestionCollectionNotFoundError,
 )
-from backend.developer.collections import DeveloperCollectionService
 
 
 @pytest.mark.asyncio

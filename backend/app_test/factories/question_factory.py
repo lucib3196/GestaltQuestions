@@ -1,13 +1,20 @@
+import base64
 from dataclasses import dataclass
 from pathlib import Path
-import base64
 from typing import Any, Protocol
 
 import pytest
 from sqlmodel import select
 
 from backend.developer import DeveloperProfile
-from backend.question import QType, Question, QuestionCreate, QuestionType, Status, Topic
+from backend.question import (
+    QType,
+    Question,
+    QuestionCreate,
+    QuestionType,
+    Status,
+    Topic,
+)
 from backend.storage import FileData
 
 
@@ -110,7 +117,7 @@ def make_question_payload() -> MakeQuestionPayload:
                 FileData(filename="question.html", content="<p>Question</p>"),
                 FileData(filename="solution.html", content="<p>Solution</p>"),
                 FileData(filename="meta.json", content={"difficulty": "easy"}),
-                FileData(filename="image.png", content=encoded)
+                FileData(filename="image.png", content=encoded),
             ],
         )
 

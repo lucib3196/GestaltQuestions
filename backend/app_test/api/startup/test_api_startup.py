@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_startup_connection(api_client) -> None:
     response = api_client.get("/health/live")
     response.json()

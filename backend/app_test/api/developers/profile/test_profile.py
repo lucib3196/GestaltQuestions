@@ -20,7 +20,7 @@ async def test_create_developer_profile_by_id(
     api_client,
     build_user_payload,
     user_manager,
-):
+) -> None:
     created_user = await create_user(
         user_manager,
         build_user_payload,
@@ -40,7 +40,7 @@ async def test_get_developer_profile_by_id(
     api_client,
     build_user_payload,
     user_manager,
-):
+) -> None:
     created_user = await create_user(
         user_manager,
         build_user_payload,
@@ -61,7 +61,7 @@ async def test_create_developer_profile_by_id_returns_403_when_role_is_not_devel
     api_client,
     build_user_payload,
     user_manager,
-):
+) -> None:
     created_user = await create_user(
         user_manager,
         build_user_payload,

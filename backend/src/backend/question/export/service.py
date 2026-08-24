@@ -23,7 +23,9 @@ class QuestionDownloadPayload:
 
 
 class QuestionDownload:
-    def __init__(self, question_manager: QuestionManager, reader: QuestionReader):
+    def __init__(
+        self, question_manager: QuestionManager, reader: QuestionReader
+    ) -> None:
         self._manager = question_manager
         self._reader = reader
 
@@ -69,7 +71,11 @@ class QuestionDownload:
 
         if file.mime_type.startswith("image/") and isinstance(content, str):
             try:
-                return base64.b64decode(content)
+                decoded = base64.b64decode(content)
+                try:
+                    return base64.b64decode(decoded, validate=True)
+                except Exception:
+                    return decoded
             except Exception as e:
                 raise QuestionExportError(
                     f"Failed to decode image file '{file.filename}'"
