@@ -1,4 +1,4 @@
-import { createStore, create } from "zustand";
+import { createStore, } from "zustand";
 import type { UserDetailRead } from "../../../services";
 import { useStore } from "zustand";
 export type UserLookUpState = {
