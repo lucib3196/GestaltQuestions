@@ -1,12 +1,12 @@
 import type {
   CollectionId,
   CollectionQuestion,
-  QuestionCollection,
+  QuestionCollectionRead
 } from "../../../services";
 import type { QuestionCollectionTreeNode } from "../instance/types";
 
 export function toCollectionTreeNode(
-  collection: QuestionCollection,
+  collection: QuestionCollectionRead,
   depth?: number,
 ): QuestionCollectionTreeNode {
   return {
