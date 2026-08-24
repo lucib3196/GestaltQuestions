@@ -1,5 +1,5 @@
 from backend.authorization.resources import ResourceAuthorizer
-from backend.developer import DeveloperProfile
+from backend.developer.model import DeveloperProfile
 from backend.developer.profiles import DeveloperProfileService
 from backend.developer.questions.actions import DeveloperQuestionAction
 from backend.question import Question

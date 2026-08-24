@@ -1,6 +1,6 @@
 from backend.accounts import User
-from backend.developer.authorization import DeveloperQuestionAuthorizer
 from backend.developer.questions.actions import DeveloperQuestionAction
+from backend.developer.questions.authorizer import DeveloperQuestionAuthorizer
 from backend.question import Question
 from backend.question.export import QuestionDownload, QuestionDownloadPayload
 from backend.shared import ID

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from starlette import status
 
-from backend.api.deps import CurrentUser, UserManagerDependeny
+from backend.api.dependencies.users import CurrentUser, UserManagerDependeny
 from backend.authorization import AccessDecision
 from backend.authorization.roles import UserRoles
 from backend.developer import DeveloperProfile
