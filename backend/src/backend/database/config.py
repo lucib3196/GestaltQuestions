@@ -3,6 +3,7 @@ from collections.abc import Generator
 from sqlmodel import Session, SQLModel, create_engine
 
 from backend.core import get_settings, logger
+from backend.database.models import import_models
 
 from .exceptions import DatabaseConfigError, DatabaseInitializationError
 
@@ -37,6 +38,7 @@ except Exception as e:
 
 
 def create_db_and_tables(engine=engine):
+    import_models()
     Base.metadata.create_all(engine)
     return engine
 

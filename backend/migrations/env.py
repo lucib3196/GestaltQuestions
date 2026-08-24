@@ -1,21 +1,13 @@
 from logging.config import fileConfig
 
 from alembic import context
-
-# Import all the models
-from backend.auth.model import *  # type: ignore
-from backend.question_access.model import *  # type: ignore
-from backend.question_collections.model import *  # type: ignore
 from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
-from backend.chat.model import *  # type: ignore
 from backend.core import get_settings
-from backend.developer.model import *  # type: ignore
-from backend.question.models import *  # type: ignore
-from backend.question_attempt.model import *  # type: ignore
-from backend.question_runtime.model import *  # type: ignore
-from backend.storage.model import *  # type: ignore
+from backend.database.models import import_models
+
+import_models()
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
