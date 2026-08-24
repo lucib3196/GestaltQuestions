@@ -1,11 +1,17 @@
-from typing import Any, Protocol
+from typing import Any, Mapping, Protocol
 from uuid import uuid4
-from backend.accounts import CreateUserFullPayload, UserCreate, ValidInstitutions
-from backend.authorization.roles import UserRoles
-import pytest
-from typing import Mapping
-from backend.accounts import User
 
+import pytest
+from sqlmodel import select
+
+from backend.accounts import (
+    CreateUserFullPayload,
+    Institution,
+    User,
+    UserCreate,
+    ValidInstitutions,
+)
+from backend.authorization.roles import UserRoles
 
 
 class MakeUser(Protocol):
@@ -14,7 +20,19 @@ class MakeUser(Protocol):
 
 @pytest.fixture
 def make_user(db_session) -> MakeUser:
-    def make(**overrides) -> User:
+    def get_institution(inst: ValidInstitutions) -> Institution:
+        institution = db_session.exec(
+            select(Institution).where(Institution.name == inst)
+        ).first()
+        if institution is not None:
+            return institution
+        institution = Institution(name=inst)
+        db_session.add(institution)
+        db_session.flush()
+        return institution
+
+    def make(**overrides: Any) -> User:
+        institution = overrides.pop("institution", None)
         user = User(
             id=overrides.pop("id", uuid4()),
             first_name=overrides.pop("first_name", "Test"),
@@ -23,6 +41,15 @@ def make_user(db_session) -> MakeUser:
             **overrides,
         )
         db_session.add(user)
+        if isinstance(institution, ValidInstitutions):
+            user.institution = get_institution(institution)
+        elif isinstance(institution, Institution):
+            user.institution = institution
+        elif institution is not None:
+            raise TypeError(
+                "institution must be a ValidInstitutions enum or Institution model."
+            )
+
         db_session.commit()
         db_session.refresh(user)
         return user
@@ -38,6 +65,8 @@ class BuildUserPayload(Protocol):
         role: UserRoles = UserRoles.STUDENT,
         institution: ValidInstitutions | None = None,
     ) -> CreateUserFullPayload: ...
+
+
 @pytest.fixture
 def build_user_payload() -> BuildUserPayload:
     def build(

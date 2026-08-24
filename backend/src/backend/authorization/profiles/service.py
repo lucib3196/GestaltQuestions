@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic
 
+from backend.accounts import User
 from backend.authorization.exceptions import AccessPolicyDenied
 from backend.authorization.policies.role_policy import RoleAccessPolicy
 from backend.authorization.profiles.exceptions import (
@@ -20,8 +21,9 @@ class ProfileService(Generic[ProfileT], ABC):
     def __init__(self, policy: RoleAccessPolicy) -> None:
         self._policy = policy
 
-    async def get_profile(self, user_id: ID) -> ProfileT:
+    async def get_profile(self, user: User | ID) -> ProfileT:
         """Return an existing profile after enforcing profile policy."""
+        user_id = self._resolve_user_id(user)
         await self._require_profile_policy(user_id)
         try:
             profile = await self._get_profile(user_id)
@@ -35,20 +37,28 @@ class ProfileService(Generic[ProfileT], ABC):
 
         return profile
 
-    async def set_profile(self, user_id: ID) -> ProfileT:
+    async def set_profile(self, user: User | ID) -> ProfileT:
         """Create or update a profile after enforcing profile policy."""
+        user_id = self._resolve_user_id(user)
         await self._require_profile_policy(user_id)
         try:
             return await self._set_profile(user_id)
         except Exception as e:
             raise self._operation_error("set", user_id, str(e)) from e
 
-    async def get_or_create_profile(self, user_id: ID) -> ProfileT:
+    async def get_or_create_profile(self, user: User | ID) -> ProfileT:
         """Return an existing profile, or create one when it is not set."""
+        user_id = self._resolve_user_id(user)
         try:
             return await self.get_profile(user_id)
         except ProfileNotSet:
             return await self.set_profile(user_id)
+
+    @staticmethod
+    def _resolve_user_id(user: User | ID) -> ID:
+        if isinstance(user, User):
+            return user.id
+        return user
 
     async def _require_profile_policy(self, user_id: ID) -> None:
         try:
