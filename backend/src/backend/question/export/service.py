@@ -54,26 +54,22 @@ class QuestionDownload:
             ) from e
 
     async def download_file(
-            self, question: Question | ID, filename: str
-        ) -> bytes | bytearray:
-            try:
-                question_id = self._resolve_question_id(question)
-                files = await self._manager.get_question_filedata(question_id)
-                matched_file = next(
-                    (file for file in files if file.filename == filename), None
-                )
-                if matched_file:
-                    content = self.normalize_content(matched_file)
-                else:
-                    content = b""
-                return content
-    
-            except (QuestionExportError, QuestionReadError):
-                raise
-            except Exception as e:
-                raise QuestionExportError(
-                    f"Failed to prepare download for question '{question}': {e}"
-                ) from e
+        self, question: Question | ID, filename: str
+    ) -> bytes | bytearray:
+        try:
+            question_id = self._resolve_question_id(question)
+            files = await self._manager.get_question_filedata(question_id)
+            matched_file = next(
+                (file for file in files if file.filename == filename), None
+            )
+            return self.normalize_content(matched_file) if matched_file else b""
+
+        except (QuestionExportError, QuestionReadError):
+            raise
+        except Exception as e:
+            raise QuestionExportError(
+                f"Failed to prepare download for question '{question}': {e}"
+            ) from e
 
     @staticmethod
     def _resolve_folder_name(question: Question | QuestionInfo) -> str:

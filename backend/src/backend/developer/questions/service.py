@@ -203,8 +203,8 @@ class DeveloperQuestionService:
             user_id, qid, DeveloperQuestionAction.UPLOAD_FILES
         )
         return await self._question_manager.upload_files(qid, files)
-    
-    async def check_access(self,user: ID|User, question: ID|Question):
+
+    async def check_access(self, user: ID | User, question: ID | Question):
         return await self._authorizer.check_access(user, question)
 
     def _require_profile_storage_path(

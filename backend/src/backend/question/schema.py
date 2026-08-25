@@ -103,13 +103,14 @@ class QuestionFilter(BaseModel):
 
 
 class QuestionInfo(BaseModel):
-    id: UUID | str
+    id: UUID | str = Field(alias="uuid")
     title: str
     topic: str | list[str]
     isAdaptive: bool
-    createdBy: str | None
-    institution: str | None
-    qType: str | list[str]
-    codelang: str | list[str]
+    ai_generated: bool = False
+    createdBy: str | None = None
+    institution: str | None = None
+    qType: QType | list[QType]
+    codelang: str | list[str] = Field(default_factory=list)
 
     model_config = ConfigDict(extra="ignore")

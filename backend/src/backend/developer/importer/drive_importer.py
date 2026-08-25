@@ -2,9 +2,10 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from gdrive_importer.auth import DriveService
 from gdrive_importer.gdrive_indexer import GoogleDriveIndexer
 from gdrive_importer.models import GDriveFile
+
+from backend.question.schema import QuestionInfo
 
 CLIENT_FILES_FOLDER = "clientFilesQuestion"
 
@@ -33,8 +34,7 @@ class DriveQuestionPackageDiscoverer:
         *,
         client_files_folder: str = CLIENT_FILES_FOLDER,
     ) -> "DriveQuestionPackageDiscoverer":
-        service = DriveService(credentials_path, token_path)
-        indexer = GoogleDriveIndexer(service)
+        indexer = GoogleDriveIndexer.from_credentials(credentials_path, token_path)
         return cls(indexer, client_files_folder=client_files_folder)
 
     def discover_packages(
@@ -157,10 +157,21 @@ class DriveQuestionPackageDiscoverer:
 
 if __name__ == "__main__":
     cred_path = Path("../credentials.json").resolve()
+    manifest = Path("drive_question_manifest.json")
+    indexer = GoogleDriveIndexer.from_credentials(cred_path)
+
     discoverer = DriveQuestionPackageDiscoverer.from_credentials(cred_path)
-    question_packages = discoverer.discover_packages(
-        root_folder_name="Learning Lab AI Project",
-        target_folder_name="statics",
-    )
-    discoverer.save_packages(question_packages, Path("drive_question_manifest.json"))
-    discoverer.pretty_print(question_packages)
+    if manifest.exists():
+        packages = discoverer.load_packages(manifest)
+        first_item = next(iter(packages.items()), None)
+        if first_item is not None:
+            target_file = first_item[1].files.get("info.json")
+            result = indexer.read_file(target_file.id).decode("utf-8")
+            validated = QuestionInfo.model_validate(json.loads(result))
+            print(validated)
+    # else:
+    #     packages = discoverer.discover_packages(
+    #         root_folder_name="Learning Lab AI Project",
+    #         target_folder_name="statics",
+    #     )
+    #     discoverer.save_packages(packages,manifest )

@@ -22,6 +22,16 @@ class GoogleDriveIndexer[FileT: GDriveFile]:
         self.file_model = file_model
         self._service = service.get_service()
 
+    @classmethod
+    def from_credentials(
+        cls,
+        credentials_path: str | Path,
+        token_path: str | Path | None = None,
+        file_model: type[FileT] = GDriveFile,
+    ) -> "GoogleDriveIndexer":
+        service = DriveService(credentials_path, token_path)
+        return cls(service=service, file_model=file_model)
+
     def get_file(self, name: str, *, trashed: bool = False) -> List[GDriveFile]:
         """Return non-trashed Drive files matching the given name."""
         query = self._query(
@@ -62,7 +72,7 @@ class GoogleDriveIndexer[FileT: GDriveFile]:
         folder_name: str | None = None,
         folder_id: str | None = None,
         recursive: bool = False,
-    )->List[GDriveFile]:
+    ) -> List[GDriveFile]:
         if (folder_name is None) == (folder_id is None):
             raise ValueError("Expected exactly one of folder_name or folder_id")
 
@@ -152,18 +162,18 @@ class GoogleDriveIndexer[FileT: GDriveFile]:
 
 
 # if __name__ == "__main__":
-    
 
-    # root = Path(__file__).parents[2]
-    # cred_path = root / "credentials.json"
-    # token_path = root / "token.json"
-    # drive = DriveService(cred_path, token_path)
-    # indexer = GoogleDriveIndexer(drive)
-    # # BASE ID points to the statics folder
-    # statics_folder = "1XJp7G0n7SQFtV8CDggO82V4V_09LpIiC"
-    # name = "Learning Lab AI Project"
-    # parent = indexer.find_folder(name)
-    # statics = indexer.find_folder(name="statics", parent_id=parent[0].id)
-    # children =indexer.list_children(folder_id=statics[0].id, recursive=True)
-    # print(children[0])
-    # (root / "data.json").write_text(json.dumps(to_serializable(results)))
+
+# root = Path(__file__).parents[2]
+# cred_path = root / "credentials.json"
+# token_path = root / "token.json"
+# drive = DriveService(cred_path, token_path)
+# indexer = GoogleDriveIndexer(drive)
+# # BASE ID points to the statics folder
+# statics_folder = "1XJp7G0n7SQFtV8CDggO82V4V_09LpIiC"
+# name = "Learning Lab AI Project"
+# parent = indexer.find_folder(name)
+# statics = indexer.find_folder(name="statics", parent_id=parent[0].id)
+# children =indexer.list_children(folder_id=statics[0].id, recursive=True)
+# print(children[0])
+# (root / "data.json").write_text(json.dumps(to_serializable(results)))

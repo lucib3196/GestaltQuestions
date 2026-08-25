@@ -22,12 +22,15 @@ class DeveloperDownloadService:
             user, question, DeveloperQuestionAction.DOWNLOAD
         )
         return await self._downloader.download(question)
-    
-    async def download_question_file(self, user: User|ID, question: Question|ID, filename: str):
+
+    async def download_question_file(
+        self, user: User | ID, question: Question | ID, filename: str
+    ):
         await self._authorizer.require_action(
-                    user, question, DeveloperQuestionAction.DOWNLOAD
-                )
-        return await self._downloader.download_file(question,filename)
+            user, question, DeveloperQuestionAction.DOWNLOAD
+        )
+        return await self._downloader.download_file(question, filename)
+
     @staticmethod
     def _resolve_question_id(question: Question | ID) -> ID:
         if isinstance(question, Question):
