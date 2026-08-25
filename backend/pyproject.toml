@@ -36,7 +36,10 @@ dependencies = [
     "langchain (>=1.3.0,<2.0.0)",
     "ruff (>=0.15.13,<0.16.0)",
     "multimethod>=2.1",
+    "gdrive-importer",
 ]
+[tool.uv.sources]
+gdrive-importer = { path = "../packages/gdrive_importer", editable = true }
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -82,6 +85,8 @@ max-line-length = 88
 [tool.ruff.lint.isort]
 combine-as-imports = true
 split-on-trailing-comma = false
+
+
 
 [dependency-groups]
 dev = [
