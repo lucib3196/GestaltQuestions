@@ -11,7 +11,7 @@ from backend.storage import FileData
 
 @pytest.mark.asyncio
 async def test_create_question_with_files(
-    developer_question_service:DeveloperQuestionService,
+    developer_question_service: DeveloperQuestionService,
     dev_owner,
     make_question_payload,
 ) -> None:

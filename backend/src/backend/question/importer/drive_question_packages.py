@@ -1,4 +1,5 @@
 import json
+from dataclasses import dataclass
 from pathlib import Path
 
 from gdrive_importer.gdrive_indexer import GoogleDriveIndexer
@@ -8,7 +9,13 @@ from backend.question.schema import QuestionInfo
 
 CLIENT_FILES_FOLDER = "clientFilesQuestion"
 
-from .importer.models import DriveQuestionPackage
+
+@dataclass
+class DriveQuestionPackage:
+    """Files discovered for one legacy Drive-backed question folder."""
+
+    parent_id: str
+    files: dict[str, GDriveFile]
 
 
 class DriveQuestionPackageDiscoverer:
