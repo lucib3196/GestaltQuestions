@@ -1,13 +1,15 @@
 export type UIPanelSize = "xs" | "sm" | "md" | "lg" | "xl";
 export type UIPanelVariant = "default" | "minimal" | "soft" | "elevated";
 
-export const uiPanelBaseStyles =
-  "rounded-[var(--radius-md)] border transition-all duration-[var(--duration-base)] ease-[var(--ease-base)] text-[var(--color-text)] border-[var(--color-border)]";
+export const uiThemeTransitionStyles =
+  "transition-colors duration-[var(--duration-base)] ease-[var(--ease-base)]";
+
+export const uiPanelBaseStyles = `rounded-[var(--radius-md)] border border-[var(--color-border)] text-[var(--color-text)] ${uiThemeTransitionStyles}`;
 
 export const uiPanelVariantStyles: Record<UIPanelVariant, string> = {
-  default: "bg-[var(--color-surface-strong)] shadow-[var(--shadow-soft)]",
-  minimal: "bg-[var(--color-surface-muted)] hover:bg-[var(--color-surface)]",
-  soft: "bg-[var(--color-surface)] shadow-inner",
+  default: "bg-[var(--color-surface)] shadow-[var(--shadow-soft)]",
+  minimal: "bg-[var(--color-surface-muted)] shadow-none",
+  soft: "bg-[var(--color-surface-secondary)] shadow-inner",
   elevated:
     "bg-[var(--color-surface-strong)] border-[var(--color-border-strong)] shadow-[var(--shadow-soft)]",
 };

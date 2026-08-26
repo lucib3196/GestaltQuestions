@@ -4,6 +4,7 @@ from backend.api.developer import (
     collection_access,
     collections,
     export,
+    importer,
     profile,
     question_access,
     question_manager,
@@ -22,3 +23,4 @@ router.include_router(roles.router)
 router.include_router(tables.router)
 router.include_router(user_lookup.router)
 router.include_router(export.router)
+router.include_router(importer.router)

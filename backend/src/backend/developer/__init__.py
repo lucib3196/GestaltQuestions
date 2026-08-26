@@ -7,7 +7,6 @@ from .profiles import DeveloperProfileService
 from .questions import DeveloperQuestionService
 from .questions.actions import DeveloperQuestionAction, DeveloperQuestionPolicy
 
-
 __all__ = [
     "DeveloperCollectionAction",
     "DeveloperCollectionPolicy",

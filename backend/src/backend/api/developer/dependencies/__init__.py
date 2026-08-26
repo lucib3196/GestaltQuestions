@@ -12,6 +12,7 @@ from .collections import (
     get_question_collection_access_reader,
     get_question_collection_service,
 )
+from .importer import DevImporterDep
 from .profiles import DeveloperProfileDependency, get_developer_profile_service
 from .questions import (
     DevQManager,
@@ -32,6 +33,7 @@ from .users import UserLookupDependency, get_user_lookup
 __all__ = [
     "CollectionAuthorizer",
     "DevCollectionManager",
+    "DevImporterDep",
     "DevQManager",
     "DeveloperProfileDependency",
     "DeveloperRoleAccess",

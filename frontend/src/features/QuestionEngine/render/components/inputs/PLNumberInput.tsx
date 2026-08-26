@@ -40,7 +40,7 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
       <div className={className}>
         <fieldset
           className={clsx(
-            "mb-4 flex w-full max-w-[620px] overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border-strong)]",
+            "mb-4 flex w-full max-w-155 overflow-hidden rounded-md border border-border-strong",
             variantStyles[variant],
             submitted && "opacity-60",
           )}
@@ -48,10 +48,10 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
           <label
             htmlFor={answerName}
             className={clsx(
-              "flex min-w-[140px] items-center border-r border-[var(--color-border)] px-4 py-3 text-sm font-semibold",
+              "flex min-w-35 items-center border-r border-border px-4 py-3 text-sm font-semibold",
               submitted
-                ? "text-[var(--color-text-soft)]"
-                : "text-[var(--color-text)]",
+                ? "text-text-soft"
+                : "text-text",
             )}
           >
             {label}
@@ -66,9 +66,9 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
             value={inputValue}
             onChange={(e) => setAnswer(answerName, e.target.value)}
             className={clsx(
-              "min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-soft)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--color-accent)]",
+              "min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-[var(--color-text)] placeholder:text-text-soft focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--color-accent)]",
               submitted &&
-                "cursor-not-allowed bg-[var(--color-surface-muted)] text-[var(--color-text-soft)]",
+                "cursor-not-allowed bg-surface-muted text-text-soft",
             )}
           />
         </fieldset>

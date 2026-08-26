@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import type React from "react";
 
 export interface PLDerivationStepProps {
   children?: React.ReactNode;

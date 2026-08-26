@@ -4,13 +4,14 @@ from pathlib import PurePosixPath
 import pytest
 
 from backend.authorization.profiles import ProfileAccessDenied
+from backend.developer import DeveloperQuestionService
 from backend.question import Question, QuestionFilter, QuestionUpdate
 from backend.storage import FileData
-from backend.developer import DeveloperQuestionService
+
 
 @pytest.mark.asyncio
 async def test_create_question_with_files(
-    developer_question_service:DeveloperQuestionService,
+    developer_question_service: DeveloperQuestionService,
     dev_owner,
     make_question_payload,
 ) -> None:
@@ -309,22 +310,7 @@ async def test_upload_files(
     assert content == b"remember this"
 
 
-@pytest.mark.asyncio
-async def test_prepare_question_download(
-    developer_question_service,
-    dev_owner,
-    make_owned_question,
-) -> None:
-    question, _ = await make_owned_question()
 
-    download = await developer_question_service.prepare_question_download(
-        dev_owner.user.id,
-        question.id,
-    )
-
-    assert download["question.html"] == b"<p>Question</p>"
-    assert download["solution.html"] == b"<p>Solution</p>"
-    assert json.loads(download["meta.json"].decode()) == {"difficulty": "easy"}
 
 
 @pytest.mark.asyncio

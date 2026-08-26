@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from collections.abc import Sequence
 from typing import Any, Literal
 
@@ -15,7 +14,6 @@ from backend.developer import (
     DeveloperProfileService,
 )
 from backend.developer.questions.actions import DeveloperQuestionAction
-from backend.question.access.exceptions import QuestionAccessDenied
 from backend.question.manager.exceptions import (
     DeveloperQuestionServiceError,
     QuestionNotFoundError,
@@ -70,7 +68,7 @@ class DeveloperQuestionService:
         )
         return self._assign_creator(user_id, question, profile)
 
-    async def copy_question(self, qid: ID, user_id: ID):
+    async def copy_question(self, qid: ID, user_id: ID) -> Question:
         """Create a copy question under the developer profile and assign ownership."""
         await self._authorizer.require_action(
             user_id, qid, DeveloperQuestionAction.COPY
@@ -96,7 +94,9 @@ class DeveloperQuestionService:
             raise QuestionNotFoundError(str(qid))
         return q
 
-    async def update_question(self, user_id: ID, qid: ID, update: QuestionUpdate):
+    async def update_question(
+        self, user_id: ID, qid: ID, update: QuestionUpdate
+    ) -> QuestionRead:
         """Update question metadata after checking developer question control."""
         await self._authorizer.require_action(
             user_id, qid, DeveloperQuestionAction.UPDATE
@@ -131,34 +131,6 @@ class DeveloperQuestionService:
                 f"Failed to filter questions for user {user_id}: {e}"
             ) from e
 
-    async def prepare_question_download(
-        self, user_id: ID, qid: ID
-    ) -> dict[str, bytes | bytearray]:
-        try:
-            await self._authorizer.require_action(
-                user_id, qid, DeveloperQuestionAction.DOWNLOAD
-            )
-            qfiles = await self._question_manager.get_question_filedata(qid)
-            file_payload: dict[str, bytes | bytearray] = {}
-            for f in qfiles:
-                content = f.content
-                if isinstance(content, str):
-                    content = content.encode()
-                elif isinstance(content, dict):
-                    content = (json.dumps(content)).encode()
-
-                file_payload[f.filename] = content
-            return file_payload
-
-        except QuestionNotFoundError:
-            raise
-        except QuestionAccessDenied:
-            raise
-        except Exception as e:
-            raise DeveloperQuestionServiceError(
-                f"Failed to download question {qid}: {e}"
-            ) from e
-
     # ------------------------------------------------------------------
     # Question Files
     # ------------------------------------------------------------------
@@ -183,28 +155,30 @@ class DeveloperQuestionService:
         )
         return await self._question_manager.read_file(qid, filename)
 
-    async def write_file(self, user_id: ID, qid: ID, filename: str, data: Any):
+    async def write_file(self, user_id: ID, qid: ID, filename: str, data: Any) -> Any:
         """Write or replace a question file after checking developer question control."""
         await self._authorizer.require_action(
             user_id, qid, DeveloperQuestionAction.WRITE_FILE
         )
         return await self._question_manager.write_file(qid, filename, data)
 
-    async def delete_file(self, user_id: ID, qid: ID, filename: str):
+    async def delete_file(self, user_id: ID, qid: ID, filename: str) -> Any:
         """Delete a question file after checking developer question control."""
         await self._authorizer.require_action(
             user_id, qid, DeveloperQuestionAction.DELETE_FILE
         )
         return await self._question_manager.delete_file(qid, filename)
 
-    async def upload_files(self, user_id: ID, qid: ID, files: list[FileData]):
+    async def upload_files(
+        self, user_id: ID, qid: ID, files: list[FileData]
+    ) -> list[str]:
         """Upload files to a question after checking developer question control."""
         await self._authorizer.require_action(
             user_id, qid, DeveloperQuestionAction.UPLOAD_FILES
         )
         return await self._question_manager.upload_files(qid, files)
-    
-    async def check_access(self,user: ID|User, question: ID|Question):
+
+    async def check_access(self, user: ID | User, question: ID | Question):
         return await self._authorizer.check_access(user, question)
 
     def _require_profile_storage_path(

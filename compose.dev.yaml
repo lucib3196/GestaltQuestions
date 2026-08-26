@@ -14,6 +14,8 @@ services:
       - 8000:8000
     volumes:
       - ./backend:/app/backend # mount project allows for reloading
+      - ./packages:/app/packages # mount external packages allows for reloading
+      
 
 
   code_sandbox:
