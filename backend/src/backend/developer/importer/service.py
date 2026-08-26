@@ -4,9 +4,11 @@ from typing import Any
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
-from backend.question import Status
+
 from backend.developer.questions import DeveloperQuestionService
+from backend.question import Status
 from backend.question.importer import (
+    MissingQuestionMetadataError,
     QuestionImporter,
     QuestionPackage,
     ZipQuestionImporter,
@@ -17,7 +19,7 @@ from backend.question.models import Question, QuestionSourceReference
 from backend.shared import ID
 
 
-class DeveloperQuestionImportService:
+class DeveloperImportService:
     def __init__(
         self,
         session: Session,
@@ -32,17 +34,28 @@ class DeveloperQuestionImportService:
         importer: QuestionImporter,
         source: Any,
         status: Status | None = Status.DRAFT,
-    ):
-        package = importer.prepare_question(source)
-        if status:
-            package.question.status = status
-        question = await self._developer_questions.create_question(
-            user_id=user_id,
-            payload=package.question,
-            files=package.files,
-        )
-        self._create_source_reference(question, package)
-        return question
+    ) -> Question:
+        question: Question | None = None
+        try:
+            package = importer.prepare_question(source)
+            if status is not None:
+                package.question.status = status
+            return await self._developer_questions.create_question(
+                user_id=user_id,
+                payload=package.question,
+                files=package.files,
+            )
+            # self._create_source_reference(question, package)
+        except MissingQuestionMetadataError as e:
+            raise DeveloperQuestionServiceError(
+                f"Failed to import question metadata: {e}"
+            ) from e
+        except Exception as e:
+            if question is not None and question.id is not None:
+                await self._developer_questions.delete_question(user_id, question.id)
+            raise DeveloperQuestionServiceError(
+                f"Failed to import question for user {user_id}: {e}"
+            ) from e
 
     def _create_source_reference(
         self, question: Question, package: QuestionPackage
@@ -68,10 +81,16 @@ class DeveloperQuestionImportService:
                 f"Failed to create source reference for question {question.id}: {e}"
             ) from e
 
-    async def import_zip_question(self, user_id: ID, content: bytes) -> Question:
+    async def import_zip_question(
+        self,
+        user_id: ID,
+        content: bytes,
+        status: Status | None = Status.DRAFT,
+    ) -> Question:
         """Import one question package from raw ZIP archive bytes."""
         return await self.import_question(
             user_id=user_id,
             importer=ZipQuestionImporter(),
             source=ZipQuestionPackage(content=content),
+            status=status,
         )

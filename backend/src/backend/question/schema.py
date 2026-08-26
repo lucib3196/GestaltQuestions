@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from enum import StrEnum
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 class Status(StrEnum):
@@ -73,7 +73,7 @@ class UpdateFile(BaseModel):
 
 # Question response models
 class QuestionRead(QuestionRelationships):
-    id: UUID
+    id: UUID | str = Field(validation_alias=AliasChoices("id", "uuid"))
     title: str | None = None
     storage_path: str | None = None
     storage_type: str
@@ -103,7 +103,7 @@ class QuestionFilter(BaseModel):
 
 
 class QuestionInfo(BaseModel):
-    id: UUID | str = Field(alias="uuid")
+    id: UUID | str = Field(validation_alias=AliasChoices("id", "uuid"))
     title: str
     topic: str | list[str]
     isAdaptive: bool

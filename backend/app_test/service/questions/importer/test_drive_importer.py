@@ -3,7 +3,11 @@ import json
 import pytest
 from gdrive_importer.models import GDriveFile
 
-from backend.question.importer import DriveQuestionImporter, DriveQuestionPackage
+from backend.question.importer import (
+    DriveQuestionImporter,
+    DriveQuestionPackage,
+    MissingQuestionMetadataError,
+)
 
 
 class FakeDriveIndexer:
@@ -72,5 +76,5 @@ def test_drive_importer_requires_info_json() -> None:
     source = DriveQuestionPackage(parent_id="folder-1", files={})
     importer = DriveQuestionImporter(FakeDriveIndexer({}))
 
-    with pytest.raises(ValueError, match="folder-1"):
+    with pytest.raises(MissingQuestionMetadataError, match="folder-1"):
         importer.prepare_question(source)

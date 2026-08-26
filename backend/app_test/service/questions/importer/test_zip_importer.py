@@ -4,7 +4,11 @@ import zipfile
 
 import pytest
 
-from backend.question.importer import ZipQuestionImporter, ZipQuestionPackage
+from backend.question.importer import (
+    MissingQuestionMetadataError,
+    ZipQuestionImporter,
+    ZipQuestionPackage,
+)
 
 
 def valid_metadata() -> dict:
@@ -54,5 +58,5 @@ def test_zip_importer_prepares_question_package() -> None:
 def test_zip_importer_requires_info_json() -> None:
     zip_bytes = make_zip({"question.html": b"<p>Hello</p>"})
 
-    with pytest.raises(ValueError, match=r"info\.json"):
+    with pytest.raises(MissingQuestionMetadataError, match=r"info\.json"):
         ZipQuestionImporter().prepare_question(ZipQuestionPackage(content=zip_bytes))

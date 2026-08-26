@@ -12,6 +12,7 @@ from .drive_question_packages import (
     DriveQuestionPackage,
     DriveQuestionPackageDiscoverer,
 )
+from .exceptions import MissingQuestionMetadataError
 from .importer import QuestionImporter
 from .schema import QuestionPackage
 
@@ -42,8 +43,9 @@ class DriveQuestionImporter(QuestionImporter[DriveQuestionPackage, GDriveFile]):
     def load_raw_metadata(self, source: DriveQuestionPackage) -> dict[str, Any]:
         meta_file = self._get_file(source, self.metadata_filename)
         if not meta_file:
-            raise ValueError(
-                f"Cannot resolve file for package with id {source.parent_id}"
+            raise MissingQuestionMetadataError(
+                self.metadata_filename,
+                source_id=source.parent_id,
             )
         return json.loads(self._indexer.read_file(meta_file.id).decode("utf-8"))
 
