@@ -67,11 +67,18 @@ export const ComponentMap: Record<
 // These are the raw attributes for instance <pl-number-input answer-name='c' />
 type RawAttributes = Record<string, string>;
 
+function mapSvgContrast(
+  value: string | undefined,
+): PLFigureProps["svgContrast"] {
+  return value === "none" ? "none" : value === "auto" ? "auto" : undefined;
+}
+
 // This essentially maps the raw attributes and changes them and process them
 // Into more react viable components, the raw attributes are a mapping to the react
 // props that the input element expects,
 export const TagAttributeMapping: {
-  [K in keyof TagRegistry]: (attrs: RawAttributes) => TagRegistry[K];
+  // eslint-disable-next-line no-unused-vars
+  [K in keyof TagRegistry]: (...args: [RawAttributes]) => TagRegistry[K];
 } = {
   "pl-question-panel": (attrs) => ({
     className: attrs["classname"] || attrs["class"],
@@ -96,10 +103,11 @@ export const TagAttributeMapping: {
   }),
   "pl-figure": (attrs) => ({
     src: attrs["src"],
-    filename: attrs["filename"],
+    filename: attrs["filename"] || attrs["file-name"],
     className: attrs["classname"] || attrs["class"],
     size: attrs["size"],
     variant: attrs["variant"],
+    svgContrast: mapSvgContrast(attrs["svg-contrast"] || attrs["svgcontrast"]),
     useClientFilesDir: attrs["legacy"] ? true : false,
   }),
   "pl-hint": (attrs) => ({

@@ -2,7 +2,6 @@ import asyncio
 from collections.abc import Sequence
 
 from fastapi import APIRouter, HTTPException, UploadFile
-from fastapi.responses import Response
 from pydantic import BaseModel
 from starlette import status
 
@@ -119,10 +118,6 @@ async def copy_question(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"{e}"
         ) from e
-
-
-
-
 
 
 @router.get("/{question_id}/files")
