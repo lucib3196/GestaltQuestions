@@ -98,3 +98,4 @@ packages/gdrive_importer/data.json
 packages/gdrive_importer/token.json
 token.json
 backend/src/drive_question_manifest.json
+.env.production
