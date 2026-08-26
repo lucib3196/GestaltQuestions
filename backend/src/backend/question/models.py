@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import JSON, Column, UniqueConstraint
+from sqlalchemy import JSON
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field as SQLField, Relationship, SQLModel
 
@@ -100,23 +100,7 @@ class Question(SQLModel, table=True):
     updated_at: datetime | None = SQLField(default_factory=datetime.now)
 
 
-class QuestionSourceReference(SQLModel, table=True):
-    __tablename__ = "question_source_reference"  # type: ignore
-    id: UUID = SQLField(default_factory=uuid4, primary_key=True)
-    __table_args__ = (
-        UniqueConstraint(
-            "question_id",
-            "source_question_id",
-            name="uq_question_source_reference_source_question",
-        ),
-    )
-    question_id: UUID = SQLField(foreign_key="question.id", index=True)
-    source_question_id: str = SQLField(index=True)  # info.json uuid
 
-    raw_metadata: dict[str, Any] = SQLField(
-        sa_column=Column(JSONType, nullable=False)
-    )  # Stores the raw info.json
-    imported_at: datetime = SQLField(default_factory=datetime.now)
 
 
 # Topic taxonomy for grouping questions.

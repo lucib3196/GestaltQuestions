@@ -1,5 +1,4 @@
 import json
-from dataclasses import dataclass
 from pathlib import Path
 
 from gdrive_importer.gdrive_indexer import GoogleDriveIndexer
@@ -9,11 +8,7 @@ from backend.question.schema import QuestionInfo
 
 CLIENT_FILES_FOLDER = "clientFilesQuestion"
 
-
-@dataclass
-class DriveQuestionPackage:
-    parent_id: str
-    files: dict[str, GDriveFile]
+from .importer.models import DriveQuestionPackage
 
 
 class DriveQuestionPackageDiscoverer:
@@ -23,6 +18,7 @@ class DriveQuestionPackageDiscoverer:
         *,
         client_files_folder: str = CLIENT_FILES_FOLDER,
     ) -> None:
+        """Create a package discoverer using an initialized Google Drive indexer."""
         self.indexer = indexer
         self.client_files_folder = client_files_folder
 
@@ -34,6 +30,7 @@ class DriveQuestionPackageDiscoverer:
         *,
         client_files_folder: str = CLIENT_FILES_FOLDER,
     ) -> "DriveQuestionPackageDiscoverer":
+        """Build a discoverer from Google Drive credential and token files."""
         indexer = GoogleDriveIndexer.from_credentials(credentials_path, token_path)
         return cls(indexer, client_files_folder=client_files_folder)
 
@@ -43,6 +40,7 @@ class DriveQuestionPackageDiscoverer:
         root_folder_name: str,
         target_folder_name: str,
     ) -> dict[str, DriveQuestionPackage]:
+        """Discover question packages under a target folder in the Drive hierarchy."""
         root_folder = self._get_unique_folder(
             self.indexer.find_folder(root_folder_name),
             root_folder_name,
@@ -66,6 +64,7 @@ class DriveQuestionPackageDiscoverer:
         packages: dict[str, DriveQuestionPackage],
         path: str | Path,
     ) -> None:
+        """Serialize discovered question packages to a local manifest file."""
         path = Path(path)
         payload = {
             "questions": [
@@ -84,6 +83,7 @@ class DriveQuestionPackageDiscoverer:
         path.write_text(json.dumps(payload, indent=2))
 
     def load_packages(self, path: str | Path) -> dict[str, DriveQuestionPackage]:
+        """Load question packages from a previously saved local manifest file."""
         payload = json.loads(Path(path).read_text())
 
         packages: dict[str, DriveQuestionPackage] = {}
@@ -101,6 +101,7 @@ class DriveQuestionPackageDiscoverer:
         return packages
 
     def pretty_print(self, packages: dict[str, DriveQuestionPackage]) -> None:
+        """Print a compact summary of discovered question packages and files."""
         print(f"Number of questions: {len(packages)}")
         for parent_id, package in packages.items():
             print(f"Parent ID: {parent_id[:5]}, num files: {len(package.files)}\n")
@@ -113,6 +114,7 @@ class DriveQuestionPackageDiscoverer:
         *,
         root_folder_id: str,
     ) -> dict[str, DriveQuestionPackage]:
+        """Group Drive children into question packages keyed by question folder id."""
         client_folder_to_question: dict[str, str] = {}
         question_packages: dict[str, DriveQuestionPackage] = {}
 
@@ -148,6 +150,7 @@ class DriveQuestionPackageDiscoverer:
 
     @staticmethod
     def _get_unique_folder(folders: list[GDriveFile], name: str) -> GDriveFile:
+        """Return the only matching folder or raise when the match is ambiguous."""
         if not folders:
             raise ValueError(f"Folder not found: {name}")
         if len(folders) > 1:
@@ -166,9 +169,10 @@ if __name__ == "__main__":
         first_item = next(iter(packages.items()), None)
         if first_item is not None:
             target_file = first_item[1].files.get("info.json")
-            result = indexer.read_file(target_file.id).decode("utf-8")
-            validated = QuestionInfo.model_validate(json.loads(result))
-            print(validated)
+            if target_file and target_file.id:
+                result = indexer.read_file(target_file.id).decode("utf-8")
+                validated = QuestionInfo.model_validate(json.loads(result))
+                print(validated)
     # else:
     #     packages = discoverer.discover_packages(
     #         root_folder_name="Learning Lab AI Project",

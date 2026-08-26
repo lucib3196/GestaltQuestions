@@ -4,9 +4,10 @@ from pathlib import PurePosixPath
 import pytest
 
 from backend.authorization.profiles import ProfileAccessDenied
+from backend.developer import DeveloperQuestionService
 from backend.question import Question, QuestionFilter, QuestionUpdate
 from backend.storage import FileData
-from backend.developer import DeveloperQuestionService
+
 
 @pytest.mark.asyncio
 async def test_create_question_with_files(
