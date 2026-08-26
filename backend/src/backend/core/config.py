@@ -31,6 +31,7 @@ class Environment(StrEnum):
 
 
 APP_ENV = os.getenv("ENV", "dev").lower()
+
 ENV_FILES: dict[str, str] = {
     "dev": ".env.dev",
     "testing": ".env.test",
@@ -39,8 +40,7 @@ ENV_FILES: dict[str, str] = {
 }
 
 # Check the env internally and attempts to resolve env file. Points to .env by default so this must always be set
-env_file = ROOT_PATH / ENV_FILES.get("ENV", ".env.dev")
-
+env_file = ROOT_PATH / ENV_FILES.get(APP_ENV, ".env.dev")
 load_dotenv(env_file, override=False)
 
 
