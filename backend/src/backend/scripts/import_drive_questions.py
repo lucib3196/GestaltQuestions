@@ -5,7 +5,7 @@ from uuid import UUID
 from backend.core.firebase import initialize_firebase_app
 from gdrive_importer.gdrive_indexer import GoogleDriveIndexer
 from sqlmodel import Session
-
+from backend.developer.importer import DeveloperImportService
 from backend.accounts.users import UserManager
 from backend.api.dependencies.storage import get_storage_manager
 from backend.database.config import engine
@@ -18,6 +18,7 @@ from backend.question.importer import (
     DriveQuestionImporter,
     DriveQuestionPackageDiscoverer,
 )
+from backend.question import Status
 from backend.question.manager import QuestionManager
 from backend.question.services.question import QuestionDB
 
@@ -64,12 +65,15 @@ async def main() -> None:
                 profile=profile_service,
             ),
         )
+        qimporter = DeveloperImportService(session=session, developer_questions=developer_questions)
+        
 
         for package in packages.values():
-            question = await developer_questions.import_question(
+            question = await qimporter.import_question(
                 user_id=args.user_id,
                 importer=importer,
                 source=package,
+                status=Status.PUBLISHED
             )
             print(f"Imported {question.id}: {question.title}")
 
