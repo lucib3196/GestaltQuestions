@@ -21,7 +21,6 @@ async def run_question_action(
         "write_file",
         "delete_file",
         "upload_files",
-        "prepare_question_download",
     ],
     user_id,
     question_id,
@@ -83,11 +82,7 @@ async def run_question_action(
             [FileData(filename="extra.txt", content="extra")],
         )
 
-    if action == "prepare_question_download":
-        return await developer_question_service.prepare_question_download(
-            user_id,
-            question_id,
-        )
+    
 
     raise ValueError(f"Unknown action: {action}")
 
