@@ -4,7 +4,7 @@ from typing import Any
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
-
+from backend.question import Status
 from backend.developer.questions import DeveloperQuestionService
 from backend.question.importer import (
     QuestionImporter,
@@ -27,9 +27,15 @@ class DeveloperQuestionImportService:
         self._developer_questions = developer_questions
 
     async def import_question(
-        self, user_id: ID, importer: QuestionImporter, source: Any
+        self,
+        user_id: ID,
+        importer: QuestionImporter,
+        source: Any,
+        status: Status | None = Status.DRAFT,
     ):
         package = importer.prepare_question(source)
+        if status:
+            package.question.status = status
         question = await self._developer_questions.create_question(
             user_id=user_id,
             payload=package.question,
