@@ -16,12 +16,18 @@ from backend.developer import (
 )
 from backend.developer.questions.actions import DeveloperQuestionAction
 from backend.question.access.exceptions import QuestionAccessDenied
+from backend.question.importer import (
+    QuestionImporter,
+    QuestionPackage,
+    ZipQuestionImporter,
+    ZipQuestionPackage,
+)
 from backend.question.manager.exceptions import (
     DeveloperQuestionServiceError,
     QuestionNotFoundError,
 )
 from backend.question.manager.services.manager import QuestionManager
-from backend.question.models import Question
+from backend.question.models import Question, QuestionSourceReference
 from backend.question.schema import (
     QuestionCreate,
     QuestionFilter,
@@ -70,7 +76,39 @@ class DeveloperQuestionService:
         )
         return self._assign_creator(user_id, question, profile)
 
-    async def copy_question(self, qid: ID, user_id: ID):
+    async def import_question(
+        self,
+        user_id: ID,
+        importer: QuestionImporter,
+        source: Any,
+    ) -> Question:
+        """Import an external package and persist its source reference."""
+        question: Question | None = None
+        try:
+            package = importer.prepare_question(source)
+            question = await self.create_question(
+                user_id=user_id,
+                payload=package.question,
+                files=package.files,
+            )
+            self._create_source_reference(question, package)
+            return question
+        except Exception as e:
+            if question is not None and question.id is not None:
+                await self._question_manager.delete_question(question.id)
+            raise DeveloperQuestionServiceError(
+                f"Failed to import question for user {user_id}: {e}"
+            ) from e
+
+    async def import_zip_question(self, user_id: ID, content: bytes) -> Question:
+        """Import one question package from raw ZIP archive bytes."""
+        return await self.import_question(
+            user_id=user_id,
+            importer=ZipQuestionImporter(),
+            source=ZipQuestionPackage(content=content),
+        )
+
+    async def copy_question(self, qid: ID, user_id: ID) -> Question:
         """Create a copy question under the developer profile and assign ownership."""
         await self._authorizer.require_action(
             user_id, qid, DeveloperQuestionAction.COPY
@@ -96,7 +134,9 @@ class DeveloperQuestionService:
             raise QuestionNotFoundError(str(qid))
         return q
 
-    async def update_question(self, user_id: ID, qid: ID, update: QuestionUpdate):
+    async def update_question(
+        self, user_id: ID, qid: ID, update: QuestionUpdate
+    ) -> QuestionRead:
         """Update question metadata after checking developer question control."""
         await self._authorizer.require_action(
             user_id, qid, DeveloperQuestionAction.UPDATE
@@ -183,21 +223,23 @@ class DeveloperQuestionService:
         )
         return await self._question_manager.read_file(qid, filename)
 
-    async def write_file(self, user_id: ID, qid: ID, filename: str, data: Any):
+    async def write_file(self, user_id: ID, qid: ID, filename: str, data: Any) -> Any:
         """Write or replace a question file after checking developer question control."""
         await self._authorizer.require_action(
             user_id, qid, DeveloperQuestionAction.WRITE_FILE
         )
         return await self._question_manager.write_file(qid, filename, data)
 
-    async def delete_file(self, user_id: ID, qid: ID, filename: str):
+    async def delete_file(self, user_id: ID, qid: ID, filename: str) -> Any:
         """Delete a question file after checking developer question control."""
         await self._authorizer.require_action(
             user_id, qid, DeveloperQuestionAction.DELETE_FILE
         )
         return await self._question_manager.delete_file(qid, filename)
 
-    async def upload_files(self, user_id: ID, qid: ID, files: list[FileData]):
+    async def upload_files(
+        self, user_id: ID, qid: ID, files: list[FileData]
+    ) -> list[str]:
         """Upload files to a question after checking developer question control."""
         await self._authorizer.require_action(
             user_id, qid, DeveloperQuestionAction.UPLOAD_FILES
@@ -237,6 +279,30 @@ class DeveloperQuestionService:
             logger.warning("Failed assigning creator to question %s", question.id)
             raise DeveloperProfileError(
                 "assign question creator", str(user_id), str(e)
+            ) from e
+
+    def _create_source_reference(
+        self, question: Question, package: QuestionPackage
+    ) -> QuestionSourceReference:
+        if question.id is None:
+            raise DeveloperQuestionServiceError(
+                "Cannot create source reference before question has an id"
+            )
+
+        try:
+            source_reference = QuestionSourceReference(
+                question_id=question.id,
+                source_question_id=str(package.source_question_id),
+                raw_metadata=package.raw_metadata,
+            )
+            self._session.add(source_reference)
+            self._session.commit()
+            self._session.refresh(source_reference)
+            return source_reference
+        except SQLAlchemyError as e:
+            self._session.rollback()
+            raise DeveloperQuestionServiceError(
+                f"Failed to create source reference for question {question.id}: {e}"
             ) from e
 
     @staticmethod
