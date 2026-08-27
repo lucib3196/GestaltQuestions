@@ -14,7 +14,7 @@ from backend.core import logger
 from backend.question.exceptions import (
     QuestionCreateError,
     QuestionDeleteError,
-    QuestionNotFoundError,
+    QuestionNotFound,
     QuestionPathError,
     QuestionReadError,
     QuestionUpdateError,
@@ -177,7 +177,7 @@ class QuestionDB:
         """
         q = await self.get_question(qid)
         if not q:
-            raise QuestionNotFoundError(f"Question '{qid}' was not found.")
+            raise QuestionNotFound(f"Question '{qid}' was not found.")
         question_data = q.model_dump(exclude=set(self.metadata_rel))
         relationship_data = await self.get_question_relationship_data(q)
 
@@ -201,7 +201,7 @@ class QuestionDB:
 
         q = await self.get_question(qid)
         if not q:
-            raise QuestionNotFoundError(f"Question '{qid}' was not found.")
+            raise QuestionNotFound(f"Question '{qid}' was not found.")
         update_data = self._validate_update_data(update)
         q = await self._attach_question_relationships(q, update_data)
 
@@ -304,7 +304,7 @@ class QuestionDB:
     async def get_question_path(self, id: ID) -> str | None:
         question = await self.get_question(id)
         if not question:
-            raise QuestionNotFoundError(f"Question with {id} does not exist")
+            raise QuestionNotFound(f"Question with {id} does not exist")
         return question.storage_path
 
     async def set_question_path(self, id: ID, path: Path | str):
@@ -321,7 +321,7 @@ class QuestionDB:
         """
         question = await self.get_question(id)
         if not question:
-            raise QuestionNotFoundError(f"Question '{id}' was not found.")
+            raise QuestionNotFound(f"Question '{id}' was not found.")
         try:
             question.storage_path = PurePosixPath(path).as_posix().rstrip("/") + "/"
             self.session.add(question)

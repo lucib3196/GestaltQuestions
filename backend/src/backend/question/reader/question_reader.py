@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
-from backend.question import QuestionNotFoundError, QuestionReadError
+from backend.question import QuestionNotFound, QuestionReadError
 from backend.question.models import Question
 from backend.question.schema import QuestionInfo
 from backend.question_runtime.model import QuestionRunTime
@@ -25,10 +25,10 @@ class QuestionReader:
 
             found = self._session.get(Question, question)
             if found is None:
-                raise QuestionNotFoundError(question)
+                raise QuestionNotFound(question)
 
             return found
-        except QuestionNotFoundError:
+        except QuestionNotFound:
             raise
         except SQLAlchemyError as e:
             raise QuestionReadError(f"Failed to read question '{question}': {e}") from e
@@ -50,7 +50,7 @@ class QuestionReader:
                 codelang=[c.language for c in self.get_runtime(question)],
             )
 
-        except (QuestionNotFoundError, QuestionReadError):
+        except (QuestionNotFound, QuestionReadError):
             raise
         except SQLAlchemyError as e:
             raise QuestionReadError(

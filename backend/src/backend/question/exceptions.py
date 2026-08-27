@@ -9,7 +9,7 @@ class QuestionValidationError(QuestionDBError):
     """Raised when question input data is invalid."""
 
 
-class QuestionNotFoundError(QuestionDBError):
+class QuestionNotFound(QuestionDBError):
     """Raised when a question cannot be found."""
 
     def __init__(self, question_id: str | UUID | None = None) -> None:

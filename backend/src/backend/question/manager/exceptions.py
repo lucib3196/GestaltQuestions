@@ -68,7 +68,7 @@ class StorageDirectoryNotFoundError(QuestionManagerException):
 # ============================================================
 
 
-class QuestionNotFoundError(QuestionManagerException):
+class QuestionNotFound(QuestionManagerException):
     """Raised when a question cannot be retrieved from the database."""
 
     def __init__(self, question_id: str) -> None:

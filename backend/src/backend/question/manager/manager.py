@@ -12,14 +12,14 @@ from backend.question.manager.exceptions import (
     QuestionCreationError,
     QuestionDeletionError,
     QuestionManagerException,
-    QuestionNotFoundError,
+    QuestionNotFound,
     QuestionUpdateError,
     StoragePathNotFoundError,
 )
 from backend.question.models import Question
 from backend.question.schema import QuestionCreate, QuestionRead, QuestionUpdate
 from backend.question.services.question import QuestionDB
-from backend.question.services.question_storage_service import QuestionStorageService
+from .storage import QuestionStorage
 from backend.shared import ID
 from backend.storage import FileData, Storage
 from backend.utils import safe_dir_name
@@ -31,7 +31,7 @@ class QuestionManager:
     def __init__(self, storage: Storage, qdb: QuestionDB) -> None:
         """Create a manager backed by a storage implementation and question DB."""
         self.qdb = qdb
-        self.storage = QuestionStorageService(storage)
+        self.storage = QuestionStorage(storage)
         logger.debug("QuestionManager initialized with %s", storage.__class__.__name__)
 
     async def create_question(
@@ -49,11 +49,11 @@ class QuestionManager:
         saved_files: list[str] = []
 
         try:
-            logger.debug(
-                "Creating question title=%s file_count=%s",
-                qdata.title,
-                len(files or []),
-            )
+            # logger.debug(
+            #     "Creating question title=%s file_count=%s",
+            #     qdata.title,
+            #     len(files or []),
+            # )
             # Create the base question
             qdata = self._validate_question_data(qdata)
             question = await self.qdb.create_question(qdata)
@@ -115,7 +115,7 @@ class QuestionManager:
         else:
             raise ValueError("Method {method} is not allowed for method get_question")
         if not q:
-            raise QuestionNotFoundError(str(qid))
+            raise QuestionNotFound(str(qid))
         return q
 
     async def copy_question(self, qid: ID, storage_base_path: str) -> Question:
@@ -256,7 +256,7 @@ class QuestionManager:
         question = await self.qdb.get_question(qid)
         if not question:
             logger.warning("Question %s was not found", qid)
-            raise QuestionNotFoundError(str(qid))
+            raise QuestionNotFound(str(qid))
         if not question.storage_path:
             logger.warning("Question %s has no storage path", qid)
             raise QuestionDeletionError(

@@ -1,3 +1,3 @@
-from .services.manager import QuestionManager
-
-__all__ = ["QuestionManager"]
+from .manager import QuestionManager
+from .storage import QuestionStorage
+__all__ = ["QuestionManager","QuestionStorage"]

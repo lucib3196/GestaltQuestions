@@ -16,9 +16,9 @@ from backend.developer import (
 from backend.developer.questions.actions import DeveloperQuestionAction
 from backend.question.manager.exceptions import (
     DeveloperQuestionServiceError,
-    QuestionNotFoundError,
+    QuestionNotFound,
 )
-from backend.question.manager.services.manager import QuestionManager
+from backend.question.manager import QuestionManager
 from backend.question.models import Question
 from backend.question.schema import (
     QuestionCreate,
@@ -91,7 +91,7 @@ class DeveloperQuestionService:
         else:
             q = await self._question_manager.qdb.get_question(qid)
         if not q:
-            raise QuestionNotFoundError(str(qid))
+            raise QuestionNotFound(str(qid))
         return q
 
     async def update_question(

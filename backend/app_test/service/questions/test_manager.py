@@ -8,7 +8,7 @@ from app_test.factories.question_factory import MakeQuestionPayload
 from backend.question import QuestionUpdate
 from backend.question.manager.exceptions import (
     FileOperationError,
-    QuestionNotFoundError,
+    QuestionNotFound,
 )
 from backend.question.manager.services.manager import QuestionManager
 from backend.storage import FileData
@@ -191,5 +191,5 @@ async def test_get_question_raises_for_missing_question(
 ) -> None:
     missing_id = "00000000-0000-0000-0000-000000000000"
 
-    with pytest.raises(QuestionNotFoundError):
+    with pytest.raises(QuestionNotFound):
         await question_manager.get_question(missing_id)

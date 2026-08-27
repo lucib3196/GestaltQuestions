@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from backend.authorization import AccessLevel, ProfileT
 from backend.core import logger
-from backend.question import Question, QuestionNotFoundError
+from backend.question import Question, QuestionNotFound
 from backend.question.collections.exceptions import (
     QuestionAlreadyInCollectionError,
     QuestionCollectionDeleteError,
@@ -168,7 +168,7 @@ class QuestionCollectionService(
             return question
         question = self._session.get(Question, question)
         if not question:
-            raise QuestionNotFoundError(question_id=question)
+            raise QuestionNotFound(question_id=question)
         return question
 
     async def remove_question(
