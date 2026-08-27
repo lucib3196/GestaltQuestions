@@ -26,15 +26,20 @@ from .exceptions import (
 
 
 class QuestionStorage:
+    """Question-aware storage service for resolving questions and managing files."""
+
     def __init__(self, storage: Storage, reader: QuestionReader) -> None:
+        """Create the service with a storage backend and question reader."""
         self.storage = storage
         self._reader = reader
 
     @classmethod
     def from_session(cls, storage: Storage, session: Session) -> Self:
+        """Build a question storage service using a session-backed reader."""
         return cls(storage=storage, reader=QuestionReader(session))
 
     async def get_storage_path(self, question: Question | ID) -> str:
+        """Resolve a question instance or ID to its configured storage path."""
         try:
             question = self._reader.get_question(question)
             storage_path = question.storage_path
@@ -47,6 +52,7 @@ class QuestionStorage:
             raise StorageOperationError("resolve_path", str(question), str(e)) from e
 
     async def list_files(self, question: Question | ID) -> list[str]:
+        """List files stored under a question's storage path."""
         try:
             storage_path = await self.get_storage_path(question)
             return self.list_storage_files(storage_path)
@@ -56,6 +62,7 @@ class QuestionStorage:
             raise FileListError(str(question), str(e)) from e
 
     async def read_file(self, question: Question | ID, filename: str) -> bytes | None:
+        """Read a named file from a question's storage directory."""
         try:
             storage_path = await self.get_storage_path(question)
             return self.read_storage_file(storage_path, filename=filename)
@@ -70,6 +77,7 @@ class QuestionStorage:
         filename: str,
         data: Any,
     ) -> str:
+        """Write data to a named file in a question's storage directory."""
         try:
             storage_path = await self.get_storage_path(question)
             return self.write_storage_file(storage_path, data, filename=filename)
@@ -79,6 +87,7 @@ class QuestionStorage:
             raise FileOperationError("write", filename, str(e)) from e
 
     async def delete_file(self, question: Question | ID, filename: str) -> None:
+        """Delete a named file from a question's storage directory."""
         try:
             storage_path = await self.get_storage_path(question)
             self.delete_storage_file(storage_path, filename=filename)
@@ -93,6 +102,7 @@ class QuestionStorage:
         old_filename: str,
         new_filename: str,
     ) -> str:
+        """Rename a file in a question's storage directory."""
         try:
             storage_path = await self.get_storage_path(question)
             return self.rename_storage_file(
@@ -110,6 +120,7 @@ class QuestionStorage:
             ) from e
 
     async def get_filedata(self, question: Question | ID) -> list[FileData]:
+        """Return normalized FileData objects for all files attached to a question."""
         try:
             storage_path = await self.get_storage_path(question)
             return self.get_all_storage_filedata(storage_path)
@@ -123,6 +134,7 @@ class QuestionStorage:
         question: Question | ID,
         files: list[FileData],
     ) -> list[str]:
+        """Persist multiple FileData objects with rollback on partial failure."""
         try:
             storage_path = await self.get_storage_path(question)
             return self._save_files(storage_path, files, question)
@@ -132,6 +144,7 @@ class QuestionStorage:
             raise FileOperationError("upload", str(question), str(e)) from e
 
     def create_dir(self, dir_path: str) -> str:
+        """Create a normalized storage directory."""
         try:
             return self.storage.create_dir(self._norm_path(dir_path))
         except QuestionStorageException:
@@ -145,6 +158,7 @@ class QuestionStorage:
         *,
         filename: str | None = None,
     ) -> bytes | None:
+        """Read a raw storage path or a named file within a directory."""
         if filename:
             dir_path = self._require_existing_dir(dir_path)
         file_path = self._construct_file_path(dir_path, filename=filename)
@@ -157,6 +171,7 @@ class QuestionStorage:
         *,
         filename: str | None = None,
     ) -> str:
+        """Write content to a raw storage path or a named file within a directory."""
         file_path = self._construct_file_path(dir_path, filename=filename)
         return self.storage.write(file_path, data)
 
@@ -166,6 +181,7 @@ class QuestionStorage:
         *,
         filename: str | None = None,
     ) -> None:
+        """Delete a raw storage path or a named file within a directory."""
         if filename:
             dir_path = self._require_existing_dir(dir_path)
         file_path = self._construct_file_path(dir_path, filename=filename)
@@ -177,6 +193,7 @@ class QuestionStorage:
         old_filename: str,
         new_filename: str,
     ) -> str:
+        """Rename a stored file by copying to the new name and deleting the old file."""
         dir_path = self._require_existing_dir(dir_path)
         old_path = self._construct_file_path(dir_path, filename=old_filename)
         new_path = self._construct_file_path(dir_path, filename=new_filename)
@@ -201,6 +218,7 @@ class QuestionStorage:
         return written_path
 
     def delete_dir(self, storage_path: str) -> None:
+        """Delete an existing storage directory and its contents."""
         try:
             normalized_path = self._require_existing_dir(storage_path)
             self.storage.delete(normalized_path)
@@ -212,6 +230,7 @@ class QuestionStorage:
     def list_storage_files(
         self, dir_path: str, *, recursive: bool = False
     ) -> list[str]:
+        """List file paths under an existing storage directory."""
         normalized_path = self._require_existing_dir(dir_path)
         files = [
             str(path)
@@ -221,6 +240,7 @@ class QuestionStorage:
         return files
 
     def batch_save_files(self, dir_path: str, files: list[FileData]) -> list[str]:
+        """Write a batch of FileData objects under an existing directory."""
         dir_path = self._require_existing_dir(dir_path)
         return [
             self.write_storage_file(dir_path, file.content, filename=file.filename)
@@ -228,6 +248,7 @@ class QuestionStorage:
         ]
 
     def move(self, target: str, old: str) -> str:
+        """Create the target directory and move an existing storage path into it."""
         new = self.storage.create_dir(self._norm_path(target))
         return self.storage.move(old, new)
 
@@ -237,6 +258,7 @@ class QuestionStorage:
         *,
         filename: str | None = None,
     ) -> FileData:
+        """Read a stored file and normalize it into FileData."""
         fpath = self._construct_file_path(target, filename=filename)
         content = self.read_storage_file(fpath)
         return normalize_filedata(
@@ -247,12 +269,14 @@ class QuestionStorage:
         )
 
     def get_all_storage_filedata(self, dir_path: str) -> list[FileData]:
+        """Read every file under a directory as normalized FileData."""
         return [
             self.get_storage_filedata(file_path)
             for file_path in self.list_storage_files(dir_path)
         ]
 
     def snapshot_dir(self, storage_path: str) -> list[FileData]:
+        """Capture raw file contents under a directory for later restore."""
         try:
             normalized_path = storage_path.rstrip("/") + "/"
             snapshot: list[FileData] = []
@@ -275,6 +299,7 @@ class QuestionStorage:
             raise StorageOperationError("snapshot_dir", storage_path, str(e)) from e
 
     def restore_files(self, storage_path: str, snapshot: list[FileData]) -> list[str]:
+        """Recreate files in a storage directory from a snapshot."""
         restored_files: list[str] = []
         failures: list[str] = []
 
@@ -305,6 +330,7 @@ class QuestionStorage:
         return restored_files
 
     def rollback_saved_files(self, saved_files: list[str]) -> FileRollbackError | None:
+        """Delete saved files after a failed batch save and report cleanup failures."""
         rollback_failures: list[str] = []
 
         for saved_file in reversed(saved_files):
@@ -324,6 +350,7 @@ class QuestionStorage:
         files: list[FileData],
         question: Question | ID,
     ) -> list[str]:
+        """Save files and roll back successful writes if a later save fails."""
         saved_files: list[str] = []
 
         for file in files:
@@ -349,11 +376,13 @@ class QuestionStorage:
         *,
         filename: str | None = None,
     ) -> str:
+        """Join an optional filename to a directory path."""
         if not filename:
             return dir_path.rstrip("/")
         return f"{dir_path.rstrip('/')}/{filename}"
 
     def _require_existing_dir(self, dir_path: str) -> str:
+        """Normalize a directory path and raise if it does not exist."""
         normalized_path = self._norm_path(dir_path)
         if not self.storage.exists(normalized_path):
             raise StorageDirectoryNotFoundError(
@@ -363,6 +392,7 @@ class QuestionStorage:
         return normalized_path
 
     def _norm_path(self, val: str | Path | Blob) -> str:
+        """Normalize supported path values into trailing-slash storage paths."""
         if isinstance(val, str):
             return val.rstrip("/") + "/"
         if isinstance(val, Path):
@@ -379,6 +409,7 @@ class QuestionStorage:
 
     @staticmethod
     def _relative_filename(storage_path: str, file_path: str) -> str:
+        """Return a file path relative to a storage directory."""
         normalized_path = storage_path.rstrip("/") + "/"
         normalized_file = file_path.replace("\\", "/")
 

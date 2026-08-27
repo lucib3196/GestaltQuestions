@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
 from uuid import UUID, uuid4
-
+from sqlmodel import Field, SQLModel, text
 from sqlalchemy import JSON, Column, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field as SQLField, Relationship, SQLModel
-
+from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, text
 from .schema import QType, Status
 
 if TYPE_CHECKING:
@@ -110,7 +110,13 @@ class QuestionSourceReference(SQLModel, table=True):
             name="uq_question_source_reference_source_question",
         ),
     )
-    question_id: UUID = SQLField(foreign_key="question.id", index=True)
+    question_id: UUID = Field(
+                sa_column=Column(
+                    ForeignKey("question.id", ondelete="CASCADE"),
+                    nullable=False,
+                    primary_key=True,
+                ),
+            )
     source_question_id: str = SQLField(index=True)  # info.json uuid
 
     raw_metadata: dict[str, Any] = SQLField(

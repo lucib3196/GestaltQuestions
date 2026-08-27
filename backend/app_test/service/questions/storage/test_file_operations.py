@@ -12,8 +12,9 @@ from backend.question.storage import (
     FileSaveError,
     StoragePathNotFoundError,
 )
+from backend.question.storage.storage import QuestionStorage
 from backend.storage import FileData
-from backend.question.storage.file_service import QuestionStorage
+
 
 @pytest.mark.asyncio
 async def test_get_storage_path_accepts_question_instance(

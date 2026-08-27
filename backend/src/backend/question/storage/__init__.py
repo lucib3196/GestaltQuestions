@@ -11,6 +11,7 @@ from .exceptions import (
     StorageOperationError,
     StoragePathNotFoundError,
 )
+from .storage import QuestionStorage
 
 __all__ = [
     "FileListError",
@@ -26,11 +27,3 @@ __all__ = [
     "StorageOperationError",
     "StoragePathNotFoundError",
 ]
-
-
-def __getattr__(name: str) -> object:
-    if name == "QuestionStorage":
-        from .file_service import QuestionStorage
-
-        return QuestionStorage
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

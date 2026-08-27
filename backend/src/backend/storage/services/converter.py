@@ -131,5 +131,3 @@ class UploadFileDataConverter:
         if not file.filename:
             raise InvalidUploadFileError("UploadFile does not include a filename")
         return file
-
-
