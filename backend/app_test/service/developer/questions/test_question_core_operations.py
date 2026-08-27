@@ -310,9 +310,6 @@ async def test_upload_files(
     assert content == b"remember this"
 
 
-
-
-
 @pytest.mark.asyncio
 async def test_copy_question(
     developer_question_service,

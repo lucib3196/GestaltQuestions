@@ -82,8 +82,6 @@ async def run_question_action(
             [FileData(filename="extra.txt", content="extra")],
         )
 
-    
-
     raise ValueError(f"Unknown action: {action}")
 
 
@@ -101,7 +99,6 @@ async def run_question_action(
         (AccessLevel.VIEW, "write_file", False),
         (AccessLevel.VIEW, "delete_file", False),
         (AccessLevel.VIEW, "upload_files", False),
-  
         (AccessLevel.EDIT, "get_question", True),
         (AccessLevel.EDIT, "copy_question", True),
         (AccessLevel.EDIT, "update_question", True),
@@ -112,7 +109,6 @@ async def run_question_action(
         (AccessLevel.EDIT, "write_file", True),
         (AccessLevel.EDIT, "delete_file", True),
         (AccessLevel.EDIT, "upload_files", True),
-
         (AccessLevel.FULL, "get_question", True),
         (AccessLevel.FULL, "copy_question", True),
         (AccessLevel.FULL, "update_question", True),
@@ -123,7 +119,6 @@ async def run_question_action(
         (AccessLevel.FULL, "write_file", True),
         (AccessLevel.FULL, "delete_file", True),
         (AccessLevel.FULL, "upload_files", True),
-       
     ],
 )
 async def test_shared_question_access_level_controls_question_actions(

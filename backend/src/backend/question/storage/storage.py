@@ -8,7 +8,9 @@ from google.cloud.storage.blob import Blob
 
 from backend.core import logger
 from backend.storage import FileData, Storage
-from .exceptions import InvalidPathError
+
+from .exceptions import InvalidPathError, StorageDirectoryNotFoundError
+
 
 class QuestionStorage:
     """Handles file storage operations for questions.
@@ -43,6 +45,8 @@ class QuestionStorage:
         Returns:
             bytes | None: File content as bytes, or None if file doesn't exist
         """
+        if filename:
+            dir_path = self._require_existing_dir(dir_path)
         file = self._construct_file_path(dir_path, filename=filename)
         # logger.debug("Reading question file %s", file)
         return self.storage.read(file)
@@ -60,9 +64,8 @@ class QuestionStorage:
             str: Path where file was written
         """
         file = self._construct_file_path(dir_path, filename=filename)
-        written_path = self.storage.write(file, data)
+        return self.storage.write(file, data)
         # logger.info("Wrote question file %s", written_path)
-        return written_path
 
     def delete_file(self, dir_path: str, *, filename: str | None = None) -> None:
         """Delete a file from storage.
@@ -72,9 +75,26 @@ class QuestionStorage:
             filename (str | None): Optional filename. If provided, deletes dir_path/filename.
             If None, treats dir_path as full file path.
         """
+        if filename:
+            dir_path = self._require_existing_dir(dir_path)
         file = self._construct_file_path(dir_path, filename=filename)
         # logger.info("Deleting question file %s", file)
         self.storage.delete(file)
+
+    def rename_file(self, dir_path: str, old_filename: str, new_filename: str) -> str:
+        """Rename a file in storage."""
+        dir_path = self._require_existing_dir(dir_path)
+        old_path = self._construct_file_path(dir_path, filename=old_filename)
+        new_path = self._construct_file_path(dir_path, filename=new_filename)
+
+        written_path = self.storage.copy(old_path, new_path)
+        try:
+            self.storage.delete(old_path)
+        except Exception:
+            self.storage.delete(new_path)
+            raise
+
+        return written_path
 
     def delete_dir(self, dir_path: str) -> None:
         """Delete an entire directory and its contents from storage.
@@ -83,7 +103,8 @@ class QuestionStorage:
             dir_path (str): Directory path to delete
         """
         # logger.info("Deleting question storage directory %s", dir_path)
-        self.storage.delete(dir_path)
+        normalized_path = self._require_existing_dir(dir_path)
+        self.storage.delete(normalized_path)
 
     def list_files(self, dir_path: str, *, recursive: bool = False) -> Sequence[str]:
         """List all files in a directory.
@@ -94,7 +115,7 @@ class QuestionStorage:
         Returns:
             Sequence[str]: List of file paths in the directory
         """
-        normalized_path = self._norm_path(dir_path)
+        normalized_path = self._require_existing_dir(dir_path)
         files = [
             str(p) for p in self.storage.list(normalized_path, recursive=recursive)
         ]
@@ -111,6 +132,7 @@ class QuestionStorage:
         Returns:
             List[str]: List of paths where files were saved
         """
+        dir_path = self._require_existing_dir(dir_path)
         targets = []
         # logger.debug("Batch saving %s question files under %s", len(files), dir_path)
         for f in files:
@@ -186,6 +208,16 @@ class QuestionStorage:
             return dir_path.rstrip("/")
         return f"{dir_path.rstrip('/')}/{filename}"
 
+    def _require_existing_dir(self, dir_path: str) -> str:
+        """Normalize a directory path and raise if it does not exist."""
+        normalized_path = self._norm_path(dir_path)
+        if not self.storage.exists(normalized_path):
+            raise StorageDirectoryNotFoundError(
+                question_id="unknown",
+                path=normalized_path,
+            )
+        return normalized_path
+
     def _norm_path(self, val: str | Path | Blob) -> str:
         """Normalizes path to standardized format with trailing slash.
 
@@ -209,6 +241,4 @@ class QuestionStorage:
         logger.warning(
             "Cannot normalize unsupported question file path type %s", type(val)
         )
-        raise InvalidPathError(
-            f"Cannot normalize path: unsupported type {type(val)}"
-        )
+        raise InvalidPathError(f"Cannot normalize path: unsupported type {type(val)}")

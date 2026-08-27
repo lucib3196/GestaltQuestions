@@ -37,11 +37,10 @@ from backend.question.schema import (
 )
 from backend.question.services.qtype import QuestionQTypeDB
 from backend.question.services.question import QuestionDB
-from backend.question.manager import QuestionStorage
 from backend.question.services.question_table import QuestionQueryService
+from backend.question.storage import QuestionStorage
 
 __all__ = [
-
     "QType",
     "Question",
     "QuestionCreate",

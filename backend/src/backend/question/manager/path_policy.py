@@ -1,6 +1,7 @@
-from backend.question.models import Question
 import re
 from pathlib import Path
+
+from backend.question.models import Question
 
 _filename_safe_re = re.compile(r"[^A-Za-z0-9._-]+")
 

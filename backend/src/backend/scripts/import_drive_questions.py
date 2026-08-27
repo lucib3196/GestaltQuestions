@@ -2,23 +2,25 @@ import argparse
 import asyncio
 from pathlib import Path
 from uuid import UUID
-from backend.core.firebase import initialize_firebase_app
+
 from gdrive_importer.gdrive_indexer import GoogleDriveIndexer
 from sqlmodel import Session
-from backend.developer.importer import DeveloperImportService
+
 from backend.accounts.users import UserManager
 from backend.api.dependencies.storage import get_storage_manager
+from backend.core.firebase import initialize_firebase_app
 from backend.database.config import engine
 from backend.developer import DeveloperProfileService, DeveloperQuestionService
+from backend.developer.collections.access import QuestionCollectionAccessReader
+from backend.developer.importer import DeveloperImportService
 from backend.developer.questions.access import QuestionAccessService
 from backend.developer.questions.authorizer import DeveloperQuestionAuthorizer
+from backend.question import Status
 from backend.question.access import QuestionAccessAdapter
-from backend.developer.collections.access import QuestionCollectionAccessReader
 from backend.question.importer import (
     DriveQuestionImporter,
     DriveQuestionPackageDiscoverer,
 )
-from backend.question import Status
 from backend.question.manager import QuestionManager
 from backend.question.services.question import QuestionDB
 
@@ -65,15 +67,16 @@ async def main() -> None:
                 profile=profile_service,
             ),
         )
-        qimporter = DeveloperImportService(session=session, developer_questions=developer_questions)
-        
+        qimporter = DeveloperImportService(
+            session=session, developer_questions=developer_questions
+        )
 
         for package in packages.values():
             question = await qimporter.import_question(
                 user_id=args.user_id,
                 importer=importer,
                 source=package,
-                status=Status.PUBLISHED
+                status=Status.PUBLISHED,
             )
             print(f"Imported {question.id}: {question.title}")
 

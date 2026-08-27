@@ -3,9 +3,6 @@ from typing import Any, Literal, overload
 
 from backend.core import logger
 from backend.question.manager.exceptions import (
-    FileListError,
-    FileOperationError,
-    FileSaveError,
     InvalidQuestionDataError,
     MissingQuestionDataError,
     QuestionCopyFailure,
@@ -14,12 +11,18 @@ from backend.question.manager.exceptions import (
     QuestionManagerException,
     QuestionNotFound,
     QuestionUpdateError,
-    StoragePathNotFoundError,
 )
 from backend.question.models import Question
 from backend.question.schema import QuestionCreate, QuestionRead, QuestionUpdate
 from backend.question.services.question import QuestionDB
-from .storage import QuestionStorage
+from backend.question.storage import (
+    FileListError,
+    FileOperationError,
+    FileSaveError,
+    QuestionStorage,
+    QuestionStorageException,
+    StoragePathNotFoundError,
+)
 from backend.shared import ID
 from backend.storage import FileData, Storage
 from backend.utils import safe_dir_name
@@ -75,7 +78,7 @@ class QuestionManager:
                 )
             logger.info("Created question %s", question.id)
             return question
-        except QuestionManagerException:
+        except (QuestionManagerException, QuestionStorageException):
             if question is not None:
                 logger.warning(
                     "Rolling back question %s after create failure", question.id
@@ -132,7 +135,7 @@ class QuestionManager:
             return await self.create_question(
                 qdata, storage_base_path=storage_base_path, files=qfiles
             )
-        except QuestionManagerException:
+        except (QuestionManagerException, QuestionStorageException):
             raise
         except Exception as e:
             raise QuestionCopyFailure(
@@ -146,7 +149,7 @@ class QuestionManager:
         try:
             logger.debug("Updating question metadata for %s", id)
             return await self.qdb.update_question(id, update)
-        except QuestionManagerException:
+        except (QuestionManagerException, QuestionStorageException):
             raise
         except Exception as e:
             raise QuestionUpdateError(question_id=str(id), reason=str(e)) from e
@@ -169,7 +172,7 @@ class QuestionManager:
             await self.qdb.delete_question(qid)
             logger.info("Deleted question %s", qid)
             return True
-        except QuestionManagerException:
+        except (QuestionManagerException, QuestionStorageException):
             raise
         except Exception as e:
             if storage_path and storage_snapshot:
@@ -189,7 +192,7 @@ class QuestionManager:
         try:
             storage_path = await self.get_storage_path(qid)
             return self.storage.list_files(storage_path)
-        except QuestionManagerException:
+        except (QuestionManagerException, QuestionStorageException):
             raise
         except Exception as e:
             raise FileListError(str(qid), str(e)) from e
@@ -199,7 +202,7 @@ class QuestionManager:
         try:
             storage_path = await self.get_storage_path(qid)
             return self.storage.read_file(storage_path, filename=filename)
-        except QuestionManagerException:
+        except (QuestionManagerException, QuestionStorageException):
             raise
         except Exception as e:
             raise FileOperationError("read", filename, str(e)) from e
@@ -209,7 +212,7 @@ class QuestionManager:
         try:
             storage_path = await self.get_storage_path(qid)
             return self.storage.write_file(storage_path, data, filename=filename)
-        except QuestionManagerException:
+        except (QuestionManagerException, QuestionStorageException):
             raise
         except Exception as e:
             raise FileOperationError("write", filename, str(e)) from e
@@ -219,7 +222,7 @@ class QuestionManager:
         try:
             storage_path = await self.get_storage_path(qid)
             return self.storage.delete_file(storage_path, filename=filename)
-        except QuestionManagerException:
+        except (QuestionManagerException, QuestionStorageException):
             raise
         except Exception as e:
             raise FileOperationError("delete", filename, str(e)) from e
@@ -229,7 +232,7 @@ class QuestionManager:
         try:
             storage_path = await self.get_storage_path(qid)
             return self.storage.get_all_filedata(storage_path)
-        except QuestionManagerException:
+        except (QuestionManagerException, QuestionStorageException):
             raise
         except Exception as e:
             raise FileOperationError("read", str(qid), str(e)) from e
@@ -244,7 +247,7 @@ class QuestionManager:
         try:
             storage_path = await self.get_storage_path(qid)
             return self._save_files(storage_path, files, qid)
-        except QuestionManagerException:
+        except (QuestionManagerException, QuestionStorageException):
             self._rollback_saved_files(saved_files)
             raise
         except Exception as e:

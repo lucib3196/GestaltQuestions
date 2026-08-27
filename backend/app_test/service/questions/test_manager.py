@@ -3,14 +3,11 @@ from pathlib import PurePosixPath
 from uuid import UUID
 
 import pytest
+from backend.question.manager.services.manager import QuestionManager
 
 from app_test.factories.question_factory import MakeQuestionPayload
 from backend.question import QuestionUpdate
-from backend.question.manager.exceptions import (
-    FileOperationError,
-    QuestionNotFound,
-)
-from backend.question.manager.services.manager import QuestionManager
+from backend.question.manager.exceptions import FileOperationError, QuestionNotFound
 from backend.storage import FileData
 from backend.utils import safe_dir_name
 
