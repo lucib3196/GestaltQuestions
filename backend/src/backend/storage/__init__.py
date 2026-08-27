@@ -1,3 +1,4 @@
+from .filedata import guess_mime_type, is_text_like_mime_type, normalize_filedata
 from .schema import FileData
 from .services import Storage
 from .services.base import STORAGE_TYPE
@@ -14,5 +15,8 @@ __all__ = [
     "Storage",
     "UploadFileDataConverter",
     "download_zip",
+    "guess_mime_type",
+    "is_text_like_mime_type",
+    "normalize_filedata",
     "upload_zip_and_extract",
 ]

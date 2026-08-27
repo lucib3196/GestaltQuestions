@@ -1,13 +1,12 @@
-import base64
 import io
 import json
-import mimetypes
 import zipfile
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Any
 
 from backend.storage import FileData
+from backend.storage.filedata import guess_mime_type, normalize_filedata
 
 from .exceptions import MissingQuestionMetadataError
 from .importer import QuestionImporter
@@ -61,31 +60,22 @@ class ZipQuestionImporter(QuestionImporter[ZipQuestionPackage, ZipQuestionFile])
 
     def load_raw_metadata(self, source: ZipQuestionPackage) -> dict[str, Any]:
         extracted_files = self._extract_files(source)
-        print("These are the extract files", extracted_files)
         raw_metadata = extracted_files.get(self.metadata_filename)
         if raw_metadata is None:
             raise MissingQuestionMetadataError(self.metadata_filename)
         return json.loads(raw_metadata.decode("utf-8"))
 
     def convert_to_filedata(self, file: ZipQuestionFile) -> FileData:
-        if file.mime_type.startswith("image/"):
-            self.verify_image(file.filename, file.content)
-            content = base64.b64encode(file.content).decode("ascii")
-        elif self.is_text_like(file.mime_type):
-            content = file.content.decode("utf-8")
-        else:
-            content = file.content
-
-        return FileData(
-            filename=file.filename,
-            content=content,
+        return normalize_filedata(
+            file.filename,
+            file.content,
             mime_type=file.mime_type,
+            verify_image=self.verify_image,
         )
 
     @staticmethod
     def _guess_mime_type(filename: str) -> str:
-        mime_type, _ = mimetypes.guess_type(PurePosixPath(filename).name)
-        return mime_type or "application/octet-stream"
+        return guess_mime_type(filename)
 
     @staticmethod
     def extract_zip(content: bytes) -> dict[str, bytes]:

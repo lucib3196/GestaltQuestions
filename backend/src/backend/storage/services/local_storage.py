@@ -57,6 +57,8 @@ class LocalStorage(Storage):
         path = self._resolve(storage_path)
 
         path.parent.mkdir(parents=True, exist_ok=True)
+        if not overwrite and path.exists():
+            raise FileExistsError(f"File already exists: {storage_path}")
         path.write_bytes(self._normalize_content(data))
         return storage_path
 

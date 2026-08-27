@@ -38,7 +38,6 @@ from backend.question.schema import (
 from backend.question.services.qtype import QuestionQTypeDB
 from backend.question.services.question import QuestionDB
 from backend.question.services.question_table import QuestionQueryService
-from backend.question.storage import QuestionStorage
 
 __all__ = [
     "QType",
@@ -59,7 +58,6 @@ __all__ = [
     "QuestionRead",
     "QuestionReadError",
     "QuestionRelationships",
-    "QuestionStorage",
     "QuestionStorageTypeError",
     "QuestionTableRow",
     "QuestionTopicLink",

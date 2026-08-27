@@ -3,11 +3,12 @@ from pathlib import PurePosixPath
 from uuid import UUID
 
 import pytest
-from backend.question.manager.services.manager import QuestionManager
 
 from app_test.factories.question_factory import MakeQuestionPayload
 from backend.question import QuestionUpdate
-from backend.question.manager.exceptions import FileOperationError, QuestionNotFound
+from backend.question.manager import QuestionManager
+from backend.question.manager.exceptions import QuestionNotFound
+from backend.question.storage import FileOperationError
 from backend.storage import FileData
 from backend.utils import safe_dir_name
 
@@ -179,7 +180,7 @@ async def test_delete_question_removes_database_record_and_storage(
     assert await question_manager.delete_question(question.id) is True
     assert await question_manager.qdb.get_question(question.id) is None
     assert storage_path is not None
-    assert not question_manager.storage.storage.exists(storage_path)
+    assert not question_manager.storage.exists(storage_path)
 
 
 @pytest.mark.asyncio

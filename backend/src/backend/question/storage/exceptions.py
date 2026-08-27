@@ -86,7 +86,7 @@ class FileListError(FileOperationError):
 class PathNormalizationError(QuestionStorageException):
     """Raised when path normalization fails."""
 
-    def __init__(self, path, reason: str = "") -> None:
+    def __init__(self, path: object, reason: str = "") -> None:
         message = f"Failed to normalize path: {path}"
         if reason:
             message += f" - {reason}"
@@ -96,6 +96,6 @@ class PathNormalizationError(QuestionStorageException):
 class InvalidPathError(PathNormalizationError):
     """Raised when a path is invalid or unsupported."""
 
-    def __init__(self, path, path_type: str = "") -> None:
+    def __init__(self, path: object, path_type: str = "") -> None:
         reason = f"type: {path_type}" if path_type else ""
         super().__init__(path, reason)
