@@ -12,9 +12,8 @@ export interface PLHintProps {
 }
 
 const variantStyles: Record<PLHintVariant, string> = {
-  default: "border border-[var(--color-border)] bg-[var(--color-surface)]",
-  highlighted:
-    "border border-[var(--color-border-strong)] bg-[var(--color-surface-strong)]",
+  default: "border-border bg-surface-secondary",
+  highlighted: "border-accent bg-[var(--color-approval-muted)]",
 };
 
 export default function PLHint({
@@ -27,16 +26,18 @@ export default function PLHint({
     <MathJax>
       <div
         className={clsx(
-          "flex w-full items-start gap-4 rounded-md p-4 mb-3 transition-all duration-(--duration-base)",
+          "flex w-full items-start gap-3 rounded-md border p-4 text-[15px] leading-7 shadow-sm transition-colors duration-[var(--duration-base)] ease-[var(--ease-base)]",
           variantStyles[variant as PLHintVariant],
           className,
         )}
       >
-        <div className="flex h-8 w-8 flex-none items-center justify-center rounded-full border border-border-strong bg-surface-muted text-sm font-semibold text-accent shadow-sm">
+        <div className="flex h-7 min-w-7 flex-none items-center justify-center rounded-full border border-border-strong bg-surface-strong px-2 text-xs font-semibold text-accent shadow-sm">
           {level}
         </div>
 
-        <div className="max-w-none text-left text-text">{children}</div>
+        <div className="min-w-0 max-w-none text-left text-text">
+          {children}
+        </div>
       </div>
     </MathJax>
   );

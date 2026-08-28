@@ -1,8 +1,9 @@
 import { MathJax } from "better-react-mathjax";
 import clsx from "clsx";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import { Button } from "../../../../../components/Button";
+import type { PLHintProps } from "../content/PLHint";
 import {
   uiPanelBaseStyles,
   type UIPanelSize,
@@ -11,6 +12,7 @@ import {
   uiPanelVariantStyles,
   uiTextStyles,
 } from "../../../styles";
+import { useEffect } from "react";
 export interface PLSolutionPanelProps {
   title?: string;
   subtitle?: string;
@@ -26,6 +28,47 @@ export interface PLSolutionPanelProps {
   autoShowAll?: boolean;
 }
 
+type SolutionStep = {
+  key: string;
+  level: number;
+  node: React.ReactNode;
+};
+
+function getSolutionSteps(children: React.ReactNode): SolutionStep[] {
+  return React.Children.toArray(children)
+    .filter((child) => {
+      if (React.isValidElement<Partial<PLHintProps>>(child)) {
+        return true;
+      }
+
+      return typeof child === "string" && child.trim().length > 0;
+    })
+    .map((child, index) => {
+      const fallbackLevel = index;
+
+      if (!React.isValidElement<Partial<PLHintProps>>(child)) {
+        return {
+          key: `step-${index}`,
+          level: fallbackLevel,
+          node: child,
+        };
+      }
+
+      return {
+        key: child.key?.toString() ?? `step-${index}`,
+        level: fallbackLevel,
+        node: React.cloneElement(child, {
+          level: fallbackLevel,
+        }),
+      };
+    });
+}
+function getStepLevels(steps: SolutionStep[]): number[] {
+  return Array.from(new Set(steps.map((step) => step.level))).sort(
+    (left, right) => left - right,
+  );
+}
+
 const PLSolutionPanel: React.FC<PLSolutionPanelProps> = ({
   children,
   className = "",
@@ -35,56 +78,80 @@ const PLSolutionPanel: React.FC<PLSolutionPanelProps> = ({
   variant = "default",
   autoShowAll = false,
 }) => {
-  const [stepIndex, setStepIndex] = useState<number>(0);
-  const steps = React.Children.toArray(children);
+  const steps = useMemo(() => getSolutionSteps(children), [children]);
+  const stepLevels = useMemo(() => getStepLevels(steps), [steps]);
+  const [visibleLevel, setVisibleLevel] = useState<number>(
+    () => stepLevels[0] ?? 1,
+  );
+
+  useEffect(() => {
+    setVisibleLevel(stepLevels[0] ?? 1);
+  }, [stepLevels]);
+
+  const maxLevel = stepLevels.at(-1) ?? visibleLevel;
+  const canShowNext = visibleLevel < maxLevel;
   const handleShowNext = () => {
-    setStepIndex((prev) => Math.min(prev + 1, steps.length));
+    setVisibleLevel((currentLevel) => {
+      const nextLevel = stepLevels.find((level) => level > currentLevel);
+      return nextLevel ?? currentLevel;
+    });
   };
   const handleReset = () => {
-    setStepIndex(0);
+    setVisibleLevel(stepLevels[0] ?? 1);
   };
 
-  const visibleSteps = autoShowAll ? steps : steps.slice(0, stepIndex);
+  const visibleSteps = autoShowAll
+    ? steps
+    : steps.filter((step) => step.level <= visibleLevel);
 
   return (
     <MathJax>
       <div
         className={clsx(
-          "h-full flex flex-col items-center text-center overflow-auto",
+          "flex h-full flex-col overflow-auto text-left",
           uiPanelBaseStyles,
           uiPanelVariantStyles[variant as UIPanelVariant],
           uiPanelSizeStyles[size as UIPanelSize],
           className,
         )}
       >
-        <div className="w-full overflow-auto">
-          <h2 className={clsx("text-xl sm:text-2xl", uiTextStyles.title)}>
-            {title}
-          </h2>
-          {subtitle && (
-            <p className={clsx("mt-1 text-sm", uiTextStyles.subtitle)}>
-              {subtitle}
-            </p>
-          )}
-        </div>
-        <div className="flex-1 w-full px-4 py-2">{visibleSteps}</div>
-
-        <div className="mt-auto mb-4 flex justify-center gap-3">
-          {!autoShowAll && stepIndex < steps.length - 1 ? (
-            <Button name="Show Next Step" onClick={handleShowNext} />
-          ) : (
-            <Button name="Reset" color="secondary" onClick={handleReset} />
-          )}
+        <div className="flex w-full items-start justify-between gap-4 border-b border-border pb-4">
+          <div>
+            <h2 className={clsx("text-lg leading-tight", uiTextStyles.title)}>
+              {title}
+            </h2>
+            {subtitle && (
+              <p
+                className={clsx(
+                  "mt-1 text-sm leading-6",
+                  uiTextStyles.subtitle,
+                )}
+              >
+                {subtitle}
+              </p>
+            )}
+          </div>
         </div>
 
-        <div
-          className={clsx(
-            "mt-6 border-t border-border pt-4 text-center text-xs",
-            uiTextStyles.helper,
-          )}
-        >
-          Review each step before proceeding.
+        <div className="flex w-full flex-1 flex-col gap-3 py-4">
+          {visibleSteps.map((step) => (
+            <div key={step.key}>{step.node}</div>
+          ))}
         </div>
+
+        {!autoShowAll && steps.length > 0 && (
+          <div className="mt-auto flex justify-end gap-2 border-t border-border pt-4">
+            {canShowNext ? (
+              <Button
+                name="Show Next Step"
+                color="showSolution"
+                onClick={handleShowNext}
+              />
+            ) : (
+              <Button name="Reset" color="secondary" onClick={handleReset} />
+            )}
+          </div>
+        )}
       </div>
     </MathJax>
   );
