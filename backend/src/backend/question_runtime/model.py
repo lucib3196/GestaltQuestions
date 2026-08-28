@@ -1,9 +1,9 @@
 from enum import StrEnum
 from uuid import UUID, uuid4
 
-from sqlalchemy import Index, UniqueConstraint
-from sqlmodel import Field, SQLModel, text
 from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, text
+from sqlmodel import Field, SQLModel, text
+
 
 class RuntimeLanguage(StrEnum):
     JAVASCRIPT = "javascript"
@@ -34,12 +34,12 @@ class QuestionRunTime(SQLModel, table=True):
     )
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     question_id: UUID = Field(
-            sa_column=Column(
-                ForeignKey("question.id", ondelete="CASCADE"),
-                nullable=False,
-                primary_key=True,
-            ),
-        )
+        sa_column=Column(
+            ForeignKey("question.id", ondelete="CASCADE"),
+            nullable=False,
+            primary_key=True,
+        ),
+    )
 
     language: RuntimeLanguage = Field(index=True)
     entry: str

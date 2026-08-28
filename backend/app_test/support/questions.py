@@ -16,16 +16,18 @@ def question_db(db_session: Session, seed_qtypes: None) -> QuestionDB:  # noqa: 
 
 
 @pytest.fixture
-def question_manager(raw_storage: Storage, question_db: QuestionDB) -> QuestionManager:
-    return QuestionManager(storage=raw_storage, qdb=question_db)
-
-
-@pytest.fixture
 def question_file_service(
     raw_storage: Storage,
     db_session: Session,
 ) -> QuestionStorage:
     return QuestionStorage.from_session(raw_storage, db_session)
+
+
+@pytest.fixture
+def question_manager(
+    question_file_service: QuestionStorage, question_db: QuestionDB
+) -> QuestionManager:
+    return QuestionManager(storage=question_file_service, qdb=question_db)
 
 
 @pytest.fixture

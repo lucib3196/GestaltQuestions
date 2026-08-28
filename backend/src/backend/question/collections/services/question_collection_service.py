@@ -41,7 +41,7 @@ class QuestionCollectionService(
 
     async def create_collection(
         self, owner: ProfileT, title: str, parent: QuestionCollection | None = None
-    ):
+    )->QuestionCollection:
         owner_id = self._require_profile_id(owner)
         self._validate_parent(parent, owner_id)
         try:

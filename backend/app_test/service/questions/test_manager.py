@@ -180,7 +180,7 @@ async def test_delete_question_removes_database_record_and_storage(
     assert await question_manager.delete_question(question.id) is True
     assert await question_manager.qdb.get_question(question.id) is None
     assert storage_path is not None
-    assert not question_manager.storage.exists(storage_path)
+    assert not question_manager.storage.storage.exists(storage_path)
 
 
 @pytest.mark.asyncio
