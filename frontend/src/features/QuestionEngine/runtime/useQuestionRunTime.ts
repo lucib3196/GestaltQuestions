@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { questionAPIURL } from "../../../config/apiConfig";
-import type {
-  QuestionRunResponse,
-  QuestionRuntimeLanguage,
-} from "../../../services/QuestionRuntime";
+import type { QuestionRuntimeLanguage } from "../../../services/QuestionRuntime";
 import { QuestionRuntimeApi } from "../../../services/QuestionRuntime";
 import { useQuestionInstance } from "../instance";
 
@@ -16,7 +13,6 @@ export function useRunQuestion(
   const setRunTimeContent = useQuestionInstance((s) => s.setRunTimeContent);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [qPayload, setQPayload] = useState<QuestionRunResponse | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,7 +28,6 @@ export function useRunQuestion(
         );
 
         if (!cancelled) {
-          setQPayload(data);
           setRunTimeContent(data);
         }
       } catch (err) {
@@ -47,7 +42,7 @@ export function useRunQuestion(
       }
     };
 
-    run();
+    void run();
 
     return () => {
       cancelled = true;
@@ -55,7 +50,6 @@ export function useRunQuestion(
   }, [questionID, serverMode, refreshKey, setRunTimeContent]);
 
   return {
-    qPayload,
     error,
     loading,
   };

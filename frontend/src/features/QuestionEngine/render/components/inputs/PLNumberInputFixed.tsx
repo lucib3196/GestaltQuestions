@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { useQuestionInstance } from "../../../instance";
 import PLNumberInputField, {
   type PLNumberInputVariant,
 } from "./PLNumberInputField";
 
-export type PLNumberInputProps = {
+export type PLNumberInputFixedProps = {
   answerName: string;
+  correctAnswerFixed: string | number;
   comparison: string;
   digits: number | string;
   label: string | number;
@@ -14,17 +15,21 @@ export type PLNumberInputProps = {
   variant?: PLNumberInputVariant;
 };
 
-const PLNumberInput: React.FC<PLNumberInputProps> = ({
+const PLNumberInputFixed: React.FC<PLNumberInputFixedProps> = ({
   answerName,
   className = "",
+  correctAnswerFixed,
   digits,
   label,
   variant = "default",
 }) => {
   const step = 1 / Math.pow(10, Number(digits) || 0);
-
   const currentResponse = useQuestionInstance((s) => s.userAnswers[answerName]);
   const setAnswer = useQuestionInstance((s) => s.setUserAnswers);
+  const setCorrectAnswer = useQuestionInstance((s) => s.setCorrectAnswer);
+  useEffect(() => {
+    setCorrectAnswer(answerName, correctAnswerFixed);
+  }, [answerName, correctAnswerFixed, setCorrectAnswer]);
   const submitted = useQuestionInstance((s) => s.hasSubmitted);
   const inputValue =
     typeof currentResponse === "string" || typeof currentResponse === "number"
@@ -45,4 +50,4 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
   );
 };
 
-export default PLNumberInput;
+export default PLNumberInputFixed;

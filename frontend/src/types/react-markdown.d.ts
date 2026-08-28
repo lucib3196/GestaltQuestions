@@ -4,6 +4,7 @@ declare module "react-markdown/lib/ast-to-react" {
   interface Components {
     "pl-question-panel"?: any;
     "pl-number-input"?: any;
+    "pl-number-input-fixed"?: any;
     "pl-solution-panel"?: any;
     "pl-figure"?: any;
   }

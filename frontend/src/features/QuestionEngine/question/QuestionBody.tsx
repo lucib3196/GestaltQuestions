@@ -1,96 +1,77 @@
-import type React from "react";
-import type { IconType } from "react-icons";
-import { FiFileText, FiTarget } from "react-icons/fi";
+import clsx from "clsx";
+import { useRef } from "react";
+import { useEffect } from "react";
 
-import type { QuestionRunResponse } from "../../../services";
-import type { QuestionRead } from "../../QuestionBuilder";
 import { useQuestionInstance } from "../instance";
 import QuestionHTMLToReact from "../render/QuestionHtmlToReact";
+import DisplayAnswers from "../ui/QuestionFeedback";
+import QuestionHeader from "../ui/QuestionHeader";
 import QuestionActions from "./QuestionActions";
-import DisplayAnswers from "./QuestionFeedback";
+type QuestionBodyVariant = "default" | "compact" | "flush" | "centered";
 
-type QuestionHeaderProps = {
-  qdata: QuestionRead | null | undefined;
-  topicIcon?: IconType | null;
+type QuestionBodyProps = {
+  variant?: QuestionBodyVariant;
+  className?: string;
 };
 
-function MetadataChip({
-  children,
-  icon: Icon,
-}: {
-  children: React.ReactNode;
-  icon?: IconType | null;
-}) {
-  return (
-    <span className="inline-flex items-center gap-2 rounded-md border border-border bg-surface-secondary px-3 py-2 text-sm font-medium text-text-muted">
-      {Icon ? <Icon className="h-4 w-4 text-accent" /> : null}
-      {children}
-    </span>
-  );
-}
-
-function QuestionHeader({
-  qdata,
-  topicIcon: TopicIcon = null,
-}: QuestionHeaderProps) {
-  return (
-    <header className="mb-6 space-y-4">
-      <div className="flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[rgba(57,91,255,0.18)] text-accent">
-          <FiTarget className="h-5 w-5" />
-        </span>
-        <h1 className="text-2xl font-semibold text-text">
-          {qdata?.title ?? "Untitled question"}
-        </h1>
-      </div>
-
-      {qdata?.topics?.length ? (
-        <div className="flex flex-wrap gap-2">
-          {qdata.topics.map((topic) => (
-            <MetadataChip
-              key={topic}
-              // TopicIcon is intentionally optional until topic-specific icons exist.
-              icon={TopicIcon}
-            >
-              {topic}
-            </MetadataChip>
-          ))}
-        </div>
-      ) : null}
-
-      {qdata?.qType?.length ? (
-        <div className="flex flex-wrap items-center gap-2 text-sm text-text-muted">
-          <FiFileText className="h-4 w-4 text-accent" />
-          <span className="font-semibold text-text">Question Type:</span>
-          {qdata.qType.map((qType) => (
-            <MetadataChip key={qType}>{qType}</MetadataChip>
-          ))}
-        </div>
-      ) : null}
-    </header>
-  );
-}
+const questionBodyVariants: Record<QuestionBodyVariant, string> = {
+  default: "p-5",
+  compact: "p-4",
+  flush: "border-transparent bg-transparent p-0 shadow-none",
+  centered: "mx-auto max-w-5xl p-5",
+};
 
 export default function QuestionBody({
-  qpayload,
-}: {
-  qpayload: QuestionRunResponse;
-}) {
+  className = "",
+  variant = "compact",
+}: QuestionBodyProps) {
+  const runtime = useQuestionInstance((s) => s.runtime);
   const hasSubmitted = useQuestionInstance((s) => s.hasSubmitted);
-  const answers = useQuestionInstance((s) => s.answers);
+  const userAnswers = useQuestionInstance((s) => s.userAnswers);
+  const correctAnswers = useQuestionInstance((s) => s.correctAnswers);
+
+  // UI stuff
+  const feedbackRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!hasSubmitted) return;
+    feedbackRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [hasSubmitted]);
+
+  if (!runtime) return null;
 
   return (
-    <div>
-      <QuestionHeader qdata={qpayload.qmeta} />
-      <QuestionHTMLToReact html={qpayload.question_html} />
-      <QuestionActions />
-
-      {hasSubmitted && qpayload.quiz_data && (
-        <DisplayAnswers
-          quizData={qpayload.quiz_data}
-          submittedAnswer={answers}
-        />
+    <section
+      className={clsx(
+        "h-full overflow-auto rounded-md border border-border-strong bg-surface text-text shadow-soft transition-colors duration-(--duration-base) ease-base",
+        questionBodyVariants[variant],
+        className,
       )}
-    </div>
+    >
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
+        <QuestionHeader qdata={runtime.qmeta} variant={variant} />
+
+        <div className="min-w-0">
+          <QuestionHTMLToReact html={runtime.question_html} />
+        </div>
+
+        <QuestionActions />
+
+        {hasSubmitted && (
+          <div ref={feedbackRef}>
+            <DisplayAnswers
+              correctAnswers={correctAnswers}
+              submittedAnswer={userAnswers}
+              variant={variant === "compact" ? "compact" : "default"}
+            />
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
+
+export type { QuestionBodyVariant };

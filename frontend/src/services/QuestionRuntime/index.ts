@@ -1,11 +1,11 @@
 export { default as QuestionRuntimeApi } from "./api";
 export type {
-  QuestionRunAnswerMap,
-  QuestionRunQuizData,
+  QuestionAnswerMap,
   QuestionRunResponse,
   QuestionRuntimeCreateRequest,
   QuestionRuntimeLanguage,
   QuestionRuntimeResponse,
-  QuestionRunValue,
+  QuestionValue,
+  QuizData,
   RuntimeConfigSource,
 } from "./types";

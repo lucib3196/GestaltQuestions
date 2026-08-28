@@ -11,15 +11,12 @@ type QuestionRenderProps = {
 
 function QuestionRenderBody({ qid, serverSettings }: QuestionRenderProps) {
   const refreshKey = useQuestionInstance((s) => s.refreshKey);
-  const { qPayload, error, loading } = useRunQuestion(
-    qid,
-    serverSettings,
-    refreshKey,
-  );
+  const runtime = useQuestionInstance((s) => s.runtime);
+  const { error, loading } = useRunQuestion(qid, serverSettings, refreshKey);
   if (error) {
     return (
       <div
-        className="w-full rounded-[var(--radius-md)] border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+        className="w-full rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800"
         role="alert"
       >
         <div className="font-semibold">Code execution failed</div>
@@ -30,10 +27,10 @@ function QuestionRenderBody({ qid, serverSettings }: QuestionRenderProps) {
     );
   }
 
-  if (loading || !qPayload) {
+  if (loading || !runtime) {
     return (
       <div
-        className="flex min-h-130 w-full items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-strong)] text-sm font-medium text-text-muted"
+        className="flex min-h-130 w-full items-center justify-center rounded-md border border-border bg-surface-strong text-sm font-medium text-text-muted"
         role="status"
         aria-live="polite"
       >
@@ -42,7 +39,7 @@ function QuestionRenderBody({ qid, serverSettings }: QuestionRenderProps) {
     );
   }
 
-  return <QuestionRenderShell qpayload={qPayload} />;
+  return <QuestionRenderShell />;
 }
 
 export default function QuestionRender({

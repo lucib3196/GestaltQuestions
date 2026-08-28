@@ -37,6 +37,7 @@ const EXAMPLES_BY_TAG: Record<string, string> = {
   "pl-question-panel": `<pl-question-panel size="md" variant="default">\n  <p>Solve for $x$ where $2x + 4 = 14$.</p>\n</pl-question-panel>`,
   "pl-solution-panel": `<pl-solution-panel title="Solution">\n  <p>Subtract 4 on both sides: $2x=10$</p>\n  <p>Then divide by 2: $x=5$</p>\n</pl-solution-panel>`,
   "pl-number-input": `<pl-number-input answers-name="x" digits="2" label="$x$"></pl-number-input>`,
+  "pl-number-input-fixed": `<pl-number-input-fixed answers-name="Ay" correct-answer-fixed="3.5" comparison="sigfig" digits="3" label="$A_{y}$ (kN)"></pl-number-input-fixed>`,
   "pl-hint": `<pl-hint level="1">Try isolating the variable first.</pl-hint>`,
   "pl-figure": `<pl-figure filename="diagram.png" size="md"></pl-figure>`,
   "pl-multiple-choice": `<pl-multiple-choice answers-name="q1">\n  <pl-answer correct="false">2</pl-answer>\n  <pl-answer correct="true">5</pl-answer>\n  <pl-answer correct="false">9</pl-answer>\n</pl-multiple-choice>`,

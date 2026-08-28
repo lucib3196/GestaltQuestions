@@ -14,7 +14,10 @@ import {
   PLMultipleChoice,
   type PLMultipleChoiceProps,
   PLNumberInput,
+  PLNumberInputFixed,
+  type PLNumberInputFixedProps,
   type PLNumberInputProps,
+  type PLNumberInputVariant,
   PLQuestionPanel,
   type PLQuestionPanelProps,
   PLSolutionPanel,
@@ -26,6 +29,7 @@ import {
 export type ValidComponents =
   | "pl-question-panel"
   | "pl-number-input"
+  | "pl-number-input-fixed"
   | "pl-figure"
   | "pl-solution-panel"
   | "pl-hint"
@@ -38,6 +42,7 @@ export type ValidComponents =
 export type TagRegistry = {
   "pl-question-panel": PLQuestionPanelProps;
   "pl-number-input": PLNumberInputProps;
+  "pl-number-input-fixed": PLNumberInputFixedProps;
   "pl-figure": PLFigureProps;
   "pl-solution-panel": PLSolutionPanelProps;
   "pl-hint": PLHintProps;
@@ -54,6 +59,7 @@ export const ComponentMap: Record<
 > = {
   "pl-question-panel": PLQuestionPanel,
   "pl-number-input": PLNumberInput,
+  "pl-number-input-fixed": PLNumberInputFixed,
   "pl-figure": PLFigure,
   "pl-solution-panel": PLSolutionPanel,
   "pl-hint": PLHint,
@@ -71,6 +77,16 @@ function mapSvgContrast(
   value: string | undefined,
 ): PLFigureProps["svgContrast"] {
   return value === "none" ? "none" : value === "auto" ? "auto" : undefined;
+}
+
+function mapNumberInputVariant(
+  value: string | undefined,
+): PLNumberInputVariant | undefined {
+  if (value === "default" || value === "minimal" || value === "emphasis") {
+    return value;
+  }
+
+  return undefined;
 }
 
 // This essentially maps the raw attributes and changes them and process them
@@ -99,7 +115,16 @@ export const TagAttributeMapping: {
     digits: Number(attrs["digits"] ?? 3),
     label: attrs["label"] ?? "",
     className: attrs["classname"] || attrs["class"],
-    variant: attrs["variant"],
+    variant: mapNumberInputVariant(attrs["variant"]),
+  }),
+  "pl-number-input-fixed": (attrs) => ({
+    answerName: attrs["answers-name"],
+    correctAnswerFixed: attrs["correct-answer-fixed"] ?? "",
+    comparison: attrs["comparison"] ?? "exact",
+    digits: Number(attrs["digits"] ?? 3),
+    label: attrs["label"] ?? "",
+    className: attrs["classname"] || attrs["class"],
+    variant: mapNumberInputVariant(attrs["variant"]),
   }),
   "pl-figure": (attrs) => ({
     src: attrs["src"],
@@ -128,16 +153,21 @@ export const TagAttributeMapping: {
   }),
   "pl-answer": (attrs) => ({
     correct: attrs["correct"] === "true" ? "true" : "false",
+    value: attrs["value"],
+    answerKey: attrs["answer-key"] || attrs["key"],
+    disabled: attrs["disabled"] === "true",
   }),
   "pl-multiple-choice": (attrs) => ({
     answersName: attrs["answers-name"],
     inline: attrs["inline"] === "true",
+    randomize: attrs["randomize"] !== "false",
     style: attrs["style"],
     multiple: attrs["multiple"] === "true",
   }),
   "pl-checkbox": (attrs) => ({
     answersName: attrs["answers-name"],
     inline: attrs["inline"] === "true",
+    randomize: attrs["randomize"] !== "false",
     style: attrs["style"],
     multiple: attrs["multiple"] === "true",
   }),

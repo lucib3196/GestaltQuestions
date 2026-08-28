@@ -12,10 +12,13 @@ export default class UserLookupApi {
     token: string,
     params: DeveloperLookupParams = {},
   ): Promise<UserDetailRead[]> {
-    const response = await api.get<UserDetailRead[]>(`${this.base}/developers`, {
-      params,
-      headers: this.authHeaders(token),
-    });
+    const response = await api.get<UserDetailRead[]>(
+      `${this.base}/developers`,
+      {
+        params,
+        headers: this.authHeaders(token),
+      },
+    );
     return response.data;
   }
 }

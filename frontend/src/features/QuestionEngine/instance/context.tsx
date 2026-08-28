@@ -2,8 +2,11 @@ import { createContext, type ReactNode, useContext, useRef } from "react";
 import type { StoreApi } from "zustand";
 import { useStore } from "zustand";
 
-import { createQuestionInstanceStore } from "./stores";
-import type { QuestionInstanceState, QuestionInstanceStore } from "./types";
+import {
+  createQuestionInstanceStore,
+  type QuestionInstanceState,
+  type QuestionInstanceStore,
+} from "./stores";
 
 const QuestionInstanceContext =
   createContext<StoreApi<QuestionInstanceStore> | null>(null);

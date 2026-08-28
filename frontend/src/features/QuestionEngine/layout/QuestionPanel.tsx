@@ -6,7 +6,7 @@ type QuestionPanelProps = {
 
 export default function QuestionPanel({ children }: QuestionPanelProps) {
   return (
-    <section className="h-full overflow-auto rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface)] p-6 text-[var(--color-text)] shadow-[var(--shadow-soft)] transition-colors duration-[var(--duration-base)] ease-[var(--ease-base)]">
+    <section className="h-full overflow-auto rounded-md border border-border-strong bg-surface p-6 text-text shadow-(--shadow-soft) transition-colors duration-(--duration-base) ease-base">
       {children}
     </section>
   );

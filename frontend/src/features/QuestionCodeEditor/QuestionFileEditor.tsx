@@ -21,7 +21,9 @@ type QuestionLogsPanelProps = {
   logs?: string[];
 };
 
-function QuestionLogsPanel({ logs = [] }: QuestionLogsPanelProps) {
+const EMPTY_LOGS: string[] = [];
+
+function QuestionLogsPanel({ logs = EMPTY_LOGS }: QuestionLogsPanelProps) {
   return (
     <section className="overflow-hidden rounded-lg border border-border bg-surface">
       <div className="flex items-center justify-between border-b border-border bg-surface-strong px-3 py-2">
@@ -52,12 +54,12 @@ function QuestionLogsPanel({ logs = [] }: QuestionLogsPanelProps) {
 function QuestionFileEditorBase({ qid }: QuestionFileEditorBaseProps) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showLogs, setShowLogs] = useState(false);
-  const logs = useQuestionInstance((s) => s.logs);
+  const logs = useQuestionInstance((s) => s.runtime?.logs ?? EMPTY_LOGS);
   const refreshQuestions = useQuestionInstance((s) => s.setRefreshKey);
   const refreshFiles = useCallback(() => {
     setRefreshKey((key) => key + 1);
     refreshQuestions();
-  }, []);
+  }, [refreshQuestions]);
   const { fileData } = useQuestionFileData(qid, refreshKey);
 
   const { files, setFiles, updateFileContent } =

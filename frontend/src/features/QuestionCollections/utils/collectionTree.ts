@@ -1,4 +1,8 @@
-import type { CollectionId, QuestionCollection ,QuestionCollectionRead} from "../../../services";
+import type {
+  CollectionId,
+  QuestionCollection,
+  QuestionCollectionRead,
+} from "../../../services";
 import type { CollectionQuestion } from "../../../services";
 import type {
   NormalizedCollections,

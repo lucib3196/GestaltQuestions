@@ -136,6 +136,67 @@
       ]
     },
     {
+      "tag": "pl-number-input-fixed",
+      "componentName": "PLNumberInputFixed",
+      "summary": "Static numeric answer display that renders a fixed correct answer without runtime state binding.",
+      "children": "None.",
+      "attributes": [
+        {
+          "htmlAttribute": "answers-name",
+          "prop": "answerName",
+          "type": "string",
+          "required": true,
+          "description": "Answer key used for the rendered input id and name."
+        },
+        {
+          "htmlAttribute": "correct-answer-fixed",
+          "prop": "correctAnswerFixed",
+          "type": "string|number",
+          "required": true,
+          "description": "Fixed value displayed in the read-only numeric input."
+        },
+        {
+          "htmlAttribute": "comparison",
+          "prop": "comparison",
+          "type": "string",
+          "required": false,
+          "default": "exact",
+          "description": "Answer comparison strategy metadata."
+        },
+        {
+          "htmlAttribute": "digits",
+          "prop": "digits",
+          "type": "number",
+          "required": false,
+          "default": 3,
+          "description": "Decimal precision used to derive input step value."
+        },
+        {
+          "htmlAttribute": "label",
+          "prop": "label",
+          "type": "string|number",
+          "required": false,
+          "default": "",
+          "description": "Visible label for the fixed numeric value."
+        },
+        {
+          "htmlAttribute": "class|classname",
+          "prop": "className",
+          "type": "string",
+          "required": false,
+          "description": "Additional wrapper classes."
+        },
+        {
+          "htmlAttribute": "variant",
+          "prop": "variant",
+          "type": "string",
+          "required": false,
+          "default": "default",
+          "description": "Input panel visual style."
+        }
+      ]
+    },
+    {
       "tag": "pl-solution-panel",
       "componentName": "PLSolutionPanel",
       "summary": "Step-by-step solution container with optional progressive reveal controls.",
@@ -315,6 +376,14 @@
           "description": "Allow multiple selected options."
         },
         {
+          "htmlAttribute": "randomize",
+          "prop": "randomize",
+          "type": "boolean",
+          "required": false,
+          "default": true,
+          "description": "Shuffle option order by default. Set to false to preserve author order."
+        },
+        {
           "htmlAttribute": "style",
           "prop": "style",
           "type": "string",
@@ -353,6 +422,14 @@
           "required": false,
           "default": false,
           "description": "Allow multiple selected options."
+        },
+        {
+          "htmlAttribute": "randomize",
+          "prop": "randomize",
+          "type": "boolean",
+          "required": false,
+          "default": true,
+          "description": "Shuffle option order by default. Set to false to preserve author order."
         },
         {
           "htmlAttribute": "style",
