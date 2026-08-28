@@ -2,7 +2,6 @@ import type React from "react";
 import type { IconType } from "react-icons";
 import { FiFileText, FiTarget } from "react-icons/fi";
 
-import type { QuestionRunResponse } from "../../../services";
 import type { QuestionRead } from "../../QuestionBuilder";
 import { useQuestionInstance } from "../instance";
 import QuestionHTMLToReact from "../render/QuestionHtmlToReact";
@@ -72,18 +71,24 @@ function QuestionHeader({
 }
 
 export default function QuestionBody() {
-  const runTimeContent = useQuestionInstance((s) => s.runtime);
+  const runtime = useQuestionInstance((s) => s.runtime);
   const hasSubmitted = useQuestionInstance((s) => s.hasSubmitted);
-  const answers = useQuestionInstance((s) => s.userAnswers);
+  const userAnswers = useQuestionInstance((s) => s.userAnswers);
   const correctAnswers = useQuestionInstance((s) => s.correctAnswers);
+
+  if (!runtime) return null;
+
   return (
     <section className="h-full overflow-auto rounded-md border border-border-strong bg-surface p-6 text-text shadow-(--shadow-soft) transition-colors duration-(--duration-base) ease-base">
-      <QuestionHeader qdata={runTimeContent?.qmeta} />
-      <QuestionHTMLToReact html={runTimeContent?.question_html ?? ""} />
+      <QuestionHeader qdata={runtime.qmeta} />
+      <QuestionHTMLToReact html={runtime.question_html} />
       <QuestionActions />
 
-      {hasSubmitted && correctAnswers && (
-        <DisplayAnswers quizData={correctAnswers} submittedAnswer={answers} />
+      {hasSubmitted && (
+        <DisplayAnswers
+          correctAnswers={correctAnswers}
+          submittedAnswer={userAnswers}
+        />
       )}
     </section>
   );

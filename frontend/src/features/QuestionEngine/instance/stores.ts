@@ -8,7 +8,7 @@ import type {
 
 export type QuestionInstanceState = {
   // Stores the runtime of the question
-  runtime?: QuestionRunResponse;
+  runtime: QuestionRunResponse | null;
   // Mapping of the user answers and the correct answers
   userAnswers: QuestionAnswerMap;
   correctAnswers: QuestionAnswerMap;
@@ -34,8 +34,22 @@ export type QuestionInstanceActions = {
 export type QuestionInstanceStore = QuestionInstanceState &
   QuestionInstanceActions;
 
+function areQuestionValuesEqual(
+  left: QuestionValue | undefined,
+  right: QuestionValue,
+): boolean {
+  if (Array.isArray(left) && Array.isArray(right)) {
+    return (
+      left.length === right.length &&
+      left.every((value, index) => value === right[index])
+    );
+  }
+
+  return left === right;
+}
+
 const initialState: QuestionInstanceState = {
-  runtime: undefined,
+  runtime: null,
   userAnswers: {},
   correctAnswers: {},
   hasSubmitted: false,
@@ -57,20 +71,33 @@ export function createQuestionInstanceStore(
         return {
           runtime: payload,
           userAnswers: {},
-          correctAnswers: correctAnswers,
+          correctAnswers,
           hasSubmitted: false,
         };
       }),
     setCorrectAnswer: (name, value) =>
-      set((state) => ({
-        correctAnswers: { ...state.correctAnswers, [name]: value },
-      })),
-    setUserAnswers: (name, value) =>
-      set((state) => ({
-        userAnswers: { ...state.userAnswers, [name]: value },
-      })),
+      set((state) => {
+        if (areQuestionValuesEqual(state.correctAnswers[name], value)) {
+          return state;
+        }
 
-    setRefreshKey: () => set((state) => ({ refreshKey: state.refreshKey + 1 })),
+        return {
+          correctAnswers: { ...state.correctAnswers, [name]: value },
+        };
+      }),
+    setUserAnswers: (name, value) =>
+      set((state) => {
+        if (areQuestionValuesEqual(state.userAnswers[name], value)) {
+          return state;
+        }
+
+        return {
+          userAnswers: { ...state.userAnswers, [name]: value },
+        };
+      }),
+
+    setRefreshKey: () =>
+      set((state) => ({ refreshKey: state.refreshKey + 1 })),
     resetAnswers: () => set(() => ({ userAnswers: {} })),
     submitAnswers: () => set(() => ({ hasSubmitted: true })),
     resetSubmissions: () => set(() => ({ hasSubmitted: false })),

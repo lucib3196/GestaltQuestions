@@ -33,21 +33,18 @@ function buildAnswerComparisonRows(
 }
 
 type DisplayAnswerProps = {
-  quizData: QuestionAnswerMap | null;
+  correctAnswers: QuestionAnswerMap;
   submittedAnswer?: QuestionAnswerMap | null; // Backward-compatible prop
   variant?: AnswerTableVariant;
 };
 
 export default function DisplayAnswers({
-  quizData,
+  correctAnswers,
   submittedAnswer,
   variant = "default",
 }: DisplayAnswerProps) {
-  if (!quizData) {
-    return null;
-  }
   const effectiveResponses = submittedAnswer ?? null;
-  const rows = buildAnswerComparisonRows(quizData, effectiveResponses);
+  const rows = buildAnswerComparisonRows(correctAnswers, effectiveResponses);
 
   return (
     <div className={clsx("qr-answer-card", variantClasses[variant])}>

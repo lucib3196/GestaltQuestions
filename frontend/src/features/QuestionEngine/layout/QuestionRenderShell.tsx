@@ -1,19 +1,16 @@
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
-import type { QuestionRunResponse } from "../../../services";
 import { useQuestionInstance } from "../instance";
 import QuestionBody from "../question/QuestionBody";
 import QuestionHTMLToReact from "../render/QuestionHtmlToReact";
-
 import SolutionPanel from "./SolutionPanel";
 
-type QuestionRenderShellProps = {
-  qpayload: QuestionRunResponse;
-};
-
-export default function QuestionRenderShell({}: QuestionRenderShellProps) {
+export default function QuestionRenderShell() {
   const showSolution = useQuestionInstance((s) => s.showSolution);
-  const runTimeContent = useQuestionInstance((s) => s.runtime);
+  const runtime = useQuestionInstance((s) => s.runtime);
+
+  if (!runtime) return null;
+
   return (
     <PanelGroup direction="horizontal" className="min-h-130 w-full gap-3">
       <Panel
@@ -32,7 +29,7 @@ export default function QuestionRenderShell({}: QuestionRenderShellProps) {
             <SolutionPanel>
               <QuestionHTMLToReact
                 html={
-                  runTimeContent?.solution_html ??
+                  runtime.solution_html ??
                   "No Solution Available for Question"
                 }
               />

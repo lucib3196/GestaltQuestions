@@ -11,7 +11,8 @@ type QuestionRenderProps = {
 
 function QuestionRenderBody({ qid, serverSettings }: QuestionRenderProps) {
   const refreshKey = useQuestionInstance((s) => s.refreshKey);
-  const { runTimeContent, error, loading } = useRunQuestion(
+  const runtime = useQuestionInstance((s) => s.runtime);
+  const { error, loading } = useRunQuestion(
     qid,
     serverSettings,
     refreshKey,
@@ -30,7 +31,7 @@ function QuestionRenderBody({ qid, serverSettings }: QuestionRenderProps) {
     );
   }
 
-  if (loading || !runTimeContent) {
+  if (loading || !runtime) {
     return (
       <div
         className="flex min-h-130 w-full items-center justify-center rounded-md border border-border bg-surface-strong text-sm font-medium text-text-muted"
