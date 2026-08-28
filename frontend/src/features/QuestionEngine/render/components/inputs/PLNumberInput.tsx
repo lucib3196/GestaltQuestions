@@ -1,8 +1,9 @@
-import { MathJax } from "better-react-mathjax";
-import clsx from "clsx";
 import React from "react";
 
 import { useQuestionInstance } from "../../../instance";
+import PLNumberInputField, {
+  type PLNumberInputVariant,
+} from "./PLNumberInputField";
 
 export type PLNumberInputProps = {
   answerName: string;
@@ -10,12 +11,7 @@ export type PLNumberInputProps = {
   digits: number | string;
   label: string | number;
   className?: string;
-  variant?: keyof typeof variantStyles;
-};
-
-const variantStyles: Record<string, string> = {
-  default: "bg-[var(--color-surface)]",
-  minimal: "bg-[var(--color-surface-muted)]",
+  variant?: PLNumberInputVariant;
 };
 
 const PLNumberInput: React.FC<PLNumberInputProps> = ({
@@ -36,41 +32,16 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
       : "";
 
   return (
-    <MathJax>
-      <div className={className}>
-        <fieldset
-          className={clsx(
-            "mb-4 flex w-full max-w-155 overflow-hidden rounded-md border border-border-strong",
-            variantStyles[variant],
-            submitted && "opacity-60",
-          )}
-        >
-          <label
-            htmlFor={answerName}
-            className={clsx(
-              "flex min-w-35 items-center border-r border-border px-4 py-3 text-sm font-semibold",
-              submitted ? "text-text-soft" : "text-text",
-            )}
-          >
-            {label}
-          </label>
-          <input
-            id={answerName}
-            name={answerName}
-            disabled={submitted}
-            type="number"
-            step={step}
-            placeholder="Enter your answer"
-            value={inputValue}
-            onChange={(e) => setAnswer(answerName, e.target.value)}
-            className={clsx(
-              "min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-text placeholder:text-text-soft focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent",
-              submitted && "cursor-not-allowed bg-surface-muted text-text-soft",
-            )}
-          />
-        </fieldset>
-      </div>
-    </MathJax>
+    <PLNumberInputField
+      answerName={answerName}
+      className={className}
+      label={label}
+      step={step}
+      submitted={submitted}
+      value={inputValue}
+      variant={variant}
+      onChange={(value) => setAnswer(answerName, value)}
+    />
   );
 };
 

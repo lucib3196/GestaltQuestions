@@ -96,8 +96,7 @@ export function createQuestionInstanceStore(
         };
       }),
 
-    setRefreshKey: () =>
-      set((state) => ({ refreshKey: state.refreshKey + 1 })),
+    setRefreshKey: () => set((state) => ({ refreshKey: state.refreshKey + 1 })),
     resetAnswers: () => set(() => ({ userAnswers: {} })),
     submitAnswers: () => set(() => ({ hasSubmitted: true })),
     resetSubmissions: () => set(() => ({ hasSubmitted: false })),

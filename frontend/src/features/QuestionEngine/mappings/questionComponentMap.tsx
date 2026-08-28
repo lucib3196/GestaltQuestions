@@ -17,6 +17,7 @@ import {
   PLNumberInputFixed,
   type PLNumberInputFixedProps,
   type PLNumberInputProps,
+  type PLNumberInputVariant,
   PLQuestionPanel,
   type PLQuestionPanelProps,
   PLSolutionPanel,
@@ -78,6 +79,16 @@ function mapSvgContrast(
   return value === "none" ? "none" : value === "auto" ? "auto" : undefined;
 }
 
+function mapNumberInputVariant(
+  value: string | undefined,
+): PLNumberInputVariant | undefined {
+  if (value === "default" || value === "minimal" || value === "emphasis") {
+    return value;
+  }
+
+  return undefined;
+}
+
 // This essentially maps the raw attributes and changes them and process them
 // Into more react viable components, the raw attributes are a mapping to the react
 // props that the input element expects,
@@ -104,7 +115,7 @@ export const TagAttributeMapping: {
     digits: Number(attrs["digits"] ?? 3),
     label: attrs["label"] ?? "",
     className: attrs["classname"] || attrs["class"],
-    variant: attrs["variant"],
+    variant: mapNumberInputVariant(attrs["variant"]),
   }),
   "pl-number-input-fixed": (attrs) => ({
     answerName: attrs["answers-name"],
@@ -113,7 +124,7 @@ export const TagAttributeMapping: {
     digits: Number(attrs["digits"] ?? 3),
     label: attrs["label"] ?? "",
     className: attrs["classname"] || attrs["class"],
-    variant: attrs["variant"],
+    variant: mapNumberInputVariant(attrs["variant"]),
   }),
   "pl-figure": (attrs) => ({
     src: attrs["src"],

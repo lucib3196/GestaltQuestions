@@ -12,11 +12,7 @@ type QuestionRenderProps = {
 function QuestionRenderBody({ qid, serverSettings }: QuestionRenderProps) {
   const refreshKey = useQuestionInstance((s) => s.refreshKey);
   const runtime = useQuestionInstance((s) => s.runtime);
-  const { error, loading } = useRunQuestion(
-    qid,
-    serverSettings,
-    refreshKey,
-  );
+  const { error, loading } = useRunQuestion(qid, serverSettings, refreshKey);
   if (error) {
     return (
       <div

@@ -1,4 +1,3 @@
-export { CollectionAccessApi, QuestionAccessApi } from "./Access";
 export type {
   AccessLevel,
   CollectionAccess,
@@ -8,15 +7,14 @@ export type {
   ShareAccessPayload,
   UpdateShareAccessPayload,
 } from "./Access";
+export { CollectionAccessApi, QuestionAccessApi } from "./Access";
 export * from "./Collections";
-export { UserLookupApi } from "./UserLookup";
-export type { DeveloperLookupParams, UserDetailRead } from "./UserLookup";
 export * from "./questionAPI";
 export type {
+  QuestionAnswerMap,
   QuestionRunResponse,
   QuestionRuntimeCreateRequest,
   QuestionRuntimeResponse,
-  QuestionAnswerMap,
   QuestionValue,
   QuizData,
   RuntimeConfigSource,
@@ -24,3 +22,5 @@ export type {
 export { QuestionRuntimeApi } from "./QuestionRuntime";
 export * from "./questionSyncAPI";
 export * from "./QuestionTables";
+export type { DeveloperLookupParams, UserDetailRead } from "./UserLookup";
+export { UserLookupApi } from "./UserLookup";

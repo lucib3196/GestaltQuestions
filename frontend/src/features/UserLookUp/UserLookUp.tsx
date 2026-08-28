@@ -1,10 +1,11 @@
 import { useDebounce } from "@uidotdev/usehooks";
 import { useEffect, useMemo, useState } from "react";
-import { useUserLookUpStore } from "./instance/store";
+
 import { SearchBar } from "../../components/SearchBar";
+import type { UserDetailRead } from "../../services";
 import { UserLookupResult } from "./components";
 import { useUserLookup } from "./hooks/useUserLookUp";
-import type { UserDetailRead } from "../../services";
+import { useUserLookUpStore } from "./instance/store";
 
 const USERS_PER_PAGE = 3;
 
@@ -19,7 +20,7 @@ export function UserLookUp() {
     setSelected([user.id]);
   };
 
-  console.log("selectedUsers", selectedUserIds)
+  console.log("selectedUsers", selectedUserIds);
 
   const { users, loading, error } = useUserLookup(debouncedSearch);
   const totalPages = Math.max(1, Math.ceil(users.length / USERS_PER_PAGE));

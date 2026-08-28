@@ -1,5 +1,6 @@
-import { UserLookupApi, type UserDetailRead } from "../../../services";
 import { useEffect, useState } from "react";
+
+import { type UserDetailRead, UserLookupApi } from "../../../services";
 import { useAuth } from "../../Auth";
 
 export function useUserLookup(queryStr: string) {

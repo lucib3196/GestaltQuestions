@@ -19,7 +19,7 @@ export default function QuestionRenderShell() {
         minSize={35}
         className="min-w-0"
       >
-        <QuestionBody />
+        <QuestionBody variant={showSolution ? "compact" : "centered"} />
       </Panel>
 
       {showSolution && (
@@ -29,8 +29,7 @@ export default function QuestionRenderShell() {
             <SolutionPanel>
               <QuestionHTMLToReact
                 html={
-                  runtime.solution_html ??
-                  "No Solution Available for Question"
+                  runtime.solution_html ?? "No Solution Available for Question"
                 }
               />
             </SolutionPanel>

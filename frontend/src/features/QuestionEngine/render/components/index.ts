@@ -8,12 +8,11 @@ export type { PLHintProps } from "./content/PLHint";
 export { default as PLHint } from "./content/PLHint";
 export type { PLAnswerProps } from "./inputs/PLAnswer";
 export { default as PLAnswer } from "./inputs/PLAnswer";
-export type {
-  PLMultipleChoiceProps,
-} from "./inputs/PLMultipleChoice";
+export type { PLMultipleChoiceProps } from "./inputs/PLMultipleChoice";
 export { default as PLMultipleChoice } from "./inputs/PLMultipleChoice";
 export type { PLNumberInputProps } from "./inputs/PLNumberInput";
 export { default as PLNumberInput } from "./inputs/PLNumberInput";
+export type { PLNumberInputVariant } from "./inputs/PLNumberInputField";
 export type { PLNumberInputFixedProps } from "./inputs/PLNumberInputFixed";
 export { default as PLNumberInputFixed } from "./inputs/PLNumberInputFixed";
 export type { PLQuestionPanelProps } from "./panels/PLQuestionPanel";

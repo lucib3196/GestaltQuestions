@@ -1,6 +1,7 @@
-import { createStore, } from "zustand";
-import type { UserDetailRead } from "../../../services";
+import { createStore } from "zustand";
 import { useStore } from "zustand";
+
+import type { UserDetailRead } from "../../../services";
 export type UserLookUpState = {
   userById: Record<string, UserDetailRead>;
   selectedUserIds: string[];
@@ -37,8 +38,6 @@ export function createUserLookUpStore(preloaded?: Partial<UserLookUpState>) {
 
 export const userLookUpStore = createUserLookUpStore();
 
-export function useUserLookUpStore<T>(
-  selector: (state: UserLookUpStore) => T
-) {
+export function useUserLookUpStore<T>(selector: (state: UserLookUpStore) => T) {
   return useStore(userLookUpStore, selector);
 }

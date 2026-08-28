@@ -14,7 +14,7 @@ function QuestionActionButton({
       {...props}
       color="transparent"
       className={clsx(
-        "inline-flex items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] px-5 py-3 text-sm font-semibold text-[var(--color-text)] shadow-sm hover:border-[var(--color-accent)] hover:bg-[var(--color-surface-secondary)] disabled:hover:scale-100",
+        "inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-3 text-sm font-semibold text-text shadow-sm hover:border-accent hover:bg-surface-secondary disabled:hover:scale-100",
         className,
       )}
     />
@@ -22,6 +22,7 @@ function QuestionActionButton({
 }
 
 export default function QuestionActions() {
+  const hasSolution = useQuestionInstance((s) => s.runtime?.solution_html);
   const resetAnswers = useQuestionInstance((s) => s.resetAnswers);
   const setRefreshKey = useQuestionInstance((s) => s.setRefreshKey);
   const setShowSolution = useQuestionInstance((s) => s.setShowSolution);
@@ -54,12 +55,14 @@ export default function QuestionActions() {
         name="New Variant"
         icon={FiRefreshCw}
       />
-      <QuestionActionButton
-        type="button"
-        onClick={() => setShowSolution()}
-        name={showSolution ? "Hide Solution" : "Show Solution"}
-        icon={showSolution ? FiEyeOff : FiEye}
-      />
+      {hasSolution && (
+        <QuestionActionButton
+          type="button"
+          onClick={() => setShowSolution()}
+          name={showSolution ? "Hide Solution" : "Show Solution"}
+          icon={showSolution ? FiEyeOff : FiEye}
+        />
+      )}
     </div>
   );
 }

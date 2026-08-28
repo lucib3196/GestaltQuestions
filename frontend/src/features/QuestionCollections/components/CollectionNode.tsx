@@ -137,7 +137,6 @@ function CollectionTitleSection({
         <span className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-normal text-text-soft">
           {subcollectionCount > 0 ? (
             <span className="inline-flex items-center gap-1">
-              
               {subcollectionCount}{" "}
               {subcollectionCount === 1
                 ? "inner collection"
