@@ -1,3 +1,3 @@
-from .services.manager import QuestionManager
+from .manager import QuestionManager
 
 __all__ = ["QuestionManager"]

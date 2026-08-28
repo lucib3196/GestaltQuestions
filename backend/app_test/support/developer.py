@@ -31,7 +31,7 @@ from backend.question.collections import (
     QuestionCollectionAdapter,
     QuestionCollectionService,
 )
-from backend.question.manager.services.manager import QuestionManager
+from backend.question.manager import QuestionManager
 
 # Actor test data
 

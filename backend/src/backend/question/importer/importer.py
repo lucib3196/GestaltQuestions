@@ -38,15 +38,6 @@ class QuestionImporter[SourceT, SourceFileT](ABC):
         )
 
     @staticmethod
-    def is_text_like(mime_type: str) -> bool:
-        return mime_type.startswith("text/") or mime_type in {
-            "application/json",
-            "application/javascript",
-            "application/typescript",
-            "application/xml",
-        }
-
-    @staticmethod
     def verify_image(filename: str, content: bytes) -> None:
         try:
             with Image.open(BytesIO(content)) as image:

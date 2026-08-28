@@ -23,6 +23,8 @@ jobs:
 
     env:
       ENV: testing
+      DATABASE_URL: "sqlite:///:memory:"
+      LANGGRAPH_STREAM_URL: "123"
       STORAGE_BUCKET: ${{secrets.STORAGE_BUCKET}}
       FIREBASE_CRED: ${{vars.FIREBASE_JSON_PATH}}
       FIREBASE_AUTH_EMULATOR_HOST: 127.0.0.1:9099

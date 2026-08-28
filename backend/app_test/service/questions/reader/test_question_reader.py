@@ -5,7 +5,7 @@ import pytest
 from app_test.factories.question_factory import MakeQuestion
 from app_test.support.developer import DeveloperActor
 from backend.accounts import Role, UserRoles, ValidInstitutions
-from backend.question import QuestionNotFoundError, QuestionReadError
+from backend.question import QuestionNotFound, QuestionReadError
 from backend.question.models import Question
 from backend.question.reader.question_reader import QuestionReader
 from backend.question_runtime.model import QuestionRunTime, RuntimeLanguage
@@ -99,7 +99,7 @@ def test_get_question_info_includes_runtime_languages(
 def test_get_question_raises_not_found_for_missing_id(reader: QuestionReader) -> None:
     missing_id = uuid4()
 
-    with pytest.raises(QuestionNotFoundError, match=str(missing_id)):
+    with pytest.raises(QuestionNotFound, match=str(missing_id)):
         reader.get_question(missing_id)
 
 
@@ -108,7 +108,7 @@ def test_get_question_info_raises_not_found_for_missing_id(
 ) -> None:
     missing_id = uuid4()
 
-    with pytest.raises(QuestionNotFoundError, match=str(missing_id)):
+    with pytest.raises(QuestionNotFound, match=str(missing_id)):
         reader.get_question_info(missing_id)
 
 

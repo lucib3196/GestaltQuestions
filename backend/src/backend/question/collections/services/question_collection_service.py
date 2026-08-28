@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from backend.authorization import AccessLevel, ProfileT
 from backend.core import logger
-from backend.question import Question, QuestionNotFoundError
+from backend.question import Question, QuestionNotFound
 from backend.question.collections.exceptions import (
     QuestionAlreadyInCollectionError,
     QuestionCollectionDeleteError,
@@ -41,7 +41,7 @@ class QuestionCollectionService(
 
     async def create_collection(
         self, owner: ProfileT, title: str, parent: QuestionCollection | None = None
-    ):
+    )->QuestionCollection:
         owner_id = self._require_profile_id(owner)
         self._validate_parent(parent, owner_id)
         try:
@@ -168,7 +168,7 @@ class QuestionCollectionService(
             return question
         question = self._session.get(Question, question)
         if not question:
-            raise QuestionNotFoundError(question_id=question)
+            raise QuestionNotFound(question_id=question)
         return question
 
     async def remove_question(

@@ -1,4 +1,3 @@
-import base64
 import json
 from pathlib import Path
 from typing import Any
@@ -7,6 +6,7 @@ from gdrive_importer.gdrive_indexer import GoogleDriveIndexer
 from gdrive_importer.models import GDriveFile
 
 from backend.storage import FileData
+from backend.storage.filedata import normalize_filedata
 
 from .drive_question_packages import (
     DriveQuestionPackage,
@@ -51,20 +51,11 @@ class DriveQuestionImporter(QuestionImporter[DriveQuestionPackage, GDriveFile]):
 
     def convert_to_filedata(self, file: GDriveFile) -> FileData:
         raw_content = self._indexer.read_file(file.id)
-        mime_type = file.mimeType or "application/octet-stream"
-
-        if mime_type.startswith("image/"):
-            self.verify_image(file.name, raw_content)
-            content = base64.b64encode(raw_content).decode("ascii")
-        elif self.is_text_like(mime_type):
-            content = raw_content.decode("utf-8")
-        else:
-            content = raw_content
-
-        return FileData(
-            filename=file.name,
-            content=content,
-            mime_type=mime_type,
+        return normalize_filedata(
+            file.name,
+            raw_content,
+            mime_type=file.mimeType or "application/octet-stream",
+            verify_image=self.verify_image,
         )
 
     def _get_file(

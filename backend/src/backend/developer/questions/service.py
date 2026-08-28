@@ -14,11 +14,11 @@ from backend.developer import (
     DeveloperProfileService,
 )
 from backend.developer.questions.actions import DeveloperQuestionAction
+from backend.question.manager import QuestionManager
 from backend.question.manager.exceptions import (
     DeveloperQuestionServiceError,
-    QuestionNotFoundError,
+    QuestionNotFound,
 )
-from backend.question.manager.services.manager import QuestionManager
 from backend.question.models import Question
 from backend.question.schema import (
     QuestionCreate,
@@ -91,7 +91,7 @@ class DeveloperQuestionService:
         else:
             q = await self._question_manager.qdb.get_question(qid)
         if not q:
-            raise QuestionNotFoundError(str(qid))
+            raise QuestionNotFound(str(qid))
         return q
 
     async def update_question(
@@ -169,6 +169,23 @@ class DeveloperQuestionService:
         )
         return await self._question_manager.delete_file(qid, filename)
 
+    async def rename_file(
+        self,
+        user_id: ID,
+        qid: ID,
+        old_filename: str,
+        new_filename: str,
+    ) -> str:
+        """Rename a question file after checking developer question control."""
+        await self._authorizer.require_action(
+            user_id, qid, DeveloperQuestionAction.RENAME_FILE
+        )
+        return await self._question_manager.rename_file(
+            qid,
+            old_filename,
+            new_filename,
+        )
+
     async def upload_files(
         self, user_id: ID, qid: ID, files: list[FileData]
     ) -> list[str]:
@@ -178,7 +195,7 @@ class DeveloperQuestionService:
         )
         return await self._question_manager.upload_files(qid, files)
 
-    async def check_access(self, user: ID | User, question: ID | Question):
+    async def check_access(self, user: ID | User, question: ID | Question) -> Any:
         return await self._authorizer.check_access(user, question)
 
     def _require_profile_storage_path(

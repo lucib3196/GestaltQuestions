@@ -1,4 +1,5 @@
 from enum import StrEnum
+from typing import ClassVar
 
 from backend.authorization import AccessLevel
 
@@ -11,6 +12,7 @@ class DeveloperQuestionAction(StrEnum):
     READ_FILE = "read_file"
     WRITE_FILE = "write_file"
     DELETE_FILE = "delete_file"
+    RENAME_FILE = "rename_file"
     UPLOAD_FILES = "upload_files"
     DOWNLOAD = "download"
 
@@ -18,7 +20,7 @@ class DeveloperQuestionAction(StrEnum):
 class DeveloperQuestionPolicy:
     """Maps developer question actions to required access levels."""
 
-    _ACTION_ACCESS = {
+    _ACTION_ACCESS: ClassVar[dict[DeveloperQuestionAction, AccessLevel]] = {
         DeveloperQuestionAction.VIEW: AccessLevel.VIEW,
         DeveloperQuestionAction.COPY: AccessLevel.VIEW,
         DeveloperQuestionAction.UPDATE: AccessLevel.EDIT,
@@ -26,6 +28,7 @@ class DeveloperQuestionPolicy:
         DeveloperQuestionAction.READ_FILE: AccessLevel.VIEW,
         DeveloperQuestionAction.WRITE_FILE: AccessLevel.EDIT,
         DeveloperQuestionAction.DELETE_FILE: AccessLevel.EDIT,
+        DeveloperQuestionAction.RENAME_FILE: AccessLevel.EDIT,
         DeveloperQuestionAction.UPLOAD_FILES: AccessLevel.EDIT,
         DeveloperQuestionAction.DOWNLOAD: AccessLevel.VIEW,
     }

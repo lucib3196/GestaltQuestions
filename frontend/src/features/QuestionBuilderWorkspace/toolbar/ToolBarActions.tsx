@@ -20,6 +20,7 @@ type Props = {
 
 export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
   const selectedQuestionIds = useQuestionTableContext((s) => s.selectedIDs);
+  
   const clearSelectedIds = useQuestionTableContext((s) => s.clearSelectedIds);
   const selectedCollectionId = useCollectionStore(
     (s) => s.selectedCollectionId,
@@ -37,13 +38,16 @@ export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
     copy: async () => {
       await copyQuestion(selectedQuestionIds);
       refreshQuestions();
+      clearSelectedIds()
     },
     download: async () => {
       await downLoadQuestions(selectedQuestionIds);
+      clearSelectedIds()
     },
     delete: async () => {
       await deleteQuestion(selectedQuestionIds);
       refreshQuestions();
+      clearSelectedIds()
     },
     removeFromCollection: async () => {
       if (!selectedCollectionId) return;

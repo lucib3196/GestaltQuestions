@@ -9,7 +9,7 @@ from backend.question.exceptions import (
     QuestionDBError,
     QuestionDeleteError,
     QuestionExportError,
-    QuestionNotFoundError,
+    QuestionNotFound,
     QuestionPathError,
     QuestionReadError,
     QuestionStorageTypeError,
@@ -37,14 +37,9 @@ from backend.question.schema import (
 )
 from backend.question.services.qtype import QuestionQTypeDB
 from backend.question.services.question import QuestionDB
-from backend.question.services.question_storage_service import (
-    InvalidQuestionFile,
-    QuestionStorageService,
-)
 from backend.question.services.question_table import QuestionQueryService
 
 __all__ = [
-    "InvalidQuestionFile",
     "QType",
     "Question",
     "QuestionCreate",
@@ -55,7 +50,7 @@ __all__ = [
     "QuestionExportError",
     "QuestionFilter",
     "QuestionInternalCreate",
-    "QuestionNotFoundError",
+    "QuestionNotFound",
     "QuestionPathError",
     "QuestionQTypeDB",
     "QuestionQTypeLink",
@@ -63,7 +58,6 @@ __all__ = [
     "QuestionRead",
     "QuestionReadError",
     "QuestionRelationships",
-    "QuestionStorageService",
     "QuestionStorageTypeError",
     "QuestionTableRow",
     "QuestionTopicLink",

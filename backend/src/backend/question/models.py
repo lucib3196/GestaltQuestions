@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import JSON, Column, UniqueConstraint
+from sqlalchemy import JSON, Column, ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import Field as SQLField, Relationship, SQLModel
+from sqlmodel import Field, Field as SQLField, Relationship, SQLModel
 
 from .schema import QType, Status
 
@@ -110,7 +110,13 @@ class QuestionSourceReference(SQLModel, table=True):
             name="uq_question_source_reference_source_question",
         ),
     )
-    question_id: UUID = SQLField(foreign_key="question.id", index=True)
+    question_id: UUID = Field(
+        sa_column=Column(
+            ForeignKey("question.id", ondelete="CASCADE"),
+            nullable=False,
+            primary_key=True,
+        ),
+    )
     source_question_id: str = SQLField(index=True)  # info.json uuid
 
     raw_metadata: dict[str, Any] = SQLField(
