@@ -13,12 +13,12 @@ export { UserLookupApi } from "./UserLookup";
 export type { DeveloperLookupParams, UserDetailRead } from "./UserLookup";
 export * from "./questionAPI";
 export type {
-  QuestionRunAnswerMap,
-  QuestionRunQuizData,
   QuestionRunResponse,
   QuestionRuntimeCreateRequest,
   QuestionRuntimeResponse,
-  QuestionRunValue,
+  QuestionAnswerMap,
+  QuestionValue,
+  QuizData,
   RuntimeConfigSource,
 } from "./QuestionRuntime";
 export { QuestionRuntimeApi } from "./QuestionRuntime";

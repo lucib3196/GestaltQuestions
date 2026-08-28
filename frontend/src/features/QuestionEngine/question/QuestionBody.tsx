@@ -71,26 +71,20 @@ function QuestionHeader({
   );
 }
 
-export default function QuestionBody({
-  qpayload,
-}: {
-  qpayload: QuestionRunResponse;
-}) {
+export default function QuestionBody() {
+  const runTimeContent = useQuestionInstance((s) => s.runtime);
   const hasSubmitted = useQuestionInstance((s) => s.hasSubmitted);
-  const answers = useQuestionInstance((s) => s.answers);
-
+  const answers = useQuestionInstance((s) => s.userAnswers);
+  const correctAnswers = useQuestionInstance((s) => s.correctAnswers);
   return (
-    <div>
-      <QuestionHeader qdata={qpayload.qmeta} />
-      <QuestionHTMLToReact html={qpayload.question_html} />
+    <section className="h-full overflow-auto rounded-md border border-border-strong bg-surface p-6 text-text shadow-(--shadow-soft) transition-colors duration-(--duration-base) ease-base">
+      <QuestionHeader qdata={runTimeContent?.qmeta} />
+      <QuestionHTMLToReact html={runTimeContent?.question_html ?? ""} />
       <QuestionActions />
 
-      {hasSubmitted && qpayload.quiz_data && (
-        <DisplayAnswers
-          quizData={qpayload.quiz_data}
-          submittedAnswer={answers}
-        />
+      {hasSubmitted && correctAnswers && (
+        <DisplayAnswers quizData={correctAnswers} submittedAnswer={answers} />
       )}
-    </div>
+    </section>
   );
 }

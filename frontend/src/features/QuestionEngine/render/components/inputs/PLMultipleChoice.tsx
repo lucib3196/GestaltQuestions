@@ -1,17 +1,9 @@
 import clsx from "clsx";
-import React from "react";
-import { useState } from "react";
+import React, { useEffect, useMemo } from "react";
 
-import { uiChoiceStyles } from "../../../styles";
-
-export type PLAnswerProps = {
-  correct: "true" | "false";
-  children?: React.ReactNode;
-};
-
-export const PLAnswer: React.FC<PLAnswerProps> = ({ children }) => {
-  return <>{children}</>;
-};
+import type { QuestionValue } from "../../../../../services";
+import { useQuestionInstance } from "../../../instance";
+import PLAnswer, { getPLAnswerValue, type PLAnswerProps } from "./PLAnswer";
 
 const variantStyles: Record<string, string> = {
   default:
@@ -19,11 +11,26 @@ const variantStyles: Record<string, string> = {
   minimal: "bg-[var(--color-surface-muted)] border border-transparent",
 };
 
+function shuffleAnswers<T>(answers: T[]): T[] {
+  const shuffled = [...answers];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[randomIndex]] = [
+      shuffled[randomIndex],
+      shuffled[index],
+    ];
+  }
+
+  return shuffled;
+}
+
 export type PLMultipleChoiceProps = {
   answersName: string;
   multiple: boolean;
   weight?: number;
   inline?: boolean;
+  randomize?: boolean;
   style?: keyof typeof variantStyles;
   showCorrectness?: boolean;
   children?: React.ReactNode;
@@ -33,30 +40,62 @@ export const PLMultipleChoice: React.FC<PLMultipleChoiceProps> = ({
   answersName,
   multiple = false,
   inline = false,
+  randomize = true,
   showCorrectness = false,
   style = "default",
   children,
 }) => {
-  const [selected, setSelected] = useState<string[]>([]);
+  const userAnswer = useQuestionInstance((s) => s.userAnswers[answersName]);
+  const setUserAnswers = useQuestionInstance((s) => s.setUserAnswers);
+  const setCorrectAnswer = useQuestionInstance((s) => s.setCorrectAnswer);
+  const isSubmitted = useQuestionInstance((s) => s.hasSubmitted);
 
-  const answersText = React.Children.toArray(children).filter(
-    (child): child is React.ReactElement<PLAnswerProps> =>
-      React.isValidElement(child),
-  );
+  const answers = useMemo(() => {
+    const parsedAnswers = React.Children.toArray(children).filter(
+      (child): child is React.ReactElement<PLAnswerProps> =>
+        React.isValidElement(child),
+    );
+
+    return randomize ? shuffleAnswers(parsedAnswers) : parsedAnswers;
+  }, [children, randomize]);
+
+  const selected = useMemo(() => {
+    if (Array.isArray(userAnswer)) {
+      return userAnswer.map(String);
+    }
+
+    if (typeof userAnswer === "string" || typeof userAnswer === "number") {
+      return [String(userAnswer)];
+    }
+
+    return [];
+  }, [userAnswer]);
+
+  const correctValue = useMemo<QuestionValue>(() => {
+    const correctAnswers = answers
+      .filter((answer) => answer.props.correct === "true")
+      .map(getPLAnswerValue);
+
+    return multiple ? correctAnswers : (correctAnswers[0] ?? null);
+  }, [answers, multiple]);
+
+  useEffect(() => {
+    if (correctValue == null) return;
+    setCorrectAnswer(answersName, correctValue);
+  }, [answersName, correctValue, setCorrectAnswer]);
 
   const handleChange = (answer: string) => {
     if (multiple) {
-      setSelected((prev) =>
-        prev.includes(answer)
-          ? prev.filter((v) => v !== answer)
-          : [...prev, answer],
-      );
-    } else {
-      setSelected([answer]);
-    }
-  };
+      const nextSelected = selected.includes(answer)
+        ? selected.filter((value) => value !== answer)
+        : [...selected, answer];
 
-  // useEffect(() => setResponse(answersName, selected), [answersName, selected, setResponse]);
+      setUserAnswers(answersName, nextSelected);
+      return;
+    }
+
+    setUserAnswers(answersName, answer);
+  };
 
   return (
     <fieldset
@@ -76,37 +115,22 @@ export const PLMultipleChoice: React.FC<PLMultipleChoiceProps> = ({
             : "flex flex-col gap-2",
         )}
       >
-        {answersText.map((answer, index) => {
-          const isCorrect = answer.props.correct === "true";
-          const answerValue = String(answer.props.children ?? "");
+        {answers.map((answer, index) => {
+          const answerValue = getPLAnswerValue(answer);
+          const answerKey = answer.props.answerKey ?? answerValue;
           const isSelected = selected.includes(answerValue);
 
           return (
-            <label
-              key={index}
-              className={clsx(
-                uiChoiceStyles.option,
-                "group flex min-h-11 items-center gap-3 rounded-[var(--radius-md)] border px-3 py-2.5 transition-colors",
-                isSelected
-                  ? "border-accent bg-accent/10"
-                  : "border-border bg-surface-strong hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-muted)]",
-                showCorrectness &&
-                  (isCorrect
-                    ? uiChoiceStyles.optionCorrect
-                    : uiChoiceStyles.optionIncorrect),
-              )}
-            >
-              <input
-                type={multiple ? "checkbox" : "radio"}
-                name={answersName}
-                checked={isSelected}
-                onChange={() => handleChange(answerValue)}
-                className="h-4 w-4 shrink-0 accent-[var(--color-accent)]"
-              />
-              <span className="min-w-0 flex-1 text-sm font-medium text-[var(--color-text)]">
-                {answer.props.children}
-              </span>
-            </label>
+            <PLAnswer
+              key={`${answersName}-${answerKey}-${index}`}
+              {...answer.props}
+              name={answersName}
+              multiple={multiple}
+              disabled={isSubmitted || answer.props.disabled}
+              selected={isSelected}
+              showCorrectness={showCorrectness}
+              onSelect={handleChange}
+            />
           );
         })}
       </div>
@@ -115,3 +139,5 @@ export const PLMultipleChoice: React.FC<PLMultipleChoiceProps> = ({
 };
 
 export default PLMultipleChoice;
+export type { PLAnswerProps };
+export { PLAnswer };

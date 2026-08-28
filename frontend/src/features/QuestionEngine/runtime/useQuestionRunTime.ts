@@ -14,6 +14,7 @@ export function useRunQuestion(
   refreshKey?: number,
 ) {
   const setRunTimeContent = useQuestionInstance((s) => s.setRunTimeContent);
+  const runTimeContent = useQuestionInstance((s)=>s.runtime)
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [qPayload, setQPayload] = useState<QuestionRunResponse | null>(null);
@@ -55,7 +56,7 @@ export function useRunQuestion(
   }, [questionID, serverMode, refreshKey, setRunTimeContent]);
 
   return {
-    qPayload,
+    runTimeContent,
     error,
     loading,
   };

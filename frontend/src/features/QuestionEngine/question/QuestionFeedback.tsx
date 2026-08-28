@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 import type { QuestionAnswerMap } from "../../../services/QuestionRuntime/types";
 import type { QuestionValue } from "../../../services/QuestionRuntime/types";
-import type { QuizData } from "../../../services/QuestionRuntime/types";
+
 type AnswerTableVariant = "default" | "compact" | "emphasis";
 
 const variantClasses: Record<AnswerTableVariant, string> = {
@@ -33,7 +33,7 @@ function buildAnswerComparisonRows(
 }
 
 type DisplayAnswerProps = {
-  quizData: QuizData | null;
+  quizData: QuestionAnswerMap | null;
   submittedAnswer?: QuestionAnswerMap | null; // Backward-compatible prop
   variant?: AnswerTableVariant;
 };
@@ -43,13 +43,11 @@ export default function DisplayAnswers({
   submittedAnswer,
   variant = "default",
 }: DisplayAnswerProps) {
-  if (!quizData) return null;
-
+  if (!quizData) {
+    return null;
+  }
   const effectiveResponses = submittedAnswer ?? null;
-  const rows = buildAnswerComparisonRows(
-    quizData.correct_answers,
-    effectiveResponses,
-  );
+  const rows = buildAnswerComparisonRows(quizData, effectiveResponses);
 
   return (
     <div className={clsx("qr-answer-card", variantClasses[variant])}>

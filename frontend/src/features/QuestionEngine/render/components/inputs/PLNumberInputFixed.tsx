@@ -1,11 +1,11 @@
 import { MathJax } from "better-react-mathjax";
 import clsx from "clsx";
 import React from "react";
-
 import { useQuestionInstance } from "../../../instance";
-
-export type PLNumberInputProps = {
+import { useEffect } from "react";
+export type PLNumberInputFixedProps = {
   answerName: string;
+  correctAnswerFixed: string | number;
   comparison: string;
   digits: number | string;
   label: string | number;
@@ -18,17 +18,21 @@ const variantStyles: Record<string, string> = {
   minimal: "bg-[var(--color-surface-muted)]",
 };
 
-const PLNumberInput: React.FC<PLNumberInputProps> = ({
+const PLNumberInputFixed: React.FC<PLNumberInputFixedProps> = ({
   answerName,
   className = "",
+  correctAnswerFixed,
   digits,
   label,
   variant = "default",
 }) => {
   const step = 1 / Math.pow(10, Number(digits) || 0);
-
   const currentResponse = useQuestionInstance((s) => s.userAnswers[answerName]);
   const setAnswer = useQuestionInstance((s) => s.setUserAnswers);
+  const setCorrectAnswer = useQuestionInstance((s) => s.setCorrectAnswer);
+  useEffect(() => {
+    setCorrectAnswer(answerName, correctAnswerFixed);
+  }, [answerName, correctAnswerFixed, setCorrectAnswer]);
   const submitted = useQuestionInstance((s) => s.hasSubmitted);
   const inputValue =
     typeof currentResponse === "string" || typeof currentResponse === "number"
@@ -42,15 +46,11 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
           className={clsx(
             "mb-4 flex w-full max-w-155 overflow-hidden rounded-md border border-border-strong",
             variantStyles[variant],
-            submitted && "opacity-60",
           )}
         >
           <label
             htmlFor={answerName}
-            className={clsx(
-              "flex min-w-35 items-center border-r border-border px-4 py-3 text-sm font-semibold",
-              submitted ? "text-text-soft" : "text-text",
-            )}
+            className="flex min-w-35 items-center border-r border-border px-4 py-3 text-sm font-semibold text-text"
           >
             {label}
           </label>
@@ -59,14 +59,11 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
             name={answerName}
             disabled={submitted}
             type="number"
-            step={step}
             placeholder="Enter your answer"
+            step={step}
             value={inputValue}
             onChange={(e) => setAnswer(answerName, e.target.value)}
-            className={clsx(
-              "min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-text placeholder:text-text-soft focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent",
-              submitted && "cursor-not-allowed bg-surface-muted text-text-soft",
-            )}
+            className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-text focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent"
           />
         </fieldset>
       </div>
@@ -74,4 +71,4 @@ const PLNumberInput: React.FC<PLNumberInputProps> = ({
   );
 };
 
-export default PLNumberInput;
+export default PLNumberInputFixed;

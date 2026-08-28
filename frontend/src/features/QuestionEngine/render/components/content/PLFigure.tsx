@@ -51,7 +51,7 @@ function shouldApplySvgContrast(
   image: string,
   mode: SvgContrastMode,
 ): boolean {
-  return mode === "auto"|| (isSvgSource(resolvedName) || isSvgDataUrl(image));
+  return mode === "auto" || isSvgSource(resolvedName) || isSvgDataUrl(image);
 }
 
 export default function PLFigure({
@@ -64,7 +64,7 @@ export default function PLFigure({
 }: PLFigureProps) {
   const resolvedName = src || filename || "default.png";
   const path = useQuestionInstance((s) =>
-    getStoragePath(s.qmeta?.storage_path),
+    getStoragePath(s.runtime?.qmeta?.storage_path),
   );
 
   const { image } = useQuestionFigure(resolvedName, path);

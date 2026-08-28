@@ -14,6 +14,8 @@ import {
   PLMultipleChoice,
   type PLMultipleChoiceProps,
   PLNumberInput,
+  PLNumberInputFixed,
+  type PLNumberInputFixedProps,
   type PLNumberInputProps,
   PLQuestionPanel,
   type PLQuestionPanelProps,
@@ -26,6 +28,7 @@ import {
 export type ValidComponents =
   | "pl-question-panel"
   | "pl-number-input"
+  | "pl-number-input-fixed"
   | "pl-figure"
   | "pl-solution-panel"
   | "pl-hint"
@@ -38,6 +41,7 @@ export type ValidComponents =
 export type TagRegistry = {
   "pl-question-panel": PLQuestionPanelProps;
   "pl-number-input": PLNumberInputProps;
+  "pl-number-input-fixed": PLNumberInputFixedProps;
   "pl-figure": PLFigureProps;
   "pl-solution-panel": PLSolutionPanelProps;
   "pl-hint": PLHintProps;
@@ -54,6 +58,7 @@ export const ComponentMap: Record<
 > = {
   "pl-question-panel": PLQuestionPanel,
   "pl-number-input": PLNumberInput,
+  "pl-number-input-fixed": PLNumberInputFixed,
   "pl-figure": PLFigure,
   "pl-solution-panel": PLSolutionPanel,
   "pl-hint": PLHint,
@@ -101,6 +106,15 @@ export const TagAttributeMapping: {
     className: attrs["classname"] || attrs["class"],
     variant: attrs["variant"],
   }),
+  "pl-number-input-fixed": (attrs) => ({
+    answerName: attrs["answers-name"],
+    correctAnswerFixed: attrs["correct-answer-fixed"] ?? "",
+    comparison: attrs["comparison"] ?? "exact",
+    digits: Number(attrs["digits"] ?? 3),
+    label: attrs["label"] ?? "",
+    className: attrs["classname"] || attrs["class"],
+    variant: attrs["variant"],
+  }),
   "pl-figure": (attrs) => ({
     src: attrs["src"],
     filename: attrs["filename"] || attrs["file-name"],
@@ -128,16 +142,21 @@ export const TagAttributeMapping: {
   }),
   "pl-answer": (attrs) => ({
     correct: attrs["correct"] === "true" ? "true" : "false",
+    value: attrs["value"],
+    answerKey: attrs["answer-key"] || attrs["key"],
+    disabled: attrs["disabled"] === "true",
   }),
   "pl-multiple-choice": (attrs) => ({
     answersName: attrs["answers-name"],
     inline: attrs["inline"] === "true",
+    randomize: attrs["randomize"] !== "false",
     style: attrs["style"],
     multiple: attrs["multiple"] === "true",
   }),
   "pl-checkbox": (attrs) => ({
     answersName: attrs["answers-name"],
     inline: attrs["inline"] === "true",
+    randomize: attrs["randomize"] !== "false",
     style: attrs["style"],
     multiple: attrs["multiple"] === "true",
   }),
