@@ -63,7 +63,7 @@ export default function QuestionHeader({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        {qdata?.topics?.map((topic) => (
+        Topics: {qdata?.topics?.map((topic) => (
           <MetadataChip key={topic} icon={TopicIcon}>
             {topic}
           </MetadataChip>
