@@ -117,6 +117,7 @@ export function createQuestionTableStore(
         partialize: (state) => ({
           rowsPerPage: state.rowsPerPage,
           filters: state.filters,
+          visibleColumns: state.visibleColumns
         }),
       },
     ),

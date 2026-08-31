@@ -30,6 +30,8 @@ export const QUESTION_TYPE_VALUES = [
   "tf",
   "fb",
   "num",
+  "parsons",
+  "multi",
 ] as const;
 
 export type QuestionType = (typeof QUESTION_TYPE_VALUES)[number];
@@ -44,6 +46,8 @@ export const QUESTION_TYPE_OPTIONS: {
   { label: "True / False", value: "tf" },
   { label: "Fill in the Blank", value: "fb" },
   { label: "Numerical", value: "num" },
+  {label: "Parsons", value: "parsons"},
+  {label: "Multi", value: "multi"}
 ];
 
 export function isQuestionType(value: string): value is QuestionType {

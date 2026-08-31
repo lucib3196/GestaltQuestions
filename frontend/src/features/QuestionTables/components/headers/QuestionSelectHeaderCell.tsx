@@ -28,24 +28,27 @@ export function QuestionSelectHeaderCell({
   }, [allVisibleSelected, someVisibleSelected]);
 
   return (
-    <button
-      type="button"
-      aria-pressed={allVisibleSelected}
-      aria-label={
-        allVisibleSelected ? "Deselect visible rows" : "Select visible rows"
-      }
-      disabled={disabled}
-      className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-surface-secondary text-text-muted transition hover:border-accent hover:bg-surface-muted hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
-      onClick={toggleVisibleRows}
-    >
-      <input
-        ref={checkboxRef}
-        type="checkbox"
-        readOnly
-        tabIndex={-1}
-        checked={allVisibleSelected}
-        className="h-4 w-4 accent-accent"
-      />
-    </button>
+    <div className="flex flex-row justify-center items-center gap-2">
+      <button
+        type="button"
+        aria-pressed={allVisibleSelected}
+        aria-label={
+          allVisibleSelected ? "Deselect visible rows" : "Select visible rows"
+        }
+        disabled={disabled}
+        className="inline-flex h-7 w-7 items-center justify-center text-text-muted transition hover:border-accent hover:bg-surface-muted hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
+        onClick={toggleVisibleRows}
+      >
+        <input
+          ref={checkboxRef}
+          type="checkbox"
+          readOnly
+          tabIndex={-1}
+          checked={allVisibleSelected}
+          className="h-4 w-4 accent-accent"
+        />
+      </button>
+      <span className="min-w-0 truncate">Select</span>
+    </div>
   );
 }

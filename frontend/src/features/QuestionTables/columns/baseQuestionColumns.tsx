@@ -79,6 +79,7 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
     {
       key: "topics",
       label: "Topics",
+      defaultVisible: true,
       render: (row) => <QuestionTopicsCell row={row} />,
       filter: {
         kind: "text",
@@ -92,6 +93,7 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
     {
       key: "question_type",
       label: "Type",
+      defaultVisible: true,
       render: (row) => <QuestionTypesCell row={row} />,
       filter: {
         kind: "multiSelect",
@@ -105,7 +107,7 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
     {
       key: "available_runtimes",
       label: "Runtimes",
-      defaultVisible: true,
+      defaultVisible: false,
       render: (row) => <QuestionRuntimesCell row={row} />,
       filter: {
         kind: "multiSelect",

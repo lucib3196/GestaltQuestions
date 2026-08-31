@@ -26,9 +26,11 @@ export default function PublishedQuestions() {
         </section>
 
         <ToolBar />
-        <PublishedQuestionsTable
-          onQuestionSelect={(qid) => navigate(`/questions/${qid}`)}
-        />
+        <div className="flex flex-1">
+          <PublishedQuestionsTable
+            onQuestionSelect={(qid) => navigate(`/questions/${qid}`)}
+          />
+        </div>
       </div>
     </QuestionTableStoreProvider>
   );
