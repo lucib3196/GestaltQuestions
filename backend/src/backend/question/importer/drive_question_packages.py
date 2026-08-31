@@ -7,6 +7,8 @@ from gdrive_importer.models import GDriveFile
 
 from backend.question.schema import QuestionInfo
 
+from .discover import QuestionPackageDiscoverer
+
 CLIENT_FILES_FOLDER = "clientFilesQuestion"
 
 
@@ -18,7 +20,17 @@ class DriveQuestionPackage:
     files: dict[str, GDriveFile]
 
 
-class DriveQuestionPackageDiscoverer:
+@dataclass
+class DriveDiscoverySpec:
+    """Inputs needed to discover Drive-backed question packages."""
+
+    root_folder_name: str
+    target_folder_name: str
+
+
+class DriveQuestionPackageDiscoverer(
+    QuestionPackageDiscoverer[DriveQuestionPackage, DriveDiscoverySpec]
+):
     def __init__(
         self,
         indexer: GoogleDriveIndexer,
@@ -43,21 +55,19 @@ class DriveQuestionPackageDiscoverer:
 
     def discover_packages(
         self,
-        *,
-        root_folder_name: str,
-        target_folder_name: str,
+        spec: DriveDiscoverySpec,
     ) -> dict[str, DriveQuestionPackage]:
         """Discover question packages under a target folder in the Drive hierarchy."""
         root_folder = self._get_unique_folder(
-            self.indexer.find_folder(root_folder_name),
-            root_folder_name,
+            self.indexer.find_folder(spec.root_folder_name),
+            spec.root_folder_name,
         )
         target_folder = self._get_unique_folder(
             self.indexer.find_folder(
-                name=target_folder_name,
+                name=spec.target_folder_name,
                 parent_id=root_folder.id,
             ),
-            target_folder_name,
+            spec.target_folder_name,
         )
         children = self.indexer.list_children(
             folder_id=target_folder.id,
@@ -182,7 +192,9 @@ if __name__ == "__main__":
                 print(validated)
     # else:
     #     packages = discoverer.discover_packages(
-    #         root_folder_name="Learning Lab AI Project",
-    #         target_folder_name="statics",
+    #         spec=DriveDiscoverySpec(
+    #             root_folder_name="Learning Lab AI Project",
+    #             target_folder_name="statics",
+    #         )
     #     )
     #     discoverer.save_packages(packages,manifest )
