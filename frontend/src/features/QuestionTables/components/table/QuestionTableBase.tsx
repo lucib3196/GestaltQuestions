@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import {
   type RowId,
@@ -6,12 +6,11 @@ import {
   TableBody,
   type TableColumn,
   TableContainer,
-  TableFooter,
 } from "../../../../components/Table";
 import { useQuestionTableContext } from "../../instance/context";
 import { getVisibleColumns } from "../../utils/getVisibleColumns";
 import TableHeader from "./TableHeader";
-
+import TableFooter from "../footer/TableFooter";
 type QuestionTableProps<T, V extends string = never> = {
   data: T[];
   columns: TableColumn<T, V>[];
@@ -25,6 +24,8 @@ export default function QuestionTable<T, V extends string = never>({
   getRowId,
   onQuestionSelect,
 }: QuestionTableProps<T, V>) {
+  const page = useQuestionTableContext((s) => s.page);
+
   // Get the global state of the columns
   const visibleColumns = useQuestionTableContext(
     (state) => state.visibleColumns,
@@ -40,24 +41,14 @@ export default function QuestionTable<T, V extends string = never>({
     (state) => state.setSelectedIDs,
   );
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const rowsPerPage = useQuestionTableContext((state) => state.rowsPerPage);
 
   const total = data.length;
-  const totalPages = Math.max(1, Math.ceil(total / rowsPerPage));
 
   const currentPageRows = useMemo(
     () => data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
     [data, page, rowsPerPage],
   );
-
-  const from = total === 0 ? 0 : page * rowsPerPage + 1;
-  const to = Math.min(total, (page + 1) * rowsPerPage);
-
-  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number.parseInt(e.target.value, 10));
-    setPage(0);
-  };
 
   return (
     <>
@@ -75,17 +66,7 @@ export default function QuestionTable<T, V extends string = never>({
         </Table>
       </TableContainer>
 
-      <TableFooter
-        from={from}
-        to={to}
-        total={total}
-        page={page}
-        totalPages={totalPages}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleRowsPerPageChange}
-        onPreviousPage={() => setPage((p) => Math.max(0, p - 1))}
-        onNextPage={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-      />
+      <TableFooter total={total} />
     </>
   );
 }
