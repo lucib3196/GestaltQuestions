@@ -9,6 +9,18 @@ export type ColumnFilterKind =
 
 type TableColumnKey<T, V extends string = never> = Extract<keyof T, string> | V;
 
+export type TableHeaderRenderContext = {
+  label: string;
+  columnKey: string;
+  visibleRowIds: RowId[];
+  selectedIds: RowId[];
+  allVisibleSelected: boolean;
+  someVisibleSelected: boolean;
+  selectVisibleRows: () => void;
+  deselectVisibleRows: () => void;
+  toggleVisibleRows: () => void;
+};
+
 export type TableColumn<T, V extends string = never, TQuery = unknown> = {
   key: TableColumnKey<T, V>;
   label?: string;
@@ -20,6 +32,7 @@ export type TableColumn<T, V extends string = never, TQuery = unknown> = {
     isSelected?: boolean,
     className?: string,
   ) => React.ReactNode;
+  headerRender?: (context: TableHeaderRenderContext) => React.ReactNode;
   filter?: {
     kind: ColumnFilterKind;
     label?: string;

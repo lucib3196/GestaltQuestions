@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useEffect, useRef } from "react";
 
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
-import { QuestionSearch } from "../../QuestionTables/components/searchBar/searchBar";
+import { QuestionSearch } from "../../QuestionTables/components/search/QuestionSearch";
 import type { WorkspaceToolbarPopupActionId } from "./constants";
 import { WorkspaceToolBarActions } from "./ToolBarActions";
 
