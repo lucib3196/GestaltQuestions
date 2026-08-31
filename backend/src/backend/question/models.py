@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional
 from uuid import UUID, uuid4
-
+from sqlalchemy import Column, Enum
 from sqlalchemy import JSON, Column, ForeignKey, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Field as SQLField, Relationship, SQLModel
@@ -50,7 +50,18 @@ class QuestionType(SQLModel, table=True):
     __tablename__ = "question_type"  # type: ignore
 
     id: UUID = SQLField(default_factory=uuid4, primary_key=True)
-    name: QType = SQLField(index=True, unique=True)
+    name: QType = SQLField(
+        sa_column=Column(
+            Enum(
+                QType,
+                name="qtype_enum",
+                values_callable=lambda enum: [e.value for e in enum],
+            ),
+            index=True,
+            unique=True,
+            nullable=False,
+        )
+    )
     display_name: str | None = None
     description: str | None = None
 

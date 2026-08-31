@@ -36,7 +36,7 @@ ENV_FILES: dict[str, str] = {
     "dev": ".env.dev",
     "testing": ".env.test",
     "production": ".env.production",
-    "docker": ".env.docker",
+    "docker": ".env.dev.docker",
 }
 
 # Check the env internally and attempts to resolve env file. Points to .env by default so this must always be set

@@ -18,6 +18,8 @@ class QType(StrEnum):
     TF = "tf"
     FB = "fb"
     NUM = "num"
+    PARSONS = "parsons"
+    MULTI = "multi"
 
     @property
     def display_name(self) -> str:
@@ -28,6 +30,8 @@ class QType(StrEnum):
             QType.TF: "True / False",
             QType.FB: "Fill in the Blank",
             QType.NUM: "Numerical",
+            QType.PARSONS: "Parson",
+            QType.MULTI: "Multiple Types"
         }[self]
 
 
@@ -105,7 +109,7 @@ class QuestionFilter(BaseModel):
 class QuestionInfo(BaseModel):
     id: UUID | str = Field(validation_alias=AliasChoices("id", "uuid"))
     title: str
-    topic: str | list[str]
+    topic: str | list[str] = Field(default_factory=list)
     isAdaptive: bool
     ai_generated: bool = False
     createdBy: str | None = None
