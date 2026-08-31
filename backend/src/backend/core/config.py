@@ -47,7 +47,8 @@ load_dotenv(env_file, override=False)
 class AppSettings(BaseSettings):
     PROJECT_NAME: str | None = "Gestalt"
     ENV: Environment = Field(
-        default=Environment.DEV, validation_alias=AliasChoices("ENV", "env", "MODE", "mode", "APPENV","appenv"),
+        default=Environment.DEV,
+        validation_alias=AliasChoices("ENV", "env", "MODE", "mode", "APPENV", "appenv"),
     )
     STORAGE_SERVICE: Literal["local", "cloud"] = "cloud"
 
