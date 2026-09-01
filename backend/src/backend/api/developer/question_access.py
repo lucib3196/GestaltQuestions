@@ -93,7 +93,7 @@ async def share_question(
         ) from e
 
 
-@router.put(
+@router.patch(
     "/{question_id}/shares/{target_user_id}",
     response_model=QuestionAccess,
 )

@@ -1,10 +1,11 @@
 import type React from "react";
 import { useNavigate } from "react-router-dom";
-
+import { UserLookupProvider } from "../UserLookUp/instance/context";
 import { CollectionProvider } from "../QuestionCollections/instance/context";
 import { useCollectionStore } from "../QuestionCollections/instance/context";
 import DeveloperQuestionsTable from "../QuestionTables/views/DeveloperQuestionsTable";
 import { QuestionTableStoreProvider } from "../QuestionTables/views/QuestionTableStoreProvider";
+import QuestionSharing from "../Sharing/QuestionSharing";
 import QuestionBuilderSideBar from "./sidebar/QuestionBuilderSideBar";
 import { ToolBar } from "./toolbar/ToolBar";
 
@@ -15,13 +16,15 @@ export function QuestionBuilderShell({
 }) {
   return (
     <QuestionTableStoreProvider>
-      <CollectionProvider>
-        <div className="min-h-screen bg-bg px-4 py-5 text-text sm:px-6">
-          <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full  flex-col gap-5">
-            {children}
+      <UserLookupProvider>
+        <CollectionProvider>
+          <div className="min-h-screen bg-bg px-4 py-5 text-text sm:px-6">
+            <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full  flex-col gap-5">
+              {children}
+            </div>
           </div>
-        </div>
-      </CollectionProvider>
+        </CollectionProvider>
+      </UserLookupProvider>
     </QuestionTableStoreProvider>
   );
 }
@@ -51,6 +54,7 @@ export default function QuestionBuilderWorkspace() {
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
         <QuestionBuilderSideBar />
         <TableView />
+        <QuestionSharing />
       </div>
     </QuestionBuilderShell>
   );

@@ -1,5 +1,4 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-
 import { RequireRole } from "./features/Auth";
 import { ComponentPlayGround } from "./features/ComponentPlayGround";
 import { CreateNewQuestion } from "./features/CreateNewQuestion";
@@ -8,22 +7,11 @@ import { GeneralQuestionRender } from "./features/PublishedQuestions/PublishedQu
 import { WorkspaceLinks } from "./features/QuestionBuilderWorkspace/links/WorkspaceLinks";
 import QuestionBuilderWorkspace from "./features/QuestionBuilderWorkspace/QuestionBuilderWorkspace";
 import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
-import { UserLookUp } from "./features/UserLookUp/UserLookUp";
-import { UserLookupProvider } from "./features/UserLookUp/instance/context";
-import ShareRecipientSearch from "./features/UserLookUp/sharing/ShareRecipientSearch";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
-
 function Test() {
-  return (
-    <UserLookupProvider>
-      <div className="flex flex-row gap-3">
-        <UserLookUp />
-        <ShareRecipientSearch />
-      </div>
-    </UserLookupProvider>
-  );
+  return <></>;
 }
 
 function App() {

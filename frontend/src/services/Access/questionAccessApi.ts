@@ -50,7 +50,7 @@ export default class QuestionAccessApi {
     targetUserId: UserId,
     payload: UpdateShareAccessPayload,
   ): Promise<QuestionAccess> {
-    const response = await api.put<QuestionAccess>(
+    const response = await api.patch<QuestionAccess>(
       `${this.base}/${encodeURIComponent(questionId)}/shares/${encodeURIComponent(
         targetUserId,
       )}`,

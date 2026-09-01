@@ -2,9 +2,9 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { type KeyboardEvent, useMemo, useState } from "react";
 
 import type { UserDetailRead } from "../../../services";
-import { SelectedUserKeyList, UserLookupResult } from "../components";
-import { useUserLookup } from "../hooks/useUserLookUp";
-import { useUserLookupStore } from "../instance/context";
+import { SelectedUserKeyList, UserLookupResult } from "../../UserLookUp/components";
+import { useUserLookup } from "../../UserLookUp/hooks/useUserLookUp";
+import { useUserLookupStore } from "../../UserLookUp/instance/context";
 
 const USERS_PER_PAGE = 5;
 const SEARCH_DEBOUNCE_MS = 250;
