@@ -9,17 +9,20 @@ import { WorkspaceLinks } from "./features/QuestionBuilderWorkspace/links/Worksp
 import QuestionBuilderWorkspace from "./features/QuestionBuilderWorkspace/QuestionBuilderWorkspace";
 import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
 import { UserLookUp } from "./features/UserLookUp/UserLookUp";
+import ShareRecipientSearch from "./features/UserLookUp/sharing/ShareRecipientSearch";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
 
 function Test() {
   return (
-    <div>
+    <div className="flex flex-row gap-3">
       <UserLookUp />
+      <ShareRecipientSearch />
     </div>
   );
 }
+
 function App() {
   return (
     <>

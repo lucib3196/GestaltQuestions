@@ -5,7 +5,7 @@ import { SearchBar } from "../../components/SearchBar";
 import type { UserDetailRead } from "../../services";
 import { UserLookupResult } from "./components";
 import { useUserLookup } from "./hooks/useUserLookUp";
-import { useUserLookUpStore } from "./instance/store";
+import { useUserLookupStore } from "./instance/store";
 
 const USERS_PER_PAGE = 3;
 
@@ -13,14 +13,14 @@ export function UserLookUp() {
   const [search, setSearch] = useState<string>("");
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(search, 250);
-  const selectedUserIds = useUserLookUpStore((s) => s.selectedUserIds);
-  const setSelected = useUserLookUpStore((s) => s.setSelectedUserIds);
+  const selectedUsersById = useUserLookupStore((s) => s.selectedUsersById);
+  const toggleSelectedUser = useUserLookupStore((s) => s.toggleSelectedUser);
+  const clearSelectedUsers = useUserLookupStore((s) => s.clearSelectedUsers);
+  const selectedUserIds = Object.keys(selectedUsersById);
 
   const handleSelect = (user: UserDetailRead) => {
-    setSelected([user.id]);
+    toggleSelectedUser(user);
   };
-
-  console.log("selectedUsers", selectedUserIds);
 
   const { users, loading, error } = useUserLookup(debouncedSearch);
   const totalPages = Math.max(1, Math.ceil(users.length / USERS_PER_PAGE));
@@ -48,6 +48,8 @@ export function UserLookUp() {
         setValue={(value) => setSearch(value)}
         placeholder="Search developers..."
       />
+      <div>Total Selected: {selectedUserIds.length}</div>
+      <div onClick={clearSelectedUsers}>Deselect All</div>
 
       <div className="mt-4 space-y-2">
         {loading ? (
@@ -74,7 +76,7 @@ export function UserLookUp() {
                 key={user.id}
                 user={user}
                 onSelect={handleSelect}
-                isSelected={selectedUserIds.some((v) => v === user.id)}
+                isSelected={Object.hasOwn(selectedUsersById, String(user.id))}
               />
             ))
           : null}
