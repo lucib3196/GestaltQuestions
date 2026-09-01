@@ -11,11 +11,38 @@ const variantStyles: Record<string, string> = {
   minimal: "bg-[var(--color-surface-muted)] border border-transparent",
 };
 
-function shuffleAnswers<T>(answers: T[]): T[] {
+function getAnswerIdentity(
+  answer: React.ReactElement<PLAnswerProps>,
+  index: number,
+) {
+  return answer.props.answerKey ?? getPLAnswerValue(answer) ?? String(index);
+}
+
+function hashString(value: string) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = Math.imul(31, hash) + value.charCodeAt(index);
+  }
+
+  return hash >>> 0;
+}
+
+function seededRandom(seed: number) {
+  let value = seed;
+
+  return () => {
+    value = Math.imul(1664525, value) + 1013904223;
+    return (value >>> 0) / 4294967296;
+  };
+}
+
+function shuffleAnswers<T>(answers: T[], seed: number): T[] {
+  const random = seededRandom(seed);
   const shuffled = [...answers];
 
   for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1));
+    const randomIndex = Math.floor(random() * (index + 1));
     [shuffled[index], shuffled[randomIndex]] = [
       shuffled[randomIndex],
       shuffled[index],
@@ -50,14 +77,27 @@ export const PLMultipleChoice: React.FC<PLMultipleChoiceProps> = ({
   const setCorrectAnswer = useQuestionInstance((s) => s.setCorrectAnswer);
   const isSubmitted = useQuestionInstance((s) => s.hasSubmitted);
 
-  const answers = useMemo(() => {
-    const parsedAnswers = React.Children.toArray(children).filter(
+  const parsedAnswers = useMemo(() => {
+    return React.Children.toArray(children).filter(
       (child): child is React.ReactElement<PLAnswerProps> =>
         React.isValidElement(child),
     );
+  }, [children]);
 
-    return randomize ? shuffleAnswers(parsedAnswers) : parsedAnswers;
-  }, [children, randomize]);
+  const answerSetKey = useMemo(() => {
+    return parsedAnswers
+      .map((answer, index) => getAnswerIdentity(answer, index))
+      .join("\u0000");
+  }, [parsedAnswers]);
+
+  const answers = useMemo(() => {
+    if (!randomize) return parsedAnswers;
+
+    return shuffleAnswers(
+      parsedAnswers,
+      hashString(`${answersName}\u0000${answerSetKey}`),
+    );
+  }, [answerSetKey, answersName, parsedAnswers, randomize]);
 
   const selected = useMemo(() => {
     if (Array.isArray(userAnswer)) {
@@ -117,12 +157,12 @@ export const PLMultipleChoice: React.FC<PLMultipleChoiceProps> = ({
       >
         {answers.map((answer, index) => {
           const answerValue = getPLAnswerValue(answer);
-          const answerKey = answer.props.answerKey ?? answerValue;
+          const answerKey = getAnswerIdentity(answer, index);
           const isSelected = selected.includes(answerValue);
 
           return (
             <PLAnswer
-              key={`${answersName}-${answerKey}-${index}`}
+              key={`${answersName}-${answerKey}`}
               {...answer.props}
               name={answersName}
               multiple={multiple}
