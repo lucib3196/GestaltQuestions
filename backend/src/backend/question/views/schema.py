@@ -30,7 +30,7 @@ class QuestionSearchParams(BaseModel):
 
     isAdaptive: bool | None = None
     # General offset and limits
-    limit: int = 50
+    limit: int = 1000
     offset: int = 0
 
 
