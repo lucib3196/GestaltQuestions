@@ -1,6 +1,6 @@
-export { default as DeveloperQuestionsTable } from "./tables/DeveloperQuestionsTable";
+export { default as DeveloperQuestionsTable } from "./views/DeveloperQuestionsTable";
 export {
   PublishedQuestionsTable as AllQuestionsTable,
   PublishedQuestionsTable,
-} from "./tables/PublishedQuestionsTable";
-export type { QuestionTableViewProps } from "./tables/types";
+} from "./views/PublishedQuestionsTable";
+export type { QuestionTableViewProps } from "./views/types";

@@ -6,7 +6,7 @@ import { useCollectionStore } from "../../QuestionCollections/instance/context";
 import { useQuestionTableContext } from "../../QuestionTables";
 import { ToolBarActions } from "../../QuestionTables";
 import { QuestionTableFilterPanel } from "../../QuestionTables";
-import { ClearTableFilters } from "../../QuestionTables/components/tableFilters/ClearTableFilters";
+import { ClearTableFilters } from "../../QuestionTables/components/filters";
 import { CollectionPopUp } from "../components/CollectionsPopUp";
 import {
   WORKSPACE_TOOLBAR_ACTIONS,

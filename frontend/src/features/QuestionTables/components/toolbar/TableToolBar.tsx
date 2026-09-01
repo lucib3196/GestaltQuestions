@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { UserRole } from "../../../Auth";
 import type { ToolBarActionConfig } from "./types";
 
@@ -5,9 +7,9 @@ export type ToolBarActionsProps<TId extends string> = {
   actions: readonly ToolBarActionConfig<TId>[];
   actionHandlers: Record<TId, () => void>;
   roles?: UserRole[];
-  isActionDisabled?: (action: ToolBarActionConfig<TId>) => boolean;
+  isActionDisabled?(_action: ToolBarActionConfig<TId>): boolean;
   variant?: "inline" | "toolbar";
-  renderActionPopup?: (action: ToolBarActionConfig<TId>) => React.ReactNode;
+  renderActionPopup?(_action: ToolBarActionConfig<TId>): ReactNode;
 };
 
 const toolbarActionsClassByVariant: Record<

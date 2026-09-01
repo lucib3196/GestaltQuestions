@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { CollectionProvider } from "../QuestionCollections/instance/context";
 import { useCollectionStore } from "../QuestionCollections/instance/context";
-import DeveloperQuestionsTable from "../QuestionTables/tables/DeveloperQuestionsTable";
-import { QuestionTableStoreProvider } from "../QuestionTables/tables/QuestionTableStoreProvider";
+import DeveloperQuestionsTable from "../QuestionTables/views/DeveloperQuestionsTable";
+import { QuestionTableStoreProvider } from "../QuestionTables/views/QuestionTableStoreProvider";
 import QuestionBuilderSideBar from "./sidebar/QuestionBuilderSideBar";
 import { ToolBar } from "./toolbar/ToolBar";
 

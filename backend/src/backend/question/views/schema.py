@@ -30,13 +30,14 @@ class QuestionSearchParams(BaseModel):
 
     isAdaptive: bool | None = None
     # General offset and limits
-    limit: int = 50
+    limit: int = 1000
     offset: int = 0
 
 
 class QuestionTableRow(BaseModel):
     question_id: UUID
     user_id: UUID
+    isAdaptive:bool
     developer_profile_id: UUID
     title: str
     institution_id: UUID

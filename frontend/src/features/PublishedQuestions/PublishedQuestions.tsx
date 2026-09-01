@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { QuestionRuntimeLanguage } from "../../services";
 import { QuestionRender } from "../QuestionEngine";
 import { PublishedQuestionsTable } from "../QuestionTables";
-import { QuestionTableStoreProvider } from "../QuestionTables/tables/QuestionTableStoreProvider";
+import { QuestionTableStoreProvider } from "../QuestionTables/views/QuestionTableStoreProvider";
 import { RuntimeToggle } from "../QuestionWorkspace";
 import { useGetQuestionRunTimes } from "../QuestionWorkspace/hooks/hooks";
 import { ToolBar } from "./toolbar/ToolBar";
@@ -26,9 +26,11 @@ export default function PublishedQuestions() {
         </section>
 
         <ToolBar />
-        <PublishedQuestionsTable
-          onQuestionSelect={(qid) => navigate(`/questions/${qid}`)}
-        />
+        <div className="flex flex-1">
+          <PublishedQuestionsTable
+            onQuestionSelect={(qid) => navigate(`/questions/${qid}`)}
+          />
+        </div>
       </div>
     </QuestionTableStoreProvider>
   );

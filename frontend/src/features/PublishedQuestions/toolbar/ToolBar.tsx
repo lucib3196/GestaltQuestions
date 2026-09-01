@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { QuestionSearch } from "../../QuestionTables/components/searchBar/searchBar";
+import { QuestionSearch } from "../../QuestionTables/components/search/QuestionSearch";
 import PublishedToolBarActions from "./ToolBarActions";
 import type { PopUpId } from "./types";
 export function ToolBar() {

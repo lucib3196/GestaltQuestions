@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+
+const DEFAULT_ROWS_PER_PAGE_OPTIONS = [5, 10, 20, 25, 50];
+
 type TableFooterProps = {
   from: number;
   to: number;
@@ -5,7 +9,8 @@ type TableFooterProps = {
   page: number;
   totalPages: number;
   rowsPerPage: number;
-  onRowsPerPageChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  rowsPerPageOptions?: number[];
+  onRowsPerPageChange: (rowsPerPage: number) => void;
   onPreviousPage: () => void;
   onNextPage: () => void;
 };
@@ -17,28 +22,87 @@ export function TableFooter({
   page,
   totalPages,
   rowsPerPage,
+  rowsPerPageOptions = DEFAULT_ROWS_PER_PAGE_OPTIONS,
   onRowsPerPageChange,
   onPreviousPage,
   onNextPage,
 }: TableFooterProps) {
+  const [customRowsPerPage, setCustomRowsPerPage] = useState(
+    String(rowsPerPage),
+  );
+  const normalizedOptions = Array.from(
+    new Set(
+      [...rowsPerPageOptions, rowsPerPage]
+        .filter((option) => Number.isFinite(option) && option > 0)
+        .map((option) => Math.floor(option)),
+    ),
+  ).sort((left, right) => left - right);
+
+  useEffect(() => {
+    setCustomRowsPerPage(String(rowsPerPage));
+  }, [rowsPerPage]);
+
+  const commitRowsPerPage = (value: string) => {
+    const nextRowsPerPage = Number.parseInt(value, 10);
+
+    if (!Number.isFinite(nextRowsPerPage) || nextRowsPerPage < 1) {
+      return;
+    }
+
+    onRowsPerPageChange(nextRowsPerPage);
+  };
+
+  const handleRowsPerPageInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const nextValue = event.target.value;
+
+    setCustomRowsPerPage(nextValue);
+    commitRowsPerPage(nextValue);
+  };
+
   return (
-    <div className="mt-3 flex items-center justify-between gap-3 text-sm text-text-muted">
+    <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-text-muted">
       <div>
         {from}-{to} of {total}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <label htmlFor="rowsPerPage">Rows:</label>
         <select
           id="rowsPerPage"
           className="rounded-md border border-border bg-surface px-2 py-1 text-sm text-text outline-none focus:border-accent"
           value={rowsPerPage}
-          onChange={onRowsPerPageChange}
+          onChange={(event) =>
+            onRowsPerPageChange(Number.parseInt(event.target.value, 10))
+          }
         >
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={20}>20</option>
+          {normalizedOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
         </select>
+
+        <label htmlFor="customRowsPerPage" className="sr-only">
+          Custom rows per page
+        </label>
+        <input
+          id="customRowsPerPage"
+          type="number"
+          min={1}
+          value={customRowsPerPage}
+          onChange={handleRowsPerPageInputChange}
+          onBlur={() => {
+            if (!customRowsPerPage.trim()) {
+              setCustomRowsPerPage(String(rowsPerPage));
+              return;
+            }
+
+            commitRowsPerPage(customRowsPerPage);
+          }}
+          className="w-20 rounded-md border border-border bg-surface px-2 py-1 text-sm text-text outline-none focus:border-accent"
+        />
 
         <button
           type="button"

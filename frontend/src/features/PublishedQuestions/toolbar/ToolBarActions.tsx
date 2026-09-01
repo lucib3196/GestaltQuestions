@@ -3,7 +3,7 @@ import { useDownloadQuestions } from "../../QuestionBuilder/hooks";
 import { ToolBarActions } from "../../QuestionTables";
 import { useQuestionTableContext } from "../../QuestionTables";
 import { QuestionTableFilterPanel } from "../../QuestionTables";
-import { ClearTableFilters } from "../../QuestionTables/components/tableFilters/ClearTableFilters";
+import { ClearTableFilters } from "../../QuestionTables/components/filters";
 import {
   BASE_QUESTION_TABLE_TOOLBAR_ACTIONS,
   type BaseQuestionTableToolbarActionId,
