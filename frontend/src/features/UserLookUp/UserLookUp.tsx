@@ -5,7 +5,7 @@ import { SearchBar } from "../../components/SearchBar";
 import type { UserDetailRead } from "../../services";
 import { UserLookupResult } from "./components";
 import { useUserLookup } from "./hooks/useUserLookUp";
-import { useUserLookupStore } from "./instance/store";
+import { useUserLookupStore } from "./instance/context";
 
 const USERS_PER_PAGE = 3;
 

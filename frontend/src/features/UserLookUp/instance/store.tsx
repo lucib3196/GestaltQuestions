@@ -1,5 +1,4 @@
 import { createStore } from "zustand";
-import { useStore } from "zustand";
 
 import type { UserDetailRead } from "../../../services";
 
@@ -83,10 +82,4 @@ export function createUserLookupStore(preloaded?: Partial<UserLookupState>) {
         };
       }),
   }));
-}
-
-export const userLookupStore = createUserLookupStore();
-
-export function useUserLookupStore<T>(selector: (state: UserLookupStore) => T) {
-  return useStore(userLookupStore, selector);
 }
