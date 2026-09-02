@@ -63,7 +63,7 @@ class TableQueryService:
         query = self.build_query(params, source=source)
         result = self._session.execute(query)
         rows = result.mappings().all()
-        return [model.model_validate(dict(row)) for row in rows]
+        return [model.model_validate(dict(row)) for row in rows] # type: ignore
 
     def build_query(
         self,

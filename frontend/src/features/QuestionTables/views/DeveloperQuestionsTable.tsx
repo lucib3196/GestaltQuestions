@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 
 import { createMyQuestionTableColumns } from "../columns";
 import { useQuestionTableQuery } from "../data/useQuestionTableQuery";
-import { useDeveloperQuestionsTableRows } from "../data/useQuestionTableRows";
+import { usePersonalQuestionsTableRows } from "../hooks";
 import { useQuestionTableContext } from "../state/context";
 import { QuestionTableLayout } from "./QuestionTableLayout";
 import type { QuestionTableViewProps } from "./types";
@@ -21,7 +21,7 @@ export default function DeveloperQuestionsTable({
   }, [columns, setColumns]);
 
   // POST /developer/tables/questions/search
-  const { questions } = useDeveloperQuestionsTableRows(query, refreshKey);
+  const { questions } = usePersonalQuestionsTableRows(query, refreshKey);
 
   return (
     <QuestionTableLayout

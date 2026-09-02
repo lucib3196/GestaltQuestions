@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 
 import { createAllQuestionTableColumns } from "../columns";
 import { useQuestionTableQuery } from "../data/useQuestionTableQuery";
-import { usePublishedQuestionsTableRows } from "../data/useQuestionTableRows";
+import { usePublishedQuestionsTableRows } from "../hooks";
 import { useQuestionTableContext } from "../state/context";
 import { QuestionTableLayout } from "./QuestionTableLayout";
 import type { QuestionTableViewProps } from "./types";
