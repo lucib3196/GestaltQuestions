@@ -2,26 +2,32 @@ import type { ComponentPropsWithoutRef } from "react";
 import { useState } from "react";
 import { FaFilter } from "react-icons/fa";
 
-import type { RowId, TableColumn } from "../../types";
+import type {
+  AnyTableSchema,
+  RowId,
+  TableColumn,
+  TableRow,
+} from "../../types";
 import { useVisibleRowSelection } from "../../state/selection";
 import { ColumnFilterControl } from "../filters";
 
 type TableBaseHeaderProps<
-  T,
-  V extends string = never,
+  Schema extends AnyTableSchema = AnyTableSchema,
 > = ComponentPropsWithoutRef<"thead"> & {
-  columns: TableColumn<T, V>[];
-  rows: T[];
-  getRowId: (_row: T) => RowId;
+  columns: TableColumn<Schema>[];
+  rows: TableRow<Schema>[];
+  getRowId: (_row: TableRow<Schema>) => RowId;
 };
 
-export default function TableBaseHeader<T, V extends string = never>({
+export default function TableBaseHeader<
+  Schema extends AnyTableSchema = AnyTableSchema,
+>({
   columns,
   rows,
   getRowId,
   className,
   ...props
-}: TableBaseHeaderProps<T, V>) {
+}: TableBaseHeaderProps<Schema>) {
   const [openFilterKey, setOpenFilterKey] = useState<string | null>(null);
   const selection = useVisibleRowSelection(rows, getRowId);
 

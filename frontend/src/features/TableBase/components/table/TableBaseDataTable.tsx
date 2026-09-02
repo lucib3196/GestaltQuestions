@@ -1,25 +1,34 @@
 import { useMemo } from "react";
 
 import { Table, TableBody, TableContainer } from "../../primitives";
-import type { RowId, TableColumn } from "../../types";
+import type {
+  AnyTableSchema,
+  RowId,
+  TableColumn,
+  TableRow,
+} from "../../types";
 import { useTableBaseContext } from "../../state/context";
 import { getVisibleColumns } from "../../utils/getVisibleColumns";
 import { TableBaseFooter } from "../footer";
 import TableBaseHeader from "../headers/TableBaseHeader";
 
-type TableBaseDataTableProps<T, V extends string = never> = {
-  data: T[];
-  columns: TableColumn<T, V>[];
-  getRowId: (_row: T) => RowId;
+type TableBaseDataTableProps<
+  Schema extends AnyTableSchema = AnyTableSchema,
+> = {
+  data: TableRow<Schema>[];
+  columns: TableColumn<Schema>[];
+  getRowId: (_row: TableRow<Schema>) => RowId;
   onQuestionSelect?: (_questionId: RowId) => void;
 };
 
-export default function TableBaseDataTable<T, V extends string = never>({
+export default function TableBaseDataTable<
+  Schema extends AnyTableSchema = AnyTableSchema,
+>({
   data,
   columns,
   getRowId,
   onQuestionSelect,
-}: TableBaseDataTableProps<T, V>) {
+}: TableBaseDataTableProps<Schema>) {
   const page = useTableBaseContext((s) => s.page);
   const columnVisibility = useTableBaseContext(
     (state) => state.columnVisibility,

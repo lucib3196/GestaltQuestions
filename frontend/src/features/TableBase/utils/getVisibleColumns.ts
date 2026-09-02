@@ -1,11 +1,9 @@
-import type { TableColumn } from "../types";
+import type { AnyTableSchema, TableColumn } from "../types";
 
 export function getVisibleColumns<
-  T,
-  V extends string,
-  TQuery extends Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 >(
-  columns: TableColumn<T, V, TQuery>[],
+  columns: TableColumn<Schema>[],
   visibleColumns: Partial<Record<string, boolean>>,
 ) {
   return columns.filter((column) => {

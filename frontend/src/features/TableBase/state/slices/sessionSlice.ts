@@ -1,14 +1,11 @@
 import type { TableSessionActions, TableSessionState } from "../types";
 import type { TableSliceCreator } from "./types";
+import type { AnyTableSchema } from "../../types";
 
 export function createTableSessionSlice<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 >(): TableSliceCreator<
-  Row,
-  VirtualKey,
-  Query,
+  Schema,
   TableSessionState & TableSessionActions
 > {
   return (set) => ({

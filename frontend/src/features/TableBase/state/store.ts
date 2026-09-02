@@ -4,20 +4,19 @@ import { persist } from "zustand/middleware";
 import { createTableSettingsSlice } from "./slices/settingsSlice";
 import { createTableSessionSlice } from "./slices/sessionSlice";
 import type { TableStore } from "./types";
+import type { AnyTableSchema } from "../types";
 
 export function createTableStore<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 >(options: {
   persistKey: string;
-  preloaded?: Partial<TableStore<Row, VirtualKey, Query>>;
+  preloaded?: Partial<TableStore<Schema>>;
 }) {
-  return createStore<TableStore<Row, VirtualKey, Query>>()(
+  return createStore<TableStore<Schema>>()(
     persist(
       (...args) => ({
-        ...createTableSettingsSlice<Row, VirtualKey, Query>()(...args),
-        ...createTableSessionSlice<Row, VirtualKey, Query>()(...args),
+        ...createTableSettingsSlice<Schema>()(...args),
+        ...createTableSessionSlice<Schema>()(...args),
         ...options.preloaded,
       }),
       {

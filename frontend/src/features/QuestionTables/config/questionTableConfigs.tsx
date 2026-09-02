@@ -7,19 +7,10 @@ import { usePublishedQuestionsTableRows } from "../hooks";
 import { usePersonalQuestionsTableRows } from "../hooks";
 import { useSharedByMeQuestionTableRows } from "../hooks";
 import { useSharedWithMeQuestionTableRows } from "../hooks";
-import type {
-  QuestionTableRow,
-  QuestionTableSearchParams,
-} from "../../../services";
+import type { QuestionTableSchema } from "../columns";
 // Base QuestionConfig for most cases this is the legacy at this point
 
-type QuestionSelectVirtualKey = "select";
-
-type QuestionConfig = TableConfig<
-  QuestionTableRow,
-  QuestionSelectVirtualKey,
-  QuestionTableSearchParams
->;
+type QuestionConfig = TableConfig<QuestionTableSchema>;
 
 export const personalQuestionsTableConfig: QuestionConfig = {
   id: "personal-questions",

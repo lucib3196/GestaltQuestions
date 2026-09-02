@@ -1,16 +1,12 @@
 import type { TableSettingsActions, TableSettingsState } from "../types";
 import type { TableSliceCreator } from "./types";
+import type { AnyTableSchema } from "../../types";
 
 export function createTableSettingsSlice<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 >(): TableSliceCreator<
-  Row,
-  VirtualKey,
-  Query,
-  TableSettingsState<Row, VirtualKey, Query> &
-    TableSettingsActions<Row, VirtualKey, Query>
+  Schema,
+  TableSettingsState<Schema> & TableSettingsActions<Schema>
 > {
   return (set) => ({
     search: "",

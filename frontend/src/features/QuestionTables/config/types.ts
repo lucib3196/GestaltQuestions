@@ -1,4 +1,10 @@
-import type { RowId, TableColumn } from "../../../components/Table";
+import type {
+  AnyTableSchema,
+  RowId,
+  TableColumn,
+  TableRow,
+  TableSchemaQuery,
+} from "../../TableBase";
 
 export type TableRowsResult<Row> = {
   rows: Row[];
@@ -7,9 +13,7 @@ export type TableRowsResult<Row> = {
 };
 
 export type TableConfig<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 > = {
   id: string;
   /**
@@ -19,13 +23,16 @@ export type TableConfig<
   /**
    * Column render/filter configuration for this table.
    */
-  createColumnDefs: () => TableColumn<Row, VirtualKey, Query>[];
+  createColumnDefs: () => TableColumn<Schema>[];
   /**
    * How the table gets a stable id from each row.
    */
-  getRowId: (row: Row) => RowId;
+  getRowId: (row: TableRow<Schema>) => RowId;
   /**
    * Hook used by the generic table view to fetch rows.
    */
-  useRows: (query: Query, refreshKey: number) => TableRowsResult<Row>;
+  useRows: (
+    query: TableSchemaQuery<Schema>,
+    refreshKey: number,
+  ) => TableRowsResult<TableRow<Schema>>;
 };

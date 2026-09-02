@@ -1,4 +1,8 @@
-import type { TableColumn } from "../../../components/Table";
+import type {
+  TableColumn,
+  TableColumnKey,
+  TableSchema,
+} from "../../TableBase";
 import type {
   QuestionTableRow,
   QuestionTableSearchParams,
@@ -6,12 +10,12 @@ import type {
 
 export type QuestionTableVirtualKey = "select";
 
-export type QuestionTableColumn = TableColumn<
+export type QuestionTableSchema = TableSchema<
   QuestionTableRow,
   QuestionTableVirtualKey,
   QuestionTableSearchParams
 >;
 
-export type QuestionColumnKey =
-  | keyof QuestionTableRow
-  | QuestionTableVirtualKey;
+export type QuestionTableColumn = TableColumn<QuestionTableSchema>;
+
+export type QuestionColumnKey = TableColumnKey<QuestionTableSchema>;

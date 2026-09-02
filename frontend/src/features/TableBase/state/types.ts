@@ -1,29 +1,14 @@
-import type { TableColumn } from "../types";
+import type {
+  AnyTableSchema,
+  TableColumn,
+  TableColumnKey,
+} from "../types";
 
 /**
- * A valid table column key.
- *
- * This can be either:
- * - a real string key from the row data, such as "question_id" or "title"
- * - a virtual UI-only column key, such as "select"
- *
- * Virtual keys are useful for columns that render table controls but do not
- * exist on the actual row object.
- */
-export type TableColumnKey<Row, VirtualKey extends string = never> =
-  | Extract<keyof Row, string>
-  | VirtualKey;
-
-/**
- * Tracks user-facing table settings.
- *
- * These values describe how the table should be displayed and queried, but do
- * not store the fetched row data itself.
+ * Tracks the user-facing settings for a table instance.
  */
 export type TableSettingsState<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 > = {
   /**
    * Text from the table search input.
@@ -39,7 +24,7 @@ export type TableSettingsState<
    * These define how each column renders, whether it can be hidden, and how its
    * filter value should be converted into query parameters.
    */
-  columnDefs: TableColumn<Row, VirtualKey, Query>[];
+  columnDefs: TableColumn<Schema>[];
 
   /**
    * Visibility overrides for each column.
@@ -48,7 +33,7 @@ export type TableSettingsState<
    * needs to store user overrides. If a key is missing, the table can fall back
    * to the column's defaultVisible setting.
    */
-  columnVisibility: Partial<Record<TableColumnKey<Row, VirtualKey>, boolean>>;
+  columnVisibility: Partial<Record<TableColumnKey<Schema>, boolean>>;
 
   /**
    * Active filter values for each column.
@@ -58,7 +43,7 @@ export type TableSettingsState<
    * or a date range object.
    */
   columnFilters: Partial<
-    Record<TableColumnKey<Row, VirtualKey> | string, unknown>
+    Record<TableColumnKey<Schema> | string, unknown>
   >;
 
   /**
@@ -74,9 +59,7 @@ export type TableSettingsState<
  * columns that exist on the row type or are explicitly allowed virtual keys.
  */
 export type TableSettingsActions<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 > = {
   /**
    * Updates the global table search term.
@@ -87,33 +70,33 @@ export type TableSettingsActions<
    * Replaces the column definitions/configuration for this table instance.
    * Usually done on the mount of the component when loading
    */
-  setColumnDefs(config: TableColumn<Row, VirtualKey, Query>[]): void;
+  setColumnDefs(config: TableColumn<Schema>[]): void;
 
   /**
    * Sets a column's visibility directly.
    */
   setColumnVisibility(
-    key: TableColumnKey<Row, VirtualKey>,
+    key: TableColumnKey<Schema>,
     visible: boolean,
   ): void;
 
   /**
    * Flips a column between visible and hidden.
    */
-  toggleColumnVisibility(key: TableColumnKey<Row, VirtualKey>): void;
+  toggleColumnVisibility(key: TableColumnKey<Schema>): void;
 
   /**
    * Sets the active filter value for a column.
    */
   setColumnFilterValue(
-    key: TableColumnKey<Row, VirtualKey>,
+    key: TableColumnKey<Schema>,
     value: unknown,
   ): void;
 
   /**
    * Removes the active filter value for a single column.
    */
-  clearColumnFilterValue(key: TableColumnKey<Row, VirtualKey>): void;
+  clearColumnFilterValue(key: TableColumnKey<Schema>): void;
 
   /**
    * Removes all active column filters.
@@ -143,10 +126,8 @@ export type TableSessionActions = {
 };
 
 export type TableStore<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
-> = TableSettingsState<Row, VirtualKey, Query> &
-  TableSettingsActions<Row, VirtualKey, Query> &
+  Schema extends AnyTableSchema = AnyTableSchema,
+> = TableSettingsState<Schema> &
+  TableSettingsActions<Schema> &
   TableSessionState &
   TableSessionActions;

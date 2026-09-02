@@ -1,25 +1,25 @@
-import type { TableColumn } from "../../types";
+import type {
+  AnyTableSchema,
+  TableColumn,
+  TableColumnKey,
+} from "../../types";
 import { useTableBaseContext } from "../../state/context";
-import type { TableColumnKey, TableStore } from "../../state/types";
+import type { TableStore } from "../../state/types";
 
 type ColumnVisibilityPanelProps<
-  T,
-  V extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 > = {
-  columns: TableColumn<T, V, Query>[];
+  columns: TableColumn<Schema>[];
 };
 
 export function ColumnVisibilityPanel<
-  T,
-  V extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 >({
   columns,
-}: ColumnVisibilityPanelProps<T, V, Query>) {
+}: ColumnVisibilityPanelProps<Schema>) {
   const useTypedTableContext = <Value,>(
-    selector: (state: TableStore<T, V, Query>) => Value,
-  ) => useTableBaseContext<T, V, Query, Value>(selector);
+    selector: (state: TableStore<Schema>) => Value,
+  ) => useTableBaseContext<Schema, Value>(selector);
 
   const columnVisibility = useTypedTableContext((s) => s.columnVisibility);
   const setColumnVisibility = useTypedTableContext(
@@ -34,7 +34,7 @@ export function ColumnVisibilityPanel<
 
       <div className="flex flex-col gap-2">
         {columns.map((column) => {
-          const key = column.key as TableColumnKey<T, V>;
+          const key = column.key as TableColumnKey<Schema>;
           const keyLabel = String(column.key);
           const isVisible =
             columnVisibility[key] ?? column.defaultVisible ?? false;

@@ -3,54 +3,51 @@ import { useStore, type StoreApi } from "zustand";
 
 import { createTableStore } from "./store";
 import type { TableStore } from "./types";
+import type { AnyTableSchema } from "../types";
 
-type AnyTableStoreApi = StoreApi<TableStore<any, any, any>>;
+type AnyTableStoreApi = StoreApi<TableStore<AnyTableSchema>>;
 
 const TableBaseContext = createContext<AnyTableStoreApi | null>(null);
 
 type TableBaseProviderProps<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 > = {
   children: ReactNode;
-  initialState?: Partial<TableStore<Row, VirtualKey, Query>>;
+  initialState?: Partial<TableStore<Schema>>;
   persistKey?: string;
 };
 
 export function TableBaseProvider<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 >({
   children,
   initialState,
   persistKey = "table-settings",
-}: TableBaseProviderProps<Row, VirtualKey, Query>) {
-  const storeRef = useRef<StoreApi<TableStore<Row, VirtualKey, Query>> | null>(
+}: TableBaseProviderProps<Schema>) {
+  const storeRef = useRef<StoreApi<TableStore<Schema>> | null>(
     null,
   );
 
   if (!storeRef.current) {
-    storeRef.current = createTableStore<Row, VirtualKey, Query>({
+    storeRef.current = createTableStore<Schema>({
       persistKey,
       preloaded: initialState,
     });
   }
 
   return (
-    <TableBaseContext.Provider value={storeRef.current as AnyTableStoreApi}>
+    <TableBaseContext.Provider
+      value={storeRef.current as unknown as AnyTableStoreApi}
+    >
       {children}
     </TableBaseContext.Provider>
   );
 }
 
 export function useTableBaseContext<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
   T = unknown,
->(selector: (state: TableStore<Row, VirtualKey, Query>) => T): T {
+>(selector: (state: TableStore<Schema>) => T): T {
   const store = useContext(TableBaseContext);
 
   if (!store) {
@@ -60,7 +57,7 @@ export function useTableBaseContext<
   }
 
   return useStore(
-    store as StoreApi<TableStore<Row, VirtualKey, Query>>,
+    store as unknown as StoreApi<TableStore<Schema>>,
     selector,
   );
 }

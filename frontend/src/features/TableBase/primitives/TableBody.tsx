@@ -1,18 +1,24 @@
-import type { RowId, TableColumn } from "../types";
+import type {
+  AnyTableSchema,
+  RowId,
+  TableColumn,
+  TableRow,
+} from "../types";
 
 type TableBodyProps<
-  T,
-  V extends string = never,
+  Schema extends AnyTableSchema = AnyTableSchema,
 > = React.ComponentPropsWithRef<"tbody"> & {
-  rows: T[];
-  columns: TableColumn<T, V>[];
-  getRowId: (row: T) => RowId;
+  rows: TableRow<Schema>[];
+  columns: TableColumn<Schema>[];
+  getRowId: (row: TableRow<Schema>) => RowId;
   selectedIDs: string[];
   setSelectedIDs: (val: string[]) => void;
   onQuestionSelect?: (questionId: RowId) => void;
 };
 
-export function TableBody<T, V extends string = never>({
+export function TableBody<
+  Schema extends AnyTableSchema = AnyTableSchema,
+>({
   rows,
   columns,
   getRowId,
@@ -21,7 +27,7 @@ export function TableBody<T, V extends string = never>({
   setSelectedIDs,
   onQuestionSelect,
   ...props
-}: TableBodyProps<T, V>) {
+}: TableBodyProps<Schema>) {
   return (
     <tbody className={className} {...props}>
       {rows.length === 0 && (

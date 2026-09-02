@@ -1,10 +1,9 @@
 import type { StateCreator } from "zustand";
 
 import type { TableStore } from "../types";
+import type { AnyTableSchema } from "../../types";
 
 export type TableSliceCreator<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
   Slice = unknown,
-> = StateCreator<TableStore<Row, VirtualKey, Query>, [], [], Slice>;
+> = StateCreator<TableStore<Schema>, [], [], Slice>;

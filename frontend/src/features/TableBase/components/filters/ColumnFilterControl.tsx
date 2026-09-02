@@ -1,29 +1,29 @@
-import type { TableColumn } from "../../types";
+import type {
+  AnyTableSchema,
+  TableColumn,
+  TableColumnKey,
+} from "../../types";
 import { useTableBaseContext } from "../../state/context";
-import type { TableColumnKey, TableStore } from "../../state/types";
+import type { TableStore } from "../../state/types";
 import { MultiSelectFilterControl } from "./MultiSelectFilterControl";
 
 type ColumnFilterControlProps<
-  T,
-  V extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 > = {
-  column: TableColumn<T, V, Query>;
+  column: TableColumn<Schema>;
 };
 
 export function ColumnFilterControl<
-  T,
-  V extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 >({
   column,
-}: ColumnFilterControlProps<T, V, Query>) {
+}: ColumnFilterControlProps<Schema>) {
   const useTypedTableContext = <Value,>(
-    selector: (state: TableStore<T, V, Query>) => Value,
-  ) => useTableBaseContext<T, V, Query, Value>(selector);
+    selector: (state: TableStore<Schema>) => Value,
+  ) => useTableBaseContext<Schema, Value>(selector);
 
   const filter = column.filter;
-  const columnKey = column.key as TableColumnKey<T, V>;
+  const columnKey = column.key as TableColumnKey<Schema>;
   const columnKeyLabel = String(column.key);
   const value = useTypedTableContext(
     (state) => state.columnFilters[columnKey],
@@ -72,10 +72,10 @@ export function ColumnFilterControl<
           options={filter.options ?? []}
           selectedValues={selectedValues}
           setFilterValue={(key, nextValue) =>
-            setFilterValue(key as TableColumnKey<T, V>, nextValue)
+            setFilterValue(key as TableColumnKey<Schema>, nextValue)
           }
           clearFilterValue={(key) =>
-            clearFilterValue(key as TableColumnKey<T, V>)
+            clearFilterValue(key as TableColumnKey<Schema>)
           }
         />
       );

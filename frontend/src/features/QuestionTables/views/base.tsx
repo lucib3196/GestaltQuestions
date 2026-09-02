@@ -1,21 +1,22 @@
 import type { TableConfig } from "../config/types";
-import { useMemo, useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuestionTableContext } from "../state/context";
-import { useQuestionTableQuery } from "../data/useQuestionTableQuery";
 import { QuestionDataTable } from "../components";
 import type { TableStore } from "../state/types";
-import type { TableColumn } from "../../../components/Table";
+import type {
+  AnyTableSchema,
+  TableColumn,
+  TableColumnKey,
+  TableSchemaQuery,
+} from "../../TableBase";
 
-function buildQuery<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
->(
-  columns: TableColumn<Row, VirtualKey, Query>[],
-  rawFilters: Partial<Record<Extract<keyof Row, string> | VirtualKey, unknown>>,
-  baseQuery: Partial<Query> = {},
-): Partial<Query> {
-  return columns.reduce<Partial<Query>>(
+function buildQuery<Schema extends AnyTableSchema>(
+  columns: TableColumn<Schema>[],
+  rawFilters: Partial<Record<TableColumnKey<Schema> | string, unknown>>,
+  search: string,
+  baseQuery: Partial<TableSchemaQuery<Schema>> = {},
+): TableSchemaQuery<Schema> {
+  const query = columns.reduce<Partial<TableSchemaQuery<Schema>>>(
     (params, column) => {
       const value = rawFilters[column.key];
 
@@ -25,41 +26,47 @@ function buildQuery<
 
       return params;
     },
-    { ...baseQuery },
+    { search, ...baseQuery } as Partial<TableSchemaQuery<Schema>>,
   );
+
+  return query as TableSchemaQuery<Schema>;
 }
 export function QuestionTableView<
-  Row,
-  VirtualKey extends string = never,
-  Query extends Record<string, unknown> = Record<string, unknown>,
+  Schema extends AnyTableSchema = AnyTableSchema,
 >({
   config,
   baseQuery,
 }: {
-  config: TableConfig<Row, VirtualKey, Query>;
-  baseQuery?: Partial<Query>;
+  config: TableConfig<Schema>;
+  baseQuery?: Partial<TableSchemaQuery<Schema>>;
 }) {
   // Set the column configurations
   const columnDefs = useMemo(() => config.createColumnDefs(), [config]);
   const setColumnDefs = useQuestionTableContext<
-    Row,
-    VirtualKey,
-    Query,
-    TableStore<Row, VirtualKey, Query>["setColumnDefs"]
+    Schema,
+    TableStore<Schema>["setColumnDefs"]
   >((s) => s.setColumnDefs);
 
   useEffect(() => {
     setColumnDefs(columnDefs);
   }, [columnDefs, setColumnDefs]);
 
-//   Construct the initial Query for the table
-const searchTerm = useQuestionTableContext((s)=>s.search)
-const rawFilters  = useQuestionTableContext<
-    Row,
-    VirtualKey,
-    Query,
-    TableStore<Row, VirtualKey, Query>["columnFilters"]
-  >((s)=>s.columnFilters)
+  // Construct the initial query for the table from shared settings.
+  const searchTerm = useQuestionTableContext<Schema, string>(
+    (s) => s.search,
+  );
+  const rawFilters = useQuestionTableContext<
+    Schema,
+    TableStore<Schema>["columnFilters"]
+  >((s) => s.columnFilters);
+  const refreshKey = useQuestionTableContext<Schema, number>(
+    (s) => s.refreshKey,
+  );
+  const query = useMemo(
+    () => buildQuery(columnDefs, rawFilters, searchTerm, baseQuery),
+    [columnDefs, rawFilters, searchTerm, baseQuery],
+  );
+  const { rows } = config.useRows(query, refreshKey);
 
   return (
     <QuestionDataTable
