@@ -1,4 +1,7 @@
-export { ClearTableFilters } from "./ClearTableFilters";
-export { ColumnFilterControl } from "./ColumnFilterControl";
-export { MultiSelectFilterControl } from "./MultiSelectFilterControl";
-export { QuestionTableFilterPanel } from "./QuestionTableFilterPanel";
+export {
+  ClearTableFilters,
+  ColumnFilterControl,
+  ColumnVisibilityPanel,
+  MultiSelectFilterControl,
+  QuestionTableFilterPanel,
+} from "../../../TableBase/components/filters";

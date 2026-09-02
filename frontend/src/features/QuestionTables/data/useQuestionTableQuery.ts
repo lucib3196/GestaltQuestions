@@ -10,7 +10,7 @@ export function useQuestionTableQuery(
   baseQuery?: QuestionTableSearchParams,
 ) {
   const searchTerm = useQuestionTableContext((s) => s.search);
-  const rawFilters = useQuestionTableContext((s) => s.filters);
+  const rawFilters = useQuestionTableContext((s) => s.columnFilters);
 
   return useMemo(
     () => ({

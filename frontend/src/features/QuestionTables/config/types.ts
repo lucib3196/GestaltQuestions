@@ -9,7 +9,7 @@ export type TableRowsResult<Row> = {
 export type TableConfig<
   Row,
   VirtualKey extends string = never,
-  Query = unknown,
+  Query extends Record<string, unknown> = Record<string, unknown>,
 > = {
   id: string;
   /**

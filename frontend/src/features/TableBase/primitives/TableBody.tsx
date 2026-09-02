@@ -1,4 +1,4 @@
-import type { RowId, TableColumn } from "./types";
+import type { RowId, TableColumn } from "../types";
 
 type TableBodyProps<
   T,

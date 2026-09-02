@@ -4,7 +4,7 @@ import type { TableSliceCreator } from "./types";
 export function createTableSessionSlice<
   Row,
   VirtualKey extends string = never,
-  Query = unknown,
+  Query extends Record<string, unknown> = Record<string, unknown>,
 >(): TableSliceCreator<
   Row,
   VirtualKey,

@@ -21,7 +21,11 @@ export type TableHeaderRenderContext = {
   toggleVisibleRows: () => void;
 };
 
-export type TableColumn<T, V extends string = never, TQuery = unknown> = {
+export type TableColumn<
+  T,
+  V extends string = never,
+  Query extends Record<string, unknown> = Record<string, unknown>,
+> = {
   key: TableColumnKey<T, V>;
   label?: string;
   defaultVisible?: boolean;
@@ -38,6 +42,6 @@ export type TableColumn<T, V extends string = never, TQuery = unknown> = {
     label?: string;
     options?: { label: string; value: string }[];
     show?: boolean;
-    toQuery?: (value: unknown) => Partial<TQuery>;
+    toQuery?: (value: unknown) => Partial<Query>;
   };
 };
