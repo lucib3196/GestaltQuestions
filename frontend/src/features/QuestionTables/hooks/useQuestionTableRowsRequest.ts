@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import type { TableRowsResult } from "../config/types";
 type QuestionTableRowsRequestOptions<Row> = {
   enabled?: boolean;
   refreshKey?: number;
@@ -10,7 +10,7 @@ export function useQuestionTableRowsRequest<Row>({
   enabled = true,
   refreshKey,
   request,
-}: QuestionTableRowsRequestOptions<Row>) {
+}: QuestionTableRowsRequestOptions<Row>): TableRowsResult<Row> {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [questions, setQuestions] = useState<Row[]>([]);
@@ -48,5 +48,5 @@ export function useQuestionTableRowsRequest<Row>({
     };
   }, [enabled, request, refreshKey]);
 
-  return { questions, loading, error };
+  return { rows: questions, loading, error };
 }

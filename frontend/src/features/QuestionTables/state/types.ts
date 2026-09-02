@@ -63,8 +63,6 @@ export type TableSettingsState<
    * Number of rows shown on each client-side table page.
    */
   rowsPerPage: number;
-  page: number,
-  offset: 0
 };
 
 /**
@@ -129,6 +127,8 @@ export type TableSettingsActions<
 export type TableSessionState = {
   selectedIds: string[];
   refreshKey: number;
+  page: number;
+  offset: number;
 };
 
 export type TableSessionActions = {
@@ -136,6 +136,8 @@ export type TableSessionActions = {
   toggleSelectedId(id: string): void;
   clearSelectedIds(): void;
   refreshRows(): void;
+  setPage(page: number): void;
+  setOffset(offset: number): void;
 };
 
 export type TableStore<
