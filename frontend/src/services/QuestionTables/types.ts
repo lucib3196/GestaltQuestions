@@ -36,3 +36,10 @@ export type QuestionTableRow = {
   updated_at: string | null;
   isAdaptive: boolean | null;
 };
+
+export type SharedQuestionTableRow = QuestionTableRow & {
+  access_level: string;
+  granted_by_id: string | null;
+  granted_by_email?: string | null;
+  shared_at: string;
+};
