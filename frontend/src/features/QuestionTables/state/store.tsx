@@ -1,124 +1,139 @@
-import { createStore } from "zustand";
+import type {
+  TableSettingsState,
+  TableSettingsActions,
+  TableSessionState,
+  TableSessionActions,
+  TableStore,
+} from "./types";
 import { persist } from "zustand/middleware";
+import { createStore, type StateCreator } from "zustand";
 
-import type { QuestionTableColumn } from "../columns";
+type TableSliceCreator<
+  Row,
+  VirtualKey extends string = never,
+  Query = unknown,
+  Slice = unknown,
+> = StateCreator<TableStore<Row, VirtualKey, Query>, [], [], Slice>;
 
-// Handle the state of the table
-type TableFilterValues = Record<string, unknown>;
-type TableColumnVisibility = Record<string, boolean>;
+export function createTableSettingsSlice<
+  Row,
+  VirtualKey extends string = never,
+  Query = unknown,
+>(): TableSliceCreator<
+  Row,
+  VirtualKey,
+  Query,
+  TableSettingsState<Row, VirtualKey, Query> &
+    TableSettingsActions<Row, VirtualKey, Query>
+> {
+  return (set) => ({
+    search: "",
+    columnDefs: [],
+    columnVisibility: {},
+    columnFilters: {},
+    rowsPerPage: 5,
+    page: 0,
+    offset: 0,
 
+    setSearch: (search: string) => set({ search: search }),
+    setColumnDefs: (columnsDef) => ({ columnsDef: columnsDef }),
+    setColumnVisibility: (key, visible) =>
+      set((state) => ({
+        columnVisibility: {
+          ...state.columnVisibility,
+          [key]: visible,
+        },
+      })),
+    toggleColumnVisibility: (key) =>
+      set((state) => ({
+        columnVisibility: {
+          ...state.columnVisibility,
+          [key]: !(state.columnVisibility[key] ?? true),
+        },
+      })),
+    setColumnFilterValue: (key, value) =>
+      set((state) => ({
+        columnFilters: {
+          ...state.columnFilters,
+          [key]: value,
+        },
+        page: 0,
+        offset: 0,
+      })),
+    clearColumnFilterValue: (key) =>
+      set((state) => {
+        const next = { ...state.columnFilters };
+        delete next[key];
 
-export type QuestionTableState = {
-  selectedIDs: string[];
-  refreshKey: number;
-  visibleColumns: TableColumnVisibility;
-  columns: QuestionTableColumn[];
-  filters: TableFilterValues;
-  search: string;
-  limit: number;
-  offset: number;
+        return {
+          columnFilters: next,
+          page: 0,
+          offset: 0,
+        };
+      }),
+    clearColumnFilters: () =>
+      set({
+        columnFilters: {},
+        page: 0,
+        offset: 0,
+      }),
+    setRowsPerPage: (rowsPerPage) =>
+      set({
+        rowsPerPage,
+        page: 0,
+        offset: 0,
+      }),
+  });
+}
 
-  // UI Table Settings
-  page: number;
-  rowsPerPage: number;
-};
+export function createTableSessionSlice<
+  Row,
+  VirtualKey extends string = never,
+  Query = unknown,
+>(): TableSliceCreator<
+  Row,
+  VirtualKey,
+  Query,
+  TableSessionState & TableSessionActions
+> {
+  return (set) => ({
+    selectedIds: [],
+    refreshKey: 0,
 
-export type QuestionTableActions = {
-  setQuestionTableColumns(col: QuestionTableColumn[]): void;
-  setSelectedIDs(ids: string[]): void;
-  refreshQuestions(): void;
-  toggleSelectedId(id: string): void;
-  clearSelectedIds(): void;
+    setSelectedIds: (selectedIds) => set({ selectedIds }),
+    toggleSelectedId: (id) =>
+      set((state) => ({
+        selectedIds: state.selectedIds.includes(id)
+          ? state.selectedIds.filter((value) => value !== id)
+          : [...state.selectedIds, id],
+      })),
+    clearSelectedIds: () => set({ selectedIds: [] }),
+    refreshRows: () =>
+      set((state) => ({
+        refreshKey: state.refreshKey + 1,
+      })),
+  });
+}
 
-  setColumnVisible(key: string, visible: boolean): void;
-  toggleColumnVisible(key: string): void;
-
-  setFilterValue(key: string, value: unknown): void;
-  clearFilterValue(key: string): void;
-  clearFilters(): void;
-  setSearch(value: string): void;
-  setPagination(next: { rowsPerPage?: number; offset?: number }): void;
-  setPage(page: number): void;
-};
-
-export type QuestionTableStore = QuestionTableState & QuestionTableActions;
-
-const initialState: QuestionTableState = {
-  selectedIDs: [],
-  refreshKey: 0,
-  visibleColumns: {},
-  columns: [],
-  filters: {},
-  search: "",
-
-  limit: 200,
-  offset: 0,
-  page: 0,
-  rowsPerPage: 5,
-};
-
-export function createQuestionTableStore(
-  preloaded?: Partial<QuestionTableState>,
-) {
-  return createStore<QuestionTableStore>()(
+export function createTableStore<
+  Row,
+  VirtualKey extends string = never,
+  Query = unknown,
+>(preloaded?: Partial<TableStore<Row, VirtualKey, Query>>) {
+  return createStore<TableStore<Row, VirtualKey, Query>>()(
     persist(
-      (set) => ({
-        ...initialState,
+      (...args) => ({
+        ...createTableSettingsSlice<Row, VirtualKey, Query>()(...args),
+        ...createTableSessionSlice<Row, VirtualKey, Query>()(...args),
         ...preloaded,
-        setQuestionTableColumns: (col) => set({ columns: col }),
-        refreshQuestions: () =>
-          set((state) => ({ refreshKey: state.refreshKey + 1 })),
-        setSelectedIDs: (selectedIds) => set({ selectedIDs: selectedIds }),
-        toggleSelectedId: (id) =>
-          set((state) => ({
-            selectedIDs: state.selectedIDs.includes(id)
-              ? state.selectedIDs.filter((value) => value !== id)
-              : [...state.selectedIDs, id],
-          })),
-        clearSelectedIds: () => set({ selectedIDs: [] }),
-        setColumnVisible: (key, visible) =>
-          set((state) => ({
-            visibleColumns: {
-              ...state.visibleColumns,
-              [key]: visible,
-            },
-          })),
-        toggleColumnVisible: (key) =>
-          set((state) => ({
-            visibleColumns: {
-              ...state.visibleColumns,
-              [key]: !(state.visibleColumns[key] ?? true),
-            },
-          })),
-        setFilterValue: (key, value) =>
-          set((state) => ({
-            filters: {
-              ...state.filters,
-              [key]: value,
-            },
-            offset: 0,
-          })),
-        clearFilterValue: (key) =>
-          set((state) => {
-            const next = { ...state.filters };
-            delete next[key];
-            return { filters: next, offset: 0 };
-          }),
-        clearFilters: () => set({ filters: {}, offset: 0 }),
-        setSearch: (search) => set({ search, offset: 0 }),
-        setPagination: (next) =>
-          set((state) => ({
-            rowsPerPage: next.rowsPerPage ?? state.rowsPerPage,
-            offset: next.offset ?? state.offset,
-          })),
-        setPage: (page) => set({ page: page }),
       }),
       {
-        name: "question-table-settings",
+        name: "table-settings",
         partialize: (state) => ({
+          search: state.search,
+          columnVisibility: state.columnVisibility,
+          columnFilters: state.columnFilters,
           rowsPerPage: state.rowsPerPage,
-          filters: state.filters,
-          visibleColumns: state.visibleColumns
         }),
       },
     ),

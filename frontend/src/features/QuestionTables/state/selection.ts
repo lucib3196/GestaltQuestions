@@ -7,9 +7,9 @@ export function useVisibleRowSelection<T>(
   rows: T[],
   getRowId: (_row: T) => RowId,
 ) {
-  const selectedIds = useQuestionTableContext((state) => state.selectedIDs);
+  const selectedIds = useQuestionTableContext((state) => state.selectedIds);
   const setSelectedIds = useQuestionTableContext(
-    (state) => state.setSelectedIDs,
+    (state) => state.setSelectedIds,
   );
 
   const visibleRowIds = useMemo(() => rows.map(getRowId), [rows, getRowId]);

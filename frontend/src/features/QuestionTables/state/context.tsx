@@ -1,38 +1,51 @@
 import { createContext, type ReactNode, useContext, useRef } from "react";
-import { useStore } from "zustand";
+import { useStore, type StoreApi } from "zustand";
 
-import {
-  createQuestionTableStore,
-  type QuestionTableState,
-  type QuestionTableStore,
-} from "./store";
+import { createTableStore } from "./store";
+import type { TableStore } from "./types";
 
-type QuestionTableStoreApi = ReturnType<typeof createQuestionTableStore>;
-const QuestionTableContext = createContext<QuestionTableStoreApi | null>(null);
+type AnyTableStoreApi = StoreApi<TableStore<any, any, any>>;
 
-type QuestionTableProviderProps = {
+const QuestionTableContext = createContext<AnyTableStoreApi | null>(null);
+
+type QuestionTableProviderProps<
+  Row,
+  VirtualKey extends string = never,
+  Query = unknown,
+> = {
   children: ReactNode;
-  initialState?: Partial<QuestionTableState>;
+  initialState?: Partial<TableStore<Row, VirtualKey, Query>>;
 };
-export function QuestionTableProvider({
+
+export function QuestionTableProvider<
+  Row,
+  VirtualKey extends string = never,
+  Query = unknown,
+>({
   children,
   initialState,
-}: QuestionTableProviderProps) {
-  const storeRef = useRef<QuestionTableStoreApi | null>(null);
+}: QuestionTableProviderProps<Row, VirtualKey, Query>) {
+  const storeRef = useRef<StoreApi<TableStore<Row, VirtualKey, Query>> | null>(
+    null,
+  );
 
   if (!storeRef.current) {
-    storeRef.current = createQuestionTableStore(initialState);
+    storeRef.current = createTableStore<Row, VirtualKey, Query>(initialState);
   }
 
   return (
-    <QuestionTableContext.Provider value={storeRef.current}>
+    <QuestionTableContext.Provider value={storeRef.current as AnyTableStoreApi}>
       {children}
     </QuestionTableContext.Provider>
   );
 }
-export function useQuestionTableContext<T>(
-  selector: (_state: QuestionTableStore) => T,
-): T {
+
+export function useQuestionTableContext<
+  Row,
+  VirtualKey extends string = never,
+  Query = unknown,
+  T = unknown,
+>(selector: (state: TableStore<Row, VirtualKey, Query>) => T): T {
   const store = useContext(QuestionTableContext);
 
   if (!store) {
@@ -41,5 +54,8 @@ export function useQuestionTableContext<T>(
     );
   }
 
-  return useStore(store, selector);
+  return useStore(
+    store as StoreApi<TableStore<Row, VirtualKey, Query>>,
+    selector,
+  );
 }

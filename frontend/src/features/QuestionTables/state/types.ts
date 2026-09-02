@@ -20,7 +20,7 @@ type TableColumnKey<Row, VirtualKey extends string = never> =
  * These values describe how the table should be displayed and queried, but do
  * not store the fetched row data itself.
  */
-type TableSettingsState<
+export type TableSettingsState<
   Row,
   VirtualKey extends string = never,
   Query = unknown,
@@ -63,6 +63,8 @@ type TableSettingsState<
    * Number of rows shown on each client-side table page.
    */
   rowsPerPage: number;
+  page: number,
+  offset: 0
 };
 
 /**
@@ -71,7 +73,7 @@ type TableSettingsState<
  * The column-based setters use TableColumnKey so callers can only update
  * columns that exist on the row type or are explicitly allowed virtual keys.
  */
-type TableSettingsActions<
+export type TableSettingsActions<
   Row,
   VirtualKey extends string = never,
   Query = unknown,
@@ -124,21 +126,23 @@ type TableSettingsActions<
   setRowsPerPage(value: number): void;
 };
 
-type QuestionTableSessionState = {
+export type TableSessionState = {
   selectedIds: string[];
+  refreshKey: number;
 };
 
-type QuestionTableSessionActions = {
+export type TableSessionActions = {
   setSelectedIds(ids: string[]): void;
-  toggleSelectedids(ids: string[]): void;
+  toggleSelectedId(id: string): void;
   clearSelectedIds(): void;
+  refreshRows(): void;
 };
 
-export type QuestionTableStore<
+export type TableStore<
   Row,
   VirtualKey extends string = never,
   Query = unknown,
 > = TableSettingsState<Row, VirtualKey, Query> &
   TableSettingsActions<Row, VirtualKey, Query> &
-  QuestionTableSessionState &
-  QuestionTableSessionActions;
+  TableSessionState &
+  TableSessionActions;
