@@ -1,4 +1,4 @@
-import type { TableConfig } from "./types";
+import type { TableConfig } from "../../TableBase/config/types";
 import {
   createAllQuestionTableColumns,
   createMyQuestionTableColumns,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { TableRowsResult } from "../config/types";
-type QuestionTableRowsRequestOptions<Row> = {
+type TableRowsRequestOptions<Row> = {
   enabled?: boolean;
   refreshKey?: number;
   request: () => Promise<Row[]>;
@@ -10,17 +10,17 @@ export function useQuestionTableRowsRequest<Row>({
   enabled = true,
   refreshKey,
   request,
-}: QuestionTableRowsRequestOptions<Row>): TableRowsResult<Row> {
+}: TableRowsRequestOptions<Row>): TableRowsResult<Row> {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [questions, setQuestions] = useState<Row[]>([]);
+  const [rows, setRows] = useState<Row[]>([]);
 
   useEffect(() => {
     let cancelled = false;
 
     async function run() {
       if (!enabled) {
-        setQuestions([]);
+        setRows([]);
         return;
       }
 
@@ -29,12 +29,10 @@ export function useQuestionTableRowsRequest<Row>({
 
       try {
         const data = await request();
-        if (!cancelled) setQuestions(data);
+        if (!cancelled) setRows(data);
       } catch (err) {
         if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : "Failed to load questions",
-          );
+          setError(err instanceof Error ? err.message : "Failed to load rows");
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -48,5 +46,5 @@ export function useQuestionTableRowsRequest<Row>({
     };
   }, [enabled, request, refreshKey]);
 
-  return { rows: questions, loading, error };
+  return { rows, loading, error };
 }
