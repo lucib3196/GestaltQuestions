@@ -7,6 +7,7 @@ import type { QuestionTableColumn } from "../columns";
 type TableFilterValues = Record<string, unknown>;
 type TableColumnVisibility = Record<string, boolean>;
 
+
 export type QuestionTableState = {
   selectedIDs: string[];
   refreshKey: number;
