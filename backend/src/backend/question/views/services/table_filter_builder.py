@@ -2,18 +2,12 @@ from collections.abc import Sequence
 from enum import StrEnum
 from typing import Any
 
-from backend.question.views.schema import (
-    QuestionSearchParams,
-    QuestionTableSearchContext,
-)
+from backend.question.views.schema import QuestionSearchParams
 
 
 class QuestionTableFilterBuilder:
-    def __init__(
-        self, params: QuestionSearchParams, context: QuestionTableSearchContext
-    ) -> None:
+    def __init__(self, params: QuestionSearchParams) -> None:
         self.params = params
-        self.context = context
         self.clauses: list[str] = []
         self.query_params: dict[str, Any] = {
             "limit": params.limit,
@@ -23,7 +17,6 @@ class QuestionTableFilterBuilder:
     def build(
         self,
     ) -> tuple[str, dict[str, Any]]:
-        self.add_context()
         self.add_title()
         self.add_status()
         self.add_topic()
@@ -110,15 +103,6 @@ class QuestionTableFilterBuilder:
                     f"language_{index}": language
                     for index, language in enumerate(languages)
                 },
-            )
-
-    def add_context(self) -> None:
-        if self.context.owner_id:
-            self.add("owner_id = :owner_id", owner_id=self.context.owner_id)
-        if self.context.developer_profile_id:
-            self.add(
-                "developer_profile_id = :developer_profile_id",
-                developer_profile_id=self.context.developer_profile_id,
             )
 
     def add_is_adaptive(self) -> None:

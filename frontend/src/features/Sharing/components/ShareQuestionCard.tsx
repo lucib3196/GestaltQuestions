@@ -43,9 +43,11 @@ export function ShareQuestionCard({
         </button>
       </div>
 
-      <div className="mb-5 min-h-28 rounded-md border border-border bg-surface-strong p-4">
-        {questionPreview}
-      </div>
+      {questionPreview && (
+        <div className="mb-5 min-h-28 rounded-md border border-border bg-surface-strong p-4">
+          {questionPreview}
+        </div>
+      )}
 
       <div className="space-y-5">
         <div className="space-y-2">

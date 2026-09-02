@@ -9,6 +9,9 @@ export type {
   ResourceAccessRevokeResult,
   ShareableAccessLevel,
   ShareAccessPayload,
+  ShareQuestionBatchResult,
+  ShareQuestionFailure,
+  ShareQuestionsWithUsersPayload,
   UpdateShareAccessPayload,
   UserId,
 } from "./types";

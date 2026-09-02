@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
@@ -37,7 +36,7 @@ class QuestionSearchParams(BaseModel):
 class QuestionTableRow(BaseModel):
     question_id: UUID
     user_id: UUID
-    isAdaptive:bool
+    isAdaptive: bool
     developer_profile_id: UUID
     title: str
     institution_id: UUID
@@ -51,10 +50,3 @@ class QuestionTableRow(BaseModel):
     collection_title: str | None
     created_at: datetime | None = None
     updated_at: datetime | None = None
-
-
-@dataclass(frozen=True)
-class QuestionTableSearchContext:
-    owner_id: UUID | None = None
-    developer_profile_id: UUID | None = None
-    dev_owner_id: UUID | None = None

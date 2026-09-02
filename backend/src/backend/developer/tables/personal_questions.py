@@ -2,11 +2,8 @@ from collections.abc import Sequence
 from uuid import UUID
 
 from backend.developer.model import DeveloperProfile
-from backend.question.views.schema import (
-    QuestionSearchParams,
-    QuestionTableRow,
-    QuestionTableSearchContext,
-)
+from backend.developer.tables import DeveloperQuestionTableSource
+from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
 from backend.question.views.services.table_query_service import TableQueryService
 
 
@@ -20,8 +17,10 @@ class DeveloperTables:
         params: QuestionSearchParams | None = None,
     ) -> Sequence[QuestionTableRow]:
         assert dev.id
-        context = QuestionTableSearchContext(developer_profile_id=dev.id)
-        return self._table_service.search(params=params, context=context)
+        return self._table_service.search(
+            params=params,
+            source=DeveloperQuestionTableSource(dev.id),
+        )
 
     def get_questions_by_collection(
         self,
@@ -46,5 +45,7 @@ class DeveloperTables:
                 "collection_title": collection_title,
             }
         )
-        context = QuestionTableSearchContext(developer_profile_id=dev.id)
-        return self._table_service.search(params=params, context=context)
+        return self._table_service.search(
+            params=params,
+            source=DeveloperQuestionTableSource(dev.id),
+        )
