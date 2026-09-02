@@ -1,3 +1,4 @@
+from .personal_questions import DeveloperPersonalQuestionTables
 from .shared_questions import DeveloperSharedQuestionTables, SharedQuestionTableRow
 from .sources import (
     DeveloperQuestionTableSource,
@@ -6,6 +7,7 @@ from .sources import (
 )
 
 __all__ = [
+    "DeveloperPersonalQuestionTables",
     "DeveloperQuestionTableSource",
     "DeveloperSharedQuestionTables",
     "SharedByMeQuestionTableSource",

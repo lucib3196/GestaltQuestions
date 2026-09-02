@@ -2,12 +2,13 @@ from collections.abc import Sequence
 from uuid import UUID
 
 from backend.developer.model import DeveloperProfile
-from backend.developer.tables import DeveloperQuestionTableSource
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
 from backend.question.views.services.table_query_service import TableQueryService
 
+from .sources import DeveloperQuestionTableSource
 
-class DeveloperTables:
+
+class DeveloperPersonalQuestionTables:
     def __init__(self, table_service: TableQueryService) -> None:
         self._table_service = table_service
 

@@ -13,8 +13,9 @@ from backend.question.views.services.table_query_service import TableQueryServic
 
 
 class SharedQuestionTableRow(QuestionTableRow):
-    access_level: AccessLevel
+    access_level: AccessLevel | str
     granted_by_id: UUID | None
+    granted_by_email: str | None = None
     shared_at: datetime
 
 
