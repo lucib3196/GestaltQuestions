@@ -1,9 +1,8 @@
 from collections.abc import Sequence
 from datetime import datetime
-from uuid import UUID
 from typing import Any, cast
+from uuid import UUID
 
-from sqlalchemy import func, select
 from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlmodel import Session
@@ -14,7 +13,6 @@ from backend.developer.tables.sources import (
     SharedByMeQuestionTableSource,
     SharedWithMeQuestionTableSource,
 )
-from backend.chat.model import Message, Thread
 from backend.question import (
     QType,
     Question,
@@ -26,8 +24,11 @@ from backend.question import (
 from backend.question.access import QuestionAccess
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
 from backend.question.views.services.table_query_service import TableQueryService
+
+
 def sql(expr: object) -> Any:
     return cast(Any, expr)
+
 
 def question_table_base_subquery():
     stmt = (

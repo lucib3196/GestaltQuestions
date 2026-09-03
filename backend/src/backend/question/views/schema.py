@@ -1,11 +1,15 @@
 from datetime import datetime
+from enum import StrEnum
+from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from backend.accounts import ValidInstitutions
 from backend.question import QType, Status
 from backend.question_runtime.model import RuntimeLanguage
+import json
+from .utils import coerce_str_enum, normalize_list
 
 
 class QuestionSearchParamsBase(BaseModel):
@@ -47,10 +51,33 @@ class QuestionTableRowBase(BaseModel):
     isAdaptive: bool
     status: Status | str
     topics: list[str | None] | None
-    question_type: list[QType | str | None] | None
-    available_runtimes: list[RuntimeLanguage | str]
+    question_type: list[QType | None] | None
+    available_runtimes: list[RuntimeLanguage | None] | None
     created_at: datetime | None = None
     updated_at: datetime | None = None
+
+    @field_validator("topics", "question_type", "available_runtimes", mode="before")
+    @classmethod
+    def normalize_array_fields(cls, value: Any) -> list[Any] | None:
+        return normalize_list(value)
+
+    @field_validator("available_runtimes", mode="before")
+    @classmethod
+    def normalize_runtime_languages(cls, value: Any) -> list[Any] | None:
+        values = normalize_list(value)
+        if values is None:
+            return None
+
+        return [coerce_str_enum(item, RuntimeLanguage) for item in values]
+
+    @field_validator("question_type", mode="before")
+    @classmethod
+    def normalize_question_types(cls, value: Any) -> list[Any] | None:
+        values = normalize_list(value)
+        if values is None:
+            return None
+
+        return [coerce_str_enum(item, QType) for item in values]
 
 
 class QuestionTableRow(BaseModel):
@@ -64,7 +91,7 @@ class QuestionTableRow(BaseModel):
     created_by: str
     status: Status | str
     topics: list[str | None] | None
-    question_type: list[QType | str | None] | None
+    question_type: list[QType | str | None]
     available_runtimes: list[RuntimeLanguage | str]
     collection_id: UUID | None
     collection_title: str | None

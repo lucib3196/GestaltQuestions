@@ -68,7 +68,6 @@ def test_search_filters_by_base_params(db_session, make_question: MakeQuestion) 
             isAdaptive=False,
         )
     )
-    
 
     assert len(rows) == 1
     assert rows[0].question_id == match.id
@@ -86,7 +85,7 @@ def test_search_by_id_returns_matching_question(
     assert question.id
 
     rows = QuestionTable(db_session).search_by_id(question.id)
-    
+
     print("Rows,", rows)
 
     assert len(rows) == 1

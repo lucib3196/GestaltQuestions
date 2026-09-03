@@ -5,6 +5,7 @@ from .table_sources import (
     QuestionTableSourceBuilder,
     TableQuerySource,
 )
+from .question_table import QuestionTable
 
 __all__ = [
     "BaseQuestionTableSource",
@@ -12,4 +13,5 @@ __all__ = [
     "QuestionTableSourceBuilder",
     "TableQueryService",
     "TableQuerySource",
+    "QuestionTable"
 ]

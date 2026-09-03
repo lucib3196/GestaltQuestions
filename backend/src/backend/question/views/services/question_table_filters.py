@@ -9,7 +9,7 @@ from backend.question.views.schema import QuestionSearchParamsBase
 
 
 class QuestionTableFilterBuilder:
-    def __init__(self, params: QuestionSearchParamsBase):
+    def __init__(self, params: QuestionSearchParamsBase) -> None:
         self.params = params
         self.filters: list[ColumnElement[bool]] = []
 
