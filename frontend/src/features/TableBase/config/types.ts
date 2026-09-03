@@ -12,9 +12,7 @@ export type TableRowsResult<Row> = {
   error: string | null;
 };
 
-export type TableConfig<
-  Schema extends AnyTableSchema = AnyTableSchema,
-> = {
+export type TableConfig<Schema extends AnyTableSchema = AnyTableSchema> = {
   id: string;
   /**
    * Used by Zustand persist. This should be unique per table.

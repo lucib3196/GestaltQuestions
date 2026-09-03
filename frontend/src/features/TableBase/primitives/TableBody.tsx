@@ -13,7 +13,7 @@ type TableBodyProps<
   getRowId: (row: TableRow<Schema>) => RowId;
   selectedIDs: string[];
   setSelectedIDs: (val: string[]) => void;
-  onQuestionSelect?: (questionId: RowId) => void;
+  onRowSelect?: (rowId: RowId) => void;
 };
 
 export function TableBody<
@@ -25,7 +25,7 @@ export function TableBody<
   className,
   selectedIDs,
   setSelectedIDs,
-  onQuestionSelect,
+  onRowSelect,
   ...props
 }: TableBodyProps<Schema>) {
   return (
@@ -59,7 +59,7 @@ export function TableBody<
                     className="px-4 py-3 text-sm text-text"
                   >
                     {column.render
-                      ? column.render(row, () => onQuestionSelect?.(rowKey))
+                      ? column.render(row, () => onRowSelect?.(rowKey))
                       : null}
                   </td>
                 );

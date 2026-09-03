@@ -8,25 +8,25 @@ import { QuestionTableLayout } from "./QuestionTableLayout";
 import type { QuestionTableViewProps } from "./types";
 
 export function PublishedQuestionsTable({
-  onQuestionSelect,
+  onRowSelect,
   baseQuery,
 }: QuestionTableViewProps) {
   const setColumns = useQuestionTableContext((s) => s.setQuestionTableColumns);
-  const columns = useMemo(() => createAllQuestionTableColumns(), []);
-  const query = useQuestionTableQuery(columns, baseQuery);
+  const columnDefs = useMemo(() => createAllQuestionTableColumns(), []);
+  const query = useQuestionTableQuery(columnDefs, baseQuery);
 
   useEffect(() => {
-    setColumns(columns);
-  }, [columns, setColumns]);
+    setColumns(columnDefs);
+  }, [columnDefs, setColumns]);
 
   // POST /question-tables/published/search
   const { questions } = usePublishedQuestionsTableRows(query);
 
   return (
     <QuestionTableLayout
-      columns={columns}
+      columnDefs={columnDefs}
       questions={questions}
-      onQuestionSelect={onQuestionSelect}
+      onRowSelect={onRowSelect}
     />
   );
 }

@@ -1,6 +1,6 @@
 export type RowId = string;
+// Supports a general query, the type is unknown as it can carry string, booleans, list etc
 export type TableQuery = Record<string, unknown>;
-
 /**
  * Carries the row shape, virtual column keys, and query shape for a table.
  *
@@ -24,6 +24,14 @@ export type TableRow<Schema extends AnyTableSchema> = Schema["row"];
 export type TableVirtualKey<Schema extends AnyTableSchema> =
   Schema["virtualKey"];
 export type TableSchemaQuery<Schema extends AnyTableSchema> = Schema["query"];
+
+//Useful for base queries
+export type PartialQuery<Schema extends AnyTableSchema> = Partial<
+  TableSchemaQuery<Schema>
+>;
+export type RawFilters<Schema extends AnyTableSchema> = Partial<
+  Record<TableColumnKey<Schema> | string, unknown>
+>;
 
 export type ColumnFilterKind =
   | "select"

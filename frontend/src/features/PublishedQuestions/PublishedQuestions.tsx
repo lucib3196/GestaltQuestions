@@ -28,7 +28,7 @@ export default function PublishedQuestions() {
         <ToolBar />
         <div className="flex flex-1">
           <PublishedQuestionsTable
-            onQuestionSelect={(qid) => navigate(`/questions/${qid}`)}
+            onRowSelect={(rowId) => navigate(`/questions/${rowId}`)}
           />
         </div>
       </div>

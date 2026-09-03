@@ -16,26 +16,26 @@ type TableBaseDataTableProps<
   Schema extends AnyTableSchema = AnyTableSchema,
 > = {
   data: TableRow<Schema>[];
-  columns: TableColumn<Schema>[];
+  columnDefs: TableColumn<Schema>[];
   getRowId: (_row: TableRow<Schema>) => RowId;
-  onQuestionSelect?: (_questionId: RowId) => void;
+  onRowSelect?: (_rowId: RowId) => void;
 };
 
 export default function TableBaseDataTable<
   Schema extends AnyTableSchema = AnyTableSchema,
 >({
   data,
-  columns,
+  columnDefs,
   getRowId,
-  onQuestionSelect,
+  onRowSelect,
 }: TableBaseDataTableProps<Schema>) {
   const page = useTableBaseContext((s) => s.page);
   const columnVisibility = useTableBaseContext(
     (state) => state.columnVisibility,
   );
   const resolvedColumns = useMemo(() => {
-    return getVisibleColumns(columns, columnVisibility);
-  }, [columns, columnVisibility]);
+    return getVisibleColumns(columnDefs, columnVisibility);
+  }, [columnDefs, columnVisibility]);
   const selectedIds = useTableBaseContext((state) => state.selectedIds);
   const setSelectedIds = useTableBaseContext(
     (state) => state.setSelectedIds,
@@ -65,7 +65,7 @@ export default function TableBaseDataTable<
             getRowId={getRowId}
             selectedIDs={selectedIds}
             setSelectedIDs={setSelectedIds}
-            onQuestionSelect={onQuestionSelect}
+            onRowSelect={onRowSelect}
           />
         </Table>
       </TableContainer>

@@ -40,8 +40,8 @@ function TableView() {
 
       <DeveloperQuestionsTable
         baseQuery={{ collection_id: selectedCollection }}
-        onQuestionSelect={(qid) =>
-          navigate(`/question_builder/questions/${qid}/edit`)
+        onRowSelect={(rowId) =>
+          navigate(`/question_builder/questions/${rowId}/edit`)
         }
       />
     </section>

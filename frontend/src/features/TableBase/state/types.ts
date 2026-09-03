@@ -2,6 +2,7 @@ import type {
   AnyTableSchema,
   TableColumn,
   TableColumnKey,
+  RawFilters
 } from "../types";
 
 /**
@@ -42,9 +43,7 @@ export type TableSettingsState<
    * filter kind can store a different shape, such as string, string[], boolean,
    * or a date range object.
    */
-  columnFilters: Partial<
-    Record<TableColumnKey<Schema> | string, unknown>
-  >;
+  columnFilters: RawFilters<Schema>
 
   /**
    * Number of rows shown on each client-side table page.

@@ -8,26 +8,26 @@ import { QuestionTableLayout } from "./QuestionTableLayout";
 import type { QuestionTableViewProps } from "./types";
 
 export default function DeveloperQuestionsTable({
-  onQuestionSelect,
+  onRowSelect,
   baseQuery,
 }: QuestionTableViewProps) {
-  const columns = useMemo(() => createMyQuestionTableColumns(), []);
+  const columnDefs = useMemo(() => createMyQuestionTableColumns(), []);
   const setColumns = useQuestionTableContext((s) => s.setQuestionTableColumns);
-  const query = useQuestionTableQuery(columns, baseQuery);
+  const query = useQuestionTableQuery(columnDefs, baseQuery);
   const refreshKey = useQuestionTableContext((s) => s.refreshKey);
 
   useEffect(() => {
-    setColumns(columns);
-  }, [columns, setColumns]);
+    setColumns(columnDefs);
+  }, [columnDefs, setColumns]);
 
   // POST /developer/tables/questions/search
   const { questions } = usePersonalQuestionsTableRows(query, refreshKey);
 
   return (
     <QuestionTableLayout
-      columns={columns}
+      columnDefs={columnDefs}
       questions={questions}
-      onQuestionSelect={onQuestionSelect}
+      onRowSelect={onRowSelect}
     />
   );
 }
