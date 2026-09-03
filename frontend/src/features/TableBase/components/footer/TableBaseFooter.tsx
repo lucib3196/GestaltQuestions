@@ -1,5 +1,5 @@
-import { TableFooter as TableFooterBase } from "./TableFooter";
 import { useTableBaseContext } from "../../state/context";
+import { TableFooter as TableFooterBase } from "./TableFooter";
 
 type TableFooterProps = {
   total: number;

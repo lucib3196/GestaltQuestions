@@ -1,6 +1,6 @@
+import type { AnyTableSchema } from "../../types";
 import type { TableSettingsActions, TableSettingsState } from "../types";
 import type { TableSliceCreator } from "./types";
-import type { AnyTableSchema } from "../../types";
 
 export function createTableSettingsSlice<
   Schema extends AnyTableSchema = AnyTableSchema,

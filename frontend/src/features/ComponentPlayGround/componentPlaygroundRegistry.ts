@@ -541,7 +541,8 @@ export const PLAYGROUND_COMPONENTS: PlaygroundComponentDoc[] = [
     version: "1.0.0",
     summary:
       "Step-by-step solution container with progressive reveal controls.",
-    childrenDescription: "One or more pl-hint children or non-empty text steps.",
+    childrenDescription:
+      "One or more pl-hint children or non-empty text steps.",
     defaultChildren:
       '<pl-hint level="1">Subtract 4 from both sides: $2x = 10$.</pl-hint>\n<pl-hint level="2" variant="highlighted">Divide by 2 to get $x = 5$.</pl-hint>',
     attributes: [
@@ -733,7 +734,8 @@ export const PLAYGROUND_COMPONENTS: PlaygroundComponentDoc[] = [
     componentName: "PLDerivationStep",
     category: "Solution",
     version: "1.0.0",
-    summary: "Single styled derivation block rendered inside a derivation container.",
+    summary:
+      "Single styled derivation block rendered inside a derivation container.",
     childrenDescription: "Step text, equations, or lightweight markup.",
     defaultChildren: "Substitute known values and simplify.",
     attributes: [classAttribute],
@@ -767,7 +769,8 @@ export const PLAYGROUND_COMPONENTS: PlaygroundComponentDoc[] = [
         label: "filename",
         control: "text",
         defaultValue: "diagram.png",
-        description: "Question file name resolved from the runtime storage path.",
+        description:
+          "Question file name resolved from the runtime storage path.",
       },
       {
         htmlAttribute: "src",

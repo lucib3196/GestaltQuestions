@@ -1,10 +1,11 @@
+import { useEffect, useMemo } from "react";
+
+import { TableBaseDataTable } from "../components";
 import type { TableConfig } from "../config/types";
+import type { TableStore } from "../state";
+import { useTableBaseContext } from "../state";
 import type { AnyTableSchema, PartialQuery } from "../types";
 import { buildQuery } from "./buildQuery";
-import type { TableStore } from "../state";
-import { useEffect, useMemo } from "react";
-import { useTableBaseContext } from "../state";
-import { TableBaseDataTable } from "../components";
 type Props<Schema extends AnyTableSchema = AnyTableSchema> = {
   config: TableConfig<Schema>;
   baseQuery: PartialQuery<Schema>;

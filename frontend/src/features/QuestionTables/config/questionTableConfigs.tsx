@@ -1,4 +1,5 @@
 import type { TableConfig } from "../../TableBase/config/types";
+import type { QuestionTableSchema } from "../columns";
 import {
   createAllQuestionTableColumns,
   createMyQuestionTableColumns,
@@ -7,7 +8,6 @@ import { usePublishedQuestionsTableRows } from "../hooks";
 import { usePersonalQuestionsTableRows } from "../hooks";
 import { useSharedByMeQuestionTableRows } from "../hooks";
 import { useSharedWithMeQuestionTableRows } from "../hooks";
-import type { QuestionTableSchema } from "../columns";
 // Base QuestionConfig for most cases this is the legacy at this point
 
 type QuestionConfig = TableConfig<QuestionTableSchema>;

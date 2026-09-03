@@ -1,6 +1,6 @@
-import type { AnyTableSchema, TableColumn, TableColumnKey } from "../../types";
 import { useTableBaseContext } from "../../state/context";
 import type { TableStore } from "../../state/types";
+import type { AnyTableSchema, TableColumn, TableColumnKey } from "../../types";
 
 type ColumnVisibilityPanelProps<
   Schema extends AnyTableSchema = AnyTableSchema,

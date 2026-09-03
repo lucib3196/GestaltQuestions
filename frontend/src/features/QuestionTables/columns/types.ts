@@ -1,12 +1,8 @@
 import type {
-  TableColumn,
-  TableColumnKey,
-  TableSchema,
-} from "../../TableBase";
-import type {
   QuestionTableRow,
   QuestionTableSearchParams,
 } from "../../../services";
+import type { TableColumn, TableColumnKey, TableSchema } from "../../TableBase";
 
 export type QuestionTableVirtualKey = "select";
 

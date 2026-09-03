@@ -1,13 +1,10 @@
 import type {
-  TableColumn,
   AnyTableSchema,
-  TableSchemaQuery,
+  PartialQuery,
   RawFilters,
-  PartialQuery
+  TableColumn,
+  TableSchemaQuery,
 } from "../types";
-
-
-
 
 export function buildQuery<Schema extends AnyTableSchema>(
   columns: TableColumn<Schema>[],

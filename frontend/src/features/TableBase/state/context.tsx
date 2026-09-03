@@ -1,9 +1,9 @@
 import { createContext, type ReactNode, useContext, useRef } from "react";
-import { useStore, type StoreApi } from "zustand";
+import { type StoreApi, useStore } from "zustand";
 
+import type { AnyTableSchema } from "../types";
 import { createTableStore } from "./store";
 import type { TableStore } from "./types";
-import type { AnyTableSchema } from "../types";
 
 type AnyTableStoreApi = StoreApi<TableStore<AnyTableSchema>>;
 

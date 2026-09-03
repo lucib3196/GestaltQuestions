@@ -1,23 +1,16 @@
-import type {
-  AnyTableSchema,
-  TableColumn,
-  TableColumnKey,
-} from "../../types";
 import { useTableBaseContext } from "../../state/context";
 import type { TableStore } from "../../state/types";
+import type { AnyTableSchema, TableColumn, TableColumnKey } from "../../types";
 import { MultiSelectFilterControl } from "./MultiSelectFilterControl";
 
-type ColumnFilterControlProps<
-  Schema extends AnyTableSchema = AnyTableSchema,
-> = {
-  column: TableColumn<Schema>;
-};
+type ColumnFilterControlProps<Schema extends AnyTableSchema = AnyTableSchema> =
+  {
+    column: TableColumn<Schema>;
+  };
 
 export function ColumnFilterControl<
   Schema extends AnyTableSchema = AnyTableSchema,
->({
-  column,
-}: ColumnFilterControlProps<Schema>) {
+>({ column }: ColumnFilterControlProps<Schema>) {
   const useTypedTableContext = <Value,>(
     selector: (state: TableStore<Schema>) => Value,
   ) => useTableBaseContext<Schema, Value>(selector);
@@ -25,9 +18,7 @@ export function ColumnFilterControl<
   const filter = column.filter;
   const columnKey = column.key as TableColumnKey<Schema>;
   const columnKeyLabel = String(column.key);
-  const value = useTypedTableContext(
-    (state) => state.columnFilters[columnKey],
-  );
+  const value = useTypedTableContext((state) => state.columnFilters[columnKey]);
   const setFilterValue = useTypedTableContext(
     (state) => state.setColumnFilterValue,
   );

@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { Check } from "lucide-react";
+
 import type { UserDetailRead } from "../../../services";
 import { UserAvatar } from "./UserAvatar";
 

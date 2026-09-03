@@ -37,13 +37,13 @@ export function UserLookupProvider({
   );
 }
 
-export function useUserLookupStore<T>(
-  selector: (state: UserLookupStore) => T,
-) {
+export function useUserLookupStore<T>(selector: (state: UserLookupStore) => T) {
   const store = useContext(UserLookupStoreContext);
 
   if (!store) {
-    throw new Error("useUserLookupStore must be used within UserLookupProvider");
+    throw new Error(
+      "useUserLookupStore must be used within UserLookupProvider",
+    );
   }
 
   return useStore(store, selector);

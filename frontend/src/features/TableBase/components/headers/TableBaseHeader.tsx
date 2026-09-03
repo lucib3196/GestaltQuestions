@@ -2,22 +2,16 @@ import type { ComponentPropsWithoutRef } from "react";
 import { useState } from "react";
 import { FaFilter } from "react-icons/fa";
 
-import type {
-  AnyTableSchema,
-  RowId,
-  TableColumn,
-  TableRow,
-} from "../../types";
 import { useVisibleRowSelection } from "../../state/selection";
+import type { AnyTableSchema, RowId, TableColumn, TableRow } from "../../types";
 import { ColumnFilterControl } from "../filters";
 
-type TableBaseHeaderProps<
-  Schema extends AnyTableSchema = AnyTableSchema,
-> = ComponentPropsWithoutRef<"thead"> & {
-  columns: TableColumn<Schema>[];
-  rows: TableRow<Schema>[];
-  getRowId: (_row: TableRow<Schema>) => RowId;
-};
+type TableBaseHeaderProps<Schema extends AnyTableSchema = AnyTableSchema> =
+  ComponentPropsWithoutRef<"thead"> & {
+    columns: TableColumn<Schema>[];
+    rows: TableRow<Schema>[];
+    getRowId: (_row: TableRow<Schema>) => RowId;
+  };
 
 export default function TableBaseHeader<
   Schema extends AnyTableSchema = AnyTableSchema,

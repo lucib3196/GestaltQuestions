@@ -63,19 +63,18 @@ export default function QuestionHeader({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        Topics: {qdata?.topics?.map((topic) => (
+        Topics:{" "}
+        {qdata?.topics?.map((topic) => (
           <MetadataChip key={topic} icon={TopicIcon}>
             {topic}
           </MetadataChip>
         ))}
-
         {qdata?.qType?.length ? (
           <span className="inline-flex items-center gap-2 text-xs font-semibold text-text-muted">
             <FiFileText className="size-3.5 text-accent" />
             Question Type:
           </span>
         ) : null}
-
         {qdata?.qType?.map((qType) => (
           <MetadataChip key={qType}>{qType}</MetadataChip>
         ))}

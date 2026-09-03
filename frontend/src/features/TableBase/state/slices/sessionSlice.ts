@@ -1,13 +1,10 @@
+import type { AnyTableSchema } from "../../types";
 import type { TableSessionActions, TableSessionState } from "../types";
 import type { TableSliceCreator } from "./types";
-import type { AnyTableSchema } from "../../types";
 
 export function createTableSessionSlice<
   Schema extends AnyTableSchema = AnyTableSchema,
->(): TableSliceCreator<
-  Schema,
-  TableSessionState & TableSessionActions
-> {
+>(): TableSliceCreator<Schema, TableSessionState & TableSessionActions> {
   return (set) => ({
     selectedIds: [],
     refreshKey: 0,

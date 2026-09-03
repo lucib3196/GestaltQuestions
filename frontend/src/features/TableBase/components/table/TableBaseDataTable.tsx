@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import { Table, TableBody, TableContainer } from "../../primitives";
-import type { AnyTableSchema, RowId, TableColumn, TableRow } from "../../types";
 import { useTableBaseContext } from "../../state/context";
+import type { AnyTableSchema, RowId, TableColumn, TableRow } from "../../types";
 import { getVisibleColumns } from "../../utils/getVisibleColumns";
 import { TableBaseFooter } from "../footer";
 import TableBaseHeader from "../headers/TableBaseHeader";

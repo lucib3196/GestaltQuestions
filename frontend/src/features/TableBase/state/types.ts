@@ -1,55 +1,54 @@
 import type {
   AnyTableSchema,
+  RawFilters,
   TableColumn,
   TableColumnKey,
-  RawFilters
 } from "../types";
 
 /**
  * Tracks the user-facing settings for a table instance.
  */
-export type TableSettingsState<
-  Schema extends AnyTableSchema = AnyTableSchema,
-> = {
-  /**
-   * Text from the table search input.
-   *
-   * This is usually converted into a backend query parameter by the table query
-   * builder.
-   */
-  search: string;
+export type TableSettingsState<Schema extends AnyTableSchema = AnyTableSchema> =
+  {
+    /**
+     * Text from the table search input.
+     *
+     * This is usually converted into a backend query parameter by the table query
+     * builder.
+     */
+    search: string;
 
-  /**
-   * Column definitions/configuration for this table.
-   *
-   * These define how each column renders, whether it can be hidden, and how its
-   * filter value should be converted into query parameters.
-   */
-  columnDefs: TableColumn<Schema>[];
+    /**
+     * Column definitions/configuration for this table.
+     *
+     * These define how each column renders, whether it can be hidden, and how its
+     * filter value should be converted into query parameters.
+     */
+    columnDefs: TableColumn<Schema>[];
 
-  /**
-   * Visibility overrides for each column.
-   *
-   * The keys match columnDefs[number].key. The object is partial because it only
-   * needs to store user overrides. If a key is missing, the table can fall back
-   * to the column's defaultVisible setting.
-   */
-  columnVisibility: Partial<Record<TableColumnKey<Schema>, boolean>>;
+    /**
+     * Visibility overrides for each column.
+     *
+     * The keys match columnDefs[number].key. The object is partial because it only
+     * needs to store user overrides. If a key is missing, the table can fall back
+     * to the column's defaultVisible setting.
+     */
+    columnVisibility: Partial<Record<TableColumnKey<Schema>, boolean>>;
 
-  /**
-   * Active filter values for each column.
-   *
-   * The keys match columnDefs[number].key. The value is unknown because each
-   * filter kind can store a different shape, such as string, string[], boolean,
-   * or a date range object.
-   */
-  columnFilters: RawFilters<Schema>
+    /**
+     * Active filter values for each column.
+     *
+     * The keys match columnDefs[number].key. The value is unknown because each
+     * filter kind can store a different shape, such as string, string[], boolean,
+     * or a date range object.
+     */
+    columnFilters: RawFilters<Schema>;
 
-  /**
-   * Number of rows shown on each client-side table page.
-   */
-  rowsPerPage: number;
-};
+    /**
+     * Number of rows shown on each client-side table page.
+     */
+    rowsPerPage: number;
+  };
 
 /**
  * Actions for updating table settings.
@@ -74,10 +73,7 @@ export type TableSettingsActions<
   /**
    * Sets a column's visibility directly.
    */
-  setColumnVisibility(
-    key: TableColumnKey<Schema>,
-    visible: boolean,
-  ): void;
+  setColumnVisibility(key: TableColumnKey<Schema>, visible: boolean): void;
 
   /**
    * Flips a column between visible and hidden.
@@ -87,10 +83,7 @@ export type TableSettingsActions<
   /**
    * Sets the active filter value for a column.
    */
-  setColumnFilterValue(
-    key: TableColumnKey<Schema>,
-    value: unknown,
-  ): void;
+  setColumnFilterValue(key: TableColumnKey<Schema>, value: unknown): void;
 
   /**
    * Removes the active filter value for a single column.
@@ -124,9 +117,8 @@ export type TableSessionActions = {
   setOffset(offset: number): void;
 };
 
-export type TableStore<
-  Schema extends AnyTableSchema = AnyTableSchema,
-> = TableSettingsState<Schema> &
-  TableSettingsActions<Schema> &
-  TableSessionState &
-  TableSessionActions;
+export type TableStore<Schema extends AnyTableSchema = AnyTableSchema> =
+  TableSettingsState<Schema> &
+    TableSettingsActions<Schema> &
+    TableSessionState &
+    TableSessionActions;

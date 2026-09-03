@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from "react";
 
+import { type TableStore, useTableBaseContext } from "../../TableBase/state";
 import {
   createMyQuestionTableColumns,
   type QuestionTableSchema,
 } from "../columns";
 import { useQuestionTableQuery } from "../data/useQuestionTableQuery";
 import { usePersonalQuestionsTableRows } from "../hooks";
-import { useTableBaseContext, type TableStore } from "../../TableBase/state";
 import { QuestionTableLayout } from "./QuestionTableLayout";
 import type { QuestionTableViewProps } from "./types";
 
