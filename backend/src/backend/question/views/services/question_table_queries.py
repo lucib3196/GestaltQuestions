@@ -18,7 +18,28 @@ from .question_table_filters import QuestionTableFilterBuilder
 
 
 class QuestionTableQuery:
+    def __init__(self, dialect_name: str | None = None) -> None:
+        self._dialect_name = dialect_name
+
     def base(self, table_name: str = "question_table") -> Subquery:
+        topics = func.array_agg(func.distinct(Topic.name)).label("topics")
+        question_type = func.array_agg(func.distinct(QuestionType.name)).label(
+            "question_type"
+        )
+        available_runtimes = func.array_remove(
+            func.array_agg(func.distinct(QuestionRunTime.language)),
+            None,
+        ).label("available_runtimes")
+
+        if self._dialect_name == "sqlite":
+            topics = func.json_group_array(func.distinct(Topic.name)).label("topics")
+            question_type = func.json_group_array(
+                func.distinct(QuestionType.name)
+            ).label("question_type")
+            available_runtimes = func.json_group_array(
+                func.distinct(QuestionRunTime.language)
+            ).label("available_runtimes")
+
         stmt = (
             select(
                 Question.id.label(  # pyright: ignore[reportAttributeAccessIssue] # type: ignore
@@ -29,18 +50,15 @@ class QuestionTableQuery:
                 Question.status,
                 Question.created_at,
                 Question.updated_at,
-                func.array_agg(func.distinct(Topic.name)).label("topics"),
-                func.array_agg(func.distinct(QuestionType.name)).label("question_type"),
-                func.array_remove(
-                    func.array_agg(func.distinct(QuestionRunTime.language)),
-                    None,
-                ).label("available_runtimes"),
+                topics,
+                question_type,
+                available_runtimes,
             )  # pyright: ignore[reportCallIssue]
             .join(QuestionTopicLink, Question.id == QuestionTopicLink.question_id)
             .join(Topic, Topic.id == QuestionTopicLink.topic_id)
             .join(QuestionQTypeLink, Question.id == QuestionQTypeLink.question_id)
             .join(QuestionType, QuestionType.id == QuestionQTypeLink.qtype_id)
-            .join(
+            .outerjoin(
                 QuestionRunTime,
                 (QuestionRunTime.question_id == Question.id)
                 & (QuestionRunTime.enabled),
