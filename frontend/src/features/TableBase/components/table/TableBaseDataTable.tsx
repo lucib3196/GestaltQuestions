@@ -42,7 +42,7 @@ export default function TableBaseDataTable<
   );
 
   return (
-    <>
+    <div className="flex flex-col w-full h-full">
       <TableContainer>
         <Table aria-label="question-table">
           <TableBaseHeader
@@ -60,8 +60,7 @@ export default function TableBaseDataTable<
           />
         </Table>
       </TableContainer>
-
       <TableBaseFooter total={total} />
-    </>
+    </div>
   );
 }

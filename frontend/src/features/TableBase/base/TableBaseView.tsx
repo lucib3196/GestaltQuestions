@@ -15,7 +15,7 @@ type Props<Schema extends AnyTableSchema = AnyTableSchema> = {
 export function TableBaseView<Schema extends AnyTableSchema = AnyTableSchema>({
   config,
   baseQuery,
-  onRowSelect
+  onRowSelect,
 }: Props<Schema>) {
   // Build and publish the column definitions used by this table instance.
   const columnsDef = useMemo(() => config.createColumnDefs(), [config]);
