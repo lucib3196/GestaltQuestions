@@ -1,20 +1,13 @@
 import { useMemo } from "react";
 
 import { Table, TableBody, TableContainer } from "../../primitives";
-import type {
-  AnyTableSchema,
-  RowId,
-  TableColumn,
-  TableRow,
-} from "../../types";
+import type { AnyTableSchema, RowId, TableColumn, TableRow } from "../../types";
 import { useTableBaseContext } from "../../state/context";
 import { getVisibleColumns } from "../../utils/getVisibleColumns";
 import { TableBaseFooter } from "../footer";
 import TableBaseHeader from "../headers/TableBaseHeader";
 
-type TableBaseDataTableProps<
-  Schema extends AnyTableSchema = AnyTableSchema,
-> = {
+type TableBaseDataTableProps<Schema extends AnyTableSchema = AnyTableSchema> = {
   data: TableRow<Schema>[];
   columnDefs: TableColumn<Schema>[];
   getRowId: (_row: TableRow<Schema>) => RowId;
@@ -37,9 +30,7 @@ export default function TableBaseDataTable<
     return getVisibleColumns(columnDefs, columnVisibility);
   }, [columnDefs, columnVisibility]);
   const selectedIds = useTableBaseContext((state) => state.selectedIds);
-  const setSelectedIds = useTableBaseContext(
-    (state) => state.setSelectedIds,
-  );
+  const setSelectedIds = useTableBaseContext((state) => state.setSelectedIds);
 
   const rowsPerPage = useTableBaseContext((state) => state.rowsPerPage);
 
@@ -63,8 +54,8 @@ export default function TableBaseDataTable<
             rows={currentPageRows}
             columns={resolvedColumns}
             getRowId={getRowId}
-            selectedIDs={selectedIds}
-            setSelectedIDs={setSelectedIds}
+            selectedIds={selectedIds}
+            setSelectedIds={setSelectedIds}
             onRowSelect={onRowSelect}
           />
         </Table>

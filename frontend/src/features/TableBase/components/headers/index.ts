@@ -1,2 +1,2 @@
 export { default as TableBaseHeader } from "./TableBaseHeader";
-export { default as QuestionTableHeader } from "./TableBaseHeader";
+export { TableSelectHeaderCell } from "./TableSelectHeaderCell";

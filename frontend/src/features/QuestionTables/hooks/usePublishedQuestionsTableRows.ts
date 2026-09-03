@@ -4,8 +4,7 @@ import {
   QuestionTablesApi,
   type QuestionTableSearchParams,
 } from "../../../services";
-
-import { useQuestionTableRowsRequest } from "./useQuestionTableRowsRequest";
+import { useTableRowsRequest } from "../../TableBase/hooks/useTableRowRequest";
 
 export function usePublishedQuestionsTableRows(
   params?: QuestionTableSearchParams,
@@ -16,7 +15,7 @@ export function usePublishedQuestionsTableRows(
     [params],
   );
 
-  return useQuestionTableRowsRequest({
+  return useTableRowsRequest({
     refreshKey,
     request,
   });

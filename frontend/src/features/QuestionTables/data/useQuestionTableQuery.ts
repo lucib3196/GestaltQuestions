@@ -1,22 +1,25 @@
 import { useMemo } from "react";
 
 import type { QuestionTableSearchParams } from "../../../services";
-import type { QuestionTableColumn } from "../columns";
-import { useQuestionTableContext } from "../state/context";
-import { buildQuestionTableQuery } from "./buildQuestionTableQuery";
+import type { RawFilters } from "../../TableBase";
+import { buildQuery } from "../../TableBase/base/buildQuery";
+import { useTableBaseContext } from "../../TableBase/state";
+import type { QuestionTableColumn, QuestionTableSchema } from "../columns";
 
 export function useQuestionTableQuery(
-  columns: QuestionTableColumn[],
+  columnDefs: QuestionTableColumn[],
   baseQuery?: QuestionTableSearchParams,
 ) {
-  const searchTerm = useQuestionTableContext((s) => s.search);
-  const rawFilters = useQuestionTableContext((s) => s.columnFilters);
+  const searchTerm = useTableBaseContext<QuestionTableSchema, string>(
+    (s) => s.search,
+  );
+  const rawFilters = useTableBaseContext<
+    QuestionTableSchema,
+    RawFilters<QuestionTableSchema>
+  >((s) => s.columnFilters);
 
   return useMemo(
-    () => ({
-      ...buildQuestionTableQuery(columns, rawFilters, searchTerm),
-      ...(baseQuery ?? {}),
-    }),
-    [columns, searchTerm, rawFilters, baseQuery],
+    () => buildQuery(columnDefs, rawFilters, searchTerm, baseQuery ?? {}),
+    [columnDefs, rawFilters, searchTerm, baseQuery],
   );
 }

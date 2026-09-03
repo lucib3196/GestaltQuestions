@@ -7,7 +7,7 @@ import type {
 import { ShareQuestionCard } from "./components";
 import { useShareQuestionBatch } from "./hooks/useShareQuestionBatch";
 import { useUserLookupStore } from "../UserLookUp/instance/context";
-import { useQuestionTableContext } from "../QuestionTables";
+import { useTableBaseContext } from "../TableBase/state";
 import type { SelectedUsersById } from "../UserLookUp/instance/store";
 
 function prepareBatch(
@@ -22,7 +22,7 @@ function prepareBatch(
 }
 export default function QuestionSharing() {
   const [accessLevel, setAccessLevel] = useState<ShareableAccessLevel>("view");
-  const questionIds = useQuestionTableContext((s) => s.selectedIDs);
+  const questionIds = useTableBaseContext((s) => s.selectedIds);
   const selectedUsers = useUserLookupStore((s) => s.selectedUsersById);
   const { shareQuestionsWithUsers } = useShareQuestionBatch();
 

@@ -1,1 +1,1 @@
-export { QuestionSearch, TableBaseSearch } from "./TableBaseSearch";
+export { TableBaseSearch } from "./TableBaseSearch";

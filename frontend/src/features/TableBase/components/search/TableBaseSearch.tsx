@@ -15,5 +15,3 @@ export function TableBaseSearch({ placeholder }: { placeholder?: string }) {
     </div>
   );
 }
-
-export { TableBaseSearch as QuestionSearch };

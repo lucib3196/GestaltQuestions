@@ -1,30 +1,22 @@
-import type {
-  AnyTableSchema,
-  RowId,
-  TableColumn,
-  TableRow,
-} from "../types";
+import type { AnyTableSchema, RowId, TableColumn, TableRow } from "../types";
 
-type TableBodyProps<
-  Schema extends AnyTableSchema = AnyTableSchema,
-> = React.ComponentPropsWithRef<"tbody"> & {
-  rows: TableRow<Schema>[];
-  columns: TableColumn<Schema>[];
-  getRowId: (row: TableRow<Schema>) => RowId;
-  selectedIDs: string[];
-  setSelectedIDs: (val: string[]) => void;
-  onRowSelect?: (rowId: RowId) => void;
-};
+type TableBodyProps<Schema extends AnyTableSchema = AnyTableSchema> =
+  React.ComponentPropsWithRef<"tbody"> & {
+    rows: TableRow<Schema>[];
+    columns: TableColumn<Schema>[];
+    getRowId: (row: TableRow<Schema>) => RowId;
+    selectedIds: string[];
+    setSelectedIds: (val: string[]) => void;
+    onRowSelect?: (rowId: RowId) => void;
+  };
 
-export function TableBody<
-  Schema extends AnyTableSchema = AnyTableSchema,
->({
+export function TableBody<Schema extends AnyTableSchema = AnyTableSchema>({
   rows,
   columns,
   getRowId,
   className,
-  selectedIDs,
-  setSelectedIDs,
+  selectedIds,
+  setSelectedIds,
   onRowSelect,
   ...props
 }: TableBodyProps<Schema>) {
@@ -66,13 +58,13 @@ export function TableBody<
               }
               if (columnKey === "select") {
                 const onSelect = () => {
-                  const nextSelectedIDs = selectedIDs.includes(rowKey)
-                    ? selectedIDs.filter((id) => id !== rowKey)
-                    : [...selectedIDs, rowKey];
+                  const nextSelectedIds = selectedIds.includes(rowKey)
+                    ? selectedIds.filter((id) => id !== rowKey)
+                    : [...selectedIds, rowKey];
 
-                  setSelectedIDs(nextSelectedIDs);
+                  setSelectedIds(nextSelectedIds);
                 };
-                const isChecked = selectedIDs.includes(rowKey);
+                const isChecked = selectedIds.includes(rowKey);
                 return (
                   <td
                     key={`${rowKey}-${columnKey}`}

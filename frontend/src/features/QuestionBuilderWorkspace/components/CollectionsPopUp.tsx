@@ -5,7 +5,7 @@ import { SearchBar } from "../../../components/SearchBar";
 import type { QuestionCollectionRead } from "../../../services";
 import { useAddQuestionToCollection } from "../../QuestionCollections/hooks/useAddQuestions";
 import useCreateCollection from "../../QuestionCollections/hooks/useCreateCollection";
-import { useQuestionTableContext } from "../../QuestionTables";
+import { useTableBaseContext } from "../../TableBase/state";
 import { useSearchCollections } from "../hooks/useSearchCollections";
 import { CollectionResults } from "./CollectionResult";
 
@@ -83,8 +83,8 @@ type CollectionPopUpProps = {
   onClose?: () => void;
 };
 export function CollectionPopUp({ onClose }: CollectionPopUpProps) {
-  const selectedQuestions = useQuestionTableContext((s) => s.selectedIDs);
-  const setSelectedQuestions = useQuestionTableContext((s) => s.setSelectedIDs);
+  const selectedQuestions = useTableBaseContext((s) => s.selectedIds);
+  const setSelectedQuestions = useTableBaseContext((s) => s.setSelectedIds);
 
   const [title, setTitle] = useState<string>("");
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<

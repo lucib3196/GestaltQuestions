@@ -1,8 +1,4 @@
-import type {
-  AnyTableSchema,
-  TableColumn,
-  TableColumnKey,
-} from "../../types";
+import type { AnyTableSchema, TableColumn, TableColumnKey } from "../../types";
 import { useTableBaseContext } from "../../state/context";
 import type { TableStore } from "../../state/types";
 
@@ -14,9 +10,7 @@ type ColumnVisibilityPanelProps<
 
 export function ColumnVisibilityPanel<
   Schema extends AnyTableSchema = AnyTableSchema,
->({
-  columns,
-}: ColumnVisibilityPanelProps<Schema>) {
+>({ columns }: ColumnVisibilityPanelProps<Schema>) {
   const useTypedTableContext = <Value,>(
     selector: (state: TableStore<Schema>) => Value,
   ) => useTableBaseContext<Schema, Value>(selector);
@@ -60,5 +54,3 @@ export function ColumnVisibilityPanel<
     </fieldset>
   );
 }
-
-export { ColumnVisibilityPanel as QuestionTableFilterPanel };

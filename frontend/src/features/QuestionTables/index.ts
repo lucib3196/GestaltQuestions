@@ -1,8 +1,6 @@
 export * from "./columns";
-export * from "./components";
-export * from "./data/buildQuestionTableQuery";
+export * from "./config/questionTableConfigs";
 export * from "./data/useQuestionTableQuery";
 export * from "./hooks";
 export * from "./QuestionTables";
-export * from "./state/context";
-export * from "./utils/getVisibleColumns";
+export { default as ToolBarActions } from "./components/toolbar/TableToolBar";

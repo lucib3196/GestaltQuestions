@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { QuestionSearch } from "../../QuestionTables/components/search/QuestionSearch";
+import { TableBaseSearch } from "../../TableBase/components/search";
 import PublishedToolBarActions from "./ToolBarActions";
 import type { PopUpId } from "./types";
 export function ToolBar() {
@@ -25,7 +25,7 @@ export function ToolBar() {
       className="relative rounded-lg border border-border bg-surface p-4 shadow-soft"
       ref={containerRef}
     >
-      <QuestionSearch />
+      <TableBaseSearch />
 
       <PublishedToolBarActions
         popUp={openPopup}

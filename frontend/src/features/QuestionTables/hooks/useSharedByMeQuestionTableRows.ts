@@ -4,9 +4,8 @@ import {
   QuestionTablesApi,
   type QuestionTableSearchParams,
 } from "../../../services";
+import { useTableRowsRequest } from "../../TableBase/hooks/useTableRowRequest";
 import { useAuth } from "../../Auth";
-
-import { useQuestionTableRowsRequest } from "./useQuestionTableRowsRequest";
 
 export function useSharedByMeQuestionTableRows(
   params?: QuestionTableSearchParams,
@@ -20,7 +19,7 @@ export function useSharedByMeQuestionTableRows(
     return QuestionTablesApi.searchDeveloperSharedByMeQuestions(token, params);
   }, [user, params]);
 
-  return useQuestionTableRowsRequest({
+  return useTableRowsRequest({
     enabled: Boolean(user),
     refreshKey,
     request,

@@ -14,7 +14,7 @@ import {
   QuestionTopicsCell,
   QuestionTypesCell,
 } from "../components/cells";
-import { QuestionSelectHeaderCell } from "../components/headers";
+import { TableSelectHeaderCell } from "../../TableBase/components/headers";
 import { RUNTIME_OPTIONS, RUNTIME_VALUES } from "./filterOptions";
 import { selectedOptions } from "./filterUtils";
 import type { QuestionTableColumn } from "./types";
@@ -32,7 +32,7 @@ export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
           onSelect={onSelect}
         />
       ),
-      headerRender: (context) => <QuestionSelectHeaderCell {...context} />,
+      headerRender: (context) => <TableSelectHeaderCell {...context} />,
     },
     {
       key: "title",

@@ -1,9 +1,12 @@
 import { useEffect, useMemo } from "react";
 
-import { createMyQuestionTableColumns } from "../columns";
+import {
+  createMyQuestionTableColumns,
+  type QuestionTableSchema,
+} from "../columns";
 import { useQuestionTableQuery } from "../data/useQuestionTableQuery";
 import { usePersonalQuestionsTableRows } from "../hooks";
-import { useQuestionTableContext } from "../state/context";
+import { useTableBaseContext, type TableStore } from "../../TableBase/state";
 import { QuestionTableLayout } from "./QuestionTableLayout";
 import type { QuestionTableViewProps } from "./types";
 
@@ -12,16 +15,21 @@ export default function DeveloperQuestionsTable({
   baseQuery,
 }: QuestionTableViewProps) {
   const columnDefs = useMemo(() => createMyQuestionTableColumns(), []);
-  const setColumns = useQuestionTableContext((s) => s.setQuestionTableColumns);
+  const setColumnDefs = useTableBaseContext<
+    QuestionTableSchema,
+    TableStore<QuestionTableSchema>["setColumnDefs"]
+  >((s) => s.setColumnDefs);
   const query = useQuestionTableQuery(columnDefs, baseQuery);
-  const refreshKey = useQuestionTableContext((s) => s.refreshKey);
+  const refreshKey = useTableBaseContext<QuestionTableSchema, number>(
+    (s) => s.refreshKey,
+  );
 
   useEffect(() => {
-    setColumns(columnDefs);
-  }, [columnDefs, setColumns]);
+    setColumnDefs(columnDefs);
+  }, [columnDefs, setColumnDefs]);
 
   // POST /developer/tables/questions/search
-  const { questions } = usePersonalQuestionsTableRows(query, refreshKey);
+  const { rows: questions } = usePersonalQuestionsTableRows(query, refreshKey);
 
   return (
     <QuestionTableLayout

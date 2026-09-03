@@ -32,5 +32,3 @@ export function TableBaseFooter({ total }: TableFooterProps) {
     />
   );
 }
-
-export { TableBaseFooter as QuestionTableFooter };

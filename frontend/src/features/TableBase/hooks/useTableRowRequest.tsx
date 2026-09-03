@@ -6,7 +6,7 @@ type TableRowsRequestOptions<Row> = {
   request: () => Promise<Row[]>;
 };
 
-export function useQuestionTableRowsRequest<Row>({
+export function useTableRowsRequest<Row>({
   enabled = true,
   refreshKey,
   request,

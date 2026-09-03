@@ -1,9 +1,9 @@
 import type { ElementRef } from "react";
 import { useEffect, useRef } from "react";
 
-import type { TableHeaderRenderContext } from "../../../../components/Table";
+import type { TableHeaderRenderContext } from "../../types";
 
-type QuestionSelectHeaderCellProps = Pick<
+type TableSelectHeaderCellProps = Pick<
   TableHeaderRenderContext,
   | "allVisibleSelected"
   | "someVisibleSelected"
@@ -11,12 +11,12 @@ type QuestionSelectHeaderCellProps = Pick<
   | "visibleRowIds"
 >;
 
-export function QuestionSelectHeaderCell({
+export function TableSelectHeaderCell({
   allVisibleSelected,
   someVisibleSelected,
   toggleVisibleRows,
   visibleRowIds,
-}: QuestionSelectHeaderCellProps) {
+}: TableSelectHeaderCellProps) {
   const checkboxRef = useRef<ElementRef<"input">>(null);
   const disabled = visibleRowIds.length === 0;
 

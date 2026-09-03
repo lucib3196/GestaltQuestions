@@ -1,13 +1,7 @@
 import type { PropsWithChildren } from "react";
 
-import { QuestionTableProvider } from "../state/context";
+import { TableBaseProvider } from "../../TableBase/state";
 
 export function QuestionTableStoreProvider({ children }: PropsWithChildren) {
-  return (
-    <QuestionTableProvider
-     
-    >
-      {children}
-    </QuestionTableProvider>
-  );
+  return <TableBaseProvider>{children}</TableBaseProvider>;
 }

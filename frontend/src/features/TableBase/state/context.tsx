@@ -9,9 +9,7 @@ type AnyTableStoreApi = StoreApi<TableStore<AnyTableSchema>>;
 
 const TableBaseContext = createContext<AnyTableStoreApi | null>(null);
 
-type TableBaseProviderProps<
-  Schema extends AnyTableSchema = AnyTableSchema,
-> = {
+type TableBaseProviderProps<Schema extends AnyTableSchema = AnyTableSchema> = {
   children: ReactNode;
   initialState?: Partial<TableStore<Schema>>;
   persistKey?: string;
@@ -24,9 +22,7 @@ export function TableBaseProvider<
   initialState,
   persistKey = "table-settings",
 }: TableBaseProviderProps<Schema>) {
-  const storeRef = useRef<StoreApi<TableStore<Schema>> | null>(
-    null,
-  );
+  const storeRef = useRef<StoreApi<TableStore<Schema>> | null>(null);
 
   if (!storeRef.current) {
     storeRef.current = createTableStore<Schema>({
@@ -56,11 +52,5 @@ export function useTableBaseContext<
     );
   }
 
-  return useStore(
-    store as unknown as StoreApi<TableStore<Schema>>,
-    selector,
-  );
+  return useStore(store as unknown as StoreApi<TableStore<Schema>>, selector);
 }
-
-export { TableBaseProvider as QuestionTableProvider };
-export { useTableBaseContext as useQuestionTableContext };

@@ -1,2 +1,2 @@
 export { TableFooter } from "./TableFooter";
-export { QuestionTableFooter, TableBaseFooter } from "./TableBaseFooter";
+export { TableBaseFooter } from "./TableBaseFooter";
