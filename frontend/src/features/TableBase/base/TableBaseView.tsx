@@ -1,18 +1,21 @@
 import { useEffect, useMemo } from "react";
-
+import type { RowId } from "../types";
 import { TableBaseDataTable } from "../components";
 import type { TableConfig } from "../config/types";
 import type { TableStore } from "../state";
 import { useTableBaseContext } from "../state";
 import type { AnyTableSchema, PartialQuery } from "../types";
 import { buildQuery } from "./buildQuery";
+
 type Props<Schema extends AnyTableSchema = AnyTableSchema> = {
   config: TableConfig<Schema>;
   baseQuery: PartialQuery<Schema>;
+  onRowSelect?: (_rowId: RowId) => void;
 };
 export function TableBaseView<Schema extends AnyTableSchema = AnyTableSchema>({
   config,
   baseQuery,
+  onRowSelect
 }: Props<Schema>) {
   // Build and publish the column definitions used by this table instance.
   const columnsDef = useMemo(() => config.createColumnDefs(), [config]);
@@ -45,6 +48,7 @@ export function TableBaseView<Schema extends AnyTableSchema = AnyTableSchema>({
       data={rows}
       columnDefs={columnsDef}
       getRowId={config.getRowId}
+      onRowSelect={onRowSelect}
     />
   );
 }

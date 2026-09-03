@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { QuestionRuntimeLanguage } from "../../services";
 import { QuestionRender } from "../QuestionEngine";
 import { PublishedQuestionsTable } from "../QuestionTables";
-import { QuestionTableStoreProvider } from "../QuestionTables/views/QuestionTableStoreProvider";
+import { TableBaseProvider } from "../TableBase";
 import { RuntimeToggle } from "../QuestionWorkspace";
 import { useGetQuestionRunTimes } from "../QuestionWorkspace/hooks/hooks";
 import { ToolBar } from "./toolbar/ToolBar";
@@ -12,7 +12,7 @@ import { ToolBar } from "./toolbar/ToolBar";
 export default function PublishedQuestions() {
   const navigate = useNavigate();
   return (
-    <QuestionTableStoreProvider>
+    <TableBaseProvider>
       <div className="flex min-h-screen flex-col bg-bg px-4 py-5 text-text sm:px-6 gap-5">
         <section className="rounded-lg border border-border bg-surface-strong px-5 py-4 shadow-soft">
           <h1 className="text-2xl font-semibold text-text">
@@ -32,7 +32,7 @@ export default function PublishedQuestions() {
           />
         </div>
       </div>
-    </QuestionTableStoreProvider>
+    </TableBaseProvider>
   );
 }
 
