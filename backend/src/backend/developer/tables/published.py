@@ -5,10 +5,7 @@ from backend.developer.model import DeveloperProfile
 from backend.developer.tables.base import DeveloperTables
 from backend.developer.tables.extensions import PublishedQuestionTableExtension
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRowBase
-from backend.question.views.services import QuestionTable, QuestionTableQueryComposer
-
-from .base import DeveloperTables
-from .extensions import PublishedQuestionTableExtension
+from backend.question.views.services import QuestionTable
 
 
 class DeveloperPersonalQuestionTables(DeveloperTables):
@@ -22,15 +19,11 @@ class DeveloperPersonalQuestionTables(DeveloperTables):
         """Return questions created by the provided developer."""
         assert dev.id
 
-        composer = QuestionTableQueryComposer(
+        table = QuestionTable(
             self._session,
             extensions=[
                 PublishedQuestionTableExtension(),
             ],
-        )
-        table = QuestionTable(
-            self._session,
-            composer=composer,
             row_model=QuestionTableRowBase,
         )
 

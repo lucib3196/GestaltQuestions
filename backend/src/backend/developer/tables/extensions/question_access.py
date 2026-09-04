@@ -6,10 +6,10 @@ from sqlmodel import col
 from backend.accounts.model import User
 from backend.developer import DeveloperProfile
 from backend.question.access import QuestionAccess
-from backend.question.views.services import QuestionTableExtension
+from backend.tables import TableExtension
 
 
-class QuestionAccessTableExtension(QuestionTableExtension):
+class QuestionAccessTableExtension(TableExtension):
     """Addss access metadata for question shared by joining the question access table"""
 
     def apply(self, stmt: Select, question_table: Subquery) -> Select:

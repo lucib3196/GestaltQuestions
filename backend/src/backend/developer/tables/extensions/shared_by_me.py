@@ -6,10 +6,10 @@ from sqlmodel import col
 
 from backend.authorization import AccessLevel
 from backend.question.access import QuestionAccess
-from backend.question.views.services import QuestionTableExtension
+from backend.tables import TableExtension
 
 
-class SharedByMeQuestionTableExtension(QuestionTableExtension):
+class SharedByMeQuestionTableExtension(TableExtension):
     """Adds access metadata for questions shared by one developer."""
 
     def __init__(self, developer_profile_id: UUID) -> None:

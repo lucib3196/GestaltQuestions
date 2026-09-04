@@ -12,7 +12,7 @@ from backend.developer.tables.extensions import (
     PublishedQuestionTableExtension,
 )
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRowBase
-from backend.question.views.services import QuestionTable, QuestionTableQueryComposer
+from backend.question.views.services import QuestionTable
 
 
 class PersonalQuestionTableRow(QuestionTableRowBase):
@@ -46,15 +46,11 @@ class DeveloperPersonalQuestionTables(DeveloperTables):
         """Return questions created by the provided developer."""
         assert dev.id
 
-        composer = QuestionTableQueryComposer(
+        table = QuestionTable(
             self._session,
             extensions=[
                 DeveloperQuestionTableExtension(dev.id),
             ],
-        )
-        table = QuestionTable(
-            self._session,
-            composer=composer,
             row_model=PersonalQuestionTableRow,
         )
 
@@ -68,16 +64,12 @@ class DeveloperPersonalQuestionTables(DeveloperTables):
         """Return published questions created by the provided developer."""
         assert dev.id
 
-        composer = QuestionTableQueryComposer(
+        table = QuestionTable(
             self._session,
             extensions=[
                 DeveloperQuestionTableExtension(dev.id),
                 PublishedQuestionTableExtension(),
             ],
-        )
-        table = QuestionTable(
-            self._session,
-            composer=composer,
             row_model=PublishedQuestionTableRow,
         )
 

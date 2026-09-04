@@ -12,10 +12,9 @@ from backend.developer.tables.extensions.question_access import (
     QuestionAccessTableExtension,
 )
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRowBase
-from backend.question.views.services import QuestionTable, QuestionTableQueryComposer
+from backend.question.views.services import QuestionTable
 
 from .base import DeveloperTables
-from .extensions import QuestionAccessTableExtension
 
 
 class SharedWithMeQuestionTableRow(QuestionTableRowBase):
@@ -47,16 +46,12 @@ class DeveloperSharedQuestionTables(DeveloperTables):
         """Return questions shared with the provided developer."""
         assert dev.id
 
-        composer = QuestionTableQueryComposer(
+        table = QuestionTable(
             self._session,
             extensions=[
                 QuestionAccessTableExtension(),
                 SharedWithMeQuestionTableExtension(dev.id),
             ],
-        )
-        table = QuestionTable(
-            self._session,
-            composer=composer,
             row_model=SharedWithMeQuestionTableRow,
         )
 
@@ -70,16 +65,12 @@ class DeveloperSharedQuestionTables(DeveloperTables):
         """Return questions shared by the provided developer."""
         assert dev.id
 
-        composer = QuestionTableQueryComposer(
+        table = QuestionTable(
             self._session,
             extensions=[
                 QuestionAccessTableExtension(),
                 SharedByMeQuestionTableExtension(dev.id),
             ],
-        )
-        table = QuestionTable(
-            self._session,
-            composer=composer,
             row_model=SharedByMeQuestionTableRow,
         )
 

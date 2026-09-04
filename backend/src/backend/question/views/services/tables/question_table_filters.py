@@ -6,9 +6,10 @@ from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.selectable import Subquery
 
 from backend.question.views.schema import QuestionSearchParamsBase
+from backend.tables import FilterBuilder
 
 
-class QuestionTableFilterBuilder:
+class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
     def __init__(self, params: QuestionSearchParamsBase) -> None:
         self.params = params
         self.filters: list[ColumnElement[bool]] = []

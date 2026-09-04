@@ -5,10 +5,10 @@ from sqlalchemy.sql.selectable import Subquery
 from sqlmodel import col
 
 from backend.question.collections import QuestionCollection, QuestionCollectionLink
-from backend.question.views.services import QuestionTableExtension
+from backend.tables import TableExtension
 
 
-class PersonalQuestionCollectionExtension(QuestionTableExtension):
+class PersonalQuestionCollectionExtension(TableExtension):
     """Filters personal question rows by collection id or collection title."""
 
     def __init__(

@@ -3,10 +3,10 @@ from uuid import UUID
 from sqlalchemy.sql import Select
 from sqlalchemy.sql.selectable import Subquery
 
-from backend.question.views.services import QuestionTableExtension
+from backend.tables import TableExtension
 
 
-class DeveloperQuestionTableExtension(QuestionTableExtension):
+class DeveloperQuestionTableExtension(TableExtension):
     """Filters the question table to questions created by one developer."""
 
     def __init__(self, developer_profile_id: UUID) -> None:

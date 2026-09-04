@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from backend.question.views.services.table_sources import TableQuerySource
+from backend.question.views.services.deprecated import TableQuerySource
 
 TABLE_VIEW_ALIAS = "table_view"
 

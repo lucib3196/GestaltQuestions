@@ -2,10 +2,10 @@ from sqlalchemy.sql import Select
 from sqlalchemy.sql.selectable import Subquery
 
 from backend.question import Status
-from backend.question.views.services import QuestionTableExtension
+from backend.tables import TableExtension
 
 
-class PublishedQuestionTableExtension(QuestionTableExtension):
+class PublishedQuestionTableExtension(TableExtension):
     """Filters the question table to published questions."""
 
     def apply(self, stmt: Select, question_table: Subquery) -> Select:
