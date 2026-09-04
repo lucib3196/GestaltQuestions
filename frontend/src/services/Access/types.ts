@@ -11,6 +11,23 @@ export type ShareAccessPayload = {
   level: ShareableAccessLevel;
 };
 
+export type ShareQuestionsWithUsersPayload = {
+  question_ids: QuestionId[];
+  target_user_ids: UserId[];
+  level: ShareableAccessLevel;
+};
+
+export type ShareQuestionFailure = {
+  question_id: QuestionId;
+  target_user_id: UserId;
+  reason: string;
+};
+
+export type ShareQuestionBatchResult = {
+  shared: QuestionAccess[];
+  failed: ShareQuestionFailure[];
+};
+
 export type UpdateShareAccessPayload = {
   level: ShareableAccessLevel;
 };

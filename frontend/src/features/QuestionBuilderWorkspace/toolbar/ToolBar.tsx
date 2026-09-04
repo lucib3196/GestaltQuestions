@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useEffect, useRef } from "react";
 
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
-import { QuestionSearch } from "../../QuestionTables/components/search/QuestionSearch";
+import { TableBaseSearch } from "../../TableBase/components/search";
 import type { WorkspaceToolbarPopupActionId } from "./constants";
 import { WorkspaceToolBarActions } from "./ToolBarActions";
 
@@ -49,7 +49,7 @@ export function ToolBar() {
       ref={containerRef}
     >
       <CollectionPreview />
-      <QuestionSearch />
+      <TableBaseSearch />
 
       <WorkspaceToolBarActions
         popUp={openPopup}

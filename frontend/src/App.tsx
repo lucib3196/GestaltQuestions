@@ -8,18 +8,13 @@ import { GeneralQuestionRender } from "./features/PublishedQuestions/PublishedQu
 import { WorkspaceLinks } from "./features/QuestionBuilderWorkspace/links/WorkspaceLinks";
 import QuestionBuilderWorkspace from "./features/QuestionBuilderWorkspace/QuestionBuilderWorkspace";
 import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
-import { UserLookUp } from "./features/UserLookUp/UserLookUp";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
-
 function Test() {
-  return (
-    <div>
-      <UserLookUp />
-    </div>
-  );
+  return <></>;
 }
+
 function App() {
   return (
     <>

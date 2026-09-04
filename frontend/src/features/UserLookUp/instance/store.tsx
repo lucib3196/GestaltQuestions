@@ -1,43 +1,85 @@
 import { createStore } from "zustand";
-import { useStore } from "zustand";
 
 import type { UserDetailRead } from "../../../services";
-export type UserLookUpState = {
-  userById: Record<string, UserDetailRead>;
-  selectedUserIds: string[];
+
+export type SelectedUsersById = Record<string, UserDetailRead>;
+
+export type UserLookupState = {
+  selectedUsersById: SelectedUsersById;
 };
 
-export type UserLookUpActions = {
-  setUserById: (u: UserDetailRead[]) => void;
-  setSelectedUserIds: (ids: string[]) => void;
+export type UserLookupActions = {
+  setSelectedUsers(users: UserDetailRead[]): void;
+  clearSelectedUsers(): void;
+  addSelectedUser(user: UserDetailRead): void;
+  removeSelectedUser(userId: string): void;
+  toggleSelectedUser(user: UserDetailRead): void;
 };
 
-export type UserLookUpStore = UserLookUpState & UserLookUpActions;
+export type UserLookupStore = UserLookupState & UserLookupActions;
 
-const initialState: UserLookUpState = {
-  userById: {},
-  selectedUserIds: [],
+const initialState: UserLookupState = {
+  selectedUsersById: {},
 };
-export function createUserLookUpStore(preloaded?: Partial<UserLookUpState>) {
-  return createStore<UserLookUpStore>()((set) => ({
-    ...initialState,
-    ...preloaded,
-    setSelectedUserIds: (ids) => {
-      set({ selectedUserIds: ids });
-    },
-    setUserById: (users) => {
-      const usersById: Record<string, UserDetailRead> = {};
-      users.forEach((user) => {
-        usersById[user.id] = user;
-      });
 
-      return set({ userById: usersById });
-    },
-  }));
+function getUserId(user: UserDetailRead) {
+  return String(user.id);
 }
 
-export const userLookUpStore = createUserLookUpStore();
+function usersToRecord(users: UserDetailRead[]): SelectedUsersById {
+  return users.reduce<SelectedUsersById>((usersById, user) => {
+    usersById[getUserId(user)] = user;
+    return usersById;
+  }, {});
+}
 
-export function useUserLookUpStore<T>(selector: (state: UserLookUpStore) => T) {
-  return useStore(userLookUpStore, selector);
+export function createUserLookupStore(preloaded?: Partial<UserLookupState>) {
+  return createStore<UserLookupStore>()((set) => ({
+    ...initialState,
+    ...preloaded,
+
+    setSelectedUsers: (users) =>
+      set({
+        selectedUsersById: usersToRecord(users),
+      }),
+
+    clearSelectedUsers: () =>
+      set({
+        selectedUsersById: {},
+      }),
+
+    addSelectedUser: (user) =>
+      set((state) => ({
+        selectedUsersById: {
+          ...state.selectedUsersById,
+          [getUserId(user)]: user,
+        },
+      })),
+
+    removeSelectedUser: (userId) =>
+      set((state) => {
+        const nextSelectedUsers = { ...state.selectedUsersById };
+        delete nextSelectedUsers[String(userId)];
+
+        return {
+          selectedUsersById: nextSelectedUsers,
+        };
+      }),
+
+    toggleSelectedUser: (user) =>
+      set((state) => {
+        const userId = getUserId(user);
+        const nextSelectedUsers = { ...state.selectedUsersById };
+
+        if (Object.hasOwn(nextSelectedUsers, userId)) {
+          delete nextSelectedUsers[userId];
+        } else {
+          nextSelectedUsers[userId] = user;
+        }
+
+        return {
+          selectedUsersById: nextSelectedUsers,
+        };
+      }),
+  }));
 }

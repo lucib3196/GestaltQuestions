@@ -3,10 +3,12 @@ import { useDownloadQuestions } from "../../QuestionBuilder/hooks";
 import { useDeleteQuestion } from "../../QuestionBuilder/hooks";
 import { useRemoveQuestionsFromCollection } from "../../QuestionCollections/hooks/useRemoveQuestions";
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
-import { useQuestionTableContext } from "../../QuestionTables";
 import { ToolBarActions } from "../../QuestionTables";
-import { QuestionTableFilterPanel } from "../../QuestionTables";
-import { ClearTableFilters } from "../../QuestionTables/components/filters";
+import {
+  ClearTableFilters,
+  ColumnVisibilityPanel,
+} from "../../TableBase/components/filters";
+import { useTableBaseContext } from "../../TableBase/state";
 import { CollectionPopUp } from "../components/CollectionsPopUp";
 import {
   WORKSPACE_TOOLBAR_ACTIONS,
@@ -19,25 +21,25 @@ type Props = {
 };
 
 export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
-  const selectedQuestionIds = useQuestionTableContext((s) => s.selectedIDs);
+  const selectedQuestionIds = useTableBaseContext((s) => s.selectedIds);
 
-  const clearSelectedIds = useQuestionTableContext((s) => s.clearSelectedIds);
+  const clearSelectedIds = useTableBaseContext((s) => s.clearSelectedIds);
   const selectedCollectionId = useCollectionStore(
     (s) => s.selectedCollectionId,
   );
   const hasSelection = selectedQuestionIds.length > 0;
-  const cols = useQuestionTableContext((s) => s.columns);
+  const columnDefs = useTableBaseContext((s) => s.columnDefs);
 
   const { copyQuestion } = useCopyQuestion();
   const { downLoadQuestions } = useDownloadQuestions();
   const { deleteQuestion } = useDeleteQuestion();
   const { removeQuestionsFromCollection } = useRemoveQuestionsFromCollection();
-  const refreshQuestions = useQuestionTableContext((s) => s.refreshQuestions);
+  const refreshRows = useTableBaseContext((s) => s.refreshRows);
 
   const actionHandlers: Record<WorkspaceToolbarActionId, () => void> = {
     copy: async () => {
       await copyQuestion(selectedQuestionIds);
-      refreshQuestions();
+      refreshRows();
       clearSelectedIds();
     },
     download: async () => {
@@ -46,7 +48,7 @@ export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
     },
     delete: async () => {
       await deleteQuestion(selectedQuestionIds);
-      refreshQuestions();
+      refreshRows();
       clearSelectedIds();
     },
     removeFromCollection: async () => {
@@ -58,7 +60,7 @@ export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
         {
           onSuccess: () => {
             clearSelectedIds();
-            refreshQuestions();
+            refreshRows();
           },
         },
       );
@@ -82,7 +84,7 @@ export function WorkspaceToolBarActions({ popUp, onOpenPopUp }: Props) {
           if (popUp === "tableFilters" && action.id === "tableFilters") {
             return (
               <div className="absolute left-0 top-full z-20 mt-2 w-64">
-                <QuestionTableFilterPanel columns={cols} />
+                <ColumnVisibilityPanel columns={columnDefs} />
               </div>
             );
           }

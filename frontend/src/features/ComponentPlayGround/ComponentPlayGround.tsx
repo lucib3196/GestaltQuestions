@@ -1,25 +1,19 @@
 import { useMemo } from "react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { FiBookOpen, FiBox, FiRefreshCw } from "react-icons/fi";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 import { Button } from "../../components/Button";
 import type { ValidComponents } from "../QuestionEngine";
-import ComponentDocsPanel from "./components/ComponentDocsPanel";
-import ComponentList from "./components/ComponentList";
-import PlaygroundPreview from "./components/PlaygroundPreview";
 import {
   findPlaygroundComponent,
   PLAYGROUND_COMPONENTS,
 } from "./componentPlaygroundRegistry";
 import { useComponentPlaygroundStore } from "./componentPlaygroundStore";
+import ComponentDocsPanel from "./components/ComponentDocsPanel";
+import ComponentList from "./components/ComponentList";
+import PlaygroundPreview from "./components/PlaygroundPreview";
 
-function HeaderMetadata({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function HeaderMetadata({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-l border-border px-4 first:border-l-0 first:pl-0">
       <div className="text-[11px] font-semibold uppercase text-text-soft">
@@ -71,7 +65,10 @@ export default function QuestionComponentPlayground() {
 
           <div className="grid min-w-80 grid-cols-2 gap-y-3 sm:grid-cols-4">
             <HeaderMetadata label="ID" value={selectedComponent.tag} />
-            <HeaderMetadata label="Category" value={selectedComponent.category} />
+            <HeaderMetadata
+              label="Category"
+              value={selectedComponent.category}
+            />
             <HeaderMetadata label="Version" value={selectedComponent.version} />
             <HeaderMetadata label="Preset" value={selectedPresetName} />
           </div>

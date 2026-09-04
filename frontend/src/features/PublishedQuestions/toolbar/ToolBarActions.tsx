@@ -1,13 +1,15 @@
 import { useCopyQuestion } from "../../QuestionBuilder/hooks";
 import { useDownloadQuestions } from "../../QuestionBuilder/hooks";
 import { ToolBarActions } from "../../QuestionTables";
-import { useQuestionTableContext } from "../../QuestionTables";
-import { QuestionTableFilterPanel } from "../../QuestionTables";
-import { ClearTableFilters } from "../../QuestionTables/components/filters";
 import {
   BASE_QUESTION_TABLE_TOOLBAR_ACTIONS,
   type BaseQuestionTableToolbarActionId,
 } from "../../QuestionTables/components/toolbar/constants";
+import {
+  ClearTableFilters,
+  ColumnVisibilityPanel,
+} from "../../TableBase/components/filters";
+import { useTableBaseContext } from "../../TableBase/state";
 type PopUpId = Extract<BaseQuestionTableToolbarActionId, "tableFilters">;
 type Props = {
   popUp: PopUpId | null;
@@ -15,9 +17,9 @@ type Props = {
 };
 
 export default function PublishedToolBarActions({ popUp, onOpenPopUp }: Props) {
-  const selectedQuestionIds = useQuestionTableContext((s) => s.selectedIDs);
+  const selectedQuestionIds = useTableBaseContext((s) => s.selectedIds);
   const hasSelection = selectedQuestionIds.length > 0;
-  const cols = useQuestionTableContext((s) => s.columns);
+  const columnDefs = useTableBaseContext((s) => s.columnDefs);
 
   const { copyQuestion } = useCopyQuestion();
   const { downLoadQuestions } = useDownloadQuestions();
@@ -42,7 +44,7 @@ export default function PublishedToolBarActions({ popUp, onOpenPopUp }: Props) {
           if (popUp === "tableFilters" && action.id === "tableFilters") {
             return (
               <div className="absolute left-0 top-full z-20 mt-2 w-64">
-                <QuestionTableFilterPanel columns={cols} />
+                <ColumnVisibilityPanel columns={columnDefs} />
               </div>
             );
           }

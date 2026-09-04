@@ -23,6 +23,23 @@ class ShareQuestionAccessPayload(BaseModel):
     level: AccessLevel
 
 
+class ShareQuestionsWithUsersPayload(BaseModel):
+    question_ids: list[ID]
+    target_user_ids: list[ID]
+    level: AccessLevel
+
+
+class ShareQuestionFailure(BaseModel):
+    question_id: ID
+    target_user_id: ID
+    reason: str
+
+
+class ShareQuestionBatchResult(BaseModel):
+    shared: list[QuestionAccess]
+    failed: list[ShareQuestionFailure]
+
+
 class UpdateQuestionAccessPayload(BaseModel):
     level: AccessLevel
 
@@ -74,8 +91,9 @@ async def share_question(
     question_access: QuestionAccessDependency,
     payload: ShareQuestionAccessPayload,
 ) -> QuestionAccess:
+    """Updating is the safer version for this"""
     try:
-        return await question_access.grant_access(
+        return await question_access.update_access(
             current_user,
             payload.target_user_id,
             question_id,
@@ -93,7 +111,56 @@ async def share_question(
         ) from e
 
 
-@router.put(
+@router.post(
+    "/shares/batch",
+    response_model=ShareQuestionBatchResult,
+    status_code=status.HTTP_201_CREATED,
+)
+async def share_questions_with_users(
+    current_user: CurrentUser,
+    question_access: QuestionAccessDependency,
+    payload: ShareQuestionsWithUsersPayload,
+) -> ShareQuestionBatchResult:
+    try:
+        shared: list[QuestionAccess] = []
+        failed: list[ShareQuestionFailure] = []
+
+        for question_id in payload.question_ids:
+            for target_user_id in payload.target_user_ids:
+                try:
+                    access = await question_access.update_access(
+                        current_user,
+                        target_user_id,
+                        question_id,
+                        payload.level,
+                    )
+                except QuestionAccessError as e:
+                    failed.append(
+                        ShareQuestionFailure(
+                            question_id=question_id,
+                            target_user_id=target_user_id,
+                            reason=str(e),
+                        )
+                    )
+                    continue
+
+                shared.append(access)
+
+        return ShareQuestionBatchResult(shared=shared, failed=failed)
+
+    except QuestionAccessError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to share question",
+        ) from e
+
+
+@router.patch(
     "/{question_id}/shares/{target_user_id}",
     response_model=QuestionAccess,
 )

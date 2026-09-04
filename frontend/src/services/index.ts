@@ -5,6 +5,9 @@ export type {
   ResourceAccessRevokeResult,
   ShareableAccessLevel,
   ShareAccessPayload,
+  ShareQuestionBatchResult,
+  ShareQuestionFailure,
+  ShareQuestionsWithUsersPayload,
   UpdateShareAccessPayload,
 } from "./Access";
 export { CollectionAccessApi, QuestionAccessApi } from "./Access";

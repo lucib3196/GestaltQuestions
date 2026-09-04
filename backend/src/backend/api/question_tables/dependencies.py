@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from backend.api.dependencies import SessionDep
-from backend.question.views.services.table_query_service import TableQueryService
+from backend.question.views.services.deprecated import TableQueryService
 
 
 def get_tables(

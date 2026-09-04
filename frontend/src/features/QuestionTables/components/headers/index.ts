@@ -1,2 +1,1 @@
-export { QuestionSelectHeaderCell } from "./QuestionSelectHeaderCell";
-export { default as QuestionTableHeader } from "./QuestionTableHeader";
+export { TableSelectHeaderCell } from "../../../TableBase/components/headers";

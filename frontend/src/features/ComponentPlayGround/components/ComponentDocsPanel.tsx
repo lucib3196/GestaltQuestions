@@ -1,12 +1,6 @@
 import clsx from "clsx";
 import type { ChangeEvent } from "react";
-import {
-  FiCheck,
-  FiCode,
-  FiRefreshCw,
-  FiSliders,
-  FiZap,
-} from "react-icons/fi";
+import { FiCheck, FiCode, FiRefreshCw, FiSliders, FiZap } from "react-icons/fi";
 
 import { Button } from "../../../components/Button";
 import { CodeEditor } from "../../../components/CodeEditor";
@@ -17,8 +11,8 @@ import type {
 } from "../componentPlaygroundRegistry";
 import {
   PLAYGROUND_TABS,
-  useComponentPlaygroundStore,
   type PlaygroundTab,
+  useComponentPlaygroundStore,
 } from "../componentPlaygroundStore";
 
 type ComponentDocsPanelProps = {
@@ -32,7 +26,9 @@ function formatValue(value: PlaygroundAttributeValue | undefined): string {
 
 function parseControlValue(
   attribute: PlaygroundAttribute,
-  event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+  event: ChangeEvent<
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  >,
 ): PlaygroundAttributeValue {
   if (attribute.control === "boolean" && "checked" in event.target) {
     return event.target.checked;

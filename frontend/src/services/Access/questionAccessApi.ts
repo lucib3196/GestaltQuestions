@@ -4,6 +4,8 @@ import type {
   QuestionId,
   ResourceAccessRevokeResult,
   ShareAccessPayload,
+  ShareQuestionBatchResult,
+  ShareQuestionsWithUsersPayload,
   UpdateShareAccessPayload,
   UserId,
 } from "./types";
@@ -44,13 +46,25 @@ export default class QuestionAccessApi {
     return response.data;
   }
 
+  static async shareQuestionsWithUsers(
+    token: string,
+    payload: ShareQuestionsWithUsersPayload,
+  ): Promise<ShareQuestionBatchResult> {
+    const response = await api.post<ShareQuestionBatchResult>(
+      `${this.base}/shares/batch`,
+      payload,
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
   static async updateQuestionShare(
     token: string,
     questionId: QuestionId,
     targetUserId: UserId,
     payload: UpdateShareAccessPayload,
   ): Promise<QuestionAccess> {
-    const response = await api.put<QuestionAccess>(
+    const response = await api.patch<QuestionAccess>(
       `${this.base}/${encodeURIComponent(questionId)}/shares/${encodeURIComponent(
         targetUserId,
       )}`,

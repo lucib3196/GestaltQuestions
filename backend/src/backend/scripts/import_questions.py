@@ -90,7 +90,6 @@ async def main() -> None:
             session=session, developer_questions=developer_questions
         )
 
-        
         for package in packages.values():
             try:
                 question = await qimporter.import_question(
@@ -103,8 +102,6 @@ async def main() -> None:
             except Exception as e:
                 print(f"Failed to import {package}")
                 raise e
-                
-       
 
 
 if __name__ == "__main__":
