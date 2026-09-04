@@ -2,8 +2,8 @@ import api from "../client";
 import type {
   QuestionTableRow,
   QuestionTableSearchParams,
-  SharedQuestionTableRow,
   SharedByMeQuestionTableRow,
+  SharedQuestionTableRow,
 } from "./types";
 
 export const QUESTION_TABLE_ENDPOINTS = {

@@ -1,16 +1,18 @@
-import { TableBaseView } from "../../TableBase/base/TableBaseView";
-import type { TableProps } from "./type";
-import { TableBaseProvider } from "../../TableBase";
 import type {
-  QuestionTableSearchParams,
   QuestionTableRow,
+  QuestionTableSearchParams,
 } from "../../../services";
-import type { TableConfig } from "../../TableBase/config/types";
 import type { TableSchema } from "../../TableBase";
-import { usePersonalQuestionsTableRows } from "../hooks";
-
-import type { QuestionTableColumnId, QuestionTableColumn } from "../columnConfig";
+import { TableBaseProvider } from "../../TableBase";
+import { TableBaseView } from "../../TableBase/base/TableBaseView";
+import type { TableConfig } from "../../TableBase/config/types";
+import type {
+  QuestionTableColumn,
+  QuestionTableColumnId,
+} from "../columnConfig";
 import { createQuestionTableColumns } from "../columnConfig";
+import { usePersonalQuestionsTableRows } from "../hooks";
+import type { TableProps } from "./type";
 type PersonalTSchema = TableSchema<
   QuestionTableRow,
   "select",

@@ -5,8 +5,8 @@ import {
 } from "../components/cells";
 import {
   createQuestionTableColumns,
-  questionTableColumnRegistry,
   type QuestionTableColumnId,
+  questionTableColumnRegistry,
 } from "./baseQuestionColumns";
 import { INSTITUTION_OPTIONS } from "./filterOptions";
 import type { QuestionTableColumn, QuestionTableSchema } from "./types";

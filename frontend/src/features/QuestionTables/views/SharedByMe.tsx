@@ -1,12 +1,12 @@
-import { TableBaseView } from "../../TableBase/base/TableBaseView";
-import type { TableProps } from "./type";
-import { TableBaseProvider } from "../../TableBase";
 import type { QuestionTableSearchParams } from "../../../services";
-import type { TableConfig } from "../../TableBase/config/types";
-import type { TableSchema } from "../../TableBase";
-import { useSharedByMeQuestionTableRows } from "../hooks";
-import { createSharedByMeQuestionTableColumns } from "../columnConfig";
 import type { SharedByMeQuestionTableRow } from "../../../services";
+import type { TableSchema } from "../../TableBase";
+import { TableBaseProvider } from "../../TableBase";
+import { TableBaseView } from "../../TableBase/base/TableBaseView";
+import type { TableConfig } from "../../TableBase/config/types";
+import { createSharedByMeQuestionTableColumns } from "../columnConfig";
+import { useSharedByMeQuestionTableRows } from "../hooks";
+import type { TableProps } from "./type";
 
 type SharedByMeSchema = TableSchema<
   SharedByMeQuestionTableRow,

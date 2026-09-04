@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { CollectionProvider } from "../QuestionCollections/instance/context";
 import { useCollectionStore } from "../QuestionCollections/instance/context";
+import PersonalQuestionTable from "../QuestionTables";
 import {
   PersonalQuestionTableProvider,
   SharedByMeQuestionTable,
@@ -11,7 +12,6 @@ import {
   SharedWithMeQuestionTable,
   SharedWithMeTableProvider,
 } from "../QuestionTables";
-import PersonalQuestionTable from "../QuestionTables";
 import QuestionSharing from "../Sharing/QuestionSharing";
 import { TableBaseSearch } from "../TableBase/components/search";
 import { useTableBaseContext } from "../TableBase/state";
@@ -208,7 +208,10 @@ export default function QuestionBuilderWorkspace() {
         <QuestionBuilderSideBar />
 
         <main className="flex min-w-0 flex-col gap-4 rounded-lg border border-border bg-surface p-4 shadow-soft">
-          <WorkspaceTableTabs activeView={activeView} onChange={setActiveView} />
+          <WorkspaceTableTabs
+            activeView={activeView}
+            onChange={setActiveView}
+          />
 
           <WorkspaceTableContent activeView={activeView} />
         </main>

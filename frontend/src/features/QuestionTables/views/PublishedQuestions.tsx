@@ -1,11 +1,11 @@
-import { TableBaseProvider } from "../../TableBase";
-import { TableBaseView } from "../../TableBase/base/TableBaseView";
-import type { TableConfig } from "../../TableBase/config/types";
-import type { TableSchema } from "../../TableBase";
 import type {
   QuestionTableRow,
   QuestionTableSearchParams,
 } from "../../../services";
+import type { TableSchema } from "../../TableBase";
+import { TableBaseProvider } from "../../TableBase";
+import { TableBaseView } from "../../TableBase/base/TableBaseView";
+import type { TableConfig } from "../../TableBase/config/types";
 import { createAllQuestionTableColumns } from "../columnConfig";
 import { usePublishedQuestionsTableRows } from "../hooks";
 import type { TableProps } from "./type";

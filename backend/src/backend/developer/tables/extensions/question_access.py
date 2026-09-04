@@ -1,15 +1,16 @@
+from uuid import UUID
+
+from sqlalchemy import func, select
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import Select
 from sqlalchemy.sql.selectable import Subquery
 from sqlmodel import col
-from sqlalchemy import func
-from sqlalchemy import select
+
 from backend.accounts.model import User
+from backend.authorization import AccessLevel
 from backend.developer import DeveloperProfile
 from backend.question.access import QuestionAccess
 from backend.tables import TableExtension
-from uuid import UUID
-from backend.authorization import AccessLevel
 
 granted_by_profile = aliased(DeveloperProfile, name="granted_by_profile")
 granted_by_user = aliased(User, name="granted_by_user")
@@ -32,7 +33,7 @@ class QuestionAccessTableExtension(TableExtension):
 
     def apply(self, stmt: Select, subquery: Subquery) -> Select:
         access_summary = self.access_summary_join(stmt, subquery)
-        stmt = stmt.join(
+        return stmt.join(
             access_summary,
             access_summary.c.question_id == subquery.c.question_id,
         ).add_columns(
@@ -43,7 +44,6 @@ class QuestionAccessTableExtension(TableExtension):
             access_summary.c.granted_by_email,
         )
 
-        return stmt
 
     def access_summary_join(self, stmt: Select, subquery: Subquery) -> Subquery:
         """Generates a subquery where we join based on the access and grouping based of question id"""

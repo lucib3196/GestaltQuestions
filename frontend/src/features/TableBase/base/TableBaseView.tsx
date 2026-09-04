@@ -1,9 +1,10 @@
 import { useEffect, useMemo } from "react";
-import type { RowId } from "../types";
+
 import { TableBaseDataTable } from "../components";
 import type { TableConfig } from "../config/types";
 import type { TableStore } from "../state";
 import { useTableBaseContext } from "../state";
+import type { RowId } from "../types";
 import type { AnyTableSchema, PartialQuery } from "../types";
 import { buildQuery } from "./buildQuery";
 

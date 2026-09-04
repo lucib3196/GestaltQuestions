@@ -1,20 +1,16 @@
 from collections.abc import Sequence
 from datetime import datetime
 from typing import cast
+from uuid import UUID
 
 from backend.authorization import AccessLevel
 from backend.developer.model import DeveloperProfile
-from backend.developer.tables.extensions import (
-    SharedByMeQuestionTableExtension,
-    SharedWithMeQuestionTableExtension,
-)
-from uuid import UUID
 from backend.developer.tables.extensions.question_access import (
     QuestionAccessTableExtension,
 )
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRowBase
 from backend.question.views.services import QuestionTable
-from typing import List
+
 from .base import DeveloperTables
 
 
@@ -23,7 +19,7 @@ class SharedWithMeQuestionTableRow(QuestionTableRowBase):
 
     access_levels: list[AccessLevel | str]
     granted_by_email: str
-    granted_to_emails: List[str]
+    granted_to_emails: list[str]
     shared_at: datetime
 
 

@@ -1,14 +1,14 @@
-import { TableBaseView } from "../../TableBase/base/TableBaseView";
-import type { TableProps } from "./type";
-import { TableBaseProvider } from "../../TableBase";
 import type {
   QuestionTableSearchParams,
   SharedQuestionTableRow,
 } from "../../../services";
-import type { TableConfig } from "../../TableBase/config/types";
 import type { TableSchema } from "../../TableBase";
-import { useSharedWithMeQuestionTableRows } from "../hooks";
+import { TableBaseProvider } from "../../TableBase";
+import { TableBaseView } from "../../TableBase/base/TableBaseView";
+import type { TableConfig } from "../../TableBase/config/types";
 import { createSharedWithMeQuestionTableColumns } from "../columnConfig";
+import { useSharedWithMeQuestionTableRows } from "../hooks";
+import type { TableProps } from "./type";
 type SharedWithMeSchema = TableSchema<
   SharedQuestionTableRow,
   "select",
@@ -16,8 +16,6 @@ type SharedWithMeSchema = TableSchema<
 >;
 
 type Config = TableConfig<SharedWithMeSchema>;
-
-
 
 export const sharedWithMeQuestionsTableConfig: Config = {
   id: "shared-with-me-questions",
