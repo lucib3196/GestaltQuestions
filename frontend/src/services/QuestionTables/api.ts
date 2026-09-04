@@ -3,6 +3,7 @@ import type {
   QuestionTableRow,
   QuestionTableSearchParams,
   SharedQuestionTableRow,
+  SharedByMeQuestionTableRow,
 } from "./types";
 
 export const QUESTION_TABLE_ENDPOINTS = {
@@ -88,8 +89,8 @@ export default class QuestionTablesApi {
   static async searchDeveloperSharedByMeQuestions(
     token: string,
     params: QuestionTableSearchParams = {},
-  ): Promise<SharedQuestionTableRow[]> {
-    const response = await api.post<SharedQuestionTableRow[]>(
+  ): Promise<SharedByMeQuestionTableRow[]> {
+    const response = await api.post<SharedByMeQuestionTableRow[]>(
       QUESTION_TABLE_ENDPOINTS.developerSharedByMeQuestionsSearch,
       params,
       {

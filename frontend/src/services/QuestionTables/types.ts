@@ -41,6 +41,14 @@ export type SharedQuestionTableRow = QuestionTableRowBase & {
   shared_at: string;
 };
 
+export type SharedByMeQuestionTableRow = QuestionTableRowBase & {
+  access_levels: string[];
+  granted_by_email: string | null;
+  granted_to_emails: string[];
+  member_ids: string[];
+  shared_at: string;
+};
+
 export type QuestionTableRow = QuestionTableRowBase & {
   user_id: string;
   developer_profile_id: string;

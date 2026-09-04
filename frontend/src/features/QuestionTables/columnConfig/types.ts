@@ -2,6 +2,7 @@ import type {
   QuestionTableRowBase,
   QuestionTableRow,
   QuestionTableSearchParams,
+  SharedByMeQuestionTableRow,
   SharedQuestionTableRow,
 } from "../../../services";
 import type { TableColumn, TableColumnKey, TableSchema } from "../../TableBase";
@@ -22,6 +23,12 @@ export type QuestionTableSchema = TableSchema<
 
 export type SharedQuestionTableSchema = TableSchema<
   SharedQuestionTableRow,
+  QuestionTableVirtualKey,
+  QuestionTableSearchParams
+>;
+
+export type SharedByMeQuestionTableSchema = TableSchema<
+  SharedByMeQuestionTableRow,
   QuestionTableVirtualKey,
   QuestionTableSearchParams
 >;

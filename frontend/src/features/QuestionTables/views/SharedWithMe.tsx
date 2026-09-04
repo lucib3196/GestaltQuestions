@@ -8,7 +8,7 @@ import type {
 import type { TableConfig } from "../../TableBase/config/types";
 import type { TableSchema } from "../../TableBase";
 import { useSharedWithMeQuestionTableRows } from "../hooks";
-import { createSharedByMeQuestionTableColumns } from "../columnConfig";
+import { createSharedWithMeQuestionTableColumns } from "../columnConfig";
 type SharedWithMeSchema = TableSchema<
   SharedQuestionTableRow,
   "select",
@@ -22,7 +22,7 @@ type Config = TableConfig<SharedWithMeSchema>;
 export const sharedWithMeQuestionsTableConfig: Config = {
   id: "shared-with-me-questions",
   persistKey: "shared-with-me-question-table-settings",
-  createColumnDefs: createSharedByMeQuestionTableColumns,
+  createColumnDefs: createSharedWithMeQuestionTableColumns,
   getRowId: (row) => row.question_id,
   useRows: (query, refreshKey) =>
     useSharedWithMeQuestionTableRows(query, refreshKey),

@@ -10,7 +10,7 @@ export type TableQuery = Record<string, unknown>;
  */
 export type TableSchema<
   Row = unknown,
-  VirtualKey extends string = string,
+  VirtualKey extends string | null = string,
   Query extends TableQuery = TableQuery,
 > = {
   row: Row;

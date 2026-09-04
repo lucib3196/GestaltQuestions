@@ -155,4 +155,3 @@ export function createQuestionTableColumns<
 export function createBaseQuestionTableColumns(): QuestionTableColumn[] {
   return createQuestionTableColumns(BASE_QUESTION_COLUMN_IDS);
 }
-

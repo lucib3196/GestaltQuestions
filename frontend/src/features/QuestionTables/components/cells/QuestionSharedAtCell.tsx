@@ -1,9 +1,7 @@
-import type { SharedQuestionTableRow } from "../../../../services";
-
 export function QuestionSharedAtCell({
   row,
 }: {
-  row: SharedQuestionTableRow;
+  row: { shared_at: string | null };
 }) {
   if (!row.shared_at) {
     return <span>-</span>;

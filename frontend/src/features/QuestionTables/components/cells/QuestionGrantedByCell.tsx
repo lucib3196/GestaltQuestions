@@ -1,9 +1,7 @@
-import type { SharedQuestionTableRow } from "../../../../services";
-
 export function QuestionGrantedByCell({
   row,
 }: {
-  row: SharedQuestionTableRow;
+  row: { granted_by_email: string | null };
 }) {
   return <span>{row.granted_by_email || "-"}</span>;
 }

@@ -6,10 +6,10 @@ import type { TableConfig } from "../../TableBase/config/types";
 import type { TableSchema } from "../../TableBase";
 import { useSharedByMeQuestionTableRows } from "../hooks";
 import { createSharedByMeQuestionTableColumns } from "../columnConfig";
-import type { SharedQuestionTableRow } from "../../../services";
+import type { SharedByMeQuestionTableRow } from "../../../services";
 
 type SharedByMeSchema = TableSchema<
-  SharedQuestionTableRow,
+  SharedByMeQuestionTableRow,
   "select",
   QuestionTableSearchParams
 >;
@@ -18,7 +18,7 @@ type Config = TableConfig<SharedByMeSchema>;
 
 export const sharedByMeQuestionsTableConfig: Config = {
   id: "shared-by-me-questions",
-  persistKey: "shared-by-me-question-table-settings",
+  persistKey: "shared-by-me-question-table-settings-v2",
   createColumnDefs: createSharedByMeQuestionTableColumns,
   getRowId: (row) => row.question_id,
   useRows: (query, refreshKey) =>

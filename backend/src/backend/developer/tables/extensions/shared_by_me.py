@@ -16,7 +16,7 @@ class SharedByMeQuestionTableExtension(TableExtension):
         """Store the developer profile id used to filter granted shares."""
         self._developer_profile_id = developer_profile_id
 
-    def apply(self, stmt: Select, question_table: Subquery) -> Select:
+    def apply(self, stmt: Select, subquery: Subquery) -> Select:
         """Join question access rows granted by the current developer."""
 
         return stmt.where(

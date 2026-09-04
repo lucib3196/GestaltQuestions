@@ -1,14 +1,17 @@
 import {
-  QuestionAccessLevelCell,
+  QuestionAccessLevelsCell,
   QuestionGrantedByCell,
-  QuestionGrantedToCell,
+  QuestionGrantedToEmailsCell,
   QuestionSharedAtCell,
 } from "../components/cells";
 import {
   createQuestionTableColumns,
   type QuestionTableColumnId,
 } from "./baseQuestionColumns";
-import type { QuestionTableColumn, SharedQuestionTableSchema } from "./types";
+import type {
+  QuestionTableColumn,
+  SharedByMeQuestionTableSchema,
+} from "./types";
 
 const SHARED_BY_ME_BASE_COLUMN_IDS = [
   "select",
@@ -23,39 +26,42 @@ const SHARED_BY_ME_BASE_COLUMN_IDS = [
 ] as const satisfies readonly QuestionTableColumnId[];
 
 const sharedByMeQuestionColumnRegistry = {
-  access_level: {
-    key: "access_level",
+  access_levels: {
+    key: "access_levels",
     label: "Access",
-    render: (row) => <QuestionAccessLevelCell row={row} />,
+    render: (row) => <QuestionAccessLevelsCell row={row} />,
+    defaultVisible: true,
   },
-  granted_to_email: {
-    key: "granted_to_email",
-    label: "Shared With",
-    render: (row) => <QuestionGrantedToCell row={row} />,
+  granted_to_emails: {
+    key: "granted_to_emails",
+    label: "Members",
+    render: (row) => <QuestionGrantedToEmailsCell row={row} />,
+    defaultVisible: true,
   },
   granted_by_email: {
     key: "granted_by_email",
     label: "Shared By",
     render: (row) => <QuestionGrantedByCell row={row} />,
+    defaultVisible: false,
   },
   shared_at: {
     key: "shared_at",
     label: "Shared",
     render: (row) => <QuestionSharedAtCell row={row} />,
   },
-} satisfies Record<string, QuestionTableColumn<SharedQuestionTableSchema>>;
+} satisfies Record<string, QuestionTableColumn<SharedByMeQuestionTableSchema>>;
 
 export type SharedByMeQuestionColumnId =
   | QuestionTableColumnId
   | keyof typeof sharedByMeQuestionColumnRegistry;
 
-export function createSharedByMeQuestionTableColumns(): QuestionTableColumn<SharedQuestionTableSchema>[] {
+export function createSharedByMeQuestionTableColumns(): QuestionTableColumn<SharedByMeQuestionTableSchema>[] {
   return [
-    ...createQuestionTableColumns<SharedQuestionTableSchema>(
+    ...createQuestionTableColumns<SharedByMeQuestionTableSchema>(
       SHARED_BY_ME_BASE_COLUMN_IDS,
     ),
-    sharedByMeQuestionColumnRegistry.access_level,
-    sharedByMeQuestionColumnRegistry.granted_to_email,
+    sharedByMeQuestionColumnRegistry.access_levels,
+    sharedByMeQuestionColumnRegistry.granted_to_emails,
     sharedByMeQuestionColumnRegistry.granted_by_email,
     sharedByMeQuestionColumnRegistry.shared_at,
   ];

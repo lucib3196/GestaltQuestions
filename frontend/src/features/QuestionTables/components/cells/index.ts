@@ -1,9 +1,11 @@
 export { QuestionAccessLevelCell } from "./QuestionAccessLevelCell";
+export { QuestionAccessLevelsCell } from "./QuestionAccessLevelsCell";
 export { QuestionAdaptiveCell } from "./QuestionAdaptiveCell";
 export { QuestionCreatedAtCell } from "./QuestionCreatedAtCell";
 export { QuestionCreatedByCell } from "./QuestionCreatedByCell";
 export { QuestionGrantedByCell } from "./QuestionGrantedByCell";
 export { QuestionGrantedToCell } from "./QuestionGrantedToCell";
+export { QuestionGrantedToEmailsCell } from "./QuestionGrantedToEmailsCell";
 export { QuestionInstitutionCell } from "./QuestionInstitutionCell";
 export { QuestionRuntimesCell } from "./QuestionRuntimesCell";
 export { QuestionSelectCell } from "./QuestionSelectCell";

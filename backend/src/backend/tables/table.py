@@ -32,6 +32,7 @@ class Table(Generic[RowModel, SearchParams]):
         """Execute a statement and validate each mapping with the row model."""
         try:
             rows = self._session.execute(stmt).mappings().all()
+
         except SQLAlchemyError as e:
             raise TableExecutionError(f"Failed to execute table query: {e}") from e
 

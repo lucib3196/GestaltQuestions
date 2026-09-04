@@ -8,31 +8,31 @@ from backend.developer.tables.extensions import (
     SharedByMeQuestionTableExtension,
     SharedWithMeQuestionTableExtension,
 )
+from uuid import UUID
 from backend.developer.tables.extensions.question_access import (
     QuestionAccessTableExtension,
 )
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRowBase
 from backend.question.views.services import QuestionTable
-
+from typing import List
 from .base import DeveloperTables
 
 
 class SharedWithMeQuestionTableRow(QuestionTableRowBase):
     """Row returned by the shared-with-me question table."""
 
-    access_level: AccessLevel | str
+    access_levels: list[AccessLevel | str]
     granted_by_email: str
-    granted_to_email: str
+    granted_to_emails: List[str]
     shared_at: datetime
 
 
 class SharedByMeQuestionTableRow(QuestionTableRowBase):
-    """Row returned by the shared-by-me question table."""
-
-    access_level: AccessLevel | str
-    granted_by_email: str
-    granted_to_email: str
-    shared_at: datetime
+    access_levels: list[AccessLevel | str]
+    granted_by_email: str | None
+    granted_to_emails: list[str | None]
+    member_ids: list[UUID | None]
+    shared_at: datetime | None
 
 
 class DeveloperSharedQuestionTables(DeveloperTables):
@@ -49,8 +49,7 @@ class DeveloperSharedQuestionTables(DeveloperTables):
         table = QuestionTable(
             self._session,
             extensions=[
-                QuestionAccessTableExtension(),
-                SharedWithMeQuestionTableExtension(dev.id),
+                QuestionAccessTableExtension(granted_to_id=dev.id),
             ],
             row_model=SharedWithMeQuestionTableRow,
         )
@@ -68,8 +67,7 @@ class DeveloperSharedQuestionTables(DeveloperTables):
         table = QuestionTable(
             self._session,
             extensions=[
-                QuestionAccessTableExtension(),
-                SharedByMeQuestionTableExtension(dev.id),
+                QuestionAccessTableExtension(granted_by_id=dev.id),
             ],
             row_model=SharedByMeQuestionTableRow,
         )

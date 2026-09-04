@@ -6,5 +6,6 @@ export type {
   QuestionTableSearchParams,
   QuestionTableSearchParamsBase,
   QuestionType,
+  SharedByMeQuestionTableRow,
   SharedQuestionTableRow,
 } from "./types";
