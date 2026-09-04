@@ -15,7 +15,6 @@ from .personal_questions import (
 from .shared_questions import (
     DeveloperSharedQuestionTables,
     SharedByMeQuestionTableRow,
-    SharedQuestionTableRow,
     SharedWithMeQuestionTableRow,
 )
 from .sources import (
@@ -38,7 +37,6 @@ __all__ = [
     "SharedByMeQuestionTableExtension",
     "SharedByMeQuestionTableRow",
     "SharedByMeQuestionTableSource",
-    "SharedQuestionTableRow",
     "SharedWithMeQuestionTableExtension",
     "SharedWithMeQuestionTableRow",
     "SharedWithMeQuestionTableSource",

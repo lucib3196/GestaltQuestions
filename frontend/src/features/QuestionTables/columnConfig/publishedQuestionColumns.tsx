@@ -47,13 +47,16 @@ const publishedQuestionColumnRegistry = {
 
 export function createAllQuestionTableColumns(): QuestionTableColumn<QuestionTableSchema>[] {
   return [
-    ...createQuestionTableColumns<QuestionTableSchema>(PUBLISHED_QUESTION_COLUMN_IDS, {
-      status: {
-        filter: questionTableColumnRegistry.status.filter
-          ? { ...questionTableColumnRegistry.status.filter, show: false }
-          : undefined,
+    ...createQuestionTableColumns<QuestionTableSchema>(
+      PUBLISHED_QUESTION_COLUMN_IDS,
+      {
+        status: {
+          filter: questionTableColumnRegistry.status.filter
+            ? { ...questionTableColumnRegistry.status.filter, show: false }
+            : undefined,
+        },
       },
-    }),
+    ),
     publishedQuestionColumnRegistry.institution,
     publishedQuestionColumnRegistry.created_by,
   ];

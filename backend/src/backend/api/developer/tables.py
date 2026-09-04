@@ -5,11 +5,11 @@ from starlette import status
 
 from backend.api.dependencies.users import CurrentUser
 from backend.developer.exceptions import DeveloperProfileError
-from backend.developer.tables import SharedQuestionTableRow
+from backend.developer.tables import SharedWithMeQuestionTableRow
 from backend.developer.tables.personal_questions import PersonalQuestionTableRow
+from backend.developer.tables.shared_questions import SharedByMeQuestionTableRow
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
 
-from backend.developer.tables.shared_questions import SharedByMeQuestionTableRow
 from .dependencies import (
     DeveloperPersonalQuestionTablesDependency,
     DeveloperProfileDependency,
@@ -63,14 +63,14 @@ async def search_my_collection_questions(
 
 @router.post(
     "/questions/shared-with-me/search",
-    response_model=list[SharedQuestionTableRow],
+    response_model=list[SharedWithMeQuestionTableRow],
 )
 async def search_shared_with_me_questions(
     current_user: CurrentUser,
     profiles: DeveloperProfileDependency,
     tables: DeveloperSharedQuestionTablesDependency,
     params: QuestionSearchParams | None = None,
-) -> Sequence[SharedQuestionTableRow]:
+) -> Sequence[SharedWithMeQuestionTableRow]:
     try:
         profile = await profiles.get_profile(current_user)
         return tables.search_shared_with_me(profile, params)

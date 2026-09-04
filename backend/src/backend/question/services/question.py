@@ -183,6 +183,7 @@ class QuestionDB:
         relationship_data = await self.get_question_relationship_data(q)
 
         return QuestionRead(**question_data, **relationship_data)
+
     async def update_question(
         self,
         qid: ID,

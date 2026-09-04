@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.sql import Select
 from sqlalchemy.sql.selectable import Subquery
+from sqlmodel import col
 
 from backend.question.collections import QuestionCollection, QuestionCollectionLink
 from backend.question.views.services import QuestionTableExtension
@@ -24,16 +25,18 @@ class PersonalQuestionCollectionExtension(QuestionTableExtension):
         """Join collection tables and apply collection filters."""
         stmt = stmt.join(
             QuestionCollectionLink,
-            QuestionCollectionLink.question_id == question_table.c.question_id,  # type: ignore
+            col(QuestionCollectionLink.question_id) == question_table.c.question_id,
         ).join(
             QuestionCollection,
-            QuestionCollection.id == QuestionCollectionLink.collection_id,  # type: ignore
+            col(QuestionCollection.id) == col(QuestionCollectionLink.collection_id),
         )
 
         if self._collection_id is not None:
-            stmt = stmt.where(QuestionCollection.id == self._collection_id)  # type: ignore
+            stmt = stmt.where(col(QuestionCollection.id) == self._collection_id)
 
         if self._collection_title:
-            stmt = stmt.where(QuestionCollection.title.ilike(self._collection_title))  # type: ignore
+            stmt = stmt.where(
+                col(QuestionCollection.title).ilike(self._collection_title)
+            )
 
         return stmt

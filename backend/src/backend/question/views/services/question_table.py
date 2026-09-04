@@ -39,5 +39,4 @@ class QuestionTable:
     def _execute(self, stmt: Select[Any]) -> Sequence[QuestionTableRowBase]:
         """Execute a statement and validate each mapping with the row model."""
         rows = self._session.execute(stmt).mappings().all()
-        print("Rows", rows)
         return [self._row_model.model_validate(row) for row in rows]

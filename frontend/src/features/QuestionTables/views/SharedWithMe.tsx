@@ -8,9 +8,7 @@ import type {
 import type { TableConfig } from "../../TableBase/config/types";
 import type { TableSchema } from "../../TableBase";
 import { useSharedWithMeQuestionTableRows } from "../hooks";
-import type { QuestionTableColumn, QuestionTableColumnId } from "../columnConfig";
-import { createQuestionTableColumns } from "../columnConfig";
-
+import { createSharedByMeQuestionTableColumns } from "../columnConfig";
 type SharedWithMeSchema = TableSchema<
   SharedQuestionTableRow,
   "select",
@@ -19,28 +17,12 @@ type SharedWithMeSchema = TableSchema<
 
 type Config = TableConfig<SharedWithMeSchema>;
 
-const SHARED_WITH_ME_COLUMN_IDS = [
-  "select",
-  "title",
-  "isAdaptive",
-  "status",
-  "topics",
-  "question_type",
-  "available_runtimes",
-  "created_at",
-  "updated_at",
-] as const satisfies readonly QuestionTableColumnId[];
 
-function createSharedWithMeColumns(): QuestionTableColumn<SharedWithMeSchema>[] {
-  return createQuestionTableColumns<SharedWithMeSchema>(
-    SHARED_WITH_ME_COLUMN_IDS,
-  );
-}
 
 export const sharedWithMeQuestionsTableConfig: Config = {
   id: "shared-with-me-questions",
   persistKey: "shared-with-me-question-table-settings",
-  createColumnDefs: createSharedWithMeColumns,
+  createColumnDefs: createSharedByMeQuestionTableColumns,
   getRowId: (row) => row.question_id,
   useRows: (query, refreshKey) =>
     useSharedWithMeQuestionTableRows(query, refreshKey),
