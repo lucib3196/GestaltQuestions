@@ -1,4 +1,3 @@
-import json
 from collections.abc import Sequence
 from typing import Any
 from uuid import UUID
@@ -6,38 +5,39 @@ from uuid import UUID
 from sqlalchemy.sql import Select
 from sqlmodel import Session
 
-from backend.question import QType
 from backend.question.views.schema import QuestionSearchParamsBase, QuestionTableRowBase
-from backend.question_runtime.model import RuntimeLanguage
 
-from .question_table_queries import QuestionTableQuery
+from .question_table_composer import QuestionTableQueryComposer
 
 
 class QuestionTable:
+    """Executes question table queries and validates rows into response models."""
+
     def __init__(
         self,
         session: Session,
-        query: QuestionTableQuery | None = None,
+        composer: QuestionTableQueryComposer | None = None,
         row_model: type[QuestionTableRowBase] = QuestionTableRowBase,
     ) -> None:
+        """Initialize the table service with a session, composer, and row model."""
         self._session = session
-        dialect_name = session.get_bind().dialect.name
-        self._query = query or QuestionTableQuery(dialect_name=dialect_name)
+        self._composer = composer or QuestionTableQueryComposer(session)
         self._row_model = row_model
-
-    def search_by_id(self, qid: UUID) -> Sequence[QuestionTableRowBase]:
-        return self._execute(self._query.by_id(qid))
 
     def search(
         self,
         params: QuestionSearchParamsBase | None = None,
     ) -> Sequence[QuestionTableRowBase]:
-        return self._execute(self._query.search(params))
+        """Return validated question table rows matching the search parameters."""
+        search = self._composer.search(params)
+        return self._execute(search)
+
+    def search_by_id(self, qid: UUID) -> Sequence[QuestionTableRowBase]:
+        """Return validated question table rows matching the question id."""
+        return self._execute(self._composer.by_id(qid))
 
     def _execute(self, stmt: Select[Any]) -> Sequence[QuestionTableRowBase]:
+        """Execute a statement and validate each mapping with the row model."""
         rows = self._session.execute(stmt).mappings().all()
-        return [
-            self._row_model.model_validate(row)
-            for row in rows
-        ]
-
+        print("Rows", rows)
+        return [self._row_model.model_validate(row) for row in rows]

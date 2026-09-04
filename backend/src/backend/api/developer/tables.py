@@ -7,6 +7,7 @@ from backend.api.dependencies.users import CurrentUser
 from backend.developer.exceptions import DeveloperProfileError
 from backend.developer.tables import SharedQuestionTableRow
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
+from backend.developer.tables.personal_questions import PersonalQuestionTableRow
 
 from .dependencies import (
     DeveloperPersonalQuestionTablesDependency,
@@ -20,13 +21,13 @@ router = APIRouter(
 )
 
 
-@router.post("/questions/search", response_model=list[QuestionTableRow])
+@router.post("/questions/search", response_model=list[PersonalQuestionTableRow])
 async def search_my_questions(
     current_user: CurrentUser,
     profiles: DeveloperProfileDependency,
     tables: DeveloperPersonalQuestionTablesDependency,
     params: QuestionSearchParams | None = None,
-) -> Sequence[QuestionTableRow]:
+) -> Sequence[PersonalQuestionTableRow]:
     try:
         profile = await profiles.get_profile(current_user)
         return tables.search_my_questions(profile, params)

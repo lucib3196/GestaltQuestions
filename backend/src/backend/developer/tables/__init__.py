@@ -1,5 +1,23 @@
-from .personal_questions import DeveloperPersonalQuestionTables
-from .shared_questions import DeveloperSharedQuestionTables, SharedQuestionTableRow
+from .base import DeveloperTables
+from .extensions import (
+    DeveloperQuestionTableExtension,
+    PersonalQuestionCollectionExtension,
+    PublishedQuestionTableExtension,
+    SharedByMeQuestionTableExtension,
+    SharedWithMeQuestionTableExtension,
+)
+from .personal_questions import (
+    DeveloperPersonalQuestionTables,
+    PersonalCollectionTableRow,
+    PersonalQuestionTableRow,
+    PublishedQuestionTableRow,
+)
+from .shared_questions import (
+    DeveloperSharedQuestionTables,
+    SharedByMeQuestionTableRow,
+    SharedQuestionTableRow,
+    SharedWithMeQuestionTableRow,
+)
 from .sources import (
     DeveloperQuestionTableSource,
     SharedByMeQuestionTableSource,
@@ -8,9 +26,20 @@ from .sources import (
 
 __all__ = [
     "DeveloperPersonalQuestionTables",
+    "DeveloperQuestionTableExtension",
     "DeveloperQuestionTableSource",
     "DeveloperSharedQuestionTables",
+    "DeveloperTables",
+    "PersonalCollectionTableRow",
+    "PersonalQuestionCollectionExtension",
+    "PersonalQuestionTableRow",
+    "PublishedQuestionTableExtension",
+    "PublishedQuestionTableRow",
+    "SharedByMeQuestionTableExtension",
+    "SharedByMeQuestionTableRow",
     "SharedByMeQuestionTableSource",
     "SharedQuestionTableRow",
+    "SharedWithMeQuestionTableExtension",
+    "SharedWithMeQuestionTableRow",
     "SharedWithMeQuestionTableSource",
 ]

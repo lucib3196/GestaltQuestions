@@ -7,19 +7,18 @@ from backend.developer.tables import (
     DeveloperPersonalQuestionTables,
     DeveloperSharedQuestionTables,
 )
-from backend.question.views.services.table_query_service import TableQueryService
 
 
 def get_developer_personal_question_tables(
     session: SessionDep,
 ) -> DeveloperPersonalQuestionTables:
-    return DeveloperPersonalQuestionTables(TableQueryService(session))
+    return DeveloperPersonalQuestionTables(session)
 
 
 def get_developer_shared_question_tables(
     session: SessionDep,
 ) -> DeveloperSharedQuestionTables:
-    return DeveloperSharedQuestionTables(TableQueryService(session))
+    return DeveloperSharedQuestionTables(session)
 
 
 DeveloperPersonalQuestionTablesDependency = Annotated[

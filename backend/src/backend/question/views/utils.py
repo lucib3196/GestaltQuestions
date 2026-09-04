@@ -26,7 +26,7 @@ def normalize_list(value: Any) -> list[Any] | None:
     return [value]
 
 
-def coerce_str_enum(value: Any, enum_type: type[EnumT]) -> EnumT | Any:
+def coerce_str_enum[EnumT: StrEnum](value: Any, enum_type: type[EnumT]) -> EnumT | Any:
     if isinstance(value, enum_type):
         return value
 
