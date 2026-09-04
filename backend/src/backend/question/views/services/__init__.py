@@ -7,7 +7,11 @@ from .deprecated import (
     TableQueryService,
     TableQuerySource,
 )
-from .tables import QuestionTable, QuestionTableFilterBuilder, QuestionTableQueryComposer
+from .tables import (
+    QuestionTable,
+    QuestionTableFilterBuilder,
+    QuestionTableQueryComposer,
+)
 
 QuestionTableExtension = TableExtension
 

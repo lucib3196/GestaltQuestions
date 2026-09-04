@@ -1,11 +1,10 @@
 from collections.abc import Sequence
 
-from sqlalchemy import String, cast, func
+from sqlalchemy import String, cast, func, select
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.sql import Select
 from sqlalchemy.sql.selectable import Subquery
 from sqlmodel import col
-from sqlalchemy import select
 
 from backend.question import (
     Question,

@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
-from sqlalchemy.sql import Subquery
 from typing import Generic
+
+from sqlalchemy.sql import Subquery
 from sqlalchemy.sql.elements import ColumnElement
+
 from .types import SearchParams
 
 

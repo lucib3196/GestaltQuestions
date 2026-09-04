@@ -7,12 +7,11 @@ from sqlalchemy.sql import Select, Subquery
 
 from .exceptions import TableFilterBuildError, TableQueryBuildError
 from .extension import TableExtension
-from .types import SearchParams
 from .filter_builder import FilterBuilder
+from .types import SearchParams
 
 
 class TableQueryComposer(ABC, Generic[SearchParams]):
-
     def __init__(
         self,
         search_params_model: type[SearchParams],
@@ -51,7 +50,9 @@ class TableQueryComposer(ABC, Generic[SearchParams]):
         except TableFilterBuildError:
             raise
         except Exception as e:
-            raise TableQueryBuildError(f"Failed to build table search query: {e}") from e
+            raise TableQueryBuildError(
+                f"Failed to build table search query: {e}"
+            ) from e
 
     def build_filters(self, params: SearchParams, table: Subquery):
         """Build filters for the current search params."""
