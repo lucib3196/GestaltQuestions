@@ -6,9 +6,7 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from backend.developer.model import DeveloperProfile
-from backend.developer.tables.base import (
-    DeveloperTables,
-)
+from backend.developer.tables.base import DeveloperTables
 from backend.developer.tables.extensions import (
     DeveloperQuestionTableExtension,
     PublishedQuestionTableExtension,

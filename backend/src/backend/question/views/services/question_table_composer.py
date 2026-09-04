@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from sqlalchemy import func, select as select_alc
+from sqlalchemy import String, cast, func, select as select_alc
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.sql import Select
 from sqlalchemy.sql.selectable import Subquery
 from sqlmodel import Session, select
-from sqlalchemy.dialects.postgresql import ARRAY
+
 from backend.question import (
     Question,
     QuestionQTypeLink,
@@ -15,7 +16,7 @@ from backend.question import (
 )
 from backend.question.views.schema import QuestionSearchParamsBase
 from backend.question_runtime.model import QuestionRunTime
-from sqlalchemy import String, cast
+
 from .question_table_filters import QuestionTableFilterBuilder
 
 

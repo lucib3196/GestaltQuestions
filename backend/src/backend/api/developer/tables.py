@@ -6,8 +6,8 @@ from starlette import status
 from backend.api.dependencies.users import CurrentUser
 from backend.developer.exceptions import DeveloperProfileError
 from backend.developer.tables import SharedQuestionTableRow
-from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
 from backend.developer.tables.personal_questions import PersonalQuestionTableRow
+from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
 
 from .dependencies import (
     DeveloperPersonalQuestionTablesDependency,

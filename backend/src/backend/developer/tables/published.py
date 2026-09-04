@@ -1,23 +1,14 @@
-from .base import DeveloperTables
-from .extensions import PublishedQuestionTableExtension
 from collections.abc import Sequence
-from datetime import datetime
 from typing import cast
-from uuid import UUID
-
-from pydantic import BaseModel
 
 from backend.developer.model import DeveloperProfile
-from backend.developer.tables.base import (
-    DeveloperTables,
-)
-from backend.developer.tables.extensions import (
-    DeveloperQuestionTableExtension,
-    PersonalQuestionCollectionExtension,
-    PublishedQuestionTableExtension,
-)
+from backend.developer.tables.base import DeveloperTables
+from backend.developer.tables.extensions import PublishedQuestionTableExtension
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRowBase
 from backend.question.views.services import QuestionTable, QuestionTableQueryComposer
+
+from .base import DeveloperTables
+from .extensions import PublishedQuestionTableExtension
 
 
 class DeveloperPersonalQuestionTables(DeveloperTables):
