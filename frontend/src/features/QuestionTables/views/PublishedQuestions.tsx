@@ -6,7 +6,7 @@ import type {
   QuestionTableRow,
   QuestionTableSearchParams,
 } from "../../../services";
-import { createAllQuestionTableColumns } from "../columns";
+import { createAllQuestionTableColumns } from "../columnConfig";
 import { usePublishedQuestionsTableRows } from "../hooks";
 import type { TableProps } from "./type";
 

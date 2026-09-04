@@ -9,8 +9,8 @@ import type { TableConfig } from "../../TableBase/config/types";
 import type { TableSchema } from "../../TableBase";
 import { usePersonalQuestionsTableRows } from "../hooks";
 
-import type { QuestionTableColumnId, QuestionTableColumn } from "../columns";
-import { createQuestionTableColumns } from "../columns";
+import type { QuestionTableColumnId, QuestionTableColumn } from "../columnConfig";
+import { createQuestionTableColumns } from "../columnConfig";
 type PersonalTSchema = TableSchema<
   QuestionTableRow,
   "select",

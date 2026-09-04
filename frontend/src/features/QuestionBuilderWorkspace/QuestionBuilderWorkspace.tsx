@@ -1,6 +1,9 @@
 import type React from "react";
 import { useNavigate } from "react-router-dom";
-
+import {
+  SharedByMeTableProvider,
+  SharedByMeQuestionTable,
+} from "../QuestionTables";
 import { CollectionProvider } from "../QuestionCollections/instance/context";
 import { useCollectionStore } from "../QuestionCollections/instance/context";
 import PersonalQuestionTable from "../QuestionTables";
@@ -18,15 +21,17 @@ export function QuestionBuilderShell({
 }) {
   return (
     <PersonalQuestionTableProvider>
-      <UserLookupProvider>
-        <CollectionProvider>
-          <div className="min-h-screen bg-bg px-4 py-5 text-text sm:px-6">
-            <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full  flex-col gap-5">
-              {children}
+      <SharedByMeTableProvider>
+        <UserLookupProvider>
+          <CollectionProvider>
+            <div className="min-h-screen bg-bg px-4 py-5 text-text sm:px-6">
+              <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full  flex-col gap-5">
+                {children}
+              </div>
             </div>
-          </div>
-        </CollectionProvider>
-      </UserLookupProvider>
+          </CollectionProvider>
+        </UserLookupProvider>
+      </SharedByMeTableProvider>
     </PersonalQuestionTableProvider>
   );
 }
@@ -49,6 +54,21 @@ function TableView() {
     </section>
   );
 }
+
+function SharedByMe() {
+  const navigate = useNavigate();
+  return (
+    <section className="flex min-w-0 flex-col gap-4">
+      <ToolBar />
+      <SharedByMeQuestionTable
+        baseQuery={{}}
+        onRowSelect={(rowId) =>
+          navigate(`/question_builder/questions/${rowId}/edit`)
+        }
+      />
+    </section>
+  );
+}
 export default function QuestionBuilderWorkspace() {
   return (
     <QuestionBuilderShell>
@@ -57,6 +77,7 @@ export default function QuestionBuilderWorkspace() {
         <QuestionBuilderSideBar />
         <TableView />
         <QuestionSharing />
+        <SharedByMe />
       </div>
     </QuestionBuilderShell>
   );

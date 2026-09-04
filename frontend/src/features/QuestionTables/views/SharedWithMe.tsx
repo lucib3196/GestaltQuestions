@@ -8,8 +8,8 @@ import type {
 import type { TableConfig } from "../../TableBase/config/types";
 import type { TableSchema } from "../../TableBase";
 import { useSharedWithMeQuestionTableRows } from "../hooks";
-import type { QuestionTableColumn, QuestionTableColumnId } from "../columns";
-import { createQuestionTableColumns } from "../columns";
+import type { QuestionTableColumn, QuestionTableColumnId } from "../columnConfig";
+import { createQuestionTableColumns } from "../columnConfig";
 
 type SharedWithMeSchema = TableSchema<
   SharedQuestionTableRow,

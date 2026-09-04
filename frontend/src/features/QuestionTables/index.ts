@@ -1,4 +1,4 @@
-export * from "./columns";
+export * from "./columnConfig";
 export { default as ToolBarActions } from "./components/toolbar/TableToolBar";
 export * from "./config/questionTableConfigs";
 export * from "./hooks";
