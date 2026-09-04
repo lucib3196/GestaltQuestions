@@ -1,4 +1,3 @@
-
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import Select
 from sqlalchemy.sql.selectable import Subquery
