@@ -3,46 +3,58 @@ import {
   QuestionCreatedByCell,
   QuestionInstitutionCell,
 } from "../components/cells";
-import { createBaseQuestionTableColumns } from "./baseQuestionColumns";
+import {
+  createQuestionTableColumns,
+  questionTableColumnRegistry,
+  type QuestionTableColumnId,
+} from "./baseQuestionColumns";
 import { INSTITUTION_OPTIONS } from "./filterOptions";
-import type { QuestionColumnKey, QuestionTableColumn } from "./types";
+import type { QuestionTableColumn, QuestionTableSchema } from "./types";
 
-type ExcludedColumns = QuestionColumnKey[];
+const PUBLISHED_QUESTION_COLUMN_IDS = [
+  "select",
+  "title",
+  "isAdaptive",
+  "status",
+  "topics",
+  "question_type",
+  "available_runtimes",
+  "created_at",
+] as const satisfies readonly QuestionTableColumnId[];
 
-export function createAllQuestionTableColumns(): QuestionTableColumn[] {
-  const baseColumns = createBaseQuestionTableColumns();
-  const excludedColumns: ExcludedColumns = ["status"];
-  const columns = baseColumns.map((column) =>
-    excludedColumns.includes(column.key)
-      ? {
-          ...column,
-          defaultVisible: true,
-          filter: column.filter ? { ...column.filter, show: false } : undefined,
-        }
-      : column,
-  );
+const publishedQuestionColumnRegistry = {
+  institution: {
+    key: "institution",
+    label: "Institution",
+    render: (row) => <QuestionInstitutionCell row={row} />,
+    filter: {
+      kind: "select",
+      label: "Filter institution",
+      options: INSTITUTION_OPTIONS,
+      toQuery: (value) => ({
+        institution: AllowedInstitutions.includes(value as ValidInstitutions)
+          ? (value as ValidInstitutions)
+          : null,
+      }),
+    },
+  },
+  created_by: {
+    key: "created_by",
+    label: "Created By",
+    render: (row) => <QuestionCreatedByCell row={row} />,
+  },
+} satisfies Record<string, QuestionTableColumn<QuestionTableSchema>>;
 
+export function createAllQuestionTableColumns(): QuestionTableColumn<QuestionTableSchema>[] {
   return [
-    ...columns,
-    {
-      key: "institution",
-      label: "Institution",
-      render: (row) => <QuestionInstitutionCell row={row} />,
-      filter: {
-        kind: "select",
-        label: "Filter institution",
-        options: INSTITUTION_OPTIONS,
-        toQuery: (value) => ({
-          institution: AllowedInstitutions.includes(value as ValidInstitutions)
-            ? (value as ValidInstitutions)
-            : null,
-        }),
+    ...createQuestionTableColumns<QuestionTableSchema>(PUBLISHED_QUESTION_COLUMN_IDS, {
+      status: {
+        filter: questionTableColumnRegistry.status.filter
+          ? { ...questionTableColumnRegistry.status.filter, show: false }
+          : undefined,
       },
-    },
-    {
-      key: "created_by",
-      label: "Created By",
-      render: (row) => <QuestionCreatedByCell row={row} />,
-    },
+    }),
+    publishedQuestionColumnRegistry.institution,
+    publishedQuestionColumnRegistry.created_by,
   ];
 }

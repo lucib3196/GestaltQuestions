@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from typing import cast
-
+from uuid import UUID
 from backend.developer.model import DeveloperProfile
 from backend.developer.tables.extensions import (
     SharedByMeQuestionTableExtension,
@@ -8,8 +8,9 @@ from backend.developer.tables.extensions import (
 )
 from backend.question.views.schema import QuestionSearchParams, QuestionTableRowBase
 from backend.question.views.services import QuestionTable, QuestionTableQueryComposer
-
+from backend.authorization import AccessLevel
 from .base import DeveloperTables
+from datetime import datetime
 
 
 class SharedWithMeQuestionTableRow(QuestionTableRowBase):
@@ -18,6 +19,11 @@ class SharedWithMeQuestionTableRow(QuestionTableRowBase):
 
 class SharedByMeQuestionTableRow(QuestionTableRowBase):
     """Row returned by the shared-by-me question table."""
+
+    access_level: AccessLevel | str
+    granted_by_email: str
+    granted_to_email: str
+    shared_at: datetime
 
 
 SharedQuestionTableRow = SharedWithMeQuestionTableRow

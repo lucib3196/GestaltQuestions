@@ -1,5 +1,6 @@
 import asyncio
 from collections.abc import Sequence
+from datetime import datetime
 from pathlib import Path, PurePosixPath
 from typing import Any, Literal
 from uuid import UUID
@@ -182,7 +183,6 @@ class QuestionDB:
         relationship_data = await self.get_question_relationship_data(q)
 
         return QuestionRead(**question_data, **relationship_data)
-
     async def update_question(
         self,
         qid: ID,
@@ -211,6 +211,8 @@ class QuestionDB:
                 exclude_unset=True,
             ).items():
                 setattr(q, k, v)
+
+            q.updated_at = datetime.now()
 
             self.session.commit()
             self.session.refresh(q)

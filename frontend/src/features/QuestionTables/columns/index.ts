@@ -1,4 +1,9 @@
-export { createBaseQuestionTableColumns } from "./baseQuestionColumns";
-export { createMyQuestionTableColumns } from "./developerQuestionColumns";
+export {
+  createBaseQuestionTableColumns,
+  createQuestionTableColumns,
+  questionTableColumnRegistry,
+  type QuestionTableColumnId,
+} from "./baseQuestionColumns";
+
 export { createAllQuestionTableColumns } from "./publishedQuestionColumns";
 export * from "./types";

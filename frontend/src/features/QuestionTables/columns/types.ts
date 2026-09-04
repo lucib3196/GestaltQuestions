@@ -1,10 +1,18 @@
 import type {
+  QuestionTableRowBase,
   QuestionTableRow,
   QuestionTableSearchParams,
+  SharedQuestionTableRow,
 } from "../../../services";
 import type { TableColumn, TableColumnKey, TableSchema } from "../../TableBase";
 
 export type QuestionTableVirtualKey = "select";
+
+export type QuestionTableBaseSchema = TableSchema<
+  QuestionTableRowBase,
+  QuestionTableVirtualKey,
+  QuestionTableSearchParams
+>;
 
 export type QuestionTableSchema = TableSchema<
   QuestionTableRow,
@@ -12,6 +20,14 @@ export type QuestionTableSchema = TableSchema<
   QuestionTableSearchParams
 >;
 
-export type QuestionTableColumn = TableColumn<QuestionTableSchema>;
+export type SharedQuestionTableSchema = TableSchema<
+  SharedQuestionTableRow,
+  QuestionTableVirtualKey,
+  QuestionTableSearchParams
+>;
+
+export type QuestionTableColumn<
+  Schema extends TableSchema = QuestionTableBaseSchema,
+> = TableColumn<Schema>;
 
 export type QuestionColumnKey = TableColumnKey<QuestionTableSchema>;

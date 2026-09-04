@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import { CollectionProvider } from "../QuestionCollections/instance/context";
 import { useCollectionStore } from "../QuestionCollections/instance/context";
-import { DeveloperQuestionsTable } from "../QuestionTables";
-import { TableBaseProvider } from "../TableBase";
+import PersonalQuestionTable from "../QuestionTables";
+import { PersonalQuestionTableProvider } from "../QuestionTables";
+
 import QuestionSharing from "../Sharing/QuestionSharing";
 import { UserLookupProvider } from "../UserLookUp/instance/context";
 import QuestionBuilderSideBar from "./sidebar/QuestionBuilderSideBar";
@@ -16,7 +17,7 @@ export function QuestionBuilderShell({
   children: React.ReactNode;
 }) {
   return (
-    <TableBaseProvider>
+    <PersonalQuestionTableProvider>
       <UserLookupProvider>
         <CollectionProvider>
           <div className="min-h-screen bg-bg px-4 py-5 text-text sm:px-6">
@@ -26,7 +27,7 @@ export function QuestionBuilderShell({
           </div>
         </CollectionProvider>
       </UserLookupProvider>
-    </TableBaseProvider>
+    </PersonalQuestionTableProvider>
   );
 }
 
@@ -39,7 +40,7 @@ function TableView() {
     <section className="flex min-w-0 flex-col gap-4">
       <ToolBar />
 
-      <DeveloperQuestionsTable
+      <PersonalQuestionTable
         baseQuery={{ collection_id: selectedCollection }}
         onRowSelect={(rowId) =>
           navigate(`/question_builder/questions/${rowId}/edit`)

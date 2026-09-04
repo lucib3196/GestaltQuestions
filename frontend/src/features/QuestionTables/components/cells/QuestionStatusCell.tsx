@@ -1,4 +1,4 @@
-import type { QuestionTableRow } from "../../../../services";
+import type { QuestionTableRowBase } from "../../../../services";
 
 function formatStatusLabel(status: string) {
   return status.charAt(0).toUpperCase() + status.slice(1);
@@ -28,7 +28,7 @@ const STATUS_DISPLAY_CONFIG: Record<string, StatusDisplayConfig> = {
   },
 };
 
-export function QuestionStatusCell({ row }: { row: QuestionTableRow }) {
+export function QuestionStatusCell({ row }: { row: QuestionTableRowBase }) {
   const status = String(row.status ?? "").toLowerCase();
   const statusConfig = STATUS_DISPLAY_CONFIG[status] ?? {
     label: formatStatusLabel(status || "unknown"),

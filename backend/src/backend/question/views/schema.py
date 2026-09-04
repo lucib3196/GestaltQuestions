@@ -37,7 +37,6 @@ class QuestionSearchParamsBase(BaseModel):
 
 
 class QuestionSearchParams(QuestionSearchParamsBase):
-    description: str | None = None
     institution: ValidInstitutions | None = None
     published: bool | None = None
     collection_id: UUID | None = None
