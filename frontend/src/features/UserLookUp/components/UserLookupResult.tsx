@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { Check } from "lucide-react";
 
+import { UserAvatar } from "../../../components/User";
 import type { UserDetailRead } from "../../../services";
-import { UserAvatar } from "./UserAvatar";
 
 type UserLookupResultProps = {
   user: UserDetailRead;

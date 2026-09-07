@@ -53,6 +53,13 @@ export type QuestionAccess = {
   updated_at: string;
 };
 
+export type QuestionAccessDetailRead = QuestionAccess & {
+  email: string;
+  first_name: string;
+  last_name: string;
+  username: string | null;
+};
+
 export type CollectionAccess = {
   id: string | null;
   collection_id: CollectionId;

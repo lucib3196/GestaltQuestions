@@ -7,6 +7,9 @@ from backend.question.collections.models import (
     QuestionCollection,
     QuestionCollectionAccess,
 )
+from backend.question.collections.services.question_collection_access_adapter import (
+    DetailRead,
+)
 
 
 class CollectionSharing(
@@ -19,9 +22,7 @@ class CollectionSharing(
     def __init__(
         self,
         access_service: ResourceAccessService[
-            QuestionCollectionAccess,
-            DeveloperProfile,
-            QuestionCollection,
+            QuestionCollectionAccess, DeveloperProfile, QuestionCollection, DetailRead
         ],
     ) -> None:
         super().__init__(access_service=access_service)

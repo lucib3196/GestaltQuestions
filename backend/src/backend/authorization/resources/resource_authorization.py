@@ -13,6 +13,7 @@ from backend.authorization.types import (
     ProfileT,
     ResourceProtocol,
     ResourceT,
+    AccessDetailRead,
 )
 from backend.shared import ID
 
@@ -30,7 +31,9 @@ DeniedErrorFactory = Callable[[str, str | None, str | None], Exception]
 class ResourceAuthorizer(Generic[AccessModelT, ProfileT, ResourceT, ActionT]):
     def __init__(
         self,
-        access: ResourceAccessService[AccessModelT, ProfileT, ResourceT],
+        access: ResourceAccessService[
+            AccessModelT, ProfileT, ResourceT, AccessDetailRead
+        ],
         profile: ProfileService[ProfileT],
         policy: ActionPolicy[ActionT],
         denied_error: DeniedErrorFactory,

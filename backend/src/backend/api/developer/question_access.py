@@ -1,13 +1,21 @@
 from collections.abc import Sequence
+from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
 from starlette import status
 
 from backend.api.dependencies.users import CurrentUser
 from backend.authorization import ResourceAccessRevokeResult
 from backend.question.access.exceptions import QuestionAccessError
-from backend.question.access.models import AccessLevel, QuestionAccess
+from backend.question.access.models import QuestionAccess
+from backend.question.access.schema import (
+    QuestionAccessDetailRead,
+    ShareQuestionAccessPayload,
+    ShareQuestionBatchResult,
+    ShareQuestionFailure,
+    ShareQuestionsWithUsersPayload,
+    UpdateQuestionAccessPayload,
+)
 from backend.shared import ID
 
 from .dependencies import QuestionAccessDependency
@@ -18,38 +26,32 @@ router = APIRouter(
 )
 
 
-class ShareQuestionAccessPayload(BaseModel):
-    target_user_id: ID
-    level: AccessLevel
-
-
-class ShareQuestionsWithUsersPayload(BaseModel):
-    question_ids: list[ID]
-    target_user_ids: list[ID]
-    level: AccessLevel
-
-
-class ShareQuestionFailure(BaseModel):
-    question_id: ID
-    target_user_id: ID
-    reason: str
-
-
-class ShareQuestionBatchResult(BaseModel):
-    shared: list[QuestionAccess]
-    failed: list[ShareQuestionFailure]
-
-
-class UpdateQuestionAccessPayload(BaseModel):
-    level: AccessLevel
-
-
 @router.get("/shared-with-me")
 async def get_shared_with_me(
     current_user: CurrentUser, question_access: QuestionAccessDependency
 ) -> Sequence[QuestionAccess]:
     try:
         return await question_access.list_access_shared_with(current_user)
+    except QuestionAccessError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get question access",
+        ) from e
+
+
+@router.get("/{qid}/access-details")
+async def list_question_access_details(
+    current_user: CurrentUser, question_access: QuestionAccessDependency, qid: ID
+) -> Sequence[QuestionAccessDetailRead]:
+    try:
+        return await question_access.list_resource_access_details(
+            qid, owner=current_user
+        )
     except QuestionAccessError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -77,6 +79,25 @@ async def get_shared_by_me(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get question access",
+        ) from e
+
+
+@router.get("/{qid}")
+async def check_access(
+    current_user: CurrentUser,
+    question_access: QuestionAccessDependency,
+    qid: UUID | str,
+) -> QuestionAccess:
+    try:
+        access = await question_access.retrieve_access(current_user, qid)
+        if not access:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Access not allowed"
+            )
+        return access
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={str(e)}
         ) from e
 
 

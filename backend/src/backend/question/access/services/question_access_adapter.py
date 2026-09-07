@@ -2,22 +2,27 @@ from collections.abc import Sequence
 from datetime import datetime
 
 from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
+from backend.accounts.model import User
 from backend.authorization import AccessLevel, ProfileT
 from backend.authorization.resources import (
     ResourceAccessAdapter,
     ResourceAccessOperationError,
     ResourceAccessValidationError,
 )
+from backend.developer.model import DeveloperProfile
 from backend.question import Question
 from backend.question.access.models import QuestionAccess
+from backend.question.access.schema import QuestionAccessDetailRead
 from backend.question.schema import Status
 from backend.shared import ID
 from backend.utils import convert_uuid
 
 
-class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Question]):
+class QuestionAccessAdapter(
+    ResourceAccessAdapter[QuestionAccess, ProfileT, Question, QuestionAccessDetailRead]
+):
     def __init__(
         self,
         session: Session,
@@ -157,6 +162,52 @@ class QuestionAccessAdapter(ResourceAccessAdapter[QuestionAccess, ProfileT, Ques
             raise self._operation_error(
                 "list access",
                 profile_id=str(profile.id),
+                details=str(e),
+            ) from e
+
+    async def list_access_details(
+        self,
+        resource: Question,
+        *,
+        owner: ProfileT | None = None,
+    ) -> Sequence[QuestionAccessDetailRead]:
+        try:
+            stmt = (
+                select(
+                    QuestionAccess,
+                    col(User.email).label("email"),
+                    col(User.first_name).label("first_name"),
+                    col(User.last_name).label("last_name"),
+                    col(User.username).label("username"),
+                )
+                .join(
+                    DeveloperProfile,
+                    col(QuestionAccess.developer_id) == col(DeveloperProfile.id),
+                )
+                .join(User, col(User.id) == col(DeveloperProfile.user_id))
+                .where(col(QuestionAccess.question_id) == resource.id)
+            )
+
+            if owner:
+                stmt = stmt.where(col(QuestionAccess.developer_id) != owner.id)
+
+            stmt = stmt.order_by(col(QuestionAccess.created_at).desc())
+            rows = self._session.exec(stmt).all()
+            return [
+                QuestionAccessDetailRead(
+                    **access.model_dump(),
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                    username=username,
+                )
+                for access, email, first_name, last_name, username in rows
+            ]
+
+        except SQLAlchemyError as e:
+            raise self._operation_error(
+                "list access details",
+                resource_id=str(resource.id),
                 details=str(e),
             ) from e
 

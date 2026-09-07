@@ -19,9 +19,13 @@ from backend.shared import ID
 from backend.utils import convert_uuid
 
 
+class DetailRead(QuestionCollectionAccess):
+    email: str
+
+
 class QuestionCollectionAdapter(
     ResourceAccessAdapter[
-        QuestionCollectionAccess, DeveloperProfile, QuestionCollection
+        QuestionCollectionAccess, DeveloperProfile, QuestionCollection, DetailRead
     ]
 ):
     def __init__(self, session: Session) -> None:
@@ -169,6 +173,14 @@ class QuestionCollectionAdapter(
                 profile_id=str(profile.id),
                 details=str(e),
             ) from e
+
+    async def list_access_details(
+        self,
+        resource: QuestionCollection,
+        *,
+        owner: DeveloperProfile | None = None,
+    ) -> Sequence[DetailRead]:
+        raise NotImplementedError("Collection access details are not implemented")
 
     async def is_owner(
         self,

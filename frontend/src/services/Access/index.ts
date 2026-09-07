@@ -5,6 +5,7 @@ export type {
   CollectionAccess,
   CollectionId,
   QuestionAccess,
+  QuestionAccessDetailRead,
   QuestionId,
   ResourceAccessRevokeResult,
   ShareableAccessLevel,

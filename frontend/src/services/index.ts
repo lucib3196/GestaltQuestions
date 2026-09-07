@@ -2,6 +2,7 @@ export type {
   AccessLevel,
   CollectionAccess,
   QuestionAccess,
+  QuestionAccessDetailRead,
   ResourceAccessRevokeResult,
   ShareableAccessLevel,
   ShareAccessPayload,
@@ -25,7 +26,7 @@ export type {
   RuntimeConfigSource,
 } from "./QuestionRuntime";
 export { QuestionRuntimeApi } from "./QuestionRuntime";
-export * from "./questionSyncAPI";
+
 export * from "./QuestionTables";
 export type { DeveloperLookupParams, UserDetailRead } from "./UserLookup";
 export { UserLookupApi } from "./UserLookup";
