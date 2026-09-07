@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
+import { DeveloperQuestionsApi } from "../../../services/DeveloperQuestions";
+import type { DeveloperQuestionUpdate } from "../../../services/DeveloperQuestions";
 import { useAuth } from "../../Auth";
-import type { QuestionUpdate } from "../../QuestionBuilder";
-import QuestionBuilderAPI from "../../QuestionBuilder/questionBuilderApi";
 
 export function useUpdateQuestion() {
   const [loading, setLoading] = useState(false);
@@ -11,7 +11,7 @@ export function useUpdateQuestion() {
   const { user } = useAuth();
 
   const updateQuestion = useCallback(
-    async (questionId: string, payload: QuestionUpdate) => {
+    async (questionId: string, payload: DeveloperQuestionUpdate) => {
       setLoading(true);
       setError(null);
 
@@ -25,7 +25,7 @@ export function useUpdateQuestion() {
 
       try {
         const token = await user.getIdToken();
-        const updated = await QuestionBuilderAPI.updateQuestion(
+        const updated = await DeveloperQuestionsApi.updateQuestion(
           token,
           questionId,
           payload,

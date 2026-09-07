@@ -3,7 +3,7 @@ import {
   QUESTION_TYPE_OPTIONS,
   QUESTION_TYPE_VALUES,
   type QuestionStatus,
-} from "../../../types/questionTypes";
+} from "../../../services/Questions";
 import { TableSelectHeaderCell } from "../../TableBase/components/headers";
 import {
   QuestionAdaptiveCell,

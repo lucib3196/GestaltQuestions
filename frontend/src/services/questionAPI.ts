@@ -1,4 +1,4 @@
-import type { QuestionFilter, QuestionRead } from "../types/questionTypes";
+import type { QuestionFilter, QuestionRead } from "./Questions";
 import api from "./client";
 
 export class QuestionAPI {

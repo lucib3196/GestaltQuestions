@@ -1,16 +1,15 @@
-import api from "../../services/client";
+import api from "../client";
 import type { FileData } from "../../types/fileTypes";
+import type { QuestionFilter, QuestionRead } from "../Questions";
 import type {
-  QuestionAllRow,
-  QuestionCreate,
+  DeveloperQuestionCreate,
+  DeveloperQuestionUpdate,
+  LegacyQuestionAllRow,
   QuestionDeleteResponse,
   QuestionFileList,
-  QuestionFilter,
-  QuestionRead,
-  QuestionUpdate,
-} from "../../types/questionTypes";
+} from "./types";
 import { downloadZip } from "../../utils/downloadUtils";
-export default class QuestionBuilderAPI {
+export default class DeveloperQuestionsApi {
   private static readonly base = "/developer/questions";
 
   private static authHeaders(token: string) {
@@ -19,7 +18,7 @@ export default class QuestionBuilderAPI {
 
   static async createQuestion(
     token: string,
-    payload: QuestionCreate,
+    payload: DeveloperQuestionCreate,
   ): Promise<QuestionRead> {
     const response = await api.post<QuestionRead>(`${this.base}/`, payload, {
       headers: this.authHeaders(token),
@@ -61,7 +60,7 @@ export default class QuestionBuilderAPI {
   static async updateQuestion(
     token: string,
     questionId: string,
-    payload: QuestionUpdate,
+    payload: DeveloperQuestionUpdate,
   ): Promise<QuestionRead> {
     const response = await api.patch<QuestionRead>(
       `${this.base}/${questionId}`,
@@ -174,8 +173,8 @@ export default class QuestionBuilderAPI {
     return response.data;
   }
 
-  static async listAllQuestions(token: string): Promise<QuestionAllRow[]> {
-    const response = await api.get<QuestionAllRow[]>("/questions/all", {
+  static async listAllQuestions(token: string): Promise<LegacyQuestionAllRow[]> {
+    const response = await api.get<LegacyQuestionAllRow[]>("/questions/all", {
       headers: this.authHeaders(token),
     });
     return response.data;
@@ -183,8 +182,11 @@ export default class QuestionBuilderAPI {
 
   static async filterAllQuestions(
     filter: QuestionFilter,
-  ): Promise<QuestionAllRow[]> {
-    const response = await api.post<QuestionAllRow[]>("/questions/all", filter);
+  ): Promise<LegacyQuestionAllRow[]> {
+    const response = await api.post<LegacyQuestionAllRow[]>(
+      "/questions/all",
+      filter,
+    );
     return response.data;
   }
 

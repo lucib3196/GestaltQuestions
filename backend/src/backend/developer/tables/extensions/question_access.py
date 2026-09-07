@@ -44,7 +44,6 @@ class QuestionAccessTableExtension(TableExtension):
             access_summary.c.granted_by_email,
         )
 
-
     def access_summary_join(self, stmt: Select, subquery: Subquery) -> Subquery:
         """Generates a subquery where we join based on the access and grouping based of question id"""
 
@@ -77,10 +76,10 @@ class QuestionAccessTableExtension(TableExtension):
             .where(col(QuestionAccess.access_level) != AccessLevel.OWNER)
         )
         if self._granted_by_id is not None:
-            sub.where(col(QuestionAccess.granted_by_id) == self._granted_by_id)
+            sub = sub.where(col(QuestionAccess.granted_by_id) == self._granted_by_id)
 
         if self._granted_to_id is not None:
-            sub.where(col(QuestionAccess.developer_id) == self._granted_to_id)
+            sub = sub.where(col(QuestionAccess.developer_id) == self._granted_to_id)
 
         return sub.group_by(
             col(QuestionAccess.question_id), col(QuestionAccess.access_level)

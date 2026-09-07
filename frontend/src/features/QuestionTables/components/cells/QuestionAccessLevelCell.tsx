@@ -5,5 +5,5 @@ export function QuestionAccessLevelCell({
 }: {
   row: SharedQuestionTableRow;
 }) {
-  return <span>{row.access_level || "-"}</span>;
+  return <span>{row.access_levels?.at(0) || "-"}</span>;
 }

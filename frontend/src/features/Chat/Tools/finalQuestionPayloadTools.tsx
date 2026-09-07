@@ -4,8 +4,8 @@ import { toast } from "react-toastify";
 
 import { Button } from "../../../components/Button";
 import { Container } from "../../../components/Container";
-import type { QuestionCreate } from "../../QuestionBuilder";
-import QuestionBuilderAPI from "../../QuestionBuilder/questionBuilderApi";
+import { DeveloperQuestionsApi } from "../../../services/DeveloperQuestions";
+import type { DeveloperQuestionCreate } from "../../../services/DeveloperQuestions";
 import type {
   RenderPreviewProps,
   ToolExecute,
@@ -14,7 +14,7 @@ import type {
 import { extractToolPayload } from "../utils/parsingUtils";
 type QuestionPreviewPayload = {
   files: File[];
-  metadata: QuestionCreate;
+  metadata: DeveloperQuestionCreate;
 };
 
 export function parseQuestionPayload(msg: ToolMessage): QuestionPreviewPayload {
@@ -33,7 +33,7 @@ export function parseQuestionPayload(msg: ToolMessage): QuestionPreviewPayload {
 
   const qMeta =
     "metadata" in obj && obj.metadata && typeof obj.metadata === "object"
-      ? (obj.metadata as QuestionCreate)
+      ? (obj.metadata as DeveloperQuestionCreate)
       : null;
 
   if (!qMeta) {
@@ -69,7 +69,9 @@ export function parseQuestionPayload(msg: ToolMessage): QuestionPreviewPayload {
   return { files: filePayload, metadata: qMeta };
 }
 
-function applySubmissionMetadata(metadata: QuestionCreate): QuestionCreate {
+function applySubmissionMetadata(
+  metadata: DeveloperQuestionCreate,
+): DeveloperQuestionCreate {
   return {
     ...metadata,
     ai_generated: true,
@@ -83,10 +85,10 @@ export const submitFinalQuestionPayload: ToolExecute<
   const metadata = applySubmissionMetadata(payload.metadata);
 
   try {
-    const qCreated = await QuestionBuilderAPI.createQuestion(token, metadata);
+    const qCreated = await DeveloperQuestionsApi.createQuestion(token, metadata);
     const qId = qCreated.id;
     if (payload.files) {
-      await QuestionBuilderAPI.uploadFiles(token, qId, payload.files);
+      await DeveloperQuestionsApi.uploadFiles(token, qId, payload.files);
     }
     toast.success("Created question success");
   } catch (error) {
@@ -136,7 +138,7 @@ export function QuestionReviewCard({
   const isReadOnly = submitted || !onApprove;
 
   // Local editable copy of metadata
-  const [draftMetadata, setDraftMetadata] = useState<QuestionCreate>({
+  const [draftMetadata, setDraftMetadata] = useState<DeveloperQuestionCreate>({
     ...(payload.metadata ?? {}),
   });
 

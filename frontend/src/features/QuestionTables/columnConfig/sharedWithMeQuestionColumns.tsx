@@ -23,10 +23,11 @@ const SHARED_WITH_ME_BASE_COLUMN_IDS = [
 ] as const satisfies readonly QuestionTableColumnId[];
 
 const sharedWithMeQuestionColumnRegistry = {
-  access_level: {
-    key: "access_level",
+  access_levels: {
+    key: "access_levels",
     label: "Access",
     render: (row) => <QuestionAccessLevelCell row={row} />,
+    defaultVisible:true
   },
   granted_to_email: {
     key: "granted_to_email",
@@ -54,7 +55,7 @@ export function createSharedWithMeQuestionTableColumns(): QuestionTableColumn<Sh
     ...createQuestionTableColumns<SharedQuestionTableSchema>(
       SHARED_WITH_ME_BASE_COLUMN_IDS,
     ),
-    sharedWithMeQuestionColumnRegistry.access_level,
+    sharedWithMeQuestionColumnRegistry.access_levels,
     sharedWithMeQuestionColumnRegistry.granted_to_email,
     sharedWithMeQuestionColumnRegistry.granted_by_email,
     sharedWithMeQuestionColumnRegistry.shared_at,

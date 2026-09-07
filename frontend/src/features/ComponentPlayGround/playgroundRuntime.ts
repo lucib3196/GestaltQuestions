@@ -1,5 +1,5 @@
 import type { QuestionRunResponse } from "../../services/QuestionRuntime";
-import type { QuestionType } from "../../types/questionTypes";
+import type { QuestionType } from "../../services/Questions";
 import type { PlaygroundComponentDoc } from "./componentPlaygroundRegistry";
 
 const DEFAULT_SOLUTION_HTML = `<pl-solution-panel title="Preview Solution" show-all="true">

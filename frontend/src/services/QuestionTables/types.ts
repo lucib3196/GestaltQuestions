@@ -1,5 +1,5 @@
 import type { ValidInstitutions } from "../../features/Auth/types";
-import type { QuestionStatus, QuestionType } from "../../types/questionTypes";
+import type { QuestionStatus, QuestionType } from "../Questions";
 import type { QuestionRuntimeLanguage } from "../QuestionRuntime";
 
 export type { QuestionType };
@@ -35,7 +35,7 @@ export type QuestionTableRowBase = {
 };
 
 export type SharedQuestionTableRow = QuestionTableRowBase & {
-  access_level: string;
+  access_levels: string;
   granted_by_email: string | null;
   granted_to_email?: string | null;
   shared_at: string;

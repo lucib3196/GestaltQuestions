@@ -12,7 +12,9 @@ export type {
 } from "./Access";
 export { CollectionAccessApi, QuestionAccessApi } from "./Access";
 export * from "./Collections";
+export * from "./DeveloperQuestions";
 export * from "./questionAPI";
+export * from "./Questions";
 export type {
   QuestionAnswerMap,
   QuestionRunResponse,

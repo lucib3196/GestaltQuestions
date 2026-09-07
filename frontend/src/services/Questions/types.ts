@@ -73,40 +73,7 @@ export type QuestionRead = {
   qType: QuestionType[];
 };
 
-export type QuestionAllRow = {
-  title: string;
-  question_id: string;
-  isAdaptive: boolean;
-  ai_generated: boolean;
-  status: QuestionStatus;
-  user_id: string;
-  created_by: string;
-  institution: string;
-};
-
-export type QuestionCreate = {
-  id?: string | null;
-  title: string;
-  status?: QuestionStatus;
-  ai_generated?: boolean;
-  isAdaptive?: boolean;
-  topics?: string[];
-  qType?: QuestionType[];
-};
-
-export type QuestionUpdate = {
-  title?: string;
-  ai_generated?: boolean;
-  isAdaptive?: boolean;
-  topics?: string[];
-  qType?: QuestionType[];
-  status?: QuestionStatus;
-};
-
 export type QuestionFilter = {
   title?: string;
-  status: QuestionStatus;
+  status?: QuestionStatus | null;
 };
-
-export type QuestionFileList = string[];
-export type QuestionDeleteResponse = boolean;

@@ -1,4 +1,4 @@
-import type { QuestionRead } from "../../types/questionTypes";
+import type { QuestionRead } from "../Questions";
 
 export type QuestionRuntimeLanguage = "javascript" | "python" | "static";
 

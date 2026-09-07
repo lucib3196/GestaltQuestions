@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { type FileData } from "../../types/fileTypes";
+import { DeveloperQuestionsApi } from "../../services/DeveloperQuestions";
 import type {
-  QuestionAllRow,
-  QuestionCreate,
-  QuestionFilter,
-  QuestionRead,
-} from "../../types/questionTypes";
+  DeveloperQuestionCreate,
+  LegacyQuestionAllRow,
+} from "../../services/DeveloperQuestions";
+import type { QuestionFilter, QuestionRead } from "../../services/Questions";
+import { type FileData } from "../../types/fileTypes";
 import { useAuth } from "../Auth";
-import QuestionBuilderAPI from "./questionBuilderApi";
 
 export function useMyQuestions() {
   const { user } = useAuth();
@@ -31,7 +30,7 @@ export function useMyQuestions() {
 
       try {
         const token = await user.getIdToken();
-        const data = await QuestionBuilderAPI.listMyQuestions(token);
+        const data = await DeveloperQuestionsApi.listMyQuestions(token);
         if (!cancelled) setQuestions(data);
       } catch (err) {
         if (!cancelled) {
@@ -75,7 +74,7 @@ export function useFilterMyQuestions(filter: Partial<QuestionFilter>) {
 
       try {
         const token = await user.getIdToken();
-        const data = await QuestionBuilderAPI.filterQuestions(token, filter);
+        const data = await DeveloperQuestionsApi.filterQuestions(token, filter);
         if (!cancelled) setQuestions(data);
       } catch (err) {
         if (!cancelled) {
@@ -99,7 +98,7 @@ export function useFilterMyQuestions(filter: Partial<QuestionFilter>) {
 }
 
 export function useFilterGeneralQuestions(filter: QuestionFilter) {
-  const [questions, setQuestions] = useState<QuestionAllRow[]>([]);
+  const [questions, setQuestions] = useState<LegacyQuestionAllRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -111,7 +110,7 @@ export function useFilterGeneralQuestions(filter: QuestionFilter) {
       setError(null);
 
       try {
-        const data = await QuestionBuilderAPI.filterAllQuestions(filter);
+        const data = await DeveloperQuestionsApi.filterAllQuestions(filter);
         if (!cancelled) setQuestions(data);
       } catch (err) {
         if (!cancelled) {
@@ -154,7 +153,7 @@ export function useQuestionFileData(qid: string, refreshKey = 0) {
 
       try {
         const token = await user.getIdToken();
-        const data = await QuestionBuilderAPI.getQuestionFileData(token, qid);
+        const data = await DeveloperQuestionsApi.getQuestionFileData(token, qid);
         if (!cancelled) setFileData(data);
       } catch (err) {
         if (!cancelled) {
@@ -197,7 +196,7 @@ export function useSaveFile(onRefresh?: () => void) {
 
       try {
         const token = await user.getIdToken();
-        await QuestionBuilderAPI.writeFile(
+        await DeveloperQuestionsApi.writeFile(
           token,
           questionId,
           filename,
@@ -234,7 +233,7 @@ export function useCreateFile(onRefresh?: () => void) {
 
       try {
         const token = await user.getIdToken();
-        await QuestionBuilderAPI.writeFile(
+        await DeveloperQuestionsApi.writeFile(
           token,
           questionId,
           filename,
@@ -271,7 +270,7 @@ export function useDeleteFile(onRefresh?: () => void) {
 
       try {
         const token = await user.getIdToken();
-        await QuestionBuilderAPI.deleteFile(token, questionId, filename);
+        await DeveloperQuestionsApi.deleteFile(token, questionId, filename);
         onRefresh?.();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to delete file");
@@ -303,7 +302,7 @@ export function useUploadFile(onRefresh?: () => void) {
 
       try {
         const token = await user.getIdToken();
-        await QuestionBuilderAPI.uploadFiles(token, questionId, files);
+        await DeveloperQuestionsApi.uploadFiles(token, questionId, files);
         console.log("Uploaded files");
         onRefresh?.();
       } catch (err) {
@@ -343,7 +342,7 @@ export function useQuestionMetadata(qid: string | null | undefined) {
 
       try {
         const token = await user.getIdToken();
-        const data = await QuestionBuilderAPI.getQuestion(token, qid);
+        const data = await DeveloperQuestionsApi.getQuestion(token, qid);
 
         if (!cancelled) setQuestionMetadata(data);
       } catch (err) {
@@ -375,7 +374,7 @@ export function useCreateQuestion() {
   const { user } = useAuth();
 
   const createQuestion = useCallback(
-    async (payload: QuestionCreate, files?: File[]) => {
+    async (payload: DeveloperQuestionCreate, files?: File[]) => {
       setLoading(true);
       setError(null);
 
@@ -387,13 +386,13 @@ export function useCreateQuestion() {
 
       try {
         const token = await user.getIdToken();
-        const qCreated = await QuestionBuilderAPI.createQuestion(
+        const qCreated = await DeveloperQuestionsApi.createQuestion(
           token,
           payload,
         );
 
         if (files?.length) {
-          await QuestionBuilderAPI.uploadFiles(token, qCreated.id, files);
+          await DeveloperQuestionsApi.uploadFiles(token, qCreated.id, files);
         }
 
         return qCreated.id;
@@ -433,7 +432,7 @@ export function useDeleteQuestion() {
       try {
         const token = await user.getIdToken();
         const results = await Promise.allSettled(
-          qids.map((qid) => QuestionBuilderAPI.deleteQuestion(token, qid)),
+          qids.map((qid) => DeveloperQuestionsApi.deleteQuestion(token, qid)),
         );
         const failedQids = results
           .map((result, index) =>
@@ -502,7 +501,7 @@ export function useDownloadQuestions() {
       try {
         const token = await user.getIdToken();
         const results = await Promise.allSettled(
-          qids.map((qid) => QuestionBuilderAPI.downloadQuestion(token, qid)),
+          qids.map((qid) => DeveloperQuestionsApi.downloadQuestion(token, qid)),
         );
         const failedQids = results
           .map((result, index) =>
@@ -572,7 +571,7 @@ export function useCopyQuestion() {
         const token = await user.getIdToken();
 
         const results = await Promise.allSettled(
-          qids.map((qid) => QuestionBuilderAPI.copyQuestion(token, qid)),
+          qids.map((qid) => DeveloperQuestionsApi.copyQuestion(token, qid)),
         );
         const failedQids = results
           .map((result, index) =>

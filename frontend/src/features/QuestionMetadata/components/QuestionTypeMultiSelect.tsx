@@ -3,7 +3,7 @@ import type { Dispatch } from "react";
 import {
   QUESTION_TYPE_OPTIONS,
   type QuestionType,
-} from "../../../types/questionTypes";
+} from "../../../services/Questions";
 
 type QuestionTypeMultiSelectProps = {
   value: QuestionType[];

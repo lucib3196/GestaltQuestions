@@ -3,7 +3,7 @@ import type React from "react";
 import type { IconType } from "react-icons";
 import { FiFileText, FiTarget } from "react-icons/fi";
 
-import type { QuestionRead } from "../../QuestionBuilder";
+import type { QuestionRead } from "../../../services/Questions";
 import type { QuestionBodyVariant } from "../question/QuestionBody";
 
 type QuestionHeaderProps = {
