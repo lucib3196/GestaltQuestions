@@ -1,12 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  QuestionAccessApi,
-  type QuestionId,
-  type ResourceAccessRevokeResult,
-  type UserId,
-} from "../../../services";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../Auth";
+import QuestionAccessApi from "../api";
+import type { QuestionId, ResourceAccessRevokeResult, UserId } from "../types";
 
 export function useRevokeQuestionAccess() {
   const [loading, setLoading] = useState(false);

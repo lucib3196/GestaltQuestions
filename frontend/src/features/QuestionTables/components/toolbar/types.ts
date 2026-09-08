@@ -1,6 +1,6 @@
 import type { IconType } from "react-icons";
 
-import type { UserRole } from "../../../Auth";
+import type { UserRole } from "../../../../services/Auth";
 // Base Type: Base Actions for most users is copy, download and
 export type ToolBarActionBaseId = "copy" | "download" | "tableFilters";
 

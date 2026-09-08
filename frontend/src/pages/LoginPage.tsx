@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 
 import { AuthModeProvider, UseAuthMode } from "../context/AuthMode";
-import { useAuth } from "../features/Auth";
 import { LogInForm } from "../features/Auth/components/login/LogInForm";
 import { SignUpForm } from "../features/Auth/components/login/SignUpForm";
+import { useAuth } from "../services/Auth";
 
 function LoginPageContent() {
   const { user } = useAuth();

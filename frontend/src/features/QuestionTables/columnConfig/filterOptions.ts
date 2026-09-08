@@ -1,5 +1,8 @@
 import type { QuestionRuntimeLanguage } from "../../../services";
-import { AllowedInstitutions, type ValidInstitutions } from "../../Auth/types";
+import {
+  AllowedInstitutions,
+  type ValidInstitutions,
+} from "../../../services/Auth";
 
 type FilterOption<T extends string> = { label: string; value: T };
 

@@ -2,8 +2,8 @@ import type { HITLRequest, HITLResponse } from "langchain";
 import { useEffect } from "react";
 import { useCallback, useMemo, useState } from "react";
 
+import { useAuth } from "../../services/Auth";
 import { ChatApi } from "../../services/Chat";
-import { useAuth } from "../Auth";
 import { useThreadStore } from "./instance/store";
 
 export function useLoadUserThreads() {

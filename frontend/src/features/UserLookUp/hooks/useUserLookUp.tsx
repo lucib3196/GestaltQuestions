@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { type UserDetailRead, UserLookupApi } from "../../../services";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../services/Auth";
 
 export function useUserLookup(queryStr: string, excluded?: string[]) {
   const { user } = useAuth();

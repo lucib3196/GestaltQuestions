@@ -5,7 +5,7 @@ import type {
   SearchCollectionsParams,
 } from "../../../services";
 import { CollectionsApi } from "../../../services";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../services/Auth";
 
 export function useSearchCollections(title: string) {
   const { user } = useAuth();

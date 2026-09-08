@@ -1,15 +1,17 @@
 import { useMemo, useState } from "react";
 
-import type { ShareableAccessLevel } from "../../services";
-import { useRevokeQuestionAccess } from "../Sharing/hooks/useRevokeQuestionAccess";
-import { useShareQuestion } from "../Sharing/hooks/useShareQuestion";
-import { useShareQuestionBatch } from "../Sharing/hooks/useShareQuestionBatch";
+import {
+  type ShareableAccessLevel,
+  useListSharedByMe,
+  useRetrieveAccess,
+  useRevokeQuestionAccess,
+  useShareQuestion,
+  useShareQuestionBatch,
+} from "../../services/Access/QuestionAccess";
 import { useUserLookupStore } from "../UserLookUp/instance/context";
 import { UserLookUp } from "../UserLookUp/UserLookUp";
 import AccessBadge from "./components/accessBadge";
 import { AccessDetail } from "./components/AccessDetail";
-import { useListSharedByMe } from "./hooks/useListSharedByMe";
-import { useRetrieveAccess } from "./hooks/useRetrieveAccess";
 
 const qid = "be94cfef-2b76-4f6a-8b44-f3b958d2be45";
 const shareLevels: ShareableAccessLevel[] = ["view", "edit", "full"];

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { QuestionAccessApi } from "../../../services";
-import { type ShareAccessPayload } from "../../../services";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../Auth";
+import QuestionAccessApi from "../api";
+import type { ShareAccessPayload } from "../types";
 
 export function useShareQuestion() {
   const [loading, setLoading] = useState(false);

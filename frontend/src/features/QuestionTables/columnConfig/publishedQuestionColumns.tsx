@@ -1,4 +1,7 @@
-import { AllowedInstitutions, type ValidInstitutions } from "../../Auth/types";
+import {
+  AllowedInstitutions,
+  type ValidInstitutions,
+} from "../../../services/Auth";
 import {
   QuestionCreatedByCell,
   QuestionInstitutionCell,

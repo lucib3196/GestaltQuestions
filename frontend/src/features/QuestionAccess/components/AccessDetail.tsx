@@ -4,7 +4,7 @@ import { UserAvatar } from "../../../components/User";
 import type {
   QuestionAccessDetailRead,
   ShareableAccessLevel,
-} from "../../../services";
+} from "../../../services/Access/QuestionAccess";
 
 const editableAccessLevels: ShareableAccessLevel[] = ["view", "edit", "full"];
 

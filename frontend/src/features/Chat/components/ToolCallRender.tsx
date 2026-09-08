@@ -1,7 +1,7 @@
 import type { BaseMessage } from "langchain";
 import { useMemo, useState } from "react";
 
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../services/Auth";
 import type { ToolName } from "../instance/types";
 import { tools } from "../Tools/tools";
 import { isToolMessage } from "../utils/validationUtils";

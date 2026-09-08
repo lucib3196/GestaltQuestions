@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  QuestionAccessApi,
-  type QuestionAccessDetailRead,
-} from "../../../services";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../Auth";
+import QuestionAccessApi from "../api";
+import type { QuestionAccessDetailRead } from "../types";
 
 export function useListSharedByMe(qid: string) {
   const { user } = useAuth();

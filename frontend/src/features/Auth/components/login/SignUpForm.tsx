@@ -1,8 +1,11 @@
 import { FirebaseError } from "firebase/app";
 import { toast } from "react-toastify";
 
-import { UserAPI } from "../../api";
-import type { UserCreate, ValidInstitutions } from "../../types";
+import {
+  UserAPI,
+  type UserCreate,
+  type ValidInstitutions,
+} from "../../../../services/Auth";
 import AuthBase from "./AuthBase";
 
 export function SignUpForm() {

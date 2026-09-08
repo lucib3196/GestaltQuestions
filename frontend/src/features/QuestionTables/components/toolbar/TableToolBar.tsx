@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { UserRole } from "../../../Auth";
+import type { UserRole } from "../../../../services/Auth";
 import type { ToolBarActionConfig } from "./types";
 
 export type ToolBarActionsProps<TId extends string> = {

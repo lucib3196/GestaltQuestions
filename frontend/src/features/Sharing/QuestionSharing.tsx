@@ -1,14 +1,14 @@
 import { useState } from "react";
 
-import type {
-  ShareableAccessLevel,
-  ShareQuestionsWithUsersPayload,
-} from "../../services";
+import {
+  type ShareableAccessLevel,
+  type ShareQuestionsWithUsersPayload,
+  useShareQuestionBatch,
+} from "../../services/Access/QuestionAccess";
 import { useTableBaseContext } from "../TableBase/state";
 import { useUserLookupStore } from "../UserLookUp/instance/context";
 import type { SelectedUsersById } from "../UserLookUp/instance/store";
 import { ShareQuestionCard } from "./components";
-import { useShareQuestionBatch } from "./hooks/useShareQuestionBatch";
 
 function prepareBatch(
   questionIds: string[],

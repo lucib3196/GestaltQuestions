@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../../Auth";
-import { QuestionAccessApi, type QuestionAccess } from "../../../services";
+import { useEffect, useState } from "react";
+
+import { useAuth } from "../../../Auth";
+import QuestionAccessApi from "../api";
+import type { QuestionAccess } from "../types";
 
 export function useRetrieveAccess(qid: string) {
   const { user } = useAuth();

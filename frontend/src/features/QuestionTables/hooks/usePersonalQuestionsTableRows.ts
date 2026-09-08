@@ -4,7 +4,7 @@ import {
   QuestionTablesApi,
   type QuestionTableSearchParams,
 } from "../../../services";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../services/Auth";
 import { useTableRowsRequest } from "../../TableBase/hooks/useTableRowRequest";
 
 export function usePersonalQuestionsTableRows(

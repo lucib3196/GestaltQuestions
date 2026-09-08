@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { CollectionsApi } from "../../../services";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../services/Auth";
 import { useCollectionStore } from "../instance/context";
 
 export function useCollections() {

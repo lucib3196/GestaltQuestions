@@ -6,7 +6,7 @@ import { createRoot } from "react-dom/client";
 import { ToastContainer } from "react-toastify";
 
 import App from "./App.tsx";
-import { AuthProvider } from "./features/Auth/AuthContext.tsx";
+import { AuthProvider } from "./services/Auth";
 
 /* =========================
    MathJax Config

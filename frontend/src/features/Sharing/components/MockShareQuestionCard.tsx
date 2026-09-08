@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { ShareableAccessLevel } from "../../../services";
+import type { ShareableAccessLevel } from "../../../services/Access/QuestionAccess";
 import { UserLookupProvider } from "../../UserLookUp/instance/context";
 import { ShareQuestionCard } from "./ShareQuestionCard";
 

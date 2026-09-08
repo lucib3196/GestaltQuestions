@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
-import { DeveloperQuestionsApi } from "../../../services/DeveloperQuestions";
+import { useAuth } from "../../../services/Auth";
 import type { DeveloperQuestionUpdate } from "../../../services/DeveloperQuestions";
-import { useAuth } from "../../Auth";
+import { DeveloperQuestionsApi } from "../../../services/DeveloperQuestions";
 
 export function useUpdateQuestion() {
   const [loading, setLoading] = useState(false);

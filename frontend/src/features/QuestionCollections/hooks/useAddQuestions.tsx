@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 import { CollectionsApi } from "../../../services";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../services/Auth";
 
 type AddQuestionToCollectionOptions = {
   onSuccess?: () => void;

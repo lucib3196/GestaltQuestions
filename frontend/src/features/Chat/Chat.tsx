@@ -5,7 +5,7 @@ import type { HITLResponse } from "langchain";
 import { useCallback } from "react";
 
 import { aiURL } from "../../config/apiConfig";
-import { useAuth } from "../Auth";
+import { useAuth } from "../../services/Auth";
 import { AIBubble, HumanBubble } from "./components/ChatBubble";
 import ChatContainer from "./components/ChatContainer";
 import { ChatInput } from "./components/ChatInput";

@@ -1,6 +1,6 @@
-import type { ValidInstitutions } from "../../features/Auth/types";
-import type { QuestionStatus, QuestionType } from "../Questions";
+import type { ValidInstitutions } from "../Auth";
 import type { QuestionRuntimeLanguage } from "../QuestionRuntime";
+import type { QuestionStatus, QuestionType } from "../Questions";
 
 export type { QuestionType };
 

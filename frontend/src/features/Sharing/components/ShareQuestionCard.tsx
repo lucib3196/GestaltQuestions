@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { ShareableAccessLevel } from "../../../services";
+import type { ShareableAccessLevel } from "../../../services/Access/QuestionAccess";
 import ShareRecipientSearch from "./ShareRecipientSearch";
 
 type ShareAccessOption = {

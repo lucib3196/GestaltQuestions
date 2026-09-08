@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import { DeveloperQuestionsApi } from "../../services/DeveloperQuestions";
+import { useAuth } from "../../services/Auth";
 import type {
   DeveloperQuestionCreate,
   LegacyQuestionAllRow,
 } from "../../services/DeveloperQuestions";
+import { DeveloperQuestionsApi } from "../../services/DeveloperQuestions";
 import type { QuestionFilter, QuestionRead } from "../../services/Questions";
 import { type FileData } from "../../types/fileTypes";
-import { useAuth } from "../Auth";
 
 export function useMyQuestions() {
   const { user } = useAuth();
@@ -153,7 +153,10 @@ export function useQuestionFileData(qid: string, refreshKey = 0) {
 
       try {
         const token = await user.getIdToken();
-        const data = await DeveloperQuestionsApi.getQuestionFileData(token, qid);
+        const data = await DeveloperQuestionsApi.getQuestionFileData(
+          token,
+          qid,
+        );
         if (!cancelled) setFileData(data);
       } catch (err) {
         if (!cancelled) {
