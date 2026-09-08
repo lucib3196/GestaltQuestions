@@ -3,6 +3,7 @@ from datetime import datetime
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, col, select
+from sqlalchemy import select as select_alc
 
 from backend.accounts.model import User
 from backend.authorization import AccessLevel, ProfileT
@@ -173,8 +174,9 @@ class QuestionAccessAdapter(
     ) -> Sequence[QuestionAccessDetailRead]:
         try:
             stmt = (
-                select(
+                select_alc(
                     QuestionAccess,
+                    col(User.id).label("user_id"),
                     col(User.email).label("email"),
                     col(User.first_name).label("first_name"),
                     col(User.last_name).label("last_name"),
@@ -192,16 +194,17 @@ class QuestionAccessAdapter(
                 stmt = stmt.where(col(QuestionAccess.developer_id) != owner.id)
 
             stmt = stmt.order_by(col(QuestionAccess.created_at).desc())
-            rows = self._session.exec(stmt).all()
+            rows = self._session.execute(stmt).all()
             return [
                 QuestionAccessDetailRead(
                     **access.model_dump(),
+                    user_id=user_id,
                     email=email,
                     first_name=first_name,
                     last_name=last_name,
                     username=username,
                 )
-                for access, email, first_name, last_name, username in rows
+                for access, user_id, email, first_name, last_name, username in rows
             ]
 
         except SQLAlchemyError as e:

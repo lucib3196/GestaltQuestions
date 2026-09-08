@@ -1,11 +1,23 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 
-from backend.authorization.types import AccessLevel
+from pydantic import BaseModel
+
+from backend.authorization.types import (
+    AccessLevel,
+    AccessModelProtocol,
+    Profile,
+    ResourceProtocol,
+)
 from backend.shared import ID
 
 
-class ResourceAccessAdapter[AccessModelT, ProfileT, ResourceT, AccessDetailRead](ABC):
+class ResourceAccessAdapter[
+    AccessModelT: AccessModelProtocol,
+    ProfileT: Profile,
+    ResourceT: ResourceProtocol,
+    AccessDetailRead: BaseModel,
+](ABC):
     """Base adapter for resource access persistence and ownership checks."""
 
     def __init__(self, name: str | None = None) -> None:

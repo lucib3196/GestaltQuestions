@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { QuestionAccessApi } from "../../../services";
-import { type ShareAccessPayload } from "../../../services";
+import {
+  QuestionAccessApi,
+  type QuestionId,
+  type ResourceAccessRevokeResult,
+  type UserId,
+} from "../../../services";
 import { useAuth } from "../../Auth";
 
-export function useShareQuestion() {
+export function useRevokeQuestionAccess() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<ResourceAccessRevokeResult | null>(null);
   const mountedRef = useRef(true);
   const { user } = useAuth();
 
@@ -16,26 +21,35 @@ export function useShareQuestion() {
     };
   }, []);
 
-  const shareQuestion = useCallback(
-    async (questionId: string, payload: ShareAccessPayload) => {
+  const revokeQuestionAccess = useCallback(
+    async (questionId: QuestionId, targetUserId: UserId) => {
       if (!user) {
-        setError("You must be signed in to share question");
+        setError("You must be signed in to revoke question access");
         return null;
       }
 
       setLoading(true);
       setError(null);
+      setResult(null);
 
       try {
         const token = await user.getIdToken();
-        return await QuestionAccessApi.shareQuestion(
+        const revokeResult = await QuestionAccessApi.unshareQuestion(
           token,
           questionId,
-          payload,
+          targetUserId,
         );
+
+        if (mountedRef.current) {
+          setResult(revokeResult);
+        }
+
+        return revokeResult;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : "Failed to share question";
+          err instanceof Error
+            ? err.message
+            : "Failed to revoke question access";
 
         if (mountedRef.current) {
           setError(message);
@@ -51,5 +65,10 @@ export function useShareQuestion() {
     [user],
   );
 
-  return { shareQuestion, loading, error };
+  return {
+    revokeQuestionAccess,
+    loading,
+    error,
+    result,
+  };
 }

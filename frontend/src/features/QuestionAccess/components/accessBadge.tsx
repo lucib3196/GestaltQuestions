@@ -4,7 +4,7 @@ import { FaCrown } from "react-icons/fa6";
 import { IoEye, IoShieldCheckmark } from "react-icons/io5";
 import { MdEdit } from "react-icons/md";
 import type { IconType } from "react-icons";
-import { useState } from "react";
+
 type AccessBadgeConfig = {
   icon: IconType;
   label: string;
@@ -25,7 +25,7 @@ const accessBadgeConfig: Record<AccessLevel, AccessBadgeConfig> = {
   full: {
     icon: IoShieldCheckmark,
     label: "Full",
-    description: "Can view, edit, and manage sharing for the question.",
+    description: "Can view, edit, and delete the question.",
   },
   owner: {
     icon: FaCrown,
@@ -35,22 +35,22 @@ const accessBadgeConfig: Record<AccessLevel, AccessBadgeConfig> = {
 };
 
 export default function AccessBadge({ level }: { level: AccessLevel }) {
-  const [showDescription, setShowDescription] = useState<boolean>(false);
+  // const [showDescription, setShowDescription] = useState<boolean>(false);
   const { icon: Icon, label, description } = accessBadgeConfig[level];
 
   return (
     <div className="relative">
       <span
         className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface-secondary p-2 text-xs font-semibold text-text"
-        // title={description}
+        title={description}
         aria-label={`${label}: ${description}`}
-        onMouseOver={() => setShowDescription(true)}
-        onMouseLeave={() => setShowDescription(false)}
+        // onMouseOver={() => setShowDescription(true)}
+        // onMouseLeave={() => setShowDescription(false)}
       >
         <Icon className="size-3.5" aria-hidden="true" />
         {label}
       </span>
-      {showDescription && <div className="bottom-0">{description}</div>}
+      {/* {showDescription && <div className="top-0">{description}</div>} */}
     </div>
   );
 }

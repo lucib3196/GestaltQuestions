@@ -1,47 +1,65 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import {
+  QuestionAccessApi,
+  type QuestionAccessDetailRead,
+} from "../../../services";
 import { useAuth } from "../../Auth";
-import { QuestionAccessApi } from "../../../services";
-import { type QuestionAccessDetailRead } from "../../../services/Access/types";
 
 export function useListSharedByMe(qid: string) {
   const { user } = useAuth();
   const [access, setAccess] = useState<QuestionAccessDetailRead[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const mountedRef = useRef(true);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function run() {
-      if (!user) {
+  const refresh = useCallback(async () => {
+    if (!user) {
+      if (mountedRef.current) {
         setAccess([]);
-        return;
+        setError("Must be signed in to retrieve access");
+        setLoading(false);
       }
-      setLoading(true);
-      setError(null);
-
-      try {
-        const data = await QuestionAccessApi.listAccessDetails(
-          await user.getIdToken(),
-          qid,
-        );
-        if (!cancelled) setAccess(data);
-      } catch (err) {
-        if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : "Failed to retrieve access",
-          );
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+      return [];
     }
 
-    run();
+    if (mountedRef.current) {
+      setLoading(true);
+      setError(null);
+    }
 
-    return () => {
-      cancelled = true;
-    };
+    try {
+      const data = await QuestionAccessApi.listAccessDetails(
+        await user.getIdToken(),
+        qid,
+      );
+      if (mountedRef.current) {
+        setAccess(data);
+      }
+      return data;
+    } catch (err) {
+      if (mountedRef.current) {
+        setError(
+          err instanceof Error ? err.message : "Failed to retrieve access",
+        );
+      }
+      return [];
+    } finally {
+      if (mountedRef.current) {
+        setLoading(false);
+      }
+    }
   }, [qid, user]);
 
-  return { access, loading, error };
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  return { access, loading, error, refresh };
 }

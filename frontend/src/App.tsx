@@ -11,24 +11,13 @@ import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
-import { useRetrieveAccess } from "./features/QuestionAccess/hooks/useRetrieveAccess";
-import AccessBadge from "./features/QuestionAccess/components/accessBadge";
-import { AccessDetail } from "./features/QuestionAccess/components/AccessDetail";
-import { useListSharedByMe } from "./features/QuestionAccess/hooks/useListSharedByMe";
+import { ManageAccess } from "./features/QuestionAccess/ManageAccess";
+import { UserLookupProvider } from "./features/UserLookUp/instance/context";
 function Test() {
-  const qid = "be94cfef-2b76-4f6a-8b44-f3b958d2be45";
-  const { access } = useRetrieveAccess(qid);
-  const { access: detailRead } = useListSharedByMe(qid);
-  if (!access) return;
-
-  console.log("Detail", detailRead);
   return (
-    <>
-      <AccessBadge level={access.access_level}></AccessBadge>
-      {detailRead.map((v) => (
-        <AccessDetail details={v} />
-      ))}
-    </>
+    <UserLookupProvider>
+      <ManageAccess />
+    </UserLookupProvider>
   );
 }
 

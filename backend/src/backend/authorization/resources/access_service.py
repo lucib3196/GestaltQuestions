@@ -1,6 +1,8 @@
 from collections.abc import Sequence
 from typing import ClassVar
 
+from pydantic import BaseModel
+
 from backend.authorization.exceptions import AccessPolicyError
 from backend.authorization.profiles.service import ProfileService
 from backend.authorization.resources.adapter import ResourceAccessAdapter
@@ -12,6 +14,7 @@ from backend.authorization.resources.exceptions import (
 from backend.authorization.types import (
     AccessDecision,
     AccessLevel,
+    AccessModelProtocol,
     Profile,
     ResourceAccessResult,
     ResourceAccessRevokeResult,
@@ -20,7 +23,12 @@ from backend.authorization.types import (
 from backend.shared import ID
 
 
-class ResourceAccessService[AccessModelT, ProfileT, ResourceT, AccessDetailRead]:
+class ResourceAccessService[
+    AccessModelT: AccessModelProtocol,
+    ProfileT: Profile,
+    ResourceT: ResourceProtocol,
+    AccessDetailRead: BaseModel,
+]:
     _ACCESS_LEVEL_RANK: ClassVar[dict[AccessLevel, int]] = {
         AccessLevel.VIEW: 1,
         AccessLevel.EDIT: 2,
@@ -305,7 +313,9 @@ class ResourceAccessService[AccessModelT, ProfileT, ResourceT, AccessDetailRead]
         self, resource: ResourceT | ID, *, owner: ProfileT | ID | None = None
     ) -> Sequence[AccessDetailRead]:
         resource_model = await self._resolve_resource(resource)
-        owner_profile = await self._resolve_profile(owner) if owner is not None else None
+        owner_profile = (
+            await self._resolve_profile(owner) if owner is not None else None
+        )
         return await self._adapter.list_access_details(
             resource_model, owner=owner_profile
         )

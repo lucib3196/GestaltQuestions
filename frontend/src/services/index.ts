@@ -10,6 +10,7 @@ export type {
   ShareQuestionFailure,
   ShareQuestionsWithUsersPayload,
   UpdateShareAccessPayload,
+  UserId,
 } from "./Access";
 export { CollectionAccessApi, QuestionAccessApi } from "./Access";
 export * from "./Collections";

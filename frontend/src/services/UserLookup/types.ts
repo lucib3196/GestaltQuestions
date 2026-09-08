@@ -10,4 +10,5 @@ export type DeveloperLookupParams = {
   query?: string | null;
   offset?: number | null;
   limit?: number | null;
+  excluded?: string[];
 };

@@ -8,11 +8,8 @@ from sqlmodel import Session
 
 from backend.accounts import User
 from backend.core import logger
-from backend.developer import (
-    DeveloperProfile,
-    DeveloperProfileError,
-    DeveloperProfileService,
-)
+from backend.developer import DeveloperProfile, DeveloperProfileError
+from backend.developer.profiles import DeveloperProfileService
 from backend.developer.questions.actions import DeveloperQuestionAction
 from backend.question.manager import QuestionManager
 from backend.question.manager.exceptions import (

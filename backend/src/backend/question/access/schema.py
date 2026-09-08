@@ -2,11 +2,12 @@ from pydantic import BaseModel
 
 from backend.authorization import AccessLevel
 from backend.shared import ID
-
+from uuid import UUID
 from .models import QuestionAccess
 
 
 class QuestionAccessDetailRead(QuestionAccess):
+    user_id: UUID
     email: str
     first_name: str
     last_name: str

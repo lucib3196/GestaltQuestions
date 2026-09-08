@@ -4,8 +4,8 @@ from fastapi import Depends
 
 from backend.api.dependencies import QuestionManagerDependency
 from backend.api.dependencies.core import SessionDep
-from backend.developer import DeveloperQuestionService
 from backend.developer.export.service import DeveloperDownloadService
+from backend.developer.questions import DeveloperQuestionService
 from backend.developer.questions.access import QuestionAccessService
 from backend.developer.questions.authorizer import DeveloperQuestionAuthorizer
 from backend.question.access import QuestionAccessAdapter
