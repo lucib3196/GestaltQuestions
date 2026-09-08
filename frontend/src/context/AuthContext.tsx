@@ -3,9 +3,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { createContext, useContext } from "react";
 
-import { auth } from "../../config/firebaseClient";
-import { UserAPI } from "./api";
-import { type UserRead } from "./types";
+import { auth } from "../config/firebaseClient";
+import { UserAPI } from "../services/Auth/api";
+import { type UserRead } from "../services/Auth/types";
 
 export function useStateAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -13,30 +13,46 @@ export function useStateAuth() {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    let active = true;
+
     const unSubscribe = onAuthStateChanged(auth, (fbUser) => {
       async function handleUser() {
+        if (!active) return;
+
+        setLoading(true);
+
         if (fbUser) {
           setUser(fbUser);
-          setLoading(false);
 
           try {
             const data = await UserAPI.getUser(fbUser);
+            if (!active) return;
             setUserData(data);
           } catch (error) {
+            if (!active) return;
             console.error("Error fetching user data:", error);
             setUser(null);
+            setUserData(null);
+          } finally {
+            if (active) {
+              setLoading(false);
+            }
           }
         } else {
           console.log("No User Logged In");
           setUser(null);
+          setUserData(null);
           setLoading(false);
         }
       }
 
-      handleUser();
+      void handleUser();
     });
 
-    return () => unSubscribe();
+    return () => {
+      active = false;
+      unSubscribe();
+    };
   }, []);
 
   return { user, userData, loading };

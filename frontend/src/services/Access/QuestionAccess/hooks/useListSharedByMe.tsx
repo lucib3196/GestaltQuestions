@@ -31,6 +31,7 @@ export function useListSharedByMe(qid: string) {
         await user.getIdToken(),
         qid,
       );
+
       if (mountedRef.current) {
         setAccess(data);
       }
@@ -50,14 +51,14 @@ export function useListSharedByMe(qid: string) {
   }, [qid, user]);
 
   useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  useEffect(() => {
     return () => {
       mountedRef.current = false;
     };
   }, []);
-
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
 
   return { access, loading, error, refresh };
 }

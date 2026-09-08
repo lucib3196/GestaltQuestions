@@ -5,22 +5,23 @@ import {
   useListSharedByMe,
   useRetrieveAccess,
   useRevokeQuestionAccess,
-  useShareQuestion,
   useShareQuestionBatch,
+  useUpdateQuestionShare,
 } from "../../services/Access/QuestionAccess";
 import { useUserLookupStore } from "../UserLookUp/instance/context";
 import { UserLookUp } from "../UserLookUp/UserLookUp";
 import AccessBadge from "./components/accessBadge";
 import { AccessDetail } from "./components/AccessDetail";
 
-const qid = "be94cfef-2b76-4f6a-8b44-f3b958d2be45";
 const shareLevels: ShareableAccessLevel[] = ["view", "edit", "full"];
 
 export function ManageAccess() {
+  const qid = "be94cfef-2b76-4f6a-8b44-f3b958d2be45";
   const [isInviting, setIsInviting] = useState(false);
   const [shareLevel, setShareLevel] = useState<ShareableAccessLevel>("view");
 
-  const { shareQuestion, loading: updatingAccess } = useShareQuestion();
+  const { updateQuestionShare, loading: updatingAccess } =
+    useUpdateQuestionShare();
   const { access } = useRetrieveAccess(qid);
   const {
     access: detailRead,
@@ -28,6 +29,7 @@ export function ManageAccess() {
     error: detailsError,
     refresh,
   } = useListSharedByMe(qid);
+
   const { revokeQuestionAccess, loading: revokingAccess } =
     useRevokeQuestionAccess();
   const { shareQuestionsWithUsers, loading: sharingBatch } =
@@ -47,10 +49,7 @@ export function ManageAccess() {
     userId: string,
     level: ShareableAccessLevel,
   ) {
-    const result = await shareQuestion(qid, {
-      target_user_id: userId,
-      level,
-    });
+    const result = await updateQuestionShare(qid, userId, level);
 
     if (result) {
       void refresh();

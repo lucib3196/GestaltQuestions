@@ -1,5 +1,5 @@
 export { UserAPI } from "./api";
-export { AuthProvider, useAuth } from "./AuthContext";
+export { AuthProvider, useAuth } from "../../context/AuthContext";
 export { type RoleDescription, RoleDescriptions } from "./constants";
 export { default as RequireRole } from "./RequireRole";
 export type {

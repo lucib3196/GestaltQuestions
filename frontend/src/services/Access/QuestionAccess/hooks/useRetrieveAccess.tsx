@@ -5,7 +5,8 @@ import QuestionAccessApi from "../api";
 import type { QuestionAccess } from "../types";
 
 export function useRetrieveAccess(qid: string) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+
   const [access, setAccess] = useState<QuestionAccess | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,6 +14,10 @@ export function useRetrieveAccess(qid: string) {
   useEffect(() => {
     let cancelled = false;
     async function run() {
+      if (authLoading) {
+        return;
+      }
+
       if (!user) {
         setAccess(null);
         return;
@@ -42,7 +47,7 @@ export function useRetrieveAccess(qid: string) {
     return () => {
       cancelled = true;
     };
-  }, [qid, user]);
+  }, [authLoading, qid, user]);
 
-  return { access, loading, error };
+  return { access, loading: authLoading || loading, error };
 }

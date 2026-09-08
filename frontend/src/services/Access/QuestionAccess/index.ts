@@ -4,6 +4,7 @@ export * from "./hooks/useRetrieveAccess";
 export * from "./hooks/useRevokeQuestionAccess";
 export * from "./hooks/useShareQuestion";
 export * from "./hooks/useShareQuestionBatch";
+export * from "./hooks/useUpdateQuestionShare";
 export type {
   AccessLevel,
   QuestionAccess,
