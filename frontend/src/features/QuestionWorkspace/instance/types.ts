@@ -1,6 +1,8 @@
 import type { QuestionRuntimeLanguage } from "../../../services/QuestionRuntime";
-import type { AnyResourceSchema } from "../../ResourceAccess/types";
-import type { ResourceAccessStore } from "../../ResourceAccess/state";
+import type {
+  AnyResourceSchema,
+  ResourceAccessStore,
+} from "../../../stores/resourceAccess";
 
 export type WorkspacePane = "livePreview" | "editor" | "metadata";
 export type WorkspaceLayoutMode = "single" | "split";

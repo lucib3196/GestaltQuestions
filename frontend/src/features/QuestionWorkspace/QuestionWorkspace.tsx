@@ -7,10 +7,15 @@ import QuestionFileEditor from "../QuestionCodeEditor/QuestionFileEditor";
 import { QuestionRender } from "../QuestionEngine";
 import { QuestionInstanceProvider } from "../QuestionEngine/instance";
 import { QuestionMetadataWorkspacePanel } from "../QuestionMetadata";
+import { QuestionAccessGate } from "./access/QuestionAccessGate";
+import type { QuestionWorkspaceAccessSchema } from "./access/types";
 import { WorkspaceHeader } from "./components/WorkspaceHeader";
 import { WorkspaceToolbar } from "./components/WorkspaceToolbar";
 import { useGetQuestionRunTimes } from "./hooks/hooks";
-import { useQuestionWorkspaceStore } from "./instance/store";
+import {
+  useWorkspaceContext,
+  WorkspaceBaseProvider,
+} from "./instance/context";
 import type { WorkspacePane } from "./instance/types";
 
 type PaneContext = {
@@ -30,24 +35,21 @@ const paneRenderMap: Record<WorkspacePane, React.ComponentType<PaneContext>> = {
   metadata: ({ qid }) => <QuestionMetadataWorkspacePanel qid={qid} />,
 };
 
-export default function QuestionWorkspace() {
-  const { qid } = useParams<{ qid: string }>();
+function QuestionWorkspaceBody({ qid }: { qid: string }) {
   const { runtimeLanguages } = useGetQuestionRunTimes(qid ?? "");
 
-  const layoutMode = useQuestionWorkspaceStore((s) => s.layoutMode);
-  const activePanes = useQuestionWorkspaceStore((s) => s.activePanes);
-  const selectedRuntimeLanguage = useQuestionWorkspaceStore(
+  const layoutMode = useWorkspaceContext((s) => s.layoutMode);
+  const activePanes = useWorkspaceContext((s) => s.activePanes);
+  const selectedRuntimeLanguage = useWorkspaceContext(
     (s) => s.selectedRuntimeLanguage,
   );
-  const setRuntimeLanguages = useQuestionWorkspaceStore(
+  const setRuntimeLanguages = useWorkspaceContext(
     (s) => s.setRuntimeLanguages,
   );
 
   useEffect(() => {
     setRuntimeLanguages(runtimeLanguages);
   }, [runtimeLanguages, setRuntimeLanguages]);
-
-  if (!qid) return <div className="text-text-muted">Missing question id.</div>;
 
   const panesToRender: WorkspacePane[] =
     layoutMode === "split"
@@ -89,5 +91,19 @@ export default function QuestionWorkspace() {
         </PanelGroup>
       </QuestionInstanceProvider>
     </div>
+  );
+}
+
+export default function QuestionWorkspace() {
+  const { qid } = useParams<{ qid: string }>();
+
+  if (!qid) return <div className="text-text-muted">Missing question id.</div>;
+
+  return (
+    <WorkspaceBaseProvider<QuestionWorkspaceAccessSchema>>
+      <QuestionAccessGate qid={qid}>
+        <QuestionWorkspaceBody qid={qid} />
+      </QuestionAccessGate>
+    </WorkspaceBaseProvider>
   );
 }

@@ -16,8 +16,9 @@ export type ResourceAccessState<
 export type ResourceAccessActions<
   Schema extends ResourceAccessSchema = AnyResourceSchema,
 > = {
-  setAccess: (access: AccessModel<Schema>) => void;
+  setAccess: (access: AccessModel<Schema> | null) => void;
   setCapabilities: (cap: Capabilities<Schema>) => void;
+  clearAccess: () => void;
 };
 
 export type ResourceAccessStore<

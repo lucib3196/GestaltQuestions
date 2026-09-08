@@ -1,22 +1,27 @@
 import { createStore } from "zustand";
 import type { WorkspaceStore } from "./types";
-import type { AnyResourceSchema } from "../../ResourceAccess/types";
+import {
+  createResourceAccessSlice,
+  type AnyResourceSchema,
+} from "../../../stores/resourceAccess";
 import { createWorkspaceSettingsSlice } from "./settingSlice";
-import { createResourceAccessSlice } from "../../ResourceAccess/slice";
 import { persist } from "zustand/middleware";
+
+export const QUESTION_WORKSPACE_PERSIST_KEY = "question-workspace-settings:v1";
 
 export function createWorkspaceStore<
   Schema extends AnyResourceSchema = AnyResourceSchema,
->(options: { persistKey: string }) {
+>(options: { persistKey?: string } = {}) {
   return createStore<WorkspaceStore<Schema>>()(
     persist(
       (...args) => ({
-        ...createResourceAccessSlice<Schema>()(...args),
-        ...createWorkspaceSettingsSlice()(...args),
+        ...createResourceAccessSlice<Schema, WorkspaceStore<Schema>>()(...args),
+        ...createWorkspaceSettingsSlice<WorkspaceStore<Schema>>()(...args),
       }),
       {
-        name: options.persistKey,
+        name: options.persistKey ?? QUESTION_WORKSPACE_PERSIST_KEY,
         partialize: (state) => ({
+          layoutMode: state.layoutMode,
           activePanes: state.activePanes,
         }),
       },

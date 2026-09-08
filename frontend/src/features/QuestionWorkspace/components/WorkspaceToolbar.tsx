@@ -1,5 +1,5 @@
 import type { QuestionRuntimeLanguage } from "../../../services/QuestionRuntime";
-import { useQuestionWorkspaceStore } from "../instance/store";
+import { useWorkspaceContext } from "../instance/context";
 import { ActivePanesToggle } from "./ActivePanesToggle";
 import { LayoutToggle } from "./LayoutToggle";
 import { RuntimeToggle } from "./RuntimeToggle";
@@ -9,17 +9,17 @@ type WorkspaceToolbarProps = {
 };
 
 export function WorkspaceToolbar({ runtimeLanguages }: WorkspaceToolbarProps) {
-  const layoutMode = useQuestionWorkspaceStore((s) => s.layoutMode);
-  const setLayoutMode = useQuestionWorkspaceStore((s) => s.setLayoutMode);
-  const selectedRuntimeLanguage = useQuestionWorkspaceStore(
+  const layoutMode = useWorkspaceContext((s) => s.layoutMode);
+  const setLayoutMode = useWorkspaceContext((s) => s.setLayoutMode);
+  const selectedRuntimeLanguage = useWorkspaceContext(
     (s) => s.selectedRuntimeLanguage,
   );
-  const setSelectedRuntimeLanguage = useQuestionWorkspaceStore(
+  const setSelectedRuntimeLanguage = useWorkspaceContext(
     (s) => s.setSelectedRuntimeLanguage,
   );
-  const activePanes = useQuestionWorkspaceStore((s) => s.activePanes);
-  const togglePane = useQuestionWorkspaceStore((s) => s.togglePane);
-  const showSinglePane = useQuestionWorkspaceStore((s) => s.showSinglePane);
+  const activePanes = useWorkspaceContext((s) => s.activePanes);
+  const togglePane = useWorkspaceContext((s) => s.togglePane);
+  const showSinglePane = useWorkspaceContext((s) => s.showSinglePane);
 
   const visiblePaneSelection =
     layoutMode === "single" ? [activePanes[0] ?? "livePreview"] : activePanes;
