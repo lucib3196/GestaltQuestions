@@ -1,10 +1,9 @@
 from uuid import uuid4
 
-from backend.question.views.services.tables import QuestionTable
-
 from app_test.factories.question_factory import MakeQuestion
 from backend.question import QType, Status
 from backend.question.views.schema import QuestionSearchParamsBase, QuestionTableRowBase
+from backend.question.views.services.tables import QuestionTable
 from backend.question_runtime.model import QuestionRunTime, RuntimeLanguage
 
 

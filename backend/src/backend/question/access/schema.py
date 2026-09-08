@@ -1,8 +1,10 @@
+from uuid import UUID
+
 from pydantic import BaseModel
 
 from backend.authorization import AccessLevel
 from backend.shared import ID
-from uuid import UUID
+
 from .models import QuestionAccess
 
 

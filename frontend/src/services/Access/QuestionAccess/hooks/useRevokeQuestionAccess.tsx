@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { useAuth } from "../../../Auth";
 import QuestionAccessApi from "../api";
@@ -8,14 +8,7 @@ export function useRevokeQuestionAccess() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ResourceAccessRevokeResult | null>(null);
-  const mountedRef = useRef(true);
   const { user } = useAuth();
-
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
 
   const revokeQuestionAccess = useCallback(
     async (questionId: QuestionId, targetUserId: UserId) => {
@@ -36,9 +29,7 @@ export function useRevokeQuestionAccess() {
           targetUserId,
         );
 
-        if (mountedRef.current) {
-          setResult(revokeResult);
-        }
+        setResult(revokeResult);
 
         return revokeResult;
       } catch (err) {
@@ -47,15 +38,11 @@ export function useRevokeQuestionAccess() {
             ? err.message
             : "Failed to revoke question access";
 
-        if (mountedRef.current) {
-          setError(message);
-        }
+        setError(message);
 
         return null;
       } finally {
-        if (mountedRef.current) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     },
     [user],

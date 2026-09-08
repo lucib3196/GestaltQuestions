@@ -1,5 +1,6 @@
-import api from "../client";
 import type { FileData } from "../../types/fileTypes";
+import { downloadZip } from "../../utils/downloadUtils";
+import api from "../client";
 import type { QuestionFilter, QuestionRead } from "../Questions";
 import type {
   DeveloperQuestionCreate,
@@ -8,7 +9,6 @@ import type {
   QuestionDeleteResponse,
   QuestionFileList,
 } from "./types";
-import { downloadZip } from "../../utils/downloadUtils";
 export default class DeveloperQuestionsApi {
   private static readonly base = "/developer/questions";
 
@@ -173,7 +173,9 @@ export default class DeveloperQuestionsApi {
     return response.data;
   }
 
-  static async listAllQuestions(token: string): Promise<LegacyQuestionAllRow[]> {
+  static async listAllQuestions(
+    token: string,
+  ): Promise<LegacyQuestionAllRow[]> {
     const response = await api.get<LegacyQuestionAllRow[]>("/questions/all", {
       headers: this.authHeaders(token),
     });

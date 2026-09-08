@@ -1,9 +1,9 @@
-import type { AccessLevel } from "../../../services";
-
+import type { IconType } from "react-icons";
 import { FaCrown } from "react-icons/fa6";
 import { IoEye, IoShieldCheckmark } from "react-icons/io5";
 import { MdEdit } from "react-icons/md";
-import type { IconType } from "react-icons";
+
+import type { AccessLevel } from "../../../services";
 
 type AccessBadgeConfig = {
   icon: IconType;

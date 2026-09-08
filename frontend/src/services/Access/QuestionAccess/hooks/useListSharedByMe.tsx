@@ -1,30 +1,36 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "../../../Auth";
 import QuestionAccessApi from "../api";
 import type { QuestionAccessDetailRead } from "../types";
 
 export function useListSharedByMe(qid: string) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [access, setAccess] = useState<QuestionAccessDetailRead[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const mountedRef = useRef(true);
 
   const refresh = useCallback(async () => {
-    if (!user) {
-      if (mountedRef.current) {
-        setAccess([]);
-        setError("Must be signed in to retrieve access");
-        setLoading(false);
-      }
+    if (authLoading) {
       return [];
     }
 
-    if (mountedRef.current) {
-      setLoading(true);
-      setError(null);
+    if (!qid) {
+      setAccess([]);
+      setError("Missing question id");
+      setLoading(false);
+      return [];
     }
+
+    if (!user) {
+      setAccess([]);
+      setError("Must be signed in to retrieve access");
+      setLoading(false);
+      return [];
+    }
+
+    setLoading(true);
+    setError(null);
 
     try {
       const data = await QuestionAccessApi.listAccessDetails(
@@ -32,33 +38,75 @@ export function useListSharedByMe(qid: string) {
         qid,
       );
 
-      if (mountedRef.current) {
-        setAccess(data);
-      }
+      setAccess(data);
       return data;
     } catch (err) {
-      if (mountedRef.current) {
-        setError(
-          err instanceof Error ? err.message : "Failed to retrieve access",
-        );
-      }
+      setError(
+        err instanceof Error ? err.message : "Failed to retrieve access",
+      );
       return [];
     } finally {
-      if (mountedRef.current) {
-        setLoading(false);
+      setLoading(false);
+    }
+  }, [authLoading, qid, user]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function run() {
+      if (authLoading) {
+        return;
+      }
+
+      if (!qid) {
+        if (!cancelled) {
+          setAccess([]);
+          setError("Missing question id");
+          setLoading(false);
+        }
+        return;
+      }
+
+      if (!user) {
+        if (!cancelled) {
+          setAccess([]);
+          setError("Must be signed in to retrieve access");
+          setLoading(false);
+        }
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await QuestionAccessApi.listAccessDetails(
+          await user.getIdToken(),
+          qid,
+        );
+
+        if (!cancelled) {
+          setAccess(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : "Failed to retrieve access",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
-  }, [qid, user]);
 
-  useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    void run();
 
-  useEffect(() => {
     return () => {
-      mountedRef.current = false;
+      cancelled = true;
     };
-  }, []);
+  }, [authLoading, qid, user]);
 
-  return { access, loading, error, refresh };
+  return { access, loading: authLoading || loading, error, refresh };
 }

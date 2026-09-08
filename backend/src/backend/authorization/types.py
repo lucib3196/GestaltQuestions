@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Protocol, TypeVar, runtime_checkable
 from uuid import UUID
+
 from pydantic import BaseModel
 
 

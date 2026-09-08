@@ -4,11 +4,11 @@ from typing import Generic
 from backend.authorization import ResourceAccessRevokeResult
 from backend.authorization.resources.access_service import ResourceAccessService
 from backend.authorization.types import (
+    AccessDetailRead,
     AccessLevel,
     AccessModelT,
     ProfileT,
     ResourceT,
-    AccessDetailRead,
 )
 from backend.shared import ID
 

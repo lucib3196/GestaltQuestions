@@ -1,9 +1,9 @@
 from collections.abc import Sequence
 from datetime import datetime
 
+from sqlalchemy import select as select_alc
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, col, select
-from sqlalchemy import select as select_alc
 
 from backend.accounts.model import User
 from backend.authorization import AccessLevel, ProfileT

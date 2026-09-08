@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { useAuth } from "../../../Auth";
 import QuestionAccessApi from "../api";
@@ -12,14 +12,7 @@ import type {
 export function useUpdateQuestionShare() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const mountedRef = useRef(true);
   const { user } = useAuth();
-
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
 
   const updateQuestionShare = useCallback(
     async (
@@ -44,19 +37,15 @@ export function useUpdateQuestionShare() {
           { level },
         );
       } catch (err) {
-        if (mountedRef.current) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Failed to update question access",
-          );
-        }
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to update question access",
+        );
 
         return null;
       } finally {
-        if (mountedRef.current) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     },
     [user],

@@ -27,7 +27,7 @@ const sharedWithMeQuestionColumnRegistry = {
     key: "access_levels",
     label: "Access",
     render: (row) => <QuestionAccessLevelCell row={row} />,
-    defaultVisible:true
+    defaultVisible: true,
   },
   granted_to_email: {
     key: "granted_to_email",

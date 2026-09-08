@@ -8,12 +8,12 @@ from backend.authorization.profiles import ProfileService
 from backend.authorization.profiles.exceptions import ProfileNotSet
 from backend.authorization.resources.access_service import ResourceAccessService
 from backend.authorization.types import (
+    AccessDetailRead,
     AccessModelT,
     Profile,
     ProfileT,
     ResourceProtocol,
     ResourceT,
-    AccessDetailRead,
 )
 from backend.shared import ID
 

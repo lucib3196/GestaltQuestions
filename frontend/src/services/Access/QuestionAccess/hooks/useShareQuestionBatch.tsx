@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { useAuth } from "../../../Auth";
 import QuestionAccessApi from "../api";
@@ -11,14 +11,7 @@ export function useShareQuestionBatch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ShareQuestionBatchResult | null>(null);
-  const mountedRef = useRef(true);
   const { user } = useAuth();
-
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
 
   const shareQuestionsWithUsers = useCallback(
     async (payload: ShareQuestionsWithUsersPayload) => {
@@ -48,24 +41,18 @@ export function useShareQuestionBatch() {
           payload,
         );
 
-        if (mountedRef.current) {
-          setResult(batchResult);
-        }
+        setResult(batchResult);
 
         return batchResult;
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Failed to share question";
 
-        if (mountedRef.current) {
-          setError(message);
-        }
+        setError(message);
 
         return null;
       } finally {
-        if (mountedRef.current) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     },
     [user],

@@ -4,8 +4,8 @@ import { toast } from "react-toastify";
 
 import { Button } from "../../../components/Button";
 import { Container } from "../../../components/Container";
-import { DeveloperQuestionsApi } from "../../../services/DeveloperQuestions";
 import type { DeveloperQuestionCreate } from "../../../services/DeveloperQuestions";
+import { DeveloperQuestionsApi } from "../../../services/DeveloperQuestions";
 import type {
   RenderPreviewProps,
   ToolExecute,
@@ -85,7 +85,10 @@ export const submitFinalQuestionPayload: ToolExecute<
   const metadata = applySubmissionMetadata(payload.metadata);
 
   try {
-    const qCreated = await DeveloperQuestionsApi.createQuestion(token, metadata);
+    const qCreated = await DeveloperQuestionsApi.createQuestion(
+      token,
+      metadata,
+    );
     const qId = qCreated.id;
     if (payload.files) {
       await DeveloperQuestionsApi.uploadFiles(token, qId, payload.files);
