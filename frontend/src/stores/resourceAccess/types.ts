@@ -1,4 +1,4 @@
-import type { AccessLevel } from "../../services";
+import type { AccessLevel } from "../../services/Access";
 
 export type BaseResourceAccessModel = {
   access_level: AccessLevel;

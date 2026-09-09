@@ -3,7 +3,7 @@ import { FaCrown } from "react-icons/fa6";
 import { IoEye, IoShieldCheckmark } from "react-icons/io5";
 import { MdEdit } from "react-icons/md";
 
-import type { AccessLevel } from "../../../services";
+import type { AccessLevel } from "../../../services/Access";
 
 type AccessBadgeConfig = {
   icon: IconType;

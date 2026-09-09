@@ -1,4 +1,4 @@
-import type { AccessLevel } from "../../../services";
+import type { AccessLevel } from "../../../services/Access";
 import type { WorkspaceCapabilities } from "./types";
 
 const ACCESS_RANK: Record<AccessLevel, number> = {

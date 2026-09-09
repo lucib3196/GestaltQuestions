@@ -1,14 +1,22 @@
-export type AccessLevel = "view" | "edit" | "full" | "owner";
+import type {
+  AccessLevel,
+  ResourceAccessRevokeResult,
+  ShareableAccessLevel,
+  ShareAccessPayload,
+  UpdateShareAccessPayload,
+  UserId,
+} from "../types";
+
+export type {
+  AccessLevel,
+  ResourceAccessRevokeResult,
+  ShareableAccessLevel,
+  ShareAccessPayload,
+  UpdateShareAccessPayload,
+  UserId,
+};
 
 export type QuestionId = string;
-export type UserId = string;
-
-export type ShareableAccessLevel = Exclude<AccessLevel, "owner">;
-
-export type ShareAccessPayload = {
-  target_user_id: UserId;
-  level: ShareableAccessLevel;
-};
 
 export type ShareQuestionsWithUsersPayload = {
   question_ids: QuestionId[];
@@ -25,21 +33,6 @@ export type ShareQuestionFailure = {
 export type ShareQuestionBatchResult = {
   shared: QuestionAccess[];
   failed: ShareQuestionFailure[];
-};
-
-export type UpdateShareAccessPayload = {
-  level: ShareableAccessLevel;
-};
-
-export type ResourceAccessRevokeResult = {
-  revoked: boolean;
-  access_id: string | null;
-  access_level: AccessLevel;
-  owner_profile_id: string;
-  target_profile_id: string;
-  resource_id: string | null;
-  resource_name: string;
-  reason: string;
 };
 
 export type QuestionAccess = {

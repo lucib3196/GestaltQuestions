@@ -1,12 +1,3 @@
-export type {
-  AccessLevel,
-  CollectionAccess,
-  ResourceAccessRevokeResult,
-  ShareableAccessLevel,
-  ShareAccessPayload,
-  UpdateShareAccessPayload,
-  UserId,
-} from "./Access";
 export { CollectionAccessApi } from "./Access";
 export * from "./Collections";
 export * from "./DeveloperQuestions";
