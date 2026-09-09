@@ -1,5 +1,5 @@
 import type { QuestionRuntimeLanguage } from "../../../services/QuestionRuntime";
-import { useWorkspaceContext } from "../instance/context";
+import { useWorkspaceContext } from "../store/context";
 import { ActivePanesToggle } from "./ActivePanesToggle";
 import { LayoutToggle } from "./LayoutToggle";
 import { RuntimeToggle } from "./RuntimeToggle";

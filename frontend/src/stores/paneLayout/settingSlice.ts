@@ -1,6 +1,8 @@
 import type { StateCreator } from "zustand";
-import type { WorkspaceSettingStore } from "./types";
-import type { WorkspacePane } from "./types";
+import type {
+  WorkspacePane,
+  WorkspaceSettingStore,
+} from "../../features/QuestionWorkspace/store/types";
 
 const defaultPane: WorkspacePane = "livePreview";
 const defaultActivePanes: WorkspacePane[] = [
@@ -24,8 +26,6 @@ export function createWorkspaceSettingsSlice<
   return (set) => ({
     layoutMode: "split",
     activePanes: defaultActivePanes,
-    selectedRuntimeLanguage: null,
-    runtimeLanguages: [],
     setLayoutMode: (mode) =>
       set(
         (state) =>
@@ -64,20 +64,6 @@ export function createWorkspaceSettingsSlice<
         activePanes: [pane],
       } as Partial<Store>),
 
-    setRuntimeLanguages: (languages) =>
-      set(
-        (state) =>
-          ({
-            runtimeLanguages: languages,
-            selectedRuntimeLanguage:
-              state.selectedRuntimeLanguage &&
-              languages.includes(state.selectedRuntimeLanguage)
-                ? state.selectedRuntimeLanguage
-                : languages[0] ?? null,
-          }) as Partial<Store>,
-      ),
-
-    setSelectedRuntimeLanguage: (language) =>
-      set({ selectedRuntimeLanguage: language } as Partial<Store>),
+    
   });
 }

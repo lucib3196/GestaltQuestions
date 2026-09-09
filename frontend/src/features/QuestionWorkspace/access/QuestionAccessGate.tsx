@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import type { ReactNode } from "react";
 
 import { useRetrieveAccess } from "../../../services/Access/QuestionAccess";
-import { useWorkspaceContext } from "../instance/context";
-import type { WorkspaceStore } from "../instance/types";
+import { useWorkspaceContext } from "../store/context";
+import type { WorkspaceStore } from "../store/types";
 import { buildQuestionCapabilities } from "./capabilities";
 import type { QuestionWorkspaceAccessSchema } from "./types";
-
+import { useQuestionWorkspaceContext } from "../store/context";
 type QuestionAccessGateProps = {
   qid: string;
   children: ReactNode;
@@ -26,6 +26,7 @@ export function QuestionAccessGate({ qid, children }: QuestionAccessGateProps) {
     QuestionWorkspaceAccessSchema,
     WorkspaceStore<QuestionWorkspaceAccessSchema>["clearAccess"]
   >((s) => s.clearAccess);
+  const setQId = useQuestionWorkspaceContext((s) => s.setQuestionId);
 
   useEffect(() => {
     if (!access) {
@@ -35,11 +36,12 @@ export function QuestionAccessGate({ qid, children }: QuestionAccessGateProps) {
 
     setAccess(access);
     setCapabilities(buildQuestionCapabilities(access.access_level));
+    setQId(qid);
 
     return () => {
       clearAccess();
     };
-  }, [access, clearAccess, setAccess, setCapabilities]);
+  }, [access, clearAccess, setAccess, setCapabilities, qid]);
 
   if (loading) {
     return (

@@ -1,6 +1,9 @@
 import { FiCheck, FiMoreVertical, FiSettings, FiTarget } from "react-icons/fi";
-
-import type { WorkspaceLayoutMode } from "../instance/types";
+import AccessBadge from "../../QuestionAccess/components/accessBadge";
+import { ManageAccess } from "../../QuestionAccess/ManageAccess";
+import { UserLookupProvider } from "../../UserLookUp/instance/context";
+import { useQuestionWorkspaceContext } from "../store/context";
+import type { WorkspaceLayoutMode } from "../store/types";
 
 type WorkspaceHeaderProps = {
   title?: string;
@@ -9,12 +12,38 @@ type WorkspaceHeaderProps = {
   layoutMode: WorkspaceLayoutMode;
 };
 
+function WorkspaceTitle({ title = "Question Workspace" }: { title?: string }) {
+  return <h1 className="text-lg font-semibold text-text">{title}</h1>;
+}
+
+function LevelHeaderAccess() {
+  const level = useQuestionWorkspaceContext((s) => s.access?.access_level);
+  const capabilities = useQuestionWorkspaceContext((s) => s.capabilities);
+  const question = useQuestionWorkspaceContext((s) => s.questionId);
+  if (!question) {
+    return null;
+  }
+  const canManageAccess = capabilities.canManageAccess;
+
+  return (
+    <div className="flex flex-row items-baseline gap-2">
+      <AccessBadge level={level} />
+      {canManageAccess && (
+        <UserLookupProvider>
+          <ManageAccess qid={question} />
+        </UserLookupProvider>
+      )}
+    </div>
+  );
+}
+
 export function WorkspaceHeader({
   title = "Question Workspace",
   status = "Draft",
   layoutMode,
 }: WorkspaceHeaderProps) {
   const enabled = false;
+
   return (
     <header className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
       <div className="flex min-w-0 items-center gap-4">
@@ -23,7 +52,7 @@ export function WorkspaceHeader({
         </span>
 
         <div className="flex min-w-0 items-center gap-3">
-          <h1 className="text-lg font-semibold text-text">{title}</h1>
+          <WorkspaceTitle title={title} />
           <span className="h-6 w-px bg-border" />
           <span className="rounded-md bg-[rgba(57,91,255,0.18)] px-2 py-1 text-xs font-semibold text-accent">
             {status}
@@ -33,6 +62,8 @@ export function WorkspaceHeader({
           </span>
         </div>
       </div>
+
+      <LevelHeaderAccess />
 
       {enabled && (
         <div className="flex items-center gap-3 text-sm text-text-muted">

@@ -3,6 +3,7 @@ import { type StoreApi, useStore } from "zustand";
 import type { AnyResourceSchema } from "../../../stores/resourceAccess";
 import { createWorkspaceStore, QUESTION_WORKSPACE_PERSIST_KEY } from "./store";
 import type { WorkspaceStore } from "./types";
+import type { QuestionWorkspaceAccessSchema } from "../access/types";
 type AnyWorkspaceStoreAPI = StoreApi<WorkspaceStore>;
 const WorkspaceContext = createContext<AnyWorkspaceStoreAPI | null>(null);
 
@@ -46,4 +47,10 @@ export function useWorkspaceContext<
     store as unknown as StoreApi<WorkspaceStore<Schema>>,
     selector,
   );
+}
+
+export function useQuestionWorkspaceContext<T>(
+  selector: (state: WorkspaceStore<QuestionWorkspaceAccessSchema>) => T,
+): T {
+  return useWorkspaceContext<QuestionWorkspaceAccessSchema, T>(selector);
 }

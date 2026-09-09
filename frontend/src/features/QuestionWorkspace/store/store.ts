@@ -4,7 +4,8 @@ import {
   createResourceAccessSlice,
   type AnyResourceSchema,
 } from "../../../stores/resourceAccess";
-import { createWorkspaceSettingsSlice } from "./settingSlice";
+import { createWorkspaceSettingsSlice } from "../../../stores/paneLayout/settingSlice";
+import { createWorkspaceSessionSlice } from "./sessionSlice";
 import { persist } from "zustand/middleware";
 
 export const QUESTION_WORKSPACE_PERSIST_KEY = "question-workspace-settings:v1";
@@ -17,6 +18,7 @@ export function createWorkspaceStore<
       (...args) => ({
         ...createResourceAccessSlice<Schema, WorkspaceStore<Schema>>()(...args),
         ...createWorkspaceSettingsSlice<WorkspaceStore<Schema>>()(...args),
+        ...createWorkspaceSessionSlice<WorkspaceStore<Schema>>()(...args),
       }),
       {
         name: options.persistKey ?? QUESTION_WORKSPACE_PERSIST_KEY,

@@ -5,7 +5,7 @@ import type { QuestionRuntimeLanguage } from "../../services";
 import { QuestionRender } from "../QuestionEngine";
 import { PublishedQuestionsTable } from "../QuestionTables";
 import { RuntimeToggle } from "../QuestionWorkspace";
-import { useGetQuestionRunTimes } from "../QuestionWorkspace/hooks/hooks";
+import { useGetQuestionRunTimes } from "../QuestionWorkspace/runtime/useGetQuestionRunTimes";
 import { TableBaseProvider } from "../TableBase";
 import { ToolBar } from "./toolbar/ToolBar";
 

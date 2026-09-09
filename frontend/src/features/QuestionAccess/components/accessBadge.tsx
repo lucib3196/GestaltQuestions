@@ -34,7 +34,8 @@ const accessBadgeConfig: Record<AccessLevel, AccessBadgeConfig> = {
   },
 };
 
-export default function AccessBadge({ level }: { level: AccessLevel }) {
+export default function AccessBadge({ level }: { level?: AccessLevel }) {
+  if (!level) return;
   // const [showDescription, setShowDescription] = useState<boolean>(false);
   const { icon: Icon, label, description } = accessBadgeConfig[level];
 

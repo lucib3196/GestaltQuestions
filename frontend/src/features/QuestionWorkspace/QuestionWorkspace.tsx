@@ -9,14 +9,14 @@ import { QuestionInstanceProvider } from "../QuestionEngine/instance";
 import { QuestionMetadataWorkspacePanel } from "../QuestionMetadata";
 import { QuestionAccessGate } from "./access/QuestionAccessGate";
 import type { QuestionWorkspaceAccessSchema } from "./access/types";
-import { WorkspaceHeader } from "./components/WorkspaceHeader";
-import { WorkspaceToolbar } from "./components/WorkspaceToolbar";
-import { useGetQuestionRunTimes } from "./hooks/hooks";
+import { WorkspaceHeader } from "./layout/WorkspaceHeader";
+import { useGetQuestionRunTimes } from "./runtime/useGetQuestionRunTimes";
 import {
   useWorkspaceContext,
   WorkspaceBaseProvider,
-} from "./instance/context";
-import type { WorkspacePane } from "./instance/types";
+} from "./store/context";
+import type { WorkspacePane } from "./store/types";
+import { WorkspaceToolbar } from "./toolbar/WorkspaceToolbar";
 
 type PaneContext = {
   qid: string;

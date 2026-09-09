@@ -2,7 +2,7 @@ import clsx from "clsx";
 import type React from "react";
 import { FiColumns, FiMaximize2 } from "react-icons/fi";
 
-import type { WorkspaceLayoutMode } from "../instance/types";
+import type { WorkspaceLayoutMode } from "../store/types";
 
 type LayoutToggleProps = {
   value: WorkspaceLayoutMode;

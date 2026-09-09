@@ -1,6 +1,10 @@
-export { ActivePanesToggle } from "./components/ActivePanesToggle";
-export { LayoutToggle } from "./components/LayoutToggle";
-export { RuntimeToggle } from "./components/RuntimeToggle";
-export { WorkspaceHeader } from "./components/WorkspaceHeader";
-export { WorkspaceToolbar } from "./components/WorkspaceToolbar";
+export { QuestionAccessGate } from "./access/QuestionAccessGate";
+export type * from "./access/types";
+export { WorkspaceHeader } from "./layout/WorkspaceHeader";
 export { default as QuestionWorkspace } from "./QuestionWorkspace";
+export { useGetQuestionRunTimes } from "./runtime/useGetQuestionRunTimes";
+export type * from "./store/types";
+export { ActivePanesToggle } from "./toolbar/ActivePanesToggle";
+export { LayoutToggle } from "./toolbar/LayoutToggle";
+export { RuntimeToggle } from "./toolbar/RuntimeToggle";
+export { WorkspaceToolbar } from "./toolbar/WorkspaceToolbar";

@@ -15,8 +15,7 @@ import { AccessDetail } from "./components/AccessDetail";
 
 const shareLevels: ShareableAccessLevel[] = ["view", "edit", "full"];
 
-export function ManageAccess() {
-  const qid = "be94cfef-2b76-4f6a-8b44-f3b958d2be45";
+export function ManageAccess({ qid }: { qid: string }) {
   const [isInviting, setIsInviting] = useState(false);
   const [shareLevel, setShareLevel] = useState<ShareableAccessLevel>("view");
 

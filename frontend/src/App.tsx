@@ -16,7 +16,7 @@ import { RequireRole } from "./services/Auth";
 function Test() {
   return (
     <UserLookupProvider>
-      <ManageAccess />
+      <ManageAccess qid="be94cfef-2b76-4f6a-8b44-f3b958d2be45" />
     </UserLookupProvider>
   );
 }
