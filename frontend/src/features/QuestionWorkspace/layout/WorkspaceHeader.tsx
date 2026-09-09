@@ -1,10 +1,8 @@
 import { FiCheck, FiMoreVertical, FiSettings, FiTarget } from "react-icons/fi";
 import AccessBadge from "../../QuestionAccess/components/accessBadge";
-import { ManageAccess } from "../../QuestionAccess/ManageAccess";
-import { UserLookupProvider } from "../../UserLookUp/instance/context";
 import { useQuestionWorkspaceContext } from "../store/context";
 import type { WorkspaceLayoutMode } from "../store/types";
-
+import { ManageAccessAction } from "../actions/ManageAccessAction";
 type WorkspaceHeaderProps = {
   title?: string;
   subtitle?: string;
@@ -28,11 +26,7 @@ function LevelHeaderAccess() {
   return (
     <div className="flex flex-row items-baseline gap-2">
       <AccessBadge level={level} />
-      {canManageAccess && (
-        <UserLookupProvider>
-          <ManageAccess qid={question} />
-        </UserLookupProvider>
-      )}
+      {canManageAccess && <ManageAccessAction questionId={question} />}
     </div>
   );
 }

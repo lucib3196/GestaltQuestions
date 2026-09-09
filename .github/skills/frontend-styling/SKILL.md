@@ -1,7 +1,6 @@
 ---
 name: frontend-styling
 description: 'Focused on styling the frontend'
-argument-hint: 'Paste or reference your code'
 user-invocable: true
 disable-model-invocation: false
 ---

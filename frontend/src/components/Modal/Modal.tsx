@@ -4,42 +4,50 @@ import { useEffect, useRef } from "react";
 import { CloseButton } from "../CloseButton";
 
 const modalSizeVariants = {
-  small: `
-    w-11/12 max-w-sm   h-auto max-h-[80vh]   /* almost full width on mobile */
-    sm:w-3/4 sm:max-w-md
-    md:w-1/2 md:max-w-lg
-  `,
-  default: `
-    w-11/12 max-w-md h-auto max-h-[85vh]
-    sm:w-3/4 sm:max-w-lg
-    md:w-2/3 md:max-w-2xl
-    lg:w-1/2 lg:max-w-3xl
-    min-h-1/2
-  `,
-  large: `
-    w-11/12 h-8/10
-    sm:w-4/5 sm:max-w-3xl
-    md:w-3/4 md:max-w-4xl
-    lg:w-2/3 lg:max-w-5xl
-  `,
+  small: "w-[min(92vw,28rem)] max-h-[82vh]",
+  default: "w-[min(94vw,48rem)] max-h-[86vh]",
+  large: "w-[min(96vw,72rem)] h-[min(88vh,52rem)]",
+};
+
+const modalPresentationVariants = {
+  modal: {
+    overlay:
+      "fixed inset-0 z-50 flex items-center justify-center bg-bg/70 px-4 py-6 backdrop-blur-sm",
+    panel:
+      "flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface-strong text-text shadow-soft",
+    ariaModal: true,
+  },
+  minimal: {
+    overlay:
+      "pointer-events-none fixed inset-0 z-50 flex items-start justify-end px-4 py-16",
+    panel:
+      "pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface-strong text-text shadow-soft",
+    ariaModal: false,
+  },
 };
 
 type ModalSizeVariants = keyof typeof modalSizeVariants;
+type ModalPresentationVariants = keyof typeof modalPresentationVariants;
 
 type ModalProps = {
   variant?: ModalSizeVariants;
+  presentation?: ModalPresentationVariants;
   setShowModal: (visible: boolean) => void;
   children: React.ReactNode;
   className?: string;
+  contentClassName?: string;
 };
 
 export default function Modal({
-  variant = "default", // default applied here
+  variant = "default",
+  presentation = "modal",
   setShowModal,
   children,
   className,
+  contentClassName,
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const presentationClasses = modalPresentationVariants[presentation];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -50,26 +58,44 @@ export default function Modal({
         setShowModal(false);
       }
     }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setShowModal(false);
+      }
+    }
+
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [setShowModal]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-50 border-2 ">
+    <div className={presentationClasses.overlay}>
       <div
         ref={modalRef}
+        role="dialog"
+        aria-modal={presentationClasses.ariaModal}
         className={clsx(
-          "flex flex-col bg-white  border-gray-300 rounded-lg shadow-xl/30 p-8 overflow-auto dark:bg-background",
+          presentationClasses.panel,
           modalSizeVariants[variant],
           className,
         )}
       >
-        <div className="self-end">
-          {" "}
+        <div className="flex shrink-0 justify-end border-b border-border bg-surface px-4 py-3">
           <CloseButton onClick={() => setShowModal(false)} />
         </div>
-        {children}
+        <div
+          className={clsx(
+            "min-h-0 flex-1 overflow-auto p-4",
+            contentClassName,
+          )}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

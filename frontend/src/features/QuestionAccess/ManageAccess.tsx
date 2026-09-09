@@ -1,17 +1,15 @@
 import { useMemo, useState } from "react";
-
+import { Header } from "./components/Header";
 import {
   type ShareableAccessLevel,
   useListSharedByMe,
   useRetrieveAccess,
-  useRevokeQuestionAccess,
   useShareQuestionBatch,
-  useUpdateQuestionShare,
 } from "../../services/Access/QuestionAccess";
 import { useUserLookupStore } from "../UserLookUp/instance/context";
 import { UserLookUp } from "../UserLookUp/UserLookUp";
-import AccessBadge from "./components/accessBadge";
-import { AccessDetail } from "./components/AccessDetail";
+
+import { AccessDetailContainer } from "./components/AccessDetail";
 
 const shareLevels: ShareableAccessLevel[] = ["view", "edit", "full"];
 
@@ -19,18 +17,9 @@ export function ManageAccess({ qid }: { qid: string }) {
   const [isInviting, setIsInviting] = useState(false);
   const [shareLevel, setShareLevel] = useState<ShareableAccessLevel>("view");
 
-  const { updateQuestionShare, loading: updatingAccess } =
-    useUpdateQuestionShare();
   const { access } = useRetrieveAccess(qid);
-  const {
-    access: detailRead,
-    loading: detailsLoading,
-    error: detailsError,
-    refresh,
-  } = useListSharedByMe(qid);
+  const { access: detailRead, refresh } = useListSharedByMe(qid);
 
-  const { revokeQuestionAccess, loading: revokingAccess } =
-    useRevokeQuestionAccess();
   const { shareQuestionsWithUsers, loading: sharingBatch } =
     useShareQuestionBatch();
   const selectedUsersById = useUserLookupStore((s) => s.selectedUsersById);
@@ -42,26 +31,6 @@ export function ManageAccess({ qid }: { qid: string }) {
     () => detailRead.map((accessDetail) => accessDetail.developer_id),
     [detailRead],
   );
-  const isBusy = updatingAccess || revokingAccess || sharingBatch;
-
-  async function handleLevelChange(
-    userId: string,
-    level: ShareableAccessLevel,
-  ) {
-    const result = await updateQuestionShare(qid, userId, level);
-
-    if (result) {
-      void refresh();
-    }
-  }
-
-  async function handleRevokeAccess(userId: string) {
-    const result = await revokeQuestionAccess(qid, userId);
-
-    if (result) {
-      void refresh();
-    }
-  }
 
   async function handleShareSelected() {
     if (selectedUserIds.length === 0) return;
@@ -89,43 +58,13 @@ export function ManageAccess({ qid }: { qid: string }) {
 
   return (
     <section className="w-full max-w-3xl rounded-md border border-border bg-surface p-5 text-text">
-      <header className="mb-5 flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-xl font-semibold">Manage Access</h1>
-          <p className="mt-1 text-sm text-text-muted">
-            Review who can access this question and adjust sharing permissions.
-          </p>
-        </div>
-        <AccessBadge level={access.access_level} />
-      </header>
+      <Header />
 
-      <div className="rounded-md border border-border bg-surface-secondary px-4">
-        {detailsLoading ? (
-          <p className="py-4 text-sm text-text-muted">
-            Loading shared access...
-          </p>
-        ) : null}
-
-        {detailsError ? (
-          <p className="py-4 text-sm text-warning">{detailsError}</p>
-        ) : null}
-
-        {!detailsLoading && !detailsError && detailRead.length === 0 ? (
-          <p className="py-4 text-sm text-text-muted">
-            No one else has access yet.
-          </p>
-        ) : null}
-
-        {detailRead.map((details) => (
-          <AccessDetail
-            key={details.id ?? details.developer_id}
-            details={details}
-            disabled={isBusy}
-            onLevelChange={(level) => handleLevelChange(details.user_id, level)}
-            onRevokeAccess={() => handleRevokeAccess(details.user_id)}
-          />
-        ))}
-      </div>
+      <AccessDetailContainer
+        qid={qid}
+        loading={sharingBatch}
+        variant="embedded"
+      />
 
       <div className="mt-5">
         <button
