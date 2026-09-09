@@ -85,7 +85,7 @@ export default function Modal({
           className,
         )}
       >
-        <div className="flex shrink-0 justify-end border-b border-border bg-surface px-4 py-3">
+        <div className="flex shrink-0 justify-end  p-2">
           <CloseButton onClick={() => setShowModal(false)} />
         </div>
         <div

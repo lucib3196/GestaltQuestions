@@ -3,7 +3,7 @@ import { FaCrown } from "react-icons/fa6";
 import { IoEye, IoShieldCheckmark } from "react-icons/io5";
 import { MdEdit } from "react-icons/md";
 
-import type { AccessLevel } from "../../../services/Access";
+import type { AccessLevel } from "../../services/Access";
 
 type AccessBadgeConfig = {
   icon: IconType;
@@ -34,7 +34,7 @@ const accessBadgeConfig: Record<AccessLevel, AccessBadgeConfig> = {
   },
 };
 
-export default function AccessBadge({ level }: { level?: AccessLevel }) {
+export function AccessBadge({ level }: { level?: AccessLevel }) {
   if (!level) return;
   // const [showDescription, setShowDescription] = useState<boolean>(false);
   const { icon: Icon, label, description } = accessBadgeConfig[level];
@@ -55,3 +55,5 @@ export default function AccessBadge({ level }: { level?: AccessLevel }) {
     </div>
   );
 }
+
+export default AccessBadge;

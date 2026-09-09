@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 
 type CloseButtonProps = {
@@ -6,17 +5,14 @@ type CloseButtonProps = {
 };
 
 export function CloseButton({ onClick }: CloseButtonProps) {
-  const [hover, setHover] = useState(false);
-
   return (
     <button
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      className="transition-all duration-500"
+      type="button"
+      className="inline-flex size-9 items-center justify-center rounded-md border border-border bg-surface text-text-muted shadow-sm transition-colors duration-200 hover:border-warning-border hover:bg-warning-muted hover:text-warning focus:outline-none focus:ring-2 focus:ring-accent/40 focus:ring-offset-2 focus:ring-offset-surface"
       onClick={onClick}
       aria-label="Close"
     >
-      <IoMdClose color={!hover ? "black" : "red"} size={30} />
+      <IoMdClose className="size-5" aria-hidden="true" />
     </button>
   );
 }

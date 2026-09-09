@@ -8,7 +8,7 @@ import {
 import { useTableBaseContext } from "../TableBase/state";
 import { useUserLookupStore } from "../UserLookUp/instance/context";
 import type { SelectedUsersById } from "../UserLookUp/instance/store";
-import { ShareQuestionCard } from "./components";
+import { ShareQuestionCard } from "./components/ShareQuestionCard";
 
 function prepareBatch(
   questionIds: string[],

@@ -1,8 +1,9 @@
 import { FiCheck, FiMoreVertical, FiSettings, FiTarget } from "react-icons/fi";
-import AccessBadge from "../../QuestionAccess/components/accessBadge";
+
+import { AccessBadge } from "../../../components/Access";
+import { ManageAccessAction } from "../manage-access/ManageAccessModal";
 import { useQuestionWorkspaceContext } from "../store/context";
 import type { WorkspaceLayoutMode } from "../store/types";
-import { ManageAccessAction } from "../actions/ManageAccessAction";
 type WorkspaceHeaderProps = {
   title?: string;
   subtitle?: string;
@@ -33,8 +34,6 @@ function LevelHeaderAccess() {
 
 export function WorkspaceHeader({
   title = "Question Workspace",
-  status = "Draft",
-  layoutMode,
 }: WorkspaceHeaderProps) {
   const enabled = false;
 
@@ -48,12 +47,6 @@ export function WorkspaceHeader({
         <div className="flex min-w-0 items-center gap-3">
           <WorkspaceTitle title={title} />
           <span className="h-6 w-px bg-border" />
-          <span className="rounded-md bg-[rgba(57,91,255,0.18)] px-2 py-1 text-xs font-semibold text-accent">
-            {status}
-          </span>
-          <span className="rounded-md border border-border px-2 py-1 text-xs font-semibold uppercase text-text-muted">
-            {layoutMode}
-          </span>
         </div>
       </div>
 

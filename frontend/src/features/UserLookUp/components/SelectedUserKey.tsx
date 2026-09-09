@@ -6,6 +6,7 @@ import type { UserDetailRead } from "../../../services";
 
 type SelectedUserKeyProps = {
   user: UserDetailRead;
+  // eslint-disable-next-line no-unused-vars
   onRemove: (user: UserDetailRead) => void;
 };
 

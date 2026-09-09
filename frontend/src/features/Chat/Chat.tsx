@@ -12,8 +12,8 @@ import { ChatInput } from "./components/ChatInput";
 import { ApprovalCard } from "./components/hitlApproval";
 import RenderToolCalls from "./components/ToolCallRender";
 import { useHITLReview } from "./hooks";
-import { useThreadStore } from "./instance/store";
-import { useChatStore } from "./instance/store";
+import { useChatStore } from "./instance/chat_store";
+import { useThreadStore } from "./instance/thread_store";
 import { prepareMessage } from "./utils";
 
 export function ChatSession() {

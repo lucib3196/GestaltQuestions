@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { ShareableAccessLevel } from "../../../services/Access/QuestionAccess";
-import ShareRecipientSearch from "./ShareRecipientSearch";
+import { UserLookupCombobox } from "../../UserLookUp/components";
 
 type ShareAccessOption = {
   label: string;
@@ -16,6 +16,7 @@ const ACCESS_OPTIONS: ShareAccessOption[] = [
 
 type ShareQuestionCardProps = {
   accessLevel: ShareableAccessLevel;
+  // eslint-disable-next-line no-unused-vars
   onAccessLevelChange: (level: ShareableAccessLevel) => void;
   onShare?: () => void;
   onCancel?: () => void;
@@ -54,7 +55,7 @@ export function ShareQuestionCard({
           <label className="text-sm font-medium text-text-muted">
             Add people
           </label>
-          <ShareRecipientSearch />
+          <UserLookupCombobox />
         </div>
 
         <div className="space-y-2">

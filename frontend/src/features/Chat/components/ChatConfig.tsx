@@ -1,6 +1,6 @@
 import { type AssistantId, ASSISTANTS } from "../constants/assistants";
 import { CHAT_MODELS, type ChatModel } from "../constants/models";
-import { useChatStore } from "../instance";
+import { useChatStore } from "../instance/chat_store";
 
 function AssistantConfig() {
   const assistantId = useChatStore((s) => s.assistantId);

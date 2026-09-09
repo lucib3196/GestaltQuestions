@@ -4,6 +4,7 @@ import { SelectedUserKey } from "./SelectedUserKey";
 
 type SelectedUserKeyListProps = {
   selectedUsersById: SelectedUsersById;
+  // eslint-disable-next-line no-unused-vars
   onRemove: (user: UserDetailRead) => void;
 };
 
