@@ -1,8 +1,10 @@
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import func, select
-from sqlalchemy.orm import aliased
+from sqlalchemy.orm import Mapped, aliased
 from sqlalchemy.sql import Select
+from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.selectable import Subquery
 from sqlmodel import col
 
@@ -27,9 +29,11 @@ class QuestionAccessTableExtension(TableExtension):
         *,
         granted_by_id: UUID | None = None,
         granted_to_id: UUID | None = None,
+        dialect_name: str = "postgresql",
     ) -> None:
         self._granted_by_id = granted_by_id
         self._granted_to_id = granted_to_id
+        self._dialect_name = dialect_name
 
     def apply(self, stmt: Select, subquery: Subquery) -> Select:
         access_summary = self.access_summary_join(stmt, subquery)
@@ -50,9 +54,9 @@ class QuestionAccessTableExtension(TableExtension):
         sub = (
             select(
                 col(QuestionAccess.question_id).label("question_id"),
-                func.array_agg(col(grantee_user.id)).label("member_ids"),
-                func.array_agg(col(grantee_user.email)).label("granted_to_emails"),
-                func.array_agg(col(QuestionAccess.access_level)).label("access_levels"),
+                self.aggregate_list(col(grantee_user.id), "member_ids"),
+                self.aggregate_list(col(grantee_user.email), "granted_to_emails"),
+                self.aggregate_list(col(QuestionAccess.access_level), "access_levels"),
                 func.min(col(QuestionAccess.created_at)).label("shared_at"),
                 func.min(col(granted_by_user.email)).label("granted_by_email"),
             )
@@ -84,3 +88,8 @@ class QuestionAccessTableExtension(TableExtension):
         return sub.group_by(
             col(QuestionAccess.question_id), col(QuestionAccess.access_level)
         ).subquery("access_summary")
+
+    def aggregate_list(self, value: ColumnElement[Any] | Mapped[Any], label: str):
+        if self._dialect_name == "sqlite":
+            return func.json_group_array(value).label(label)
+        return func.array_agg(value).label(label)

@@ -1,12 +1,12 @@
 from collections.abc import Sequence
+from typing import Literal
 
 from sqlalchemy import String, cast, func, select
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.sql import Select
-from sqlalchemy.sql.selectable import Subquery
-from sqlmodel import col
-from typing import Literal, Sequence
 from sqlalchemy.sql.elements import Label
+from sqlalchemy.sql.selectable import Subquery
+from sqlmodel import SQLModel, col
 
 from backend.question import (
     Question,
@@ -20,7 +20,6 @@ from backend.question_runtime.model import QuestionRunTime
 from backend.tables import TableExtension, TableQueryComposer
 
 from .question_table_filters import QuestionTableFilterBuilder
-from sqlmodel import SQLModel
 
 
 class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):

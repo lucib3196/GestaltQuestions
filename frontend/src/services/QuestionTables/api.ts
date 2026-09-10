@@ -8,7 +8,7 @@ import type {
 
 export const QUESTION_TABLE_ENDPOINTS = {
   allQuestionsSearch: "/question-tables/search",
-  publishedQuestionsSearch: "/question-tables/published/search",
+  publishedQuestionsSearch: "/developer/tables/questions/published/search",
   developerQuestionsSearch: "/developer/tables/questions/search",
   developerCollectionQuestionsSearch:
     "/developer/tables/questions/collections/search",

@@ -29,8 +29,10 @@ from .questions import (
 from .roles import DeveloperRoleAccess, get_developer_role_access
 from .tables import (
     DeveloperPersonalQuestionTablesDependency,
+    DeveloperPublishedQuestionTablesDependency,
     DeveloperSharedQuestionTablesDependency,
     get_developer_personal_question_tables,
+    get_developer_published_question_tables,
     get_developer_shared_question_tables,
 )
 from .users import UserLookupDependency, get_user_lookup
@@ -42,6 +44,7 @@ __all__ = [
     "DevQManager",
     "DeveloperPersonalQuestionTablesDependency",
     "DeveloperProfileDependency",
+    "DeveloperPublishedQuestionTablesDependency",
     "DeveloperRoleAccess",
     "DeveloperSharedQuestionTablesDependency",
     "ExporterDep",
@@ -59,6 +62,7 @@ __all__ = [
     "get_developer_collection_authorizer",
     "get_developer_personal_question_tables",
     "get_developer_profile_service",
+    "get_developer_published_question_tables",
     "get_developer_question_authorizer",
     "get_developer_role_access",
     "get_developer_shared_question_tables",

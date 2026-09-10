@@ -1,39 +1,19 @@
 from collections.abc import Sequence
-from datetime import datetime
 from typing import cast
-from uuid import UUID
-
-from pydantic import BaseModel
 
 from backend.developer.model import DeveloperProfile
 from backend.developer.tables.base import DeveloperTables
 from backend.developer.tables.extensions import (
     DeveloperQuestionTableExtension,
-    PublishedQuestionTableExtension,
     PersonalQuestionCollectionExtension,
+    PublishedQuestionTableExtension,
 )
-from backend.question.views.schema import QuestionSearchParams, QuestionTableRowBase
+from backend.developer.tables.schemas import (
+    PersonalQuestionTableRow,
+    PublishedQuestionTableRow,
+)
+from backend.question.views.schema import QuestionSearchParams
 from backend.question.views.services import QuestionTable
-
-
-class PersonalQuestionTableRow(QuestionTableRowBase):
-    """Row returned by the personal question table."""
-
-
-class PublishedQuestionTableRow(QuestionTableRowBase):
-    """Row returned by the published personal question table."""
-
-
-class PersonalCollectionTableRow(BaseModel):
-    """Row returned by the personal collection table."""
-
-    id: UUID | None
-    owner_id: UUID | None
-    title: str
-    parent_id: UUID | None
-    question_count: int
-    created_at: datetime
-    updated_at: datetime
 
 
 class DeveloperPersonalQuestionTables(DeveloperTables):
@@ -87,9 +67,7 @@ class DeveloperPersonalQuestionTables(DeveloperTables):
             self._session,
             extensions=[
                 DeveloperQuestionTableExtension(dev.id),
-                PersonalQuestionCollectionExtension(
-                    collection_id=params.collection_id
-                )
+                PersonalQuestionCollectionExtension(collection_id=params.collection_id),
             ],
             row_model=PersonalQuestionTableRow,
         )

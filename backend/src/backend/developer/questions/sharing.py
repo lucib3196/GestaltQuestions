@@ -1,6 +1,4 @@
-from backend.authorization.resources import (
-    ResourceSharingService,
-)
+from backend.authorization.resources import ResourceSharingService
 from backend.developer.questions.access import QuestionAccessService
 
 

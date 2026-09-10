@@ -5,14 +5,17 @@ from starlette import status
 
 from backend.api.dependencies.users import CurrentUser
 from backend.developer.exceptions import DeveloperProfileError
-from backend.developer.tables import SharedWithMeQuestionTableRow
-from backend.developer.tables.personal_questions import PersonalQuestionTableRow
-from backend.developer.tables.shared_questions import SharedByMeQuestionTableRow
-from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
+from backend.developer.tables.schemas import (
+    PersonalQuestionTableRow,
+    SharedByMeQuestionTableRow,
+    SharedWithMeQuestionTableRow,
+)
+from backend.question.views.schema import QuestionSearchParams, QuestionTableRowBase
 
 from .dependencies import (
     DeveloperPersonalQuestionTablesDependency,
     DeveloperProfileDependency,
+    DeveloperPublishedQuestionTablesDependency,
     DeveloperSharedQuestionTablesDependency,
 )
 
@@ -63,6 +66,14 @@ async def search_my_collection_questions(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(e),
         ) from e
+
+
+@router.post("/questions/published/search", response_model=list[QuestionTableRowBase])
+async def search_published_questions(
+    tables: DeveloperPublishedQuestionTablesDependency,
+    params: QuestionSearchParams | None = None,
+) -> Sequence[QuestionTableRowBase]:
+    return tables.search_published_questions(params)
 
 
 @router.post(

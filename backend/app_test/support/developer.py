@@ -10,19 +10,15 @@ from app_test.factories.developer_factory import (
 from app_test.factories.question_factory import MakeQuestion
 from app_test.factories.user_factory import MakeUser
 from backend.accounts import Role, User, UserRoles
-from backend.developer import (
-
-    DeveloperProfile,
-
-)
-from backend.developer.profiles import DeveloperProfileService
-from backend.developer.collections import DeveloperCollectionService
+from backend.developer import DeveloperProfile
 from backend.developer.collections import (
     CollectionSharing,
     DeveloperCollectionAuthorizer,
+    DeveloperCollectionService,
     QuestionCollectionAccessReader,
     QuestionCollectionAccessService,
 )
+from backend.developer.profiles import DeveloperProfileService
 from backend.developer.questions import DeveloperQuestionService
 from backend.developer.questions.access import QuestionAccessService
 from backend.developer.questions.authorizer import DeveloperQuestionAuthorizer

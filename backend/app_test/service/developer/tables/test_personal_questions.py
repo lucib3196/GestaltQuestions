@@ -1,8 +1,9 @@
+import pytest
+
 from app_test.factories.question_factory import MakeQuestion
 from backend.developer.tables.personal_questions import DeveloperPersonalQuestionTables
 from backend.question import QType, Status
 from backend.question.views.schema import QuestionSearchParams
-import pytest
 
 
 @pytest.fixture
@@ -81,8 +82,12 @@ async def test_search_questions_in_collections_returns_selected_collection_quest
     second = make_question(dev_owner.profile, title="Collection Question 2")
     unrelated = make_question(dev_owner.profile, title="Unrelated Question")
 
-    await developer_collection_service.add_question(dev_owner.user, collection.id, first.id)
-    await developer_collection_service.add_question(dev_owner.user, collection.id, second.id)
+    await developer_collection_service.add_question(
+        dev_owner.user, collection.id, first.id
+    )
+    await developer_collection_service.add_question(
+        dev_owner.user, collection.id, second.id
+    )
 
     rows = personal_table.search_questions_in_collections(
         dev_owner.profile,

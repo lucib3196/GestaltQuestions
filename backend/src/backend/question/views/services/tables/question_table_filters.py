@@ -5,10 +5,11 @@ from sqlalchemy import func, select
 from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.selectable import Subquery
 from sqlmodel import col
-from backend.question.views.schema import QuestionSearchParamsBase
-from backend.tables import FilterBuilder
+
 from backend.question import QuestionQTypeLink, QuestionType
+from backend.question.views.schema import QuestionSearchParamsBase
 from backend.question_runtime.model import QuestionRunTime
+from backend.tables import FilterBuilder
 
 
 class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
