@@ -1,4 +1,5 @@
-import type { StateCreator} from "zustand";
+import type { StateCreator } from "zustand";
+
 import type { UserLookupStore } from "./state";
 import { usersToRecord } from "./utils";
 import { getUserId } from "./utils";

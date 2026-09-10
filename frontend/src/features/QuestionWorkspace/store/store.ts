@@ -1,12 +1,13 @@
 import { createStore } from "zustand";
-import type { WorkspaceStore } from "./types";
-import {
-  createResourceAccessSlice,
-  type AnyResourceSchema,
-} from "../../../stores/resourceAccess";
-import { createWorkspaceSettingsSlice } from "../../../stores/paneLayout/settingSlice";
-import { createWorkspaceSessionSlice } from "./sessionSlice";
 import { persist } from "zustand/middleware";
+
+import { createWorkspaceSettingsSlice } from "../../../stores/paneLayout/settingSlice";
+import {
+  type AnyResourceSchema,
+  createResourceAccessSlice,
+} from "../../../stores/resourceAccess";
+import { createWorkspaceSessionSlice } from "./sessionSlice";
+import type { WorkspaceStore } from "./types";
 
 export const QUESTION_WORKSPACE_PERSIST_KEY = "question-workspace-settings:v1";
 

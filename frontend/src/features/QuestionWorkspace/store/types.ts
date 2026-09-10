@@ -37,6 +37,4 @@ export type WorkspaceSessionStore = WorkspaceSessionState &
   WorkspaceSessionActions;
 export type WorkspaceStore<
   Schema extends AnyResourceSchema = AnyResourceSchema,
-> = WorkspaceSettingStore &
-  ResourceAccessStore<Schema> &
-  WorkspaceSessionStore;
+> = WorkspaceSettingStore & ResourceAccessStore<Schema> & WorkspaceSessionStore;

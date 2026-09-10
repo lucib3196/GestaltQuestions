@@ -1,10 +1,11 @@
 import type { StateCreator } from "zustand";
+
+import type { ResourceAccessStore } from "./state";
 import type {
-  ResourceAccessSchema,
   AnyResourceSchema,
   Capabilities,
+  ResourceAccessSchema,
 } from "./types";
-import type { ResourceAccessStore } from "./state";
 
 export type ResourceAccessSliceCreator<
   Schema extends ResourceAccessSchema = AnyResourceSchema,

@@ -1,12 +1,12 @@
-import { useEffect } from "react";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 
 import { useRetrieveAccess } from "../../../services/Access/QuestionAccess";
 import { useWorkspaceContext } from "../store/context";
+import { useQuestionWorkspaceContext } from "../store/context";
 import type { WorkspaceStore } from "../store/types";
 import { buildQuestionCapabilities } from "./capabilities";
 import type { QuestionWorkspaceAccessSchema } from "./types";
-import { useQuestionWorkspaceContext } from "../store/context";
 type QuestionAccessGateProps = {
   qid: string;
   children: ReactNode;

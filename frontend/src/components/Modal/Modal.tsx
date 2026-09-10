@@ -89,10 +89,7 @@ export default function Modal({
           <CloseButton onClick={() => setShowModal(false)} />
         </div>
         <div
-          className={clsx(
-            "min-h-0 flex-1 overflow-auto p-4",
-            contentClassName,
-          )}
+          className={clsx("min-h-0 flex-1 overflow-auto p-4", contentClassName)}
         >
           {children}
         </div>

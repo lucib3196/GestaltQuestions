@@ -1,3 +1,3 @@
-export function WorkspaceTitle(){
-    return 
+export function WorkspaceTitle() {
+  return;
 }

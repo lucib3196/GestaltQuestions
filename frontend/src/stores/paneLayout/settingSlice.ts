@@ -1,4 +1,5 @@
 import type { StateCreator } from "zustand";
+
 import type {
   WorkspacePane,
   WorkspaceSettingStore,
@@ -14,12 +15,7 @@ const defaultActivePanes: WorkspacePane[] = [
 export type WorkspaceSettingSliceCreator<
   Store extends WorkspaceSettingStore = WorkspaceSettingStore,
   Slice = WorkspaceSettingStore,
-> = StateCreator<
-  Store,
-  [],
-  [],
-  Slice
->;
+> = StateCreator<Store, [], [], Slice>;
 export function createWorkspaceSettingsSlice<
   Store extends WorkspaceSettingStore = WorkspaceSettingStore,
 >(): WorkspaceSettingSliceCreator<Store, WorkspaceSettingStore> {
@@ -46,24 +42,20 @@ export function createWorkspaceSettingsSlice<
       } as Partial<Store>),
 
     togglePane: (pane) =>
-      set(
-        (state) => {
-          const nextPanes = state.activePanes.includes(pane)
-            ? state.activePanes.filter((activePane) => activePane !== pane)
-            : [...state.activePanes, pane];
+      set((state) => {
+        const nextPanes = state.activePanes.includes(pane)
+          ? state.activePanes.filter((activePane) => activePane !== pane)
+          : [...state.activePanes, pane];
 
-          return {
-            activePanes: nextPanes.length ? nextPanes : [defaultPane],
-          } as Partial<Store>;
-        },
-      ),
+        return {
+          activePanes: nextPanes.length ? nextPanes : [defaultPane],
+        } as Partial<Store>;
+      }),
 
     showSinglePane: (pane) =>
       set({
         layoutMode: "single",
         activePanes: [pane],
       } as Partial<Store>),
-
-    
   });
 }

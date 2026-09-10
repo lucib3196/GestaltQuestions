@@ -1,4 +1,5 @@
 import type { StateCreator } from "zustand";
+
 import type { WorkspaceSessionStore } from "./types";
 
 export type WorkspaceSessionSliceCreator<

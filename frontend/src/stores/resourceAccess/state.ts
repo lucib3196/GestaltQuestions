@@ -1,10 +1,9 @@
 import type {
-  ResourceAccessSchema,
+  AccessModel,
   AnyResourceSchema,
   Capabilities,
-  AccessModel,
+  ResourceAccessSchema,
 } from "./types";
-
 
 export type ResourceAccessState<
   Schema extends ResourceAccessSchema = AnyResourceSchema,
