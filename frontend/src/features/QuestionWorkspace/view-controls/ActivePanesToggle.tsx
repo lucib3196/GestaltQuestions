@@ -7,6 +7,8 @@ import type { WorkspacePane } from "../store/types";
 
 type ActivePanesToggleProps = {
   activePanes: WorkspacePane[];
+  availablePanes: WorkspacePane[];
+  // eslint-disable-next-line no-unused-vars
   onTogglePane: (pane: WorkspacePane) => void;
 };
 
@@ -34,19 +36,25 @@ const paneOptions: Array<{
 
 export function ActivePanesToggle({
   activePanes,
+  availablePanes,
   onTogglePane,
 }: ActivePanesToggleProps) {
-  return (
-    <div className="rounded-md border border-border bg-surface p-3">
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-text-soft">
-          Visible Panes
-        </span>
-        <span className="text-xs text-text-muted">Choose workspace panels</span>
-      </div>
+  const visiblePaneOptions = paneOptions.filter((pane) =>
+    availablePanes.includes(pane.value),
+  );
 
-      <div className="flex flex-wrap gap-2">
-        {paneOptions.map((pane) => {
+  if (!visiblePaneOptions.length) {
+    return null;
+  }
+
+  return (
+    <div className="flex min-w-fit flex-wrap items-center gap-2">
+      <span className="text-xs font-semibold uppercase text-text-soft">
+        Panes
+      </span>
+
+      <div className="flex h-9 flex-wrap items-center gap-1 rounded-md bg-surface-muted p-1">
+        {visiblePaneOptions.map((pane) => {
           const active = activePanes.includes(pane.value);
 
           return (
@@ -56,10 +64,10 @@ export function ActivePanesToggle({
               aria-pressed={active}
               onClick={() => onTogglePane(pane.value)}
               className={clsx(
-                "inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition-all",
+                "inline-flex h-7 items-center justify-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors",
                 active
-                  ? "border-accent bg-surface-strong text-accent shadow-sm"
-                  : "border-border text-text-muted hover:border-border-strong hover:bg-surface-secondary hover:text-text",
+                  ? "bg-surface-strong text-accent shadow-sm"
+                  : "text-text-muted hover:bg-surface-secondary hover:text-text",
               )}
             >
               {pane.icon}

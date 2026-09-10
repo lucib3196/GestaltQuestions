@@ -6,6 +6,7 @@ import type { WorkspaceLayoutMode } from "../store/types";
 
 type LayoutToggleProps = {
   value: WorkspaceLayoutMode;
+  // eslint-disable-next-line no-unused-vars
   onChange: (mode: WorkspaceLayoutMode) => void;
 };
 
@@ -28,15 +29,12 @@ const layoutOptions: Array<{
 
 export function LayoutToggle({ value, onChange }: LayoutToggleProps) {
   return (
-    <div className="rounded-md border border-border bg-surface p-3">
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <span className="text-xs font-semibold uppercase tracking-wide text-text-soft">
-          Layout
-        </span>
-        <span className="text-xs text-text-muted">Workspace arrangement</span>
-      </div>
+    <div className="flex min-w-fit items-center gap-2">
+      <span className="text-xs font-semibold uppercase text-text-soft">
+        Layout
+      </span>
 
-      <div className="inline-grid grid-flow-col gap-1 rounded-md border border-border-strong bg-[var(--color-surface-muted)] p-1">
+      <div className="inline-flex h-9 items-center gap-1 rounded-md bg-surface-muted p-1">
         {layoutOptions.map((option) => {
           const active = option.value === value;
 
@@ -47,9 +45,9 @@ export function LayoutToggle({ value, onChange }: LayoutToggleProps) {
               aria-pressed={active}
               onClick={() => onChange(option.value)}
               className={clsx(
-                "inline-flex items-center justify-center gap-2 rounded-[calc(var(--radius-md)-4px)] px-4 py-2 text-sm font-semibold transition-all",
+                "inline-flex h-7 items-center justify-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors",
                 active
-                  ? "bg-accent text-white shadow-sm"
+                  ? "bg-surface-strong text-accent shadow-sm"
                   : "text-text-muted hover:bg-surface-secondary hover:text-text",
               )}
             >

@@ -1,14 +1,11 @@
-import { FiCheck, FiMoreVertical, FiSettings, FiTarget } from "react-icons/fi";
+import { FiTarget } from "react-icons/fi";
 
 import { AccessBadge } from "../../../components/Access";
 import { ManageAccessAction } from "../manage-access/ManageAccessModal";
 import { useQuestionWorkspaceContext } from "../store/context";
-import type { WorkspaceLayoutMode } from "../store/types";
+
 type WorkspaceHeaderProps = {
   title?: string;
-  subtitle?: string;
-  status?: string;
-  layoutMode: WorkspaceLayoutMode;
 };
 
 function WorkspaceTitle({ title = "Question Workspace" }: { title?: string }) {
@@ -25,7 +22,7 @@ function LevelHeaderAccess() {
   const canManageAccess = capabilities.canManageAccess;
 
   return (
-    <div className="flex flex-row items-baseline gap-2">
+    <div className="flex shrink-0 items-center gap-2">
       <AccessBadge level={level} />
       {canManageAccess && <ManageAccessAction questionId={question} />}
     </div>
@@ -35,12 +32,10 @@ function LevelHeaderAccess() {
 export function WorkspaceHeader({
   title = "Question Workspace",
 }: WorkspaceHeaderProps) {
-  const enabled = false;
-
   return (
-    <header className="flex items-center justify-between border-b border-border bg-surface px-4 py-3">
+    <header className="flex min-h-14 flex-wrap items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3">
       <div className="flex min-w-0 items-center gap-4">
-        <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[rgba(57,91,255,0.18)] text-accent">
+        <span className="flex h-9 w-9 items-center justify-center rounded-md bg-accent/10 text-accent">
           <FiTarget className="h-5 w-5" />
         </span>
 
@@ -51,31 +46,6 @@ export function WorkspaceHeader({
       </div>
 
       <LevelHeaderAccess />
-
-      {enabled && (
-        <div className="flex items-center gap-3 text-sm text-text-muted">
-          <span className="inline-flex items-center gap-2">
-            <FiCheck className="h-4 w-4" />
-            Autosaved just now
-          </span>
-
-          <button
-            type="button"
-            aria-label="Workspace settings"
-            className="rounded-md border border-border bg-surface-muted p-2 text-text-muted hover:border-border-strong hover:text-text"
-          >
-            <FiSettings className="h-5 w-5" />
-          </button>
-
-          <button
-            type="button"
-            aria-label="More workspace actions"
-            className="rounded-md border border-border bg-surface-muted p-2 text-text-muted hover:border-border-strong hover:text-text"
-          >
-            <FiMoreVertical className="h-5 w-5" />
-          </button>
-        </div>
-      )}
     </header>
   );
 }
