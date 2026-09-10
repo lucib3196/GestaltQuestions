@@ -3,7 +3,7 @@ import { useDownloadQuestions } from "../../QuestionBuilder/hooks";
 import { useDeleteQuestion } from "../../QuestionBuilder/hooks";
 import { useRemoveQuestionsFromCollection } from "../../QuestionCollections/hooks/useRemoveQuestions";
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
-import { ToolBarActions } from "../../QuestionTables";
+import ToolBarActions from "../../Toolbar/TableToolBar";
 import {
   ClearTableFilters,
   ColumnVisibilityPanel,

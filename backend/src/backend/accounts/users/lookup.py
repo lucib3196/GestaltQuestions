@@ -38,15 +38,13 @@ class UserLookup:
                     )
                 )
             if institution:
-                stmt = stmt.where(
-                    col(User.id).not_in([convert_uuid(id) for id in exclude_id or []])
-                )
+                stmt = stmt.where(col(User.institution_id) == institution.id)
 
             if exclude_id:
                 excluded_ids = [convert_uuid(id) for id in exclude_id]
                 stmt = stmt.where(col(User.id).not_in(excluded_ids))
 
-                stmt = stmt.offset(offset).limit(limit)
+            stmt = stmt.offset(offset).limit(limit)
             return self._session.exec(stmt).all()
         except Exception as e:
             self._session.rollback()

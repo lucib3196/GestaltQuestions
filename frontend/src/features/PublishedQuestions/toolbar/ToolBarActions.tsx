@@ -1,10 +1,8 @@
 import { useCopyQuestion } from "../../QuestionBuilder/hooks";
 import { useDownloadQuestions } from "../../QuestionBuilder/hooks";
-import { ToolBarActions } from "../../QuestionTables";
-import {
-  BASE_QUESTION_TABLE_TOOLBAR_ACTIONS,
-  type BaseQuestionTableToolbarActionId,
-} from "../../QuestionTables/components/toolbar/constants";
+import ToolBarActions from "../../Toolbar/TableToolBar";
+
+import  { type BaseQuestionTableToolbarActionId, BASE_QUESTION_TABLE_TOOLBAR_ACTIONS } from "../../QuestionTables/toolbarConfig/toolbarConfig";
 import {
   ClearTableFilters,
   ColumnVisibilityPanel,

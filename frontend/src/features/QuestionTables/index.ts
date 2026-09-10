@@ -1,5 +1,5 @@
 export * from "./columnConfig";
-export { default as ToolBarActions } from "./components/toolbar/TableToolBar";
+
 export * from "./hooks";
 export {
   default,

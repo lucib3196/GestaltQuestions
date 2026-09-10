@@ -1,4 +1,4 @@
-import type { ToolBarActionConfig } from "./types";
+import type { ToolBarActionConfig } from "../../Toolbar/types";
 
 export const BASE_QUESTION_TABLE_TOOLBAR_ACTIONS = [
   {
@@ -6,20 +6,20 @@ export const BASE_QUESTION_TABLE_TOOLBAR_ACTIONS = [
     label: "Copy",
     requiresSelection: true,
     allowedRoles: ["developer"],
-    active: true,
+    visible: true,
   },
   {
     id: "download",
     label: "Download",
     requiresSelection: true,
     allowedRoles: ["developer"],
-    active: true,
+    visible: true,
   },
   {
     id: "tableFilters",
     label: "Filters",
     allowedRoles: ["developer"],
-    active: true,
+    visible: true,
   },
 ] as const satisfies readonly ToolBarActionConfig[];
 

@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from uuid import UUID
 
 from sqlmodel import Session
 
@@ -30,3 +31,7 @@ class QuestionTable(Table[QuestionTableRowBase, QuestionSearchParamsBase]):
             row_model=row_model,
             composer=composer,
         )
+
+    def search_by_id(self, question_id: UUID) -> Sequence[QuestionTableRowBase]:
+        """Return the table row for a single question id."""
+        return self.search(QuestionSearchParamsBase(question_id=question_id))

@@ -18,6 +18,7 @@ class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
         self.filters: list[ColumnElement[bool]] = []
 
     def build(self, subquery: Subquery) -> list[ColumnElement[bool]]:
+        self.add_question_id(subquery)
         self.add_title(subquery)
         self.add_status(subquery)
         self.add_topic(subquery)
@@ -25,6 +26,12 @@ class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
         self.add_qtype(subquery)
         self.add_language(subquery)
         return self.filters
+
+    def add_question_id(self, subquery: Subquery) -> None:
+        if not self.params.question_id:
+            return
+
+        self.filters.append(subquery.c.question_id == self.params.question_id)
 
     def add_title(self, subquery: Subquery) -> None:
         if not self.params.search:

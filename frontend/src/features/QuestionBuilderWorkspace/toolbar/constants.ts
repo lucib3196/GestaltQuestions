@@ -2,13 +2,8 @@ import type { IconType } from "react-icons";
 import { BsCollectionFill } from "react-icons/bs";
 import { FaCopy, FaDownload, FaFilter } from "react-icons/fa";
 import { MdDelete, MdRemoveCircle } from "react-icons/md";
-
-import {
-  BASE_QUESTION_TABLE_TOOLBAR_ACTIONS,
-  type BaseQuestionTableToolbarActionId,
-} from "../../QuestionTables/components/toolbar/constants";
-import type { ToolBarActionConfig } from "../../QuestionTables/components/toolbar/types";
-
+import { type BaseQuestionTableToolbarActionId , BASE_QUESTION_TABLE_TOOLBAR_ACTIONS} from "../../QuestionTables/toolbarConfig/toolbarConfig";
+import type { ToolBarActionConfig } from "../../Toolbar/types";
 const BASE_WORKSPACE_TOOLBAR_ACTION_ICONS: Record<
   BaseQuestionTableToolbarActionId,
   IconType
@@ -43,14 +38,14 @@ export const WORKSPACE_TOOLBAR_ACTIONS = [
     variant: "danger",
     requiresSelection: true,
     allowedRoles: ["developer"],
-    active: true,
+    visible: true,
   },
   {
     id: "collections",
     label: "Add to Collections",
     icon: BsCollectionFill,
     allowedRoles: ["developer"],
-    active: true,
+    visible: true,
   },
   {
     id: "removeFromCollection",
@@ -59,7 +54,7 @@ export const WORKSPACE_TOOLBAR_ACTIONS = [
     variant: "danger",
     requiresSelection: true,
     allowedRoles: ["developer"],
-    active: true,
+    visible: true,
   },
 ] as const satisfies readonly ToolBarActionConfig<WorkspaceToolbarActionId>[];
 

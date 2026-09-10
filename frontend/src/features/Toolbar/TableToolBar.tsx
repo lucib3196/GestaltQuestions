@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { UserRole } from "../../../../services/Auth";
+import type { UserRole } from "../../services/Auth";
 import type { ToolBarActionConfig } from "./types";
 
 export type ToolBarActionsProps<TId extends string> = {
@@ -41,7 +41,7 @@ export default function ToolBarActions<TId extends string>({
 }: ToolBarActionsProps<TId>) {
   const visibleActions = actions.filter(
     (action) =>
-      action.active &&
+      action.visible &&
       (!action.allowedRoles ||
         action.allowedRoles.some((role) => roles.includes(role))),
   );
