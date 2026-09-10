@@ -4,9 +4,11 @@ from enum import StrEnum
 from sqlalchemy import func, select
 from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.selectable import Subquery
-
+from sqlmodel import col
 from backend.question.views.schema import QuestionSearchParamsBase
 from backend.tables import FilterBuilder
+from backend.question import QuestionQTypeLink, QuestionType
+from backend.question_runtime.model import QuestionRunTime
 
 
 class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
@@ -58,14 +60,35 @@ class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
         if not qtypes:
             return
 
-        self.filters.append(subquery.c.question_type.overlap(qtypes))
+        qtype_match = (
+            select(1)
+            .select_from(QuestionQTypeLink)
+            .join(
+                QuestionType,
+                col(QuestionType.id) == col(QuestionQTypeLink.qtype_id),
+            )
+            .where(col(QuestionQTypeLink.question_id) == subquery.c.question_id)
+            .where(col(QuestionType.name).in_(qtypes))
+            .exists()
+        )
+
+        self.filters.append(qtype_match)
 
     def add_language(self, subquery: Subquery) -> None:
         languages = self._enum_names(self.params.language)
         if not languages:
             return
 
-        self.filters.append(subquery.c.available_runtimes.overlap(languages))
+        runtime_match = (
+            select(1)
+            .select_from(QuestionRunTime)
+            .where(col(QuestionRunTime.question_id) == subquery.c.question_id)
+            .where(col(QuestionRunTime.enabled))
+            .where(col(QuestionRunTime.language).in_(languages))
+            .exists()
+        )
+
+        self.filters.append(runtime_match)
 
     @staticmethod
     def _enum_names(value: StrEnum | Sequence[StrEnum] | None) -> list[str]:
@@ -77,4 +100,4 @@ class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
             if isinstance(value, Sequence) and not isinstance(value, str)
             else [value]
         )
-        return [item.name for item in values]
+        return [str(item.name).lower() for item in values]

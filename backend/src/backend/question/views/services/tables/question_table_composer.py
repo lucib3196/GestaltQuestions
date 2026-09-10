@@ -5,6 +5,8 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.sql import Select
 from sqlalchemy.sql.selectable import Subquery
 from sqlmodel import col
+from typing import Literal, Sequence
+from sqlalchemy.sql.elements import Label
 
 from backend.question import (
     Question,
@@ -18,6 +20,7 @@ from backend.question_runtime.model import QuestionRunTime
 from backend.tables import TableExtension, TableQueryComposer
 
 from .question_table_filters import QuestionTableFilterBuilder
+from sqlmodel import SQLModel
 
 
 class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
@@ -38,28 +41,26 @@ class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
 
     def build_base_subquery(self, table_name: str = "question_table") -> Subquery:
         """Build the reusable base question table subquery."""
-        topics = func.array_agg(func.distinct(Topic.name)).label("topics")
+        topics = self._cast_to_array(
+            Topic,
+            lookup_field="name",
+            label="topics",
+            dialect=self._dialect_name,
+        )
 
-        question_type = cast(
-            func.array_agg(func.distinct(QuestionType.name)),
-            ARRAY(String),
-        ).label("question_type")
+        question_type = self._cast_to_array(
+            QuestionType,
+            lookup_field="name",
+            label="question_type",
+            dialect=self._dialect_name,
+        )
 
-        available_runtimes = func.array_remove(
-            cast(
-                func.array_agg(func.distinct(QuestionRunTime.language)), ARRAY(String)
-            ),
-            None,
-        ).label("available_runtimes")
-
-        if self._dialect_name == "sqlite":
-            topics = func.json_group_array(func.distinct(Topic.name)).label("topics")
-            question_type = func.json_group_array(
-                func.distinct(QuestionType.name)
-            ).label("question_type")
-            available_runtimes = func.json_group_array(
-                func.distinct(QuestionRunTime.language)
-            ).label("available_runtimes")
+        available_runtimes = self._cast_to_array(
+            QuestionRunTime,
+            lookup_field="language",
+            label="available_runtimes",
+            dialect=self._dialect_name,
+        )
 
         stmt = (
             select(
@@ -108,3 +109,27 @@ class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
             table.c.updated_at.desc().nulls_last(),
             table.c.created_at.desc(),
         )
+
+    def _cast_to_array(
+        self,
+        model: type[SQLModel],
+        *,
+        lookup_field: str,
+        label: str,
+        dialect: Literal["sqlite", "postgresql"] | str,
+    ) -> Label:
+        try:
+            field = getattr(model, lookup_field)
+        except AttributeError as exc:
+            raise ValueError(f"Cannot determine lookup field: {lookup_field}") from exc
+
+        if dialect == "postgresql":
+            return cast(
+                func.array_agg(func.distinct(field)),
+                ARRAY(String),
+            ).label(label)
+
+        if dialect == "sqlite":
+            return func.json_group_array(func.distinct(field)).label(label)
+
+        raise ValueError(f"Unsupported dialect: {dialect}")
