@@ -1,4 +1,4 @@
 export * from "./components";
 export { QuestionMetadataForm } from "./QuestionMetadataForm";
-export { default as QuestionMetadataWorkspacePanel } from "./QuestionMetadataWorkspacePanel";
+export { default as QuestionMetadataEditorPanel } from "./QuestionMetadataEditorPanel";
 export * from "./utils";

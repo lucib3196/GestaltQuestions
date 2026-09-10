@@ -1,3 +1,3 @@
-import { type BaseQuestionTableToolbarActionId } from "../../QuestionTables/components/toolbar/constants";
+import { type BaseQuestionTableToolbarActionId } from "../../QuestionTables/toolbarConfig/toolbarConfig";
 
 export type PopUpId = Extract<BaseQuestionTableToolbarActionId, "tableFilters">;

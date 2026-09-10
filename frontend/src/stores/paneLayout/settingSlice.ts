@@ -1,24 +1,24 @@
 import type { StateCreator } from "zustand";
 
 import type {
-  WorkspacePane,
-  WorkspaceSettingStore,
-} from "../../features/QuestionWorkspace/store/types";
+  QuestionEditorPane,
+  QuestionEditorSettingsStore,
+} from "../../features/QuestionEditor/store/types";
 
-const defaultPane: WorkspacePane = "livePreview";
-const defaultActivePanes: WorkspacePane[] = [
+const defaultPane: QuestionEditorPane = "livePreview";
+const defaultActivePanes: QuestionEditorPane[] = [
   "livePreview",
   "editor",
   "metadata",
 ];
 
-export type WorkspaceSettingSliceCreator<
-  Store extends WorkspaceSettingStore = WorkspaceSettingStore,
-  Slice = WorkspaceSettingStore,
+export type QuestionEditorSettingsSliceCreator<
+  Store extends QuestionEditorSettingsStore = QuestionEditorSettingsStore,
+  Slice = QuestionEditorSettingsStore,
 > = StateCreator<Store, [], [], Slice>;
-export function createWorkspaceSettingsSlice<
-  Store extends WorkspaceSettingStore = WorkspaceSettingStore,
->(): WorkspaceSettingSliceCreator<Store, WorkspaceSettingStore> {
+export function createQuestionEditorSettingsSlice<
+  Store extends QuestionEditorSettingsStore = QuestionEditorSettingsStore,
+>(): QuestionEditorSettingsSliceCreator<Store, QuestionEditorSettingsStore> {
   return (set) => ({
     layoutMode: "split",
     activePanes: defaultActivePanes,

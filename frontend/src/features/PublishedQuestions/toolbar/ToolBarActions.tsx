@@ -1,6 +1,6 @@
 import { useCopyQuestion } from "../../QuestionBuilder/hooks";
 import { useDownloadQuestions } from "../../QuestionBuilder/hooks";
-import ToolBarActions from "../../Toolbar/TableToolBar";
+import ToolBarActions from "../../Toolbar/ToolBar";
 
 import  { type BaseQuestionTableToolbarActionId, BASE_QUESTION_TABLE_TOOLBAR_ACTIONS } from "../../QuestionTables/toolbarConfig/toolbarConfig";
 import {
@@ -38,7 +38,7 @@ export default function PublishedToolBarActions({ popUp, onOpenPopUp }: Props) {
           Boolean(action.requiresSelection && !hasSelection)
         }
         variant="inline"
-        renderActionPopup={(action) => {
+        renderActionPopover={(action) => {
           if (popUp === "tableFilters" && action.id === "tableFilters") {
             return (
               <div className="absolute left-0 top-full z-20 mt-2 w-64">

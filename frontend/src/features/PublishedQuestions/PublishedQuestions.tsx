@@ -4,8 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { QuestionRuntimeLanguage } from "../../services";
 import { QuestionRender } from "../QuestionEngine";
 import { PublishedQuestionsTable } from "../QuestionTables";
-import { RuntimeToggle } from "../QuestionWorkspace";
-import { useGetQuestionRunTimes } from "../QuestionWorkspace/runtime/useGetQuestionRunTimes";
+import { RuntimeToggle, useGetQuestionRunTimes } from "../QuestionEditor";
 import { TableBaseProvider } from "../TableBase";
 import { ToolBar } from "./toolbar/ToolBar";
 

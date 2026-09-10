@@ -1,2 +1,2 @@
 export * from "./cells";
-export { default as ToolBarActions } from "./toolbar/TableToolBar";
+export { default as ToolBarActions } from "../../Toolbar/ToolBar";

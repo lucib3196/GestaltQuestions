@@ -2,12 +2,12 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { ComponentPlayGround } from "./features/ComponentPlayGround";
 import { CreateNewQuestion } from "./features/CreateNewQuestion";
+import DeveloperQuestionLibrary from "./features/DeveloperQuestionLibrary/DeveloperQuestionLibrary";
+import { DeveloperWorkspaceLayout } from "./features/DeveloperWorkspace/DeveloperWorkspaceLayout";
 import PublishedQuestions from "./features/PublishedQuestions/PublishedQuestions";
 import { GeneralQuestionRender } from "./features/PublishedQuestions/PublishedQuestions";
 import { ManageAccess } from "./features/QuestionAccess/ManageAccess";
-import { WorkspaceLinks } from "./features/QuestionBuilderWorkspace/links/WorkspaceLinks";
-import QuestionBuilderWorkspace from "./features/QuestionBuilderWorkspace/QuestionBuilderWorkspace";
-import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
+import QuestionEditor from "./features/QuestionEditor/QuestionEditor";
 import { UserLookupProvider } from "./features/UserLookUp/instance/context";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
@@ -40,16 +40,16 @@ function App() {
 
             {/* Developer Only Routes */}
             <Route element={<RequireRole allow={["admin", "developer"]} />}>
-              <Route path="/question_builder" element={<WorkspaceLinks />}>
+              <Route path="/question_builder" element={<DeveloperWorkspaceLayout />}>
                 <Route
                   path="questions"
-                  element={<QuestionBuilderWorkspace />}
+                  element={<DeveloperQuestionLibrary />}
                 />
-                <Route index element={<QuestionBuilderWorkspace />} />
+                <Route index element={<DeveloperQuestionLibrary />} />
                 <Route path="questions/new" element={<CreateNewQuestion />} />
                 <Route
                   path="questions/:qid/edit"
-                  element={<QuestionWorkspace />}
+                  element={<QuestionEditor />}
                 />
                 <Route path="playground" element={<ComponentPlayGround />} />
                 <Route path="chat" element={<ChatPage />} />
