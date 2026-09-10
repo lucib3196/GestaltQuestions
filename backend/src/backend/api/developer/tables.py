@@ -31,6 +31,8 @@ async def search_my_questions(
 ) -> Sequence[PersonalQuestionTableRow]:
     try:
         profile = await profiles.get_profile(current_user)
+        if params and params.collection_id:
+            return tables.search_questions_in_collections(profile, params)
         return tables.search_my_questions(profile, params)
     except DeveloperProfileError as e:
         raise HTTPException(
@@ -39,16 +41,18 @@ async def search_my_questions(
         ) from e
 
 
-@router.post("/questions/collections/search", response_model=list[QuestionTableRow])
+@router.post(
+    "/questions/collections/search", response_model=list[PersonalQuestionTableRow]
+)
 async def search_my_collection_questions(
     current_user: CurrentUser,
     profiles: DeveloperProfileDependency,
     tables: DeveloperPersonalQuestionTablesDependency,
     params: QuestionSearchParams,
-) -> Sequence[QuestionTableRow]:
+) -> Sequence[PersonalQuestionTableRow]:
     try:
         profile = await profiles.get_profile(current_user)
-        return tables.get_questions_by_collection(profile, params)
+        return tables.search_questions_in_collections(profile, params)
     except DeveloperProfileError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

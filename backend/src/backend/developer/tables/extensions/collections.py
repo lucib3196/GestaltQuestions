@@ -21,11 +21,11 @@ class PersonalQuestionCollectionExtension(TableExtension):
         self._collection_id = collection_id
         self._collection_title = collection_title
 
-    def apply(self, stmt: Select, question_table: Subquery) -> Select:
+    def apply(self, stmt: Select, subquery: Subquery) -> Select:
         """Join collection tables and apply collection filters."""
         stmt = stmt.join(
             QuestionCollectionLink,
-            col(QuestionCollectionLink.question_id) == question_table.c.question_id,
+            col(QuestionCollectionLink.question_id) == subquery.c.question_id,
         ).join(
             QuestionCollection,
             col(QuestionCollection.id) == col(QuestionCollectionLink.collection_id),
@@ -33,10 +33,5 @@ class PersonalQuestionCollectionExtension(TableExtension):
 
         if self._collection_id is not None:
             stmt = stmt.where(col(QuestionCollection.id) == self._collection_id)
-
-        if self._collection_title:
-            stmt = stmt.where(
-                col(QuestionCollection.title).ilike(self._collection_title)
-            )
 
         return stmt

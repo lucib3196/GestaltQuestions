@@ -13,6 +13,6 @@ class DeveloperQuestionTableExtension(TableExtension):
         """Store the developer profile id used to filter owned questions."""
         self._developer_profile_id = developer_profile_id
 
-    def apply(self, stmt: Select, question_table: Subquery) -> Select:
+    def apply(self, stmt: Select, subquery: Subquery) -> Select:
         """Add a developer-owned question filter to the statement."""
-        return stmt.where(question_table.c.created_by_id == self._developer_profile_id)
+        return stmt.where(subquery.c.created_by_id == self._developer_profile_id)

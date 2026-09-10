@@ -8,6 +8,6 @@ from backend.tables import TableExtension
 class PublishedQuestionTableExtension(TableExtension):
     """Filters the question table to published questions."""
 
-    def apply(self, stmt: Select, question_table: Subquery) -> Select:
+    def apply(self, stmt: Select, subquery: Subquery) -> Select:
         """Add a published status filter to the statement."""
-        return stmt.where(question_table.c.status == Status.PUBLISHED.name)
+        return stmt.where(subquery.c.status == Status.PUBLISHED.name)

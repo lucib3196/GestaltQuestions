@@ -8,7 +8,7 @@ import useCreateCollection from "../../QuestionCollections/hooks/useCreateCollec
 import { useTableBaseContext } from "../../TableBase/state";
 import { useSearchCollections } from "../hooks/useSearchCollections";
 import { CollectionResults } from "./CollectionResult";
-
+import { useCollections } from "../../QuestionCollections/hooks/useCollection";
 export function CreateCollectionSection({ title }: { title: string }) {
   const { createCollection } = useCreateCollection();
   return (
@@ -85,6 +85,7 @@ type CollectionPopUpProps = {
 export function CollectionPopUp({ onClose }: CollectionPopUpProps) {
   const selectedQuestions = useTableBaseContext((s) => s.selectedIds);
   const setSelectedQuestions = useTableBaseContext((s) => s.setSelectedIds);
+   const {fetchCollections} = useCollections()
 
   const [title, setTitle] = useState<string>("");
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<
@@ -124,6 +125,7 @@ export function CollectionPopUp({ onClose }: CollectionPopUpProps) {
         onSuccess: () => {
           setSelectedCollectionIds(new Set());
           setSelectedQuestions([]);
+          fetchCollections()
           onClose?.();
         },
       },

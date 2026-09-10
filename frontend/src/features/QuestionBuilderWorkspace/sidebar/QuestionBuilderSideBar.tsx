@@ -8,6 +8,7 @@ import QuestionCollectionToolBar from "../../QuestionCollections/components/Coll
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
 import QuestionCollections from "../../QuestionCollections/QuestionCollections";
 import { useSearchCollections } from "../hooks/useSearchCollections";
+import { useCollections } from "../../QuestionCollections/hooks/useCollection";
 
 const COLLECTIONS_PER_PAGE = 5;
 
@@ -19,7 +20,7 @@ export default function QuestionBuilderSideBar() {
   const [showAllQuestions, setShowAllQuestions] = useState(true);
   const [collectionPage, setCollectionPage] = useState(1);
   const [collectionCount, setCollectionCount] = useState(0);
-
+  
   // Get collections based on search bar
   const { collections } = useSearchCollections(title);
 

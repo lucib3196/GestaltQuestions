@@ -7,24 +7,24 @@ function formatStatusLabel(status: string) {
 type StatusDisplayConfig = {
   label: string;
   dotClassName: string;
-  textClassName: string;
+  className: string;
 };
 
 const STATUS_DISPLAY_CONFIG: Record<string, StatusDisplayConfig> = {
   published: {
     label: "Published",
-    dotClassName: "bg-emerald-400",
-    textClassName: "text-emerald-100",
+    dotClassName: "bg-approval",
+    className: "border-approval-border bg-approval-muted text-approval",
   },
   draft: {
     label: "Draft",
-    dotClassName: "bg-slate-500",
-    textClassName: "text-slate-300",
+    dotClassName: "bg-text-tertiary",
+    className: "border-border bg-surface-muted text-text-muted",
   },
   archived: {
     label: "Archived",
-    dotClassName: "bg-amber-400",
-    textClassName: "text-amber-100",
+    dotClassName: "bg-warning",
+    className: "border-warning-border bg-warning-muted text-warning",
   },
 };
 
@@ -32,17 +32,17 @@ export function QuestionStatusCell({ row }: { row: QuestionTableRowBase }) {
   const status = String(row.status ?? "").toLowerCase();
   const statusConfig = STATUS_DISPLAY_CONFIG[status] ?? {
     label: formatStatusLabel(status || "unknown"),
-    dotClassName: "bg-slate-500",
-    textClassName: "text-slate-300",
+    dotClassName: "bg-text-tertiary",
+    className: "border-border bg-surface-muted text-text-muted",
   };
 
   return (
     <span
-      className={`inline-flex items-center gap-2 text-sm font-medium ${statusConfig.textClassName}`}
+      className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors duration-base ${statusConfig.className}`}
     >
       <span
         aria-hidden="true"
-        className={`h-2 w-2 rounded-full ${statusConfig.dotClassName}`}
+        className={`size-2 rounded-full ${statusConfig.dotClassName}`}
       />
       {statusConfig.label}
     </span>

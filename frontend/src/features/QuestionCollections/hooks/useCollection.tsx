@@ -37,6 +37,7 @@ export function useCollections() {
 
   return {
     normalizedCollection,
+    fetchCollections,
     loading,
     error,
   };
