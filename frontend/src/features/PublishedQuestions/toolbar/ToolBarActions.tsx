@@ -1,13 +1,15 @@
 import { useCopyQuestion } from "../../QuestionBuilder/hooks";
 import { useDownloadQuestions } from "../../QuestionBuilder/hooks";
-import ToolBarActions from "../../Toolbar/ToolBar";
-
-import  { type BaseQuestionTableToolbarActionId, BASE_QUESTION_TABLE_TOOLBAR_ACTIONS } from "../../QuestionTables/toolbarConfig/toolbarConfig";
+import {
+  BASE_QUESTION_TABLE_TOOLBAR_ACTIONS,
+  type BaseQuestionTableToolbarActionId,
+} from "../../QuestionTables/toolbarConfig/toolbarConfig";
 import {
   ClearTableFilters,
   ColumnVisibilityPanel,
 } from "../../TableBase/components/filters";
 import { useTableBaseContext } from "../../TableBase/state";
+import ToolBarActions from "../../Toolbar/ToolBar";
 type PopUpId = Extract<BaseQuestionTableToolbarActionId, "tableFilters">;
 type Props = {
   popUp: PopUpId | null;

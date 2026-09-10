@@ -8,7 +8,11 @@ type QuestionEditorHeaderProps = {
   title?: string;
 };
 
-function QuestionEditorTitle({ title = "Question Editor" }: { title?: string }) {
+function QuestionEditorTitle({
+  title = "Question Editor",
+}: {
+  title?: string;
+}) {
   return <h1 className="text-lg font-semibold text-text">{title}</h1>;
 }
 

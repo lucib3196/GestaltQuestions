@@ -19,7 +19,7 @@ export default function QuestionLibrarySidebar() {
   const [showAllQuestions, setShowAllQuestions] = useState(true);
   const [collectionPage, setCollectionPage] = useState(1);
   const [collectionCount, setCollectionCount] = useState(0);
-  
+
   // Get collections based on search bar
   const { collections } = useSearchCollections(title);
 

@@ -1,5 +1,6 @@
-import type { ToolBarActionsProps } from "./types";
 import clsx from "clsx";
+
+import type { ToolBarActionsProps } from "./types";
 
 const toolbarActionsClassByVariant: Record<
   NonNullable<ToolBarActionsProps<string>["variant"]>,

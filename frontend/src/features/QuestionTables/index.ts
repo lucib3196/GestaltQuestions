@@ -1,5 +1,4 @@
 export * from "./columnConfig";
-
 export * from "./hooks";
 export {
   default,

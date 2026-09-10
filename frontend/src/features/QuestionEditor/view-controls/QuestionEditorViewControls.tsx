@@ -4,11 +4,11 @@ import type { QuestionRuntimeLanguage } from "../../../services/QuestionRuntime"
 import { useQuestionEditorContext } from "../store/context";
 import { ActivePanesToggle } from "./ActivePanesToggle";
 import { LayoutToggle } from "./LayoutToggle";
-import { RuntimeToggle } from "./RuntimeToggle";
 import {
   filterAvailableQuestionEditorPanes,
   getAvailableQuestionEditorPanes,
 } from "./questionEditorPaneAccess";
+import { RuntimeToggle } from "./RuntimeToggle";
 
 type QuestionEditorViewControlsProps = {
   runtimeLanguages: QuestionRuntimeLanguage[];

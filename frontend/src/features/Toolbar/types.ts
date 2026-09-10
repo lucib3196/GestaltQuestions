@@ -1,6 +1,7 @@
-import type { IconType } from "react-icons";
-import type { UserRole } from "../../services/Auth";
 import type { ReactNode } from "react";
+import type { IconType } from "react-icons";
+
+import type { UserRole } from "../../services/Auth";
 // Base Type: Base Actions for most users is copy, download and
 
 export type ToolBarActionVariant = "default" | "danger";

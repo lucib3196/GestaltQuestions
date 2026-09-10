@@ -6,5 +6,5 @@ export { useGetQuestionRunTimes } from "./runtime/useGetQuestionRunTimes";
 export type * from "./store/types";
 export { ActivePanesToggle } from "./view-controls/ActivePanesToggle";
 export { LayoutToggle } from "./view-controls/LayoutToggle";
-export { RuntimeToggle } from "./view-controls/RuntimeToggle";
 export { QuestionEditorViewControls } from "./view-controls/QuestionEditorViewControls";
+export { RuntimeToggle } from "./view-controls/RuntimeToggle";

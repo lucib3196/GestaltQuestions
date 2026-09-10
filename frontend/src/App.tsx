@@ -6,21 +6,15 @@ import DeveloperQuestionLibrary from "./features/DeveloperQuestionLibrary/Develo
 import { DeveloperWorkspaceLayout } from "./features/DeveloperWorkspace/DeveloperWorkspaceLayout";
 import PublishedQuestions from "./features/PublishedQuestions/PublishedQuestions";
 import { GeneralQuestionRender } from "./features/PublishedQuestions/PublishedQuestions";
-import { ManageAccess } from "./features/QuestionAccess/ManageAccess";
 import QuestionEditor from "./features/QuestionEditor/QuestionEditor";
-import { UserLookupProvider } from "./features/UserLookUp/instance/context";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
 import { RequireRole } from "./services/Auth";
-function Test() {
-  return (
-    <UserLookupProvider>
-      <ManageAccess qid="be94cfef-2b76-4f6a-8b44-f3b958d2be45" />
-    </UserLookupProvider>
-  );
-}
 
+function Test() {
+  return <div></div>;
+}
 function App() {
   return (
     <>
@@ -40,7 +34,10 @@ function App() {
 
             {/* Developer Only Routes */}
             <Route element={<RequireRole allow={["admin", "developer"]} />}>
-              <Route path="/question_builder" element={<DeveloperWorkspaceLayout />}>
+              <Route
+                path="/question_builder"
+                element={<DeveloperWorkspaceLayout />}
+              >
                 <Route
                   path="questions"
                   element={<DeveloperQuestionLibrary />}

@@ -4,11 +4,11 @@ import { useState } from "react";
 import { SearchBar } from "../../../components/SearchBar";
 import type { QuestionCollectionRead } from "../../../services";
 import { useAddQuestionToCollection } from "../../QuestionCollections/hooks/useAddQuestions";
+import { useCollections } from "../../QuestionCollections/hooks/useCollection";
 import useCreateCollection from "../../QuestionCollections/hooks/useCreateCollection";
 import { useTableBaseContext } from "../../TableBase/state";
 import { useSearchCollections } from "../hooks/useSearchCollections";
 import { CollectionResults } from "./CollectionResult";
-import { useCollections } from "../../QuestionCollections/hooks/useCollection";
 export function CreateCollectionSection({ title }: { title: string }) {
   const { createCollection } = useCreateCollection();
   return (
@@ -85,7 +85,7 @@ type CollectionPopUpProps = {
 export function CollectionPopUp({ onClose }: CollectionPopUpProps) {
   const selectedQuestions = useTableBaseContext((s) => s.selectedIds);
   const setSelectedQuestions = useTableBaseContext((s) => s.setSelectedIds);
-   const {fetchCollections} = useCollections()
+  const { fetchCollections } = useCollections();
 
   const [title, setTitle] = useState<string>("");
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<
@@ -125,7 +125,7 @@ export function CollectionPopUp({ onClose }: CollectionPopUpProps) {
         onSuccess: () => {
           setSelectedCollectionIds(new Set());
           setSelectedQuestions([]);
-          fetchCollections()
+          fetchCollections();
           onClose?.();
         },
       },
