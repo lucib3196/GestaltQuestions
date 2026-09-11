@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ColumnVisibilityPanel, useTableBaseContext } from "../../TableBase";
+
 import { AnchoredPopover } from "../../../components/AnchoredPopover";
 import { QuestionTableToolbar } from "../../QuestionTables/toolbar/QuestionTableToolbar";
+import { ColumnVisibilityPanel, useTableBaseContext } from "../../TableBase";
 import {
   type SharedWithMeActionId,
   sharedWithMeToolbarActions,
@@ -9,9 +10,7 @@ import {
 import { useSharedWithMeActionHandlers } from "./hooks/useSharedWithMeToolbarActions";
 
 export function SharedWithMeToolbar() {
-  const [openPopup, setOpenPopup] = useState<SharedWithMeActionId | null>(
-    null,
-  );
+  const [openPopup, setOpenPopup] = useState<SharedWithMeActionId | null>(null);
 
   const handlePopUp = (val: SharedWithMeActionId) => {
     if (val === openPopup) {
@@ -31,8 +30,7 @@ export function SharedWithMeToolbar() {
       openPopover={openPopup}
       onClosePopover={() => setOpenPopup(null)}
       isActionDisabled={(action) =>
-        action.id === "clearFilters" &&
-        Object.keys(columnFilters).length === 0
+        action.id === "clearFilters" && Object.keys(columnFilters).length === 0
       }
       renderActionPopover={(action) => {
         if (openPopup === "tableFilters" && action.id === "tableFilters") {

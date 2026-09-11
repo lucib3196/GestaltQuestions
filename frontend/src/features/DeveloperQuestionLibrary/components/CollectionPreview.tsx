@@ -1,6 +1,5 @@
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
 
-
 export function CollectionPreview() {
   const selectedCollection = useCollectionStore((s) => s.selectedCollection);
   const title = selectedCollection?.title ?? "All Questions";

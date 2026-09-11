@@ -17,7 +17,7 @@ export type ToolBarActionConfig<TId extends string = string> = {
   visible?: boolean;
   disabled?: boolean;
   allowedRoles?: readonly UserRole[];
-  className?:string
+  className?: string;
 };
 
 // Behavior when clicked

@@ -1,9 +1,9 @@
 import { useState } from "react";
 
 import { AnchoredPopover } from "../../../components/AnchoredPopover";
+import { QuestionTableToolbar } from "../../QuestionTables/toolbar/QuestionTableToolbar";
 import { ColumnVisibilityPanel } from "../../TableBase";
 import { useTableBaseContext } from "../../TableBase/state";
-import { QuestionTableToolbar } from "../../QuestionTables/toolbar/QuestionTableToolbar";
 import {
   type PublishedQuestionsToolbarActionId,
   publishedQuestionsToolbarActions,
@@ -34,10 +34,7 @@ export function PublishedQuestionsToolbar() {
             Object.keys(columnFilters).length === 0)
         }
         renderActionPopover={(action) => {
-          if (
-            openPopover === "tableFilters" &&
-            action.id === "tableFilters"
-          ) {
+          if (openPopover === "tableFilters" && action.id === "tableFilters") {
             return (
               <AnchoredPopover>
                 <ColumnVisibilityPanel columns={columnDefs} />

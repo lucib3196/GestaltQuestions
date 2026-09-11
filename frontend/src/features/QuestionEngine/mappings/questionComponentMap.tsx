@@ -12,8 +12,8 @@ import {
   PLHint,
   type PLHintProps,
   PLMatch,
-  type PLMatchItemProps,
   PLMatchItem,
+  type PLMatchItemProps,
   type PLMatchProps,
   PLMultipleChoice,
   type PLMultipleChoiceProps,
@@ -24,12 +24,12 @@ import {
   type PLNumberInputVariant,
   PLParsonsSequential,
   type PLParsonsSequentialProps,
-  PLSymbolicInput,
-  type PLSymbolicInputProps,
   PLQuestionPanel,
   type PLQuestionPanelProps,
   PLSolutionPanel,
   type PLSolutionPanelProps,
+  PLSymbolicInput,
+  type PLSymbolicInputProps,
 } from "../render/components";
 
 // The currently available tags that are processed, this is the mapping

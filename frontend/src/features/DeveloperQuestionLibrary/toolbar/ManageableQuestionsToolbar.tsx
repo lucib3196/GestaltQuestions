@@ -1,9 +1,10 @@
 import { useState } from "react";
+
+import { AnchoredPopover } from "../../../components/AnchoredPopover";
+import { useCollectionStore } from "../../QuestionCollections/instance/context";
+import { QuestionTableToolbar } from "../../QuestionTables/toolbar/QuestionTableToolbar";
 import QuestionSharing from "../../Sharing/QuestionSharing";
 import { ColumnVisibilityPanel, useTableBaseContext } from "../../TableBase";
-import { useCollectionStore } from "../../QuestionCollections/instance/context";
-import { AnchoredPopover } from "../../../components/AnchoredPopover";
-import { QuestionTableToolbar } from "../../QuestionTables/toolbar/QuestionTableToolbar";
 import { AddToCollectionsPopover } from "../popovers/AddToCollectionsPopover";
 import {
   type ManageableQuestionsActionId,

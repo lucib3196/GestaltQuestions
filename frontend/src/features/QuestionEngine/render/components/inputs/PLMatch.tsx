@@ -52,16 +52,17 @@ export default function PLMatch({
   leftTitle = "Prompt",
   rightTitle = "Match",
 }: PLMatchProps) {
-  const currentResponse = useQuestionInstance((s) => s.userAnswers[answersName]);
+  const currentResponse = useQuestionInstance(
+    (s) => s.userAnswers[answersName],
+  );
   const setUserAnswers = useQuestionInstance((s) => s.setUserAnswers);
   const setCorrectAnswer = useQuestionInstance((s) => s.setCorrectAnswer);
   const submitted = useQuestionInstance((s) => s.hasSubmitted);
 
   const items = useMemo(() => {
     return React.Children.toArray(children)
-      .filter(
-        (child): child is React.ReactElement<PLMatchItemProps> =>
-          React.isValidElement(child),
+      .filter((child): child is React.ReactElement<PLMatchItemProps> =>
+        React.isValidElement(child),
       )
       .map((child) => ({
         left: normalizeText(child.props.left),
