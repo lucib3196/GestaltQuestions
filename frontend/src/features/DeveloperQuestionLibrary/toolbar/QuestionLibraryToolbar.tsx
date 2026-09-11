@@ -1,61 +1,53 @@
-import { useState } from "react";
-import { useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 
-import { useCollectionStore } from "../../QuestionCollections/instance/context";
-import { TableBaseSearch } from "../../TableBase/components/search";
-import type { QuestionLibraryToolbarPopupActionId } from "./constants";
-import { QuestionLibraryToolbarActions } from "./QuestionLibraryToolbarActions";
+import { TableBaseSearch } from "../../TableBase";
+import ToolBarActions from "../../Toolbar/ToolBar";
+import type {
+  ToolBarActionConfig,
+  ToolBarActionHandlers,
+} from "../../Toolbar/types";
 
-function CollectionPreview() {
-  const selectedCollection = useCollectionStore((s) => s.selectedCollection);
-  const title = selectedCollection?.title ?? "All Questions";
-  const description = selectedCollection
-    ? "Showing questions in this collection"
-    : "Showing every available question";
+type QuestionLibraryToolbarProps<TId extends string> = {
+  actions: readonly ToolBarActionConfig<TId>[];
+  actionHandlers: ToolBarActionHandlers<TId>;
+  openPopover: TId | null;
+  onClosePopover: () => void;
+  isActionDisabled?: (action: ToolBarActionConfig<TId>) => boolean;
+  renderActionPopover?: (action: ToolBarActionConfig<TId>) => ReactNode;
+};
 
-  return (
-    <div className="flex min-w-0 flex-1 items-center gap-3 rounded-md border border-border bg-surface-secondary px-3 py-2 my-4">
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-text">{title}</p>
-      </div>
-      <span className="ml-auto hidden shrink-0 text-xs text-text-muted lg:inline">
-        {description}
-      </span>
-    </div>
-  );
-}
-
-export function QuestionLibraryToolbar() {
-  const [openPopup, setOpenPopup] =
-    useState<QuestionLibraryToolbarPopupActionId | null>(null);
+export function QuestionLibraryToolbar<TId extends string>({
+  actions,
+  actionHandlers,
+  openPopover,
+  onClosePopover,
+  isActionDisabled,
+  renderActionPopover,
+}: QuestionLibraryToolbarProps<TId>) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  //   Handle mouse down events when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Node;
       if (containerRef.current && !containerRef.current.contains(target)) {
-        setOpenPopup(null);
+        onClosePopover();
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [openPopup]);
-  return (
-    <div
-      className="relative rounded-lg border border-border bg-surface p-4 shadow-soft"
-      ref={containerRef}
-    >
-      <CollectionPreview />
-      <TableBaseSearch />
+  }, [onClosePopover, openPopover]);
 
-      <QuestionLibraryToolbarActions
-        popUp={openPopup}
-        onOpenPopUp={(id) =>
-          setOpenPopup((current) => (current === id ? null : id))
-        }
+  return (
+    <div ref={containerRef} className="flex flex-col gap-2">
+      <TableBaseSearch />
+      <ToolBarActions
+        actionHandlers={actionHandlers}
+        actions={actions}
+        isActionDisabled={isActionDisabled}
+        renderActionPopover={renderActionPopover}
       />
     </div>
   );

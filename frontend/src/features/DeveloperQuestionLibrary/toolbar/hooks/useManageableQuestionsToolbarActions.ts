@@ -2,13 +2,14 @@ import { useTableBaseContext } from "../../../TableBase";
 import { useCopyQuestion } from "../../../QuestionBuilder";
 import { useDeleteQuestion } from "../../../QuestionBuilder";
 import { useDownloadQuestions } from "../../../QuestionBuilder";
-import type { MyQuestionActionsId } from "../config/PersonalQuestionsConfig";
+import type { ManageableQuestionsActionId } from "../config/manageableQuestionsToolbarConfig";
 import { useRemoveQuestionsFromCollection } from "../../../QuestionCollections/hooks/useRemoveQuestions";
 import { useCollections } from "../../../QuestionCollections/hooks/useCollection";
-export function useMyQuestionToolBarActionHandlers(
+
+export function useManageableQuestionsToolbarActions(
   selectedIds: string[],
-  collection_id: string | null,
-  onOpenPopUp: (val: MyQuestionActionsId) => void,
+  collectionId: string | null,
+  onOpenPopUp: (val: ManageableQuestionsActionId) => void,
 ) {
   const clearSelectedIds = useTableBaseContext((s) => s.clearSelectedIds);
   const refreshRows = useTableBaseContext((s) => s.refreshRows);
@@ -17,9 +18,9 @@ export function useMyQuestionToolBarActionHandlers(
   const { downLoadQuestions } = useDownloadQuestions();
   const { deleteQuestion } = useDeleteQuestion();
   const { removeQuestionsFromCollection } = useRemoveQuestionsFromCollection();
-  const {fetchCollections} = useCollections()
+  const { fetchCollections } = useCollections();
 
-  const actionHandlers: Record<MyQuestionActionsId, () => void> = {
+  const actionHandlers: Record<ManageableQuestionsActionId, () => void> = {
     copy: async () => {
       await copyQuestion(selectedIds);
       refreshRows();
@@ -44,10 +45,10 @@ export function useMyQuestionToolBarActionHandlers(
       onOpenPopUp("collections");
     },
     removeFromCollection: async () => {
-      if (!collection_id) return;
-      removeQuestionsFromCollection(collection_id, selectedIds);
-      await fetchCollections()
-      refreshRows()
+      if (!collectionId) return;
+      removeQuestionsFromCollection(collectionId, selectedIds);
+      await fetchCollections();
+      refreshRows();
     },
   };
 

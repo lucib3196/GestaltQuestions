@@ -2,13 +2,11 @@ import { PersonalQuestionTableProvider } from "../../QuestionTables";
 import PersonalQuestionTable from "../../QuestionTables";
 import { useNavigate } from "react-router-dom";
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
-import { PersonalToolBar } from "../toolbar/PersonalQuestionToolBar";
+import { ManageableQuestionsToolbar } from "../toolbar/ManageableQuestionsToolbar";
 
 export function MyQuestionsView() {
   const navigate = useNavigate();
-
   const selectedCollection = useCollectionStore((s) => s.selectedCollectionId);
-
   return (
     <PersonalQuestionTableProvider>
       <section className="flex min-w-0 flex-col gap-4">
@@ -20,7 +18,7 @@ export function MyQuestionsView() {
             </p>
           </div>
         </div>
-        <PersonalToolBar />
+        <ManageableQuestionsToolbar />
         <PersonalQuestionTable
           baseQuery={{ collection_id: selectedCollection }}
           onRowSelect={(rowId) =>

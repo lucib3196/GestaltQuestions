@@ -1,148 +1,13 @@
-import type React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import { DeveloperQuestionLibraryShell } from "./layout/DeveloperQuestionLibraryShell";
+import QuestionLibrarySidebar from "./layout/QuestionLibrarySidebar";
+import { QuestionLibraryTableLayout } from "./layout/QuestionLibraryTableLayout";
+import { QuestionLibraryTabs } from "./layout/QuestionLibraryTabs";
+import type { QuestionLibraryTableView } from "./types";
 import { MyQuestionsView } from "./views/MyQuestionView";
-import { CollectionProvider } from "../QuestionCollections/instance/context";
-import {
-  SharedByMeQuestionTable,
-  SharedByMeTableProvider,
-  SharedWithMeQuestionTable,
-  SharedWithMeTableProvider,
-} from "../QuestionTables";
-import { TableBaseSearch } from "../TableBase/components/search";
-import { useTableBaseContext } from "../TableBase/state";
-import { UserLookupProvider } from "../UserLookUp/instance/context";
-import QuestionLibrarySidebar from "./sidebar/QuestionLibrarySidebar";
-
-type QuestionLibraryTableView = "myQuestions" | "sharedByMe" | "sharedWithMe";
-
-const QUESTION_LIBRARY_TABLE_OPTIONS = [
-  { id: "myQuestions", label: "My Questions" },
-  { id: "sharedByMe", label: "Shared by me" },
-  { id: "sharedWithMe", label: "Shared with me" },
-] as const satisfies readonly {
-  id: QuestionLibraryTableView;
-  label: string;
-}[];
-
-function tableOptionClassName(isActive: boolean) {
-  return isActive
-    ? "rounded-md border border-border-strong bg-surface-strong px-3 py-1.5 text-sm font-medium text-text"
-    : "rounded-md border border-border bg-surface-secondary px-3 py-1.5 text-sm font-medium text-text-muted transition hover:border-border-strong hover:text-text";
-}
-
-export function DeveloperQuestionLibraryShell({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <UserLookupProvider>
-      <CollectionProvider>
-        <div className="min-h-screen bg-bg px-4 py-5 text-text sm:px-6">
-          <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full flex-col gap-5">
-            {children}
-          </div>
-        </div>
-      </CollectionProvider>
-    </UserLookupProvider>
-  );
-}
-
-function QuestionLibraryTableTabs({
-  activeView,
-  onChange,
-}: {
-  activeView: QuestionLibraryTableView;
-  onChange: (view: QuestionLibraryTableView) => void;
-}) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      {QUESTION_LIBRARY_TABLE_OPTIONS.map((option) => (
-        <button
-          key={option.id}
-          type="button"
-          onClick={() => onChange(option.id)}
-          className={tableOptionClassName(activeView === option.id)}
-        >
-          {option.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-export function ShareSelectedButton({ onOpenShare }: { onOpenShare: () => void }) {
-  const selectedIds = useTableBaseContext((s) => s.selectedIds);
-
-  return (
-    <button
-      type="button"
-      onClick={onOpenShare}
-      disabled={!selectedIds.length}
-      className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-bg transition hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      Share selected
-    </button>
-  );
-}
-
-
-function SharedByMeView() {
-  const navigate = useNavigate();
-
-  return (
-    <SharedByMeTableProvider>
-      <section className="flex min-w-0 flex-col gap-4">
-        <div>
-          <h2 className="text-lg font-semibold text-text">Shared by me</h2>
-          <p className="mt-1 text-sm text-text-muted">
-            Review question access granted to other members.
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-border bg-surface p-4 shadow-soft">
-          <TableBaseSearch />
-        </div>
-
-        <SharedByMeQuestionTable
-          baseQuery={{}}
-          onRowSelect={(rowId) =>
-            navigate(`/question_builder/questions/${rowId}/edit`)
-          }
-        />
-      </section>
-    </SharedByMeTableProvider>
-  );
-}
-
-function SharedWithMeView() {
-  const navigate = useNavigate();
-
-  return (
-    <SharedWithMeTableProvider>
-      <section className="flex min-w-0 flex-col gap-4">
-        <div>
-          <h2 className="text-lg font-semibold text-text">Shared with me</h2>
-          <p className="mt-1 text-sm text-text-muted">
-            Questions other members have shared with you.
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-border bg-surface p-4 shadow-soft">
-          <TableBaseSearch />
-        </div>
-
-        <SharedWithMeQuestionTable
-          baseQuery={{}}
-          onRowSelect={(rowId) =>
-            navigate(`/question_builder/questions/${rowId}/edit`)
-          }
-        />
-      </section>
-    </SharedWithMeTableProvider>
-  );
-}
+import { SharedByMeView } from "./views/SharedByMeView";
+import { SharedWithMeView } from "./views/SharedWithMeView";
 
 function QuestionLibraryTableContent({
   activeView,
@@ -169,14 +34,14 @@ export default function DeveloperQuestionLibrary() {
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
         <QuestionLibrarySidebar />
 
-        <main className="flex min-w-0 flex-col gap-4 rounded-lg border border-border bg-surface p-4 shadow-soft">
-          <QuestionLibraryTableTabs
+        <QuestionLibraryTableLayout>
+          <QuestionLibraryTabs
             activeView={activeView}
             onChange={setActiveView}
           />
 
           <QuestionLibraryTableContent activeView={activeView} />
-        </main>
+        </QuestionLibraryTableLayout>
       </div>
     </DeveloperQuestionLibraryShell>
   );

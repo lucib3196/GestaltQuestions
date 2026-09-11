@@ -8,7 +8,7 @@ import { useCollections } from "../../QuestionCollections/hooks/useCollection";
 import useCreateCollection from "../../QuestionCollections/hooks/useCreateCollection";
 import { useTableBaseContext } from "../../TableBase/state";
 import { useSearchCollections } from "../hooks/useSearchCollections";
-import { CollectionResults } from "./CollectionResult";
+import { CollectionResults } from "./CollectionResults";
 export function CreateCollectionSection({ title }: { title: string }) {
   const { createCollection } = useCreateCollection();
   return (
@@ -79,10 +79,13 @@ function Header({
   );
 }
 
-type CollectionPopUpProps = {
+type AddToCollectionsPopoverProps = {
   onClose?: () => void;
 };
-export function CollectionPopUp({ onClose }: CollectionPopUpProps) {
+
+export function AddToCollectionsPopover({
+  onClose,
+}: AddToCollectionsPopoverProps) {
   const selectedQuestions = useTableBaseContext((s) => s.selectedIds);
   const setSelectedQuestions = useTableBaseContext((s) => s.setSelectedIds);
   const { fetchCollections } = useCollections();
