@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from textwrap import dedent
+from typing import List
 
 from src.services.code_runner.base import CodeRunner
 from src.services.code_runner.models import Language, RuntimeExecutionConfig
@@ -22,6 +23,10 @@ class PythonScriptRunner(CodeRunner):
     def _initialize_env(self) -> None:
         """Build environment variables used by the Python subprocess."""
         self._env = os.environ.copy()
+        
+        
+    def _helper_files(self) -> List[Path]:
+        return [Path("src/runtime_serialization.py").resolve()]
 
     def _build_runner_script(self, entry_point_path: str | Path) -> str:
         """Build inline bootstrap script that imports and calls configured function."""
@@ -34,7 +39,7 @@ class PythonScriptRunner(CodeRunner):
             import json
             from pathlib import Path
 
-            from src.runtime_serialization import to_json
+            from runtime_serialization import to_json
 
             def runtime_to_jsonable(value):
                 if isinstance(value, dict):
@@ -73,7 +78,7 @@ class PythonScriptRunner(CodeRunner):
 
 
 if __name__ == "__main__":
-    path = Path(r"src/services/code_runner/temp.py").resolve()
+    path = Path(r"app_test/assets/runtime_serialization_entry.py").resolve()
     config = RuntimeExecutionConfig(
         entry="server.py",
         language="python",

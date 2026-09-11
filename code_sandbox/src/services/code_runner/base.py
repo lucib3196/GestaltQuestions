@@ -5,7 +5,7 @@ from pathlib import Path
 import subprocess
 from subprocess import CompletedProcess
 import tempfile
-
+from typing import List
 from .error_handling import ExecutionError
 from .models import ExecutionResult, Language, RuntimeExecutionConfig
 
@@ -37,6 +37,10 @@ class CodeRunner(ABC):
         """Initialize runner environment for subprocess execution."""
         raise NotImplementedError("_initialize_env must be implemented by subclass")
 
+    @abstractmethod
+    def _helper_files(self) -> List[Path]:
+        raise NotImplementedError("_initialize_env must be implemented by subclass")
+
     def execute(self) -> CompletedProcess:
         """Write runtime files to temp workspace and execute the subprocess."""
         tmp_dir_name = self._get_temp_dir_name()
@@ -46,6 +50,17 @@ class CodeRunner(ABC):
             # Materialize runtime-provided files in isolated workspace.
             for filename, content in self.runtime_config.files.items():
                 (tmp_path / filename).write_text(content, encoding="utf-8")
+
+            for helper_file in self._helper_files():
+                if not helper_file.exists():
+                    raise ValueError(f"Helper file could not be found: {helper_file}")
+
+                (tmp_path / helper_file.name).write_text(
+                    helper_file.read_text(encoding="utf-8"),
+                    encoding="utf-8",
+                )
+            
+
 
             entry_point = (tmp_path / self.runtime_config.entry).as_posix()
             runner = self._build_runner_script(entry_point)
