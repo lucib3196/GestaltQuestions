@@ -1,23 +1,18 @@
 import type React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { MyQuestionsView } from "./views/MyQuestionView";
 import { CollectionProvider } from "../QuestionCollections/instance/context";
-import { useCollectionStore } from "../QuestionCollections/instance/context";
-import PersonalQuestionTable from "../QuestionTables";
 import {
-  PersonalQuestionTableProvider,
   SharedByMeQuestionTable,
   SharedByMeTableProvider,
   SharedWithMeQuestionTable,
   SharedWithMeTableProvider,
 } from "../QuestionTables";
-import QuestionSharing from "../Sharing/QuestionSharing";
 import { TableBaseSearch } from "../TableBase/components/search";
 import { useTableBaseContext } from "../TableBase/state";
 import { UserLookupProvider } from "../UserLookUp/instance/context";
 import QuestionLibrarySidebar from "./sidebar/QuestionLibrarySidebar";
-import { QuestionLibraryToolbar } from "./toolbar/QuestionLibraryToolbar";
 
 type QuestionLibraryTableView = "myQuestions" | "sharedByMe" | "sharedWithMe";
 
@@ -77,7 +72,7 @@ function QuestionLibraryTableTabs({
   );
 }
 
-function ShareSelectedButton({ onOpenShare }: { onOpenShare: () => void }) {
+export function ShareSelectedButton({ onOpenShare }: { onOpenShare: () => void }) {
   const selectedIds = useTableBaseContext((s) => s.selectedIds);
 
   return (
@@ -92,39 +87,6 @@ function ShareSelectedButton({ onOpenShare }: { onOpenShare: () => void }) {
   );
 }
 
-function MyQuestionsView() {
-  const navigate = useNavigate();
-  const [sharingOpen, setSharingOpen] = useState(false);
-  const selectedCollection = useCollectionStore((s) => s.selectedCollectionId);
-
-  return (
-    <PersonalQuestionTableProvider>
-      <section className="flex min-w-0 flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-semibold text-text">My Questions</h2>
-            <p className="mt-1 text-sm text-text-muted">
-              Browse, edit, and share your questions.
-            </p>
-          </div>
-
-          <ShareSelectedButton onOpenShare={() => setSharingOpen(true)} />
-        </div>
-
-        {sharingOpen && <QuestionSharing />}
-
-        <QuestionLibraryToolbar />
-
-        <PersonalQuestionTable
-          baseQuery={{ collection_id: selectedCollection }}
-          onRowSelect={(rowId) =>
-            navigate(`/question_builder/questions/${rowId}/edit`)
-          }
-        />
-      </section>
-    </PersonalQuestionTableProvider>
-  );
-}
 
 function SharedByMeView() {
   const navigate = useNavigate();

@@ -5,7 +5,7 @@ import type { UserRole } from "../../services/Auth";
 // Base Type: Base Actions for most users is copy, download and
 
 export type ToolBarActionVariant = "default" | "danger";
-
+export type ToolBarActionPlacement = "primary" | "overflow";
 // Metadat for the toolbar component
 export type ToolBarActionConfig<TId extends string = string> = {
   id: TId;
@@ -13,9 +13,11 @@ export type ToolBarActionConfig<TId extends string = string> = {
   icon?: IconType;
   variant?: ToolBarActionVariant;
   requiresSelection?: boolean;
+  placement?: ToolBarActionPlacement;
   visible?: boolean;
   disabled?: boolean;
   allowedRoles?: readonly UserRole[];
+  className?:string
 };
 
 // Behavior when clicked
