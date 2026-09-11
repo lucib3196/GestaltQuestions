@@ -1,6 +1,6 @@
-import type { QuestionTableRow } from "../../../../services";
+import type { QuestionTableRowBase } from "../../../../services";
 
-export function QuestionAdaptiveCell({ row }: { row: QuestionTableRow }) {
+export function QuestionAdaptiveCell({ row }: { row: QuestionTableRowBase }) {
   const isAdaptive = row.isAdaptive === true;
 
   return (

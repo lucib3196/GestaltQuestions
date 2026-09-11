@@ -5,15 +5,15 @@ import type { HITLResponse } from "langchain";
 import { useCallback } from "react";
 
 import { aiURL } from "../../config/apiConfig";
-import { useAuth } from "../Auth";
+import { useAuth } from "../../services/Auth";
 import { AIBubble, HumanBubble } from "./components/ChatBubble";
 import ChatContainer from "./components/ChatContainer";
 import { ChatInput } from "./components/ChatInput";
 import { ApprovalCard } from "./components/hitlApproval";
 import RenderToolCalls from "./components/ToolCallRender";
 import { useHITLReview } from "./hooks";
-import { useThreadStore } from "./instance/store";
-import { useChatStore } from "./instance/store";
+import { useChatStore } from "./instance/chat_store";
+import { useThreadStore } from "./instance/thread_store";
 import { prepareMessage } from "./utils";
 
 export function ChatSession() {

@@ -35,9 +35,7 @@ export default function PLHint({
           {level}
         </div>
 
-        <div className="min-w-0 max-w-none text-left text-text">
-          {children}
-        </div>
+        <div className="min-w-0 max-w-none text-left text-text">{children}</div>
       </div>
     </MathJax>
   );

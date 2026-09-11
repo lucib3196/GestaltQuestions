@@ -2,9 +2,9 @@ import type { HITLRequest, HITLResponse } from "langchain";
 import { useEffect } from "react";
 import { useCallback, useMemo, useState } from "react";
 
+import { useAuth } from "../../services/Auth";
 import { ChatApi } from "../../services/Chat";
-import { useAuth } from "../Auth";
-import { useThreadStore } from "./instance/store";
+import { useThreadStore } from "./instance/thread_store";
 
 export function useLoadUserThreads() {
   const { user } = useAuth();
@@ -26,7 +26,7 @@ export function useLoadUserThreads() {
         }
       } catch (error) {
         if (!cancelled) {
-          console.log("Error", error);
+          globalThis.console.log("Error", error);
         }
       }
     };
@@ -39,7 +39,8 @@ export function useLoadUserThreads() {
   }, [user, setThreads, threadId]); // Refresh when setthreads, or thread id is updated
 }
 
-type SubmitHITLResume = (resume: HITLResponse) => Promise<unknown> | unknown;
+// eslint-disable-next-line no-unused-vars
+type SubmitHITLResume = (_resume: HITLResponse) => Promise<unknown> | unknown;
 export function useHITLReview({
   interruptValue,
   submitResume,

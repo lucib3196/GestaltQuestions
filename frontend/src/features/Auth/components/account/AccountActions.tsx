@@ -1,7 +1,7 @@
 import { deleteUser } from "firebase/auth";
 import { toast } from "react-toastify";
 
-import { useAuth } from "../..";
+import { useAuth } from "../../../../services/Auth";
 
 export default function AccountActions() {
   const { user, logout } = useAuth();

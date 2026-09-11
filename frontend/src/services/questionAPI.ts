@@ -1,5 +1,5 @@
-import type { QuestionFilter, QuestionRead } from "../types/questionTypes";
 import api from "./client";
+import type { QuestionFilter, QuestionRead } from "./Questions";
 
 export class QuestionAPI {
   private static readonly base = "/questions";

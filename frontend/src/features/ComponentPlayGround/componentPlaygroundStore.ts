@@ -61,7 +61,11 @@ function getInitialComponentState(tag: ValidComponents) {
     selectedPresetName: preset?.name ?? "Custom",
     attributeValues,
     childrenValue,
-    editorValue: buildPlaygroundMarkup(component, attributeValues, childrenValue),
+    editorValue: buildPlaygroundMarkup(
+      component,
+      attributeValues,
+      childrenValue,
+    ),
   };
 }
 

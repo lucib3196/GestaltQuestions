@@ -65,7 +65,7 @@ class QuestionQTypeDB:
             QType.FB: "A question where the learner completes missing text in a prompt.",
             QType.NUM: "A question where the learner provides a numeric answer.",
             QType.PARSONS: "A question where the learner orders or assembles provided blocks.",
-            QType.MULTI: "Contains multiple types"
+            QType.MULTI: "Contains multiple types",
         }
         for qtype, description in valid_types.items():
             if not self.get_qtype(qtype):

@@ -2,27 +2,46 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useEffect, useMemo, useState } from "react";
 
 import { SearchBar } from "../../components/SearchBar";
-import type { UserDetailRead } from "../../services";
-import { UserLookupResult } from "./components";
+import {
+  SelectedUsersTray,
+  UserLookupHeader,
+  UserLookupPagination,
+  UserLookupResults,
+} from "./components";
 import { useUserLookup } from "./hooks/useUserLookUp";
-import { useUserLookUpStore } from "./instance/store";
+import { useUserLookupStore } from "./instance/context";
 
 const USERS_PER_PAGE = 3;
 
-export function UserLookUp() {
+export type UserLookupVariant = "panel" | "embedded" | "compact" | "plain";
+
+type UserLookUpProps = {
+  excluded?: string[];
+  variant?: UserLookupVariant;
+};
+
+const variantClassName: Record<UserLookupVariant, string> = {
+  panel:
+    "w-full max-w-xl rounded-md border border-border bg-surface p-4 text-text",
+  embedded:
+    "w-full rounded-md border border-border bg-surface-secondary p-3 text-text",
+  compact: "w-full text-text",
+  plain: "w-full text-text",
+};
+
+export function UserLookUp({ excluded, variant = "panel" }: UserLookUpProps) {
   const [search, setSearch] = useState<string>("");
   const [page, setPage] = useState(1);
   const debouncedSearch = useDebounce(search, 250);
-  const selectedUserIds = useUserLookUpStore((s) => s.selectedUserIds);
-  const setSelected = useUserLookUpStore((s) => s.setSelectedUserIds);
+  const selectedUsersById = useUserLookupStore((s) => s.selectedUsersById);
+  const toggleSelectedUser = useUserLookupStore((s) => s.toggleSelectedUser);
+  const removeSelectedUser = useUserLookupStore((s) => s.removeSelectedUser);
+  const clearSelectedUsers = useUserLookupStore((s) => s.clearSelectedUsers);
+  const selectedUserIds = Object.keys(selectedUsersById);
+  const showHeader = variant !== "compact";
+  const isCompact = variant === "compact";
 
-  const handleSelect = (user: UserDetailRead) => {
-    setSelected([user.id]);
-  };
-
-  console.log("selectedUsers", selectedUserIds);
-
-  const { users, loading, error } = useUserLookup(debouncedSearch);
+  const { users, loading, error } = useUserLookup(debouncedSearch, excluded);
   const totalPages = Math.max(1, Math.ceil(users.length / USERS_PER_PAGE));
 
   useEffect(() => {
@@ -35,78 +54,43 @@ export function UserLookUp() {
   }, [page, users]);
 
   return (
-    <div className="w-full max-w-xl rounded-md border border-border bg-surface p-4 text-text">
-      <div className="mb-4">
-        <h2 className="text-sm font-semibold">User Lookup</h2>
-        <p className="text-xs text-text-muted">
-          Search developers to share questions or collections.
-        </p>
-      </div>
+    <div className={variantClassName[variant]}>
+      {showHeader ? (
+        <UserLookupHeader
+          selectedCount={selectedUserIds.length}
+          onClear={clearSelectedUsers}
+        />
+      ) : null}
 
       <SearchBar
         value={search}
         setValue={(value) => setSearch(value)}
-        placeholder="Search developers..."
+        placeholder="Enter name or email"
       />
 
-      <div className="mt-4 space-y-2">
-        {loading ? (
-          <div className="rounded-md border border-border bg-surface-muted px-3 py-6 text-center text-sm text-text-muted">
-            Searching developers...
-          </div>
-        ) : null}
+      <SelectedUsersTray
+        isCompact={isCompact}
+        selectedUsersById={selectedUsersById}
+        onRemove={(user) => removeSelectedUser(user.id)}
+      />
 
-        {!loading && error ? (
-          <div className="rounded-md border border-warning-border bg-warning-muted px-3 py-3 text-sm text-warning">
-            {error}
-          </div>
-        ) : null}
+      <UserLookupResults
+        isCompact={isCompact}
+        users={users}
+        visibleUsers={visibleUsers}
+        loading={loading}
+        error={error}
+        selectedUsersById={selectedUsersById}
+        onSelect={toggleSelectedUser}
+      />
 
-        {!loading && !error && users.length === 0 ? (
-          <div className="rounded-md border border-border bg-surface-muted px-3 py-6 text-center text-sm text-text-muted">
-            No developers found.
-          </div>
-        ) : null}
-
-        {!loading && !error
-          ? visibleUsers.map((user) => (
-              <UserLookupResult
-                key={user.id}
-                user={user}
-                onSelect={handleSelect}
-                isSelected={selectedUserIds.some((v) => v === user.id)}
-              />
-            ))
-          : null}
-      </div>
-
-      {users.length > USERS_PER_PAGE ? (
-        <div className="mt-4 flex items-center justify-between gap-3 text-sm text-text-muted">
-          <button
-            type="button"
-            disabled={page === 1}
-            onClick={() => setPage((current) => Math.max(1, current - 1))}
-            className="rounded-md border border-border bg-surface-secondary px-3 py-1.5 transition hover:border-border-strong hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Previous
-          </button>
-
-          <span>
-            Page {page} of {totalPages}
-          </span>
-
-          <button
-            type="button"
-            disabled={page === totalPages}
-            onClick={() =>
-              setPage((current) => Math.min(totalPages, current + 1))
-            }
-            className="rounded-md border border-border bg-surface-secondary px-3 py-1.5 transition hover:border-border-strong hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      ) : null}
+      <UserLookupPagination
+        show={users.length > USERS_PER_PAGE}
+        page={page}
+        totalPages={totalPages}
+        onPrevious={() => setPage((current) => Math.max(1, current - 1))}
+        onNext={() => setPage((current) => Math.min(totalPages, current + 1))}
+      />
     </div>
   );
 }

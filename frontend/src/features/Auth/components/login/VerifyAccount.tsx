@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 
 import { Button } from "../../../../components/Button";
-import { useAuth } from "../../AuthContext";
+import { useAuth } from "../../../../services/Auth";
 
 export default function VerifyAccount() {
   const { user } = useAuth();

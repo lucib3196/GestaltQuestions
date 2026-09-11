@@ -1,13 +1,14 @@
 from collections.abc import Sequence
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
 from starlette import status
 
 from backend.accounts import UserDetailRead, UserReadError
 from backend.api.dependencies.users import CurrentUser
-from backend.authorization.roles import UserRoles
+from backend.shared import ID
 
-from .dependencies import UserLookupDependency
+from .dependencies import DeveloperProfileDependency, UserLookupDependency
 
 router = APIRouter(
     prefix="/user-lookup",
@@ -15,21 +16,29 @@ router = APIRouter(
 )
 
 
-@router.get("/developers", response_model=list[UserDetailRead])
+class LookUp(BaseModel):
+    query: str | None = None
+    excluded: list[ID] = Field(default_factory=list)
+    offset: int = 0
+    limit: int = 10
+
+
+@router.post("/developers", response_model=list[UserDetailRead])
 async def lookup_developers(
     current_user: CurrentUser,
     user_lookup: UserLookupDependency,
-    query: str | None = Query(default=None),
-    offset: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    profiles: DeveloperProfileDependency,
+    args: LookUp,
 ) -> Sequence[UserDetailRead]:
     try:
-        users = user_lookup.find_users(
-            [UserRoles.DEVELOPER],
-            query=query,
-            offset=offset,
-            limit=limit,
-            exclude_id=current_user,
+        current_profile = await profiles.get_profile(current_user)
+        excluded = [current_profile.id, *args.excluded]
+
+        users = user_lookup.find_developers(
+            query=args.query,
+            offset=args.offset,
+            limit=args.limit,
+            exclude_developer_ids=excluded,
         )
         return [UserDetailRead.from_model(user) for user in users]
     except UserReadError as e:

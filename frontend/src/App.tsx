@@ -1,24 +1,19 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import { RequireRole } from "./features/Auth";
 import { ComponentPlayGround } from "./features/ComponentPlayGround";
 import { CreateNewQuestion } from "./features/CreateNewQuestion";
-import PublishedQuestions from "./features/PublishedQuestions/PublishedQuestions";
-import { GeneralQuestionRender } from "./features/PublishedQuestions/PublishedQuestions";
-import { WorkspaceLinks } from "./features/QuestionBuilderWorkspace/links/WorkspaceLinks";
-import QuestionBuilderWorkspace from "./features/QuestionBuilderWorkspace/QuestionBuilderWorkspace";
-import QuestionWorkspace from "./features/QuestionWorkspace/QuestionWorkspace";
-import { UserLookUp } from "./features/UserLookUp/UserLookUp";
+import DeveloperQuestionLibrary from "./features/DeveloperQuestionLibrary/DeveloperQuestionLibrary";
+import { DeveloperWorkspaceLayout } from "./features/DeveloperWorkspace/DeveloperWorkspaceLayout";
+import Published from "./features/Published/Published";
+import { GeneralQuestionRender } from "./features/Published/Published";
+import QuestionEditor from "./features/QuestionEditor/QuestionEditor";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
+import { RequireRole } from "./services/Auth";
 
 function Test() {
-  return (
-    <div>
-      <UserLookUp />
-    </div>
-  );
+  return <div></div>;
 }
 function App() {
   return (
@@ -30,7 +25,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/account" element={<AccountPage />} />
 
-            <Route path="/questions" element={<PublishedQuestions />} />
+            <Route path="/questions" element={<Published />} />
             <Route path="/questions/:qid" element={<GeneralQuestionRender />} />
 
             <Route path="/test" element={<Test />}></Route>
@@ -39,16 +34,19 @@ function App() {
 
             {/* Developer Only Routes */}
             <Route element={<RequireRole allow={["admin", "developer"]} />}>
-              <Route path="/question_builder" element={<WorkspaceLinks />}>
+              <Route
+                path="/question_builder"
+                element={<DeveloperWorkspaceLayout />}
+              >
                 <Route
                   path="questions"
-                  element={<QuestionBuilderWorkspace />}
+                  element={<DeveloperQuestionLibrary />}
                 />
-                <Route index element={<QuestionBuilderWorkspace />} />
+                <Route index element={<DeveloperQuestionLibrary />} />
                 <Route path="questions/new" element={<CreateNewQuestion />} />
                 <Route
                   path="questions/:qid/edit"
-                  element={<QuestionWorkspace />}
+                  element={<QuestionEditor />}
                 />
                 <Route path="playground" element={<ComponentPlayGround />} />
                 <Route path="chat" element={<ChatPage />} />

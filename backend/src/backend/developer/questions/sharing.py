@@ -1,25 +1,7 @@
-from backend.authorization.resources import (
-    ResourceAccessService,
-    ResourceSharingService,
-)
-from backend.developer.model import DeveloperProfile
-from backend.question import Question
-from backend.question.access.models import QuestionAccess
+from backend.authorization.resources import ResourceSharingService
+from backend.developer.questions.access import QuestionAccessService
 
 
-class QuestionSharing(
-    ResourceSharingService[
-        QuestionAccess,
-        DeveloperProfile,
-        Question,
-    ]
-):
-    def __init__(
-        self,
-        access_service: ResourceAccessService[
-            QuestionAccess,
-            DeveloperProfile,
-            Question,
-        ],
-    ) -> None:
+class QuestionSharing(ResourceSharingService):
+    def __init__(self, access_service: QuestionAccessService) -> None:
         super().__init__(access_service=access_service)

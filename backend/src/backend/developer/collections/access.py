@@ -13,15 +13,19 @@ from backend.question.collections.models import (
 )
 
 
+class DetailRead(QuestionCollectionAccess):
+    email: str
+
+
 class QuestionCollectionAccessService(
     ResourceAccessService[
-        QuestionCollectionAccess, DeveloperProfile, QuestionCollection
+        QuestionCollectionAccess, DeveloperProfile, QuestionCollection, DetailRead
     ]
 ):
     def __init__(
         self,
         adapter: ResourceAccessAdapter[
-            QuestionCollectionAccess, DeveloperProfile, QuestionCollection
+            QuestionCollectionAccess, DeveloperProfile, QuestionCollection, DetailRead
         ],
         profile_service: DeveloperProfileService,
     ) -> None:

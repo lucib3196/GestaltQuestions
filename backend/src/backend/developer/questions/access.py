@@ -5,10 +5,14 @@ from backend.developer.profiles import DeveloperProfileService
 from backend.question import Question
 from backend.question.access import QuestionAccessAdapter
 from backend.question.access.models import QuestionAccess
+from backend.question.access.schema import QuestionAccessDetailRead
+from backend.shared import ID
 
 
 class QuestionAccessService(
-    ResourceAccessService[QuestionAccess, DeveloperProfile, Question]
+    ResourceAccessService[
+        QuestionAccess, DeveloperProfile, Question, QuestionAccessDetailRead
+    ]
 ):
     def __init__(
         self,
@@ -20,8 +24,10 @@ class QuestionAccessService(
         self.access_reader = access_reader
 
     async def retrieve_access(
-        self, requester: DeveloperProfile, resource: Question
+        self, requester: DeveloperProfile | ID, resource: Question | ID
     ) -> QuestionAccess | None:
+        requester = await self._resolve_profile(requester)
+        resource = await self._resolve_resource(resource)
         direct_access = await super().retrieve_access(requester, resource)
         if direct_access is not None:
             return direct_access

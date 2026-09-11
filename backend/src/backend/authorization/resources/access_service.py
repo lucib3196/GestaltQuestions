@@ -1,5 +1,7 @@
 from collections.abc import Sequence
-from typing import Generic
+from typing import ClassVar
+
+from pydantic import BaseModel
 
 from backend.authorization.exceptions import AccessPolicyError
 from backend.authorization.profiles.service import ProfileService
@@ -12,19 +14,22 @@ from backend.authorization.resources.exceptions import (
 from backend.authorization.types import (
     AccessDecision,
     AccessLevel,
-    AccessModelT,
+    AccessModelProtocol,
     Profile,
-    ProfileT,
     ResourceAccessResult,
     ResourceAccessRevokeResult,
     ResourceProtocol,
-    ResourceT,
 )
 from backend.shared import ID
 
 
-class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
-    _ACCESS_LEVEL_RANK = {
+class ResourceAccessService[
+    AccessModelT: AccessModelProtocol,
+    ProfileT: Profile,
+    ResourceT: ResourceProtocol,
+    AccessDetailRead: BaseModel,
+]:
+    _ACCESS_LEVEL_RANK: ClassVar[dict[AccessLevel, int]] = {
         AccessLevel.VIEW: 1,
         AccessLevel.EDIT: 2,
         AccessLevel.FULL: 3,
@@ -33,7 +38,9 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
 
     def __init__(
         self,
-        adapter: ResourceAccessAdapter[AccessModelT, ProfileT, ResourceT],
+        adapter: ResourceAccessAdapter[
+            AccessModelT, ProfileT, ResourceT, AccessDetailRead
+        ],
         profile_service: ProfileService[ProfileT],
     ) -> None:
         self._adapter = adapter
@@ -301,6 +308,17 @@ class ResourceAccessService(Generic[AccessModelT, ProfileT, ResourceT]):
                 profile_id=str(requester_profile.id),
                 details=str(e),
             ) from e
+
+    async def list_resource_access_details(
+        self, resource: ResourceT | ID, *, owner: ProfileT | ID | None = None
+    ) -> Sequence[AccessDetailRead]:
+        resource_model = await self._resolve_resource(resource)
+        owner_profile = (
+            await self._resolve_profile(owner) if owner is not None else None
+        )
+        return await self._adapter.list_access_details(
+            resource_model, owner=owner_profile
+        )
 
     async def _validate_owner(self, owner: ProfileT, resource: ResourceT) -> None:
         is_owner = await self._adapter.is_owner(resource, owner)

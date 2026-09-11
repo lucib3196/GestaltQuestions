@@ -31,7 +31,7 @@ class QType(StrEnum):
             QType.FB: "Fill in the Blank",
             QType.NUM: "Numerical",
             QType.PARSONS: "Parson",
-            QType.MULTI: "Multiple Types"
+            QType.MULTI: "Multiple Types",
         }[self]
 
 
