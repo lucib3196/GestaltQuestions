@@ -58,7 +58,7 @@ class CodeRunner(ABC):
                     cwd=tmp_path,
                     capture_output=True,
                     text=True,
-                    timeout=5,
+                    timeout=10,
                     check=True,
                     env=env,
                 )

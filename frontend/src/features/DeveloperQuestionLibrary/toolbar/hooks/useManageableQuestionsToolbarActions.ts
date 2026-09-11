@@ -12,6 +12,7 @@ export function useManageableQuestionsToolbarActions(
   onOpenPopUp: (val: ManageableQuestionsActionId) => void,
 ) {
   const clearSelectedIds = useTableBaseContext((s) => s.clearSelectedIds);
+  const clearColumnFilters = useTableBaseContext((s) => s.clearColumnFilters);
   const refreshRows = useTableBaseContext((s) => s.refreshRows);
 
   const { copyQuestion } = useCopyQuestion();
@@ -40,6 +41,9 @@ export function useManageableQuestionsToolbarActions(
     },
     tableFilters: async () => {
       onOpenPopUp("tableFilters");
+    },
+    clearFilters: () => {
+      clearColumnFilters();
     },
     collections: async () => {
       onOpenPopUp("collections");

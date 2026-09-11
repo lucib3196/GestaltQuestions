@@ -1,37 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import type { QuestionRuntimeLanguage } from "../../services";
 import { RuntimeToggle, useGetQuestionRunTimes } from "../QuestionEditor";
 import { QuestionRender } from "../QuestionEngine";
-import { PublishedQuestionsTable } from "../QuestionTables";
-import { TableBaseProvider } from "../TableBase";
-import { ToolBar } from "./toolbar/ToolBar";
+import { PublishedShell } from "./layout/PublishedShell";
+import { QuestionsView } from "./views/QuestionsView";
 
-export default function PublishedQuestions() {
-  const navigate = useNavigate();
+export default function Published() {
   return (
-    <TableBaseProvider>
-      <div className="flex min-h-screen flex-col bg-bg px-4 py-5 text-text sm:px-6 gap-5">
-        <section className="rounded-lg border border-border bg-surface-strong px-5 py-4 shadow-soft">
-          <h1 className="text-2xl font-semibold text-text">
-            Published Questions
-          </h1>
-          <p className="mt-1 max-w-3xl text-sm text-text-muted">
-            Browse the published question bank. Select questions in the table,
-            then use the toolbar to copy them into your workspace or download
-            them.
-          </p>
-        </section>
-
-        <ToolBar />
-        <div className="flex flex-1">
-          <PublishedQuestionsTable
-            onRowSelect={(rowId) => navigate(`/questions/${rowId}`)}
-          />
-        </div>
-      </div>
-    </TableBaseProvider>
+    <PublishedShell>
+      <QuestionsView />
+    </PublishedShell>
   );
 }
 

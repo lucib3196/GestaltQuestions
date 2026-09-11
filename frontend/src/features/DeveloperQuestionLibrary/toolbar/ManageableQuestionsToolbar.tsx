@@ -2,14 +2,14 @@ import { useState } from "react";
 import QuestionSharing from "../../Sharing/QuestionSharing";
 import { ColumnVisibilityPanel, useTableBaseContext } from "../../TableBase";
 import { useCollectionStore } from "../../QuestionCollections/instance/context";
+import { AnchoredPopover } from "../../../components/AnchoredPopover";
+import { QuestionTableToolbar } from "../../QuestionTables/toolbar/QuestionTableToolbar";
 import { AddToCollectionsPopover } from "../popovers/AddToCollectionsPopover";
-import { PopoverContainer } from "../popovers/PopoverContainer";
 import {
   type ManageableQuestionsActionId,
   manageableQuestionsToolbarActions,
 } from "./config/manageableQuestionsToolbarConfig";
 import { useManageableQuestionsToolbarActions } from "./hooks/useManageableQuestionsToolbarActions";
-import { QuestionLibraryToolbar } from "./QuestionLibraryToolbar";
 
 export function ManageableQuestionsToolbar() {
   const [openPopup, setOpenPopup] =
@@ -32,9 +32,10 @@ export function ManageableQuestionsToolbar() {
     handlePopUp,
   );
   const columnDefs = useTableBaseContext((s) => s.columnDefs);
+  const columnFilters = useTableBaseContext((s) => s.columnFilters);
 
   return (
-    <QuestionLibraryToolbar
+    <QuestionTableToolbar
       actionHandlers={actionHandlers}
       actions={manageableQuestionsToolbarActions}
       openPopover={openPopup}
@@ -46,19 +47,22 @@ export function ManageableQuestionsToolbar() {
         if (action.id === "removeFromCollection") {
           return base || !selectedCollectionId;
         }
+        if (action.id === "clearFilters") {
+          return Object.keys(columnFilters).length === 0;
+        }
         return base;
       }}
       renderActionPopover={(action) => {
         if (openPopup === "tableFilters" && action.id === "tableFilters") {
           return (
-            <PopoverContainer>
+            <AnchoredPopover>
               <ColumnVisibilityPanel columns={columnDefs} />
-            </PopoverContainer>
+            </AnchoredPopover>
           );
         }
         if (openPopup === "shareQuestion" && action.id === "shareQuestion") {
           return (
-            <PopoverContainer size="lg">
+            <AnchoredPopover size="lg">
               <QuestionSharing
                 questionIds={selectedQuestionIds}
                 closeOnShare
@@ -67,14 +71,14 @@ export function ManageableQuestionsToolbar() {
                   <div>Total Questions {selectedQuestionIds.length}</div>
                 }
               />
-            </PopoverContainer>
+            </AnchoredPopover>
           );
         }
         if (openPopup === "collections" && action.id === "collections") {
           return (
-            <PopoverContainer size="lg">
+            <AnchoredPopover size="lg">
               <AddToCollectionsPopover onClose={() => setOpenPopup(null)} />
-            </PopoverContainer>
+            </AnchoredPopover>
           );
         }
       }}

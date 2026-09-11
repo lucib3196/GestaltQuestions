@@ -11,6 +11,10 @@ import {
   type PLFigureProps,
   PLHint,
   type PLHintProps,
+  PLMatch,
+  type PLMatchItemProps,
+  PLMatchItem,
+  type PLMatchProps,
   PLMultipleChoice,
   type PLMultipleChoiceProps,
   PLNumberInput,
@@ -18,6 +22,10 @@ import {
   type PLNumberInputFixedProps,
   type PLNumberInputProps,
   type PLNumberInputVariant,
+  PLParsonsSequential,
+  type PLParsonsSequentialProps,
+  PLSymbolicInput,
+  type PLSymbolicInputProps,
   PLQuestionPanel,
   type PLQuestionPanelProps,
   PLSolutionPanel,
@@ -30,6 +38,7 @@ export type ValidComponents =
   | "pl-question-panel"
   | "pl-number-input"
   | "pl-number-input-fixed"
+  | "pl-symbolic-input"
   | "pl-figure"
   | "pl-solution-panel"
   | "pl-hint"
@@ -37,12 +46,16 @@ export type ValidComponents =
   | "pl-derivation-step"
   | "pl-multiple-choice"
   | "pl-checkbox"
+  | "pl-match"
+  | "pl-parsons-sequential"
+  | "pl-item"
   | "pl-answer";
 
 export type TagRegistry = {
   "pl-question-panel": PLQuestionPanelProps;
   "pl-number-input": PLNumberInputProps;
   "pl-number-input-fixed": PLNumberInputFixedProps;
+  "pl-symbolic-input": PLSymbolicInputProps;
   "pl-figure": PLFigureProps;
   "pl-solution-panel": PLSolutionPanelProps;
   "pl-hint": PLHintProps;
@@ -50,6 +63,9 @@ export type TagRegistry = {
   "pl-derivation-step": PLDerivationStepProps;
   "pl-multiple-choice": PLMultipleChoiceProps;
   "pl-checkbox": PLMultipleChoiceProps;
+  "pl-match": PLMatchProps;
+  "pl-parsons-sequential": PLParsonsSequentialProps;
+  "pl-item": PLMatchItemProps;
   "pl-answer": PLAnswerProps;
 };
 
@@ -60,6 +76,7 @@ export const ComponentMap: Record<
   "pl-question-panel": PLQuestionPanel,
   "pl-number-input": PLNumberInput,
   "pl-number-input-fixed": PLNumberInputFixed,
+  "pl-symbolic-input": PLSymbolicInput,
   "pl-figure": PLFigure,
   "pl-solution-panel": PLSolutionPanel,
   "pl-hint": PLHint,
@@ -67,6 +84,9 @@ export const ComponentMap: Record<
   "pl-derivation-step": PLDerivationStep,
   "pl-multiple-choice": PLMultipleChoice,
   "pl-checkbox": PLMultipleChoice,
+  "pl-match": PLMatch,
+  "pl-parsons-sequential": PLParsonsSequential,
+  "pl-item": PLMatchItem,
   "pl-answer": PLAnswer,
 };
 
@@ -126,6 +146,14 @@ export const TagAttributeMapping: {
     className: attrs["classname"] || attrs["class"],
     variant: mapNumberInputVariant(attrs["variant"]),
   }),
+  "pl-symbolic-input": (attrs) => ({
+    answerName: attrs["answers-name"],
+    comparison: attrs["comparison"] ?? "exact",
+    digits: Number(attrs["digits"] ?? 3),
+    label: attrs["label"] ?? "",
+    className: attrs["classname"] || attrs["class"],
+    variant: mapNumberInputVariant(attrs["variant"]),
+  }),
   "pl-figure": (attrs) => ({
     src: attrs["src"],
     filename: attrs["filename"] || attrs["file-name"],
@@ -170,5 +198,24 @@ export const TagAttributeMapping: {
     randomize: attrs["randomize"] !== "false",
     style: attrs["style"],
     multiple: attrs["multiple"] === "true",
+  }),
+  "pl-match": (attrs) => ({
+    answersName: attrs["answers-name"],
+    type: attrs["type"] ?? "match",
+    leftTitle: attrs["left-title"] ?? "Prompt",
+    rightTitle: attrs["right-title"] ?? "Match",
+    className: attrs["classname"] || attrs["class"],
+  }),
+  "pl-item": (attrs) => ({
+    left: attrs["left"] ?? "",
+    right: attrs["right"] ?? "",
+    seq: attrs["seq"] ?? "",
+    dist: attrs["dist"] ?? "f",
+    comment: attrs["comment"] ?? "",
+  }),
+  "pl-parsons-sequential": (attrs) => ({
+    answersName: attrs["answers-name"],
+    type: attrs["type"] ?? "sequential",
+    className: attrs["classname"] || attrs["class"],
   }),
 };

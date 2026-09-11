@@ -34,6 +34,23 @@ class PythonScriptRunner(CodeRunner):
             import json
             from pathlib import Path
 
+            from src.runtime_serialization import to_json
+
+            def runtime_to_jsonable(value):
+                if isinstance(value, dict):
+                    return {{
+                        key: runtime_to_jsonable(item)
+                        for key, item in value.items()
+                    }}
+
+                if isinstance(value, list):
+                    return [runtime_to_jsonable(item) for item in value]
+
+                if isinstance(value, tuple):
+                    return [runtime_to_jsonable(item) for item in value]
+
+                return to_json(value)
+
             entry = Path({entry_point_path!r}).resolve()
             func_name = {self.runtime_config.func_name!r}
 
@@ -49,14 +66,14 @@ class PythonScriptRunner(CodeRunner):
                 raise RuntimeError(f"Function '{{func_name}}' not found or not callable")
 
             result = fn()
-            print(json.dumps(result))
+            print(json.dumps(runtime_to_jsonable(result)))
             """
         )
         return bootstrap
 
 
 if __name__ == "__main__":
-    path = Path(r"../app_test/assets/generate.py").resolve()
+    path = Path(r"src/services/code_runner/temp.py").resolve()
     config = RuntimeExecutionConfig(
         entry="server.py",
         language="python",

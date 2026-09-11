@@ -1,5 +1,5 @@
 import { BsCollectionFill } from "react-icons/bs";
-import { FaCopy, FaDownload, FaFilter } from "react-icons/fa";
+import { FaCopy, FaDownload, FaFilter, FaTimesCircle } from "react-icons/fa";
 import { MdDelete, MdRemoveCircle } from "react-icons/md";
 
 import type { ToolBarActionConfig } from "../../Toolbar/types";
@@ -35,8 +35,14 @@ export const QUESTION_LIBRARY_TOOLBAR_ACTION_CONFIGS = {
     icon: FaFilter,
     allowedRoles: ["developer"],
     visible: true,
-    className: "ml-auto"
-    
+    className: "ml-auto",
+  },
+  clearFilters: {
+    id: "clearFilters",
+    label: "Clear filters",
+    icon: FaTimesCircle,
+    allowedRoles: ["developer"],
+    visible: true,
   },
   delete: {
     id: "delete",

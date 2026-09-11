@@ -1,9 +1,12 @@
 import { buildQuestionLibraryToolbarActions } from "../constants";
 
 export const sharedWithMeToolbarActions = buildQuestionLibraryToolbarActions(
-  ["tableFilters"] as const,
+  ["tableFilters", "clearFilters"] as const,
 
-  { tableFilters: { placement: "primary" } },
+  {
+    tableFilters: { placement: "primary" },
+    clearFilters: { placement: "primary" },
+  },
 );
 
 export type SharedWithMeActionId =

@@ -7,7 +7,7 @@ import type {
   ToolBarActionHandlers,
 } from "../../Toolbar/types";
 
-type QuestionLibraryToolbarProps<TId extends string> = {
+type QuestionTableToolbarProps<TId extends string> = {
   actions: readonly ToolBarActionConfig<TId>[];
   actionHandlers: ToolBarActionHandlers<TId>;
   openPopover: TId | null;
@@ -16,14 +16,14 @@ type QuestionLibraryToolbarProps<TId extends string> = {
   renderActionPopover?: (action: ToolBarActionConfig<TId>) => ReactNode;
 };
 
-export function QuestionLibraryToolbar<TId extends string>({
+export function QuestionTableToolbar<TId extends string>({
   actions,
   actionHandlers,
   openPopover,
   onClosePopover,
   isActionDisabled,
   renderActionPopover,
-}: QuestionLibraryToolbarProps<TId>) {
+}: QuestionTableToolbarProps<TId>) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {

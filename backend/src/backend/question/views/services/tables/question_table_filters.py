@@ -6,7 +6,7 @@ from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.selectable import Subquery
 from sqlmodel import col
 
-from backend.question import QuestionQTypeLink, QuestionType
+from backend.question import QuestionQTypeLink, QuestionType, Topic, QuestionTopicLink
 from backend.question.views.schema import QuestionSearchParamsBase
 from backend.question_runtime.model import QuestionRunTime
 from backend.tables import FilterBuilder
@@ -46,16 +46,20 @@ class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
         self.filters.append(subquery.c.status == self.params.status.name)
 
     def add_topic(self, subquery: Subquery) -> None:
-        if not self.params.topic:
+        topic = self.params.topic.strip() if self.params.topic else None
+        if not topic:
             return
 
-        topics = select(func.unnest(subquery.c.topics).label("topic")).subquery()
-        self.filters.append(
+        topic_match = (
             select(1)
-            .select_from(topics)
-            .where(topics.c.topic.ilike(f"%{self.params.topic}%"))
+            .select_from(QuestionTopicLink)
+            .join(Topic, col(Topic.id) == col(QuestionTopicLink.topic_id))
+            .where(col(QuestionTopicLink.question_id) == subquery.c.question_id)
+            .where(col(Topic.name).ilike(f"%{topic}%"))
             .exists()
         )
+
+        self.filters.append(topic_match)
 
     def add_is_adaptive(self, subquery: Subquery) -> None:
         if self.params.isAdaptive is None:

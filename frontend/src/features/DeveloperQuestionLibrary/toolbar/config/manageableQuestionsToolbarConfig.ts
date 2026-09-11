@@ -10,6 +10,7 @@ export const manageableQuestionsToolbarActions =
       "delete",
       "removeFromCollection",
       "tableFilters",
+      "clearFilters",
     ] as const,
     {
       copy: {
@@ -22,6 +23,9 @@ export const manageableQuestionsToolbarActions =
       shareQuestion: { placement: "primary" },
       collections: { placement: "primary" },
       tableFilters: {
+        placement: "primary",
+      },
+      clearFilters: {
         placement: "primary",
       },
       delete: {

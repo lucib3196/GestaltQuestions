@@ -4,8 +4,8 @@ import { ComponentPlayGround } from "./features/ComponentPlayGround";
 import { CreateNewQuestion } from "./features/CreateNewQuestion";
 import DeveloperQuestionLibrary from "./features/DeveloperQuestionLibrary/DeveloperQuestionLibrary";
 import { DeveloperWorkspaceLayout } from "./features/DeveloperWorkspace/DeveloperWorkspaceLayout";
-import PublishedQuestions from "./features/PublishedQuestions/PublishedQuestions";
-import { GeneralQuestionRender } from "./features/PublishedQuestions/PublishedQuestions";
+import Published from "./features/Published/Published";
+import { GeneralQuestionRender } from "./features/Published/Published";
 import QuestionEditor from "./features/QuestionEditor/QuestionEditor";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
@@ -25,7 +25,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/account" element={<AccountPage />} />
 
-            <Route path="/questions" element={<PublishedQuestions />} />
+            <Route path="/questions" element={<Published />} />
             <Route path="/questions/:qid" element={<GeneralQuestionRender />} />
 
             <Route path="/test" element={<Test />}></Route>
