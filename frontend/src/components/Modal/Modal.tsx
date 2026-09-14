@@ -12,7 +12,7 @@ const modalSizeVariants = {
 const modalPresentationVariants = {
   modal: {
     overlay:
-      "fixed inset-0 z-50 flex items-center justify-center bg-bg/70 px-4 py-6 backdrop-blur-sm",
+      "fixed inset-0 z-50 flex items-center justify-center bg-bg/70 px-4 py-6 ",
     panel:
       "flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface-strong text-text shadow-soft",
     ariaModal: true,

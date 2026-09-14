@@ -1,11 +1,13 @@
 import { Edit3, Folder, Plus, Share2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+
+import AddQuestionsToCollection from "../AddQuestionsToCollection";
 import { MyQuestionsView } from "../DeveloperQuestionLibrary/views/MyQuestionView";
 import { useFetchCollection } from "../QuestionCollections/hooks/useFetchCollection";
 import { CollectionProvider } from "../QuestionCollections/instance/context";
 import { useCollectionStore } from "../QuestionCollections/instance/context";
-import { useState } from "react";
-import SearchAndAddQuestions from "./components/SearchQuestions";
+import { Modal } from "../../components/Modal";
 const DEFAULT_COLLECTION_COLOR = "var(--color-accent)";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -34,7 +36,9 @@ function CollectionViewData() {
     (s) => s.setSelectedCollectionId,
   );
 
-  setSelectedCollection(collectionId);
+  useEffect(() => {
+    setSelectedCollection(collectionId ?? null);
+  }, [collectionId, setSelectedCollection]);
 
   if (loading) {
     return (
@@ -156,7 +160,11 @@ function CollectionViewData() {
         </div>
       </div>
 
-      {showQuestion && <SearchAndAddQuestions />}
+      {showQuestion && (
+        <Modal setShowModal={(val) => setShowQuestion(val)} variant="default">
+          <AddQuestionsToCollection collection={collection} />
+        </Modal>
+      )}
       <MyQuestionsView />
     </section>
   );
