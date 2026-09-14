@@ -4,8 +4,11 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, text
 from sqlmodel import Field, Relationship, SQLModel
-
+from sqlalchemy import JSON, Column
 from backend.authorization import AccessLevel
+from sqlalchemy.dialects.postgresql import JSONB
+
+JSONType = JSON().with_variant(JSONB, "postgresql")
 
 
 class QuestionCollection(SQLModel, table=True):
@@ -16,7 +19,9 @@ class QuestionCollection(SQLModel, table=True):
         foreign_key="developer_profile.id",
     )
     title: str = Field(index=True)
+    
 
+    # Nested information
     parent_id: UUID | None = Field(
         default=None,
         foreign_key="question_collection.id",

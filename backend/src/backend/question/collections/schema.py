@@ -1,10 +1,10 @@
 from datetime import datetime
 from uuid import UUID
-
+from typing import Literal
 from pydantic import BaseModel, Field
 
 from backend.question.collections.models import QuestionCollection
-
+from pydantic import BaseModel, ConfigDict
 
 class QuestionCollectionCreate(BaseModel):
     owner_id: UUID | str
@@ -43,3 +43,13 @@ class QuestionCollectionRead(BaseModel):
             question_ids=question_ids or [],
             subcollections_len=len(collection.children),
         )
+
+
+
+class CollectionCustomization(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: Literal[1] = 1
+
+    color: str | None = None
+    icon: str | None = None
