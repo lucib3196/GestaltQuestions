@@ -3,12 +3,19 @@ import type { QuestionRead } from "../Questions";
 export type CollectionId = string;
 export type QuestionId = string;
 
+export type CollectionCustomization = {
+  schema_version: number;
+  color: string | null;
+  icon: string | null;
+};
 export type QuestionCollection = {
   id: CollectionId | null;
   owner_id: string | null;
   title: string;
   parent_id: CollectionId | null;
   children?: QuestionCollection[];
+  description: string | null;
+  customization: CollectionCustomization | null;
   created_at: string;
   updated_at: string;
 };

@@ -11,7 +11,8 @@ import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
 import { RequireRole } from "./services/Auth";
-
+import DeveloperCollections from "./features/DeveloperCollections/DeveloperCollections";
+import CollectionView from "./features/DeveloperCollections/CollectionView";
 function Test() {
   return <div></div>;
 }
@@ -43,6 +44,11 @@ function App() {
                   element={<DeveloperQuestionLibrary />}
                 />
                 <Route index element={<DeveloperQuestionLibrary />} />
+                <Route path="collections" element={<DeveloperCollections />} />
+                <Route
+                  path="collections/:collectionId"
+                  element={<CollectionView />}
+                />
                 <Route path="questions/new" element={<CreateNewQuestion />} />
                 <Route
                   path="questions/:qid/edit"

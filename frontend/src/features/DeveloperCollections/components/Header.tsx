@@ -12,7 +12,7 @@ export default function Header({ onCreateCollection }: CollectionsHeaderProps) {
           Collections
         </h1>
         <p className="mt-2 text-base text-text-muted sm:text-lg">
-          Organize your questions. Share what you know.
+          Organize your questions. 
         </p>
       </div>
 

@@ -7,7 +7,7 @@ from sqlmodel import Field, Relationship, SQLModel
 from sqlalchemy import JSON, Column
 from backend.authorization import AccessLevel
 from sqlalchemy.dialects.postgresql import JSONB
-
+from typing import Any
 JSONType = JSON().with_variant(JSONB, "postgresql")
 
 
@@ -19,6 +19,10 @@ class QuestionCollection(SQLModel, table=True):
         foreign_key="developer_profile.id",
     )
     title: str = Field(index=True)
+    description:str|None
+    customization :  dict[str, Any] = Field(
+        sa_column=Column(JSONType, nullable=False)
+    )
     
 
     # Nested information
