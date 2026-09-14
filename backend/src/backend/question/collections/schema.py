@@ -1,30 +1,32 @@
 from datetime import datetime
 from uuid import UUID
-from typing import Literal
+from typing import Literal, Any
 from pydantic import BaseModel, Field
 
 from backend.question.collections.models import QuestionCollection
 from pydantic import BaseModel, ConfigDict
 
 
+class CollectionCustomization(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    color: str | None = None
+    icon: str | None = None
+    schema_version: Literal[1] = 1
+
+
 class QuestionCollectionCreate(BaseModel):
-    owner_id: UUID | str
     title: str
-    parent_id: UUID | str | None = None
+    description: str | None = None
+    customization: dict[str, Any] | CollectionCustomization = Field(
+        default_factory=dict
+    )
+    parent_id: str | UUID | None = None
 
 
 class QuestionCollectionUpdate(BaseModel):
     title: str | None = None
     parent_id: UUID | str | None = None
-
-
-class CollectionCustomization(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    schema_version: Literal[1] = 1
-
-    color: str | None = None
-    icon: str | None = None
 
 
 class QuestionCollectionRead(BaseModel):

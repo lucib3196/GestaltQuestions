@@ -29,10 +29,12 @@ class DeveloperCollectionService:
         self._authorizer = authorizer
 
     async def create_collection(
-        self, user: User | ID, title: str
+        self, user: User | ID, title: str, *, description: str | None = None
     ) -> QuestionCollection:
         owner = await self._authorizer.resolve_profile(user)
-        return await self._collections.create_collection(owner, title)
+        return await self._collections.create_collection(
+            owner, title, description=description
+        )
 
     async def get_collection(
         self, user: User | ID, collection_id: ID

@@ -8,6 +8,12 @@ from sqlalchemy import JSON, Column
 from backend.authorization import AccessLevel
 from sqlalchemy.dialects.postgresql import JSONB
 from typing import Any
+from enum import StrEnum
+
+class Status(StrEnum):
+    ARCHIVED = "archived"
+    DRAFT = "draft"
+    PUBLISHED = "published"
 
 JSONType = JSON().with_variant(JSONB, "postgresql")
 
@@ -24,6 +30,7 @@ class QuestionCollection(SQLModel, table=True):
     customization: dict[str, Any] | None = Field(
         sa_column=Column(JSONType, nullable=False), default_factory=dict
     )
+    status: Status|None = Field(default = Status.DRAFT)
 
     # Nested information
     parent_id: UUID | None = Field(

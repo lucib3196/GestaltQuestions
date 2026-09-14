@@ -15,7 +15,10 @@ from backend.question.collections import (
     QuestionCollectionLink,
     QuestionCollectionNotFoundError,
 )
-from backend.question.collections.schema import QuestionCollectionRead
+from backend.question.collections.schema import (
+    QuestionCollectionRead,
+    QuestionCollectionCreate,
+)
 from backend.shared import ID
 
 from .dependencies import DevCollectionManager
@@ -24,11 +27,6 @@ router = APIRouter(
     prefix="/collections",
     tags=["Collections"],
 )
-
-
-class CreateCollectionPayload(BaseModel):
-    title: str
-    parent_id: str | UUID | None = None
 
 
 class UpdateCollectionPayload(BaseModel):
@@ -48,12 +46,11 @@ class CollectionQuestionPayload(BaseModel):
 async def create_collection(
     current_user: CurrentUser,
     collections: DevCollectionManager,
-    payload: CreateCollectionPayload,
+    payload: QuestionCollectionCreate,
 ) -> QuestionCollection:
     try:
         return await collections.create_collection(
-            current_user,
-            title=payload.title,
+            current_user, title=payload.title, description=payload.description
         )
     except DeveloperAccessDenied as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
