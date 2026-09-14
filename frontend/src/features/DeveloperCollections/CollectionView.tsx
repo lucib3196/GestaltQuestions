@@ -1,8 +1,11 @@
 import { Edit3, Folder, Plus, Share2 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-
+import { MyQuestionsView } from "../DeveloperQuestionLibrary/views/MyQuestionView";
 import { useFetchCollection } from "../QuestionCollections/hooks/useFetchCollection";
-
+import { CollectionProvider } from "../QuestionCollections/instance/context";
+import { useCollectionStore } from "../QuestionCollections/instance/context";
+import { useState } from "react";
+import SearchAndAddQuestions from "./components/SearchQuestions";
 const DEFAULT_COLLECTION_COLOR = "var(--color-accent)";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -23,9 +26,15 @@ function formatDate(value: string | null | undefined) {
   return dateFormatter.format(date);
 }
 
-export default function CollectionView() {
+function CollectionViewData() {
+  const [showQuestion, setShowQuestion] = useState<boolean>(false);
   const { collectionId } = useParams<{ collectionId: string }>();
   const { collection, loading, error } = useFetchCollection(collectionId);
+  const setSelectedCollection = useCollectionStore(
+    (s) => s.setSelectedCollectionId,
+  );
+
+  setSelectedCollection(collectionId);
 
   if (loading) {
     return (
@@ -56,7 +65,8 @@ export default function CollectionView() {
     );
   }
 
-  const accentColor = collection.customization?.color || DEFAULT_COLLECTION_COLOR;
+  const accentColor =
+    collection.customization?.color || DEFAULT_COLLECTION_COLOR;
   const icon = collection.customization?.icon?.trim();
   const updatedDate = formatDate(collection.updated_at);
   const createdDate = formatDate(collection.created_at);
@@ -80,7 +90,7 @@ export default function CollectionView() {
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => console.log("Add questions", collection.id)}
+            onClick={() => setShowQuestion((prev) => !prev)}
             className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-accent px-4 text-sm font-semibold text-bg shadow-sm transition hover:bg-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
           >
             <Plus className="size-5" aria-hidden="true" />
@@ -96,7 +106,9 @@ export default function CollectionView() {
           </button>
           <button
             type="button"
-            onClick={() => console.log("Edit collection details", collection.id)}
+            onClick={() =>
+              console.log("Edit collection details", collection.id)
+            }
             className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border bg-surface-secondary px-4 text-sm font-semibold text-text-muted shadow-sm transition hover:border-border-strong hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
           >
             <Edit3 className="size-5" aria-hidden="true" />
@@ -143,6 +155,17 @@ export default function CollectionView() {
           </div>
         </div>
       </div>
+
+      {showQuestion && <SearchAndAddQuestions />}
+      <MyQuestionsView />
     </section>
+  );
+}
+
+export default function CollectionView() {
+  return (
+    <CollectionProvider>
+      <CollectionViewData />
+    </CollectionProvider>
   );
 }

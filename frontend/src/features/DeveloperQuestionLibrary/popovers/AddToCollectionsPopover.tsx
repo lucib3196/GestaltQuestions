@@ -5,36 +5,11 @@ import { SearchBar } from "../../../components/SearchBar";
 import type { QuestionCollectionRead } from "../../../services";
 import { useAddQuestionToCollection } from "../../QuestionCollections/hooks/useAddQuestions";
 import { useCollections } from "../../QuestionCollections/hooks/useCollection";
-import useCreateCollection from "../../QuestionCollections/hooks/useCreateCollection";
+
 import { useTableBaseContext } from "../../TableBase/state";
 import { useSearchCollections } from "../hooks/useSearchCollections";
 import { CollectionResults } from "./CollectionResults";
-export function CreateCollectionSection({ title }: { title: string }) {
-  const { createCollection } = useCreateCollection();
-  return (
-    <div>
-      <div className="rounded-md border border-border bg-surface-muted p-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="text-sm font-semibold text-text">
-              Need a new collection?
-            </div>
-            <div className="text-xs text-text-soft">
-              This action is wired as a console log for now.
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => createCollection(title)}
-            className="rounded-md border border-approval-border bg-approval-muted px-3 py-2 text-sm font-semibold text-approval transition hover:border-approval"
-          >
-            Create Collection
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+
 
 function SearchCollections({
   title,

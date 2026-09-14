@@ -33,9 +33,11 @@ function CollectionViewPlaceholder({
   const { normalizedCollection, loading, error } = useCollections();
   const copy = EMPTY_STATE_COPY[activeView];
   const collections =
-    activeView === "myCollections" ? Object.values(normalizedCollection.byId) : [];
+    activeView === "myCollections"
+      ? Object.values(normalizedCollection.byId)
+      : [];
 
-    const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <section className="min-h-96 rounded-lg border border-border bg-bg p-4 shadow-inner">
@@ -60,10 +62,12 @@ function CollectionViewPlaceholder({
             <CollectionCard
               key={collection.id ?? collection.title}
               collection={collection}
-              onOpen={(selectedCollection) =>
-                {console.log("Going to collection", selectedCollection.id)
-                navigate(`/question_builder/collections/${selectedCollection.id}`)}
-              }
+              onOpen={(selectedCollection) => {
+                console.log("Going to collection", selectedCollection.id);
+                navigate(
+                  `/question_builder/collections/${selectedCollection.id}`,
+                );
+              }}
             />
           ))}
         </div>
