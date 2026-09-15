@@ -1,9 +1,13 @@
+import type { ResourceTreeNode } from "../../../components/ResourceTree/type";
 import type {
   CollectionId,
   CollectionQuestion,
   QuestionCollectionRead,
-} from "../../services/Collections/types";
-import type { QuestionCollectionTreeNode } from "./types";
+} from "../../../services/Collections/types";
+
+export type QuestionCollectionTreeNode =
+  | ResourceTreeNode<"collection", QuestionCollectionRead>
+  | ResourceTreeNode<"question", CollectionQuestion>;
 
 export function toCollectionTreeNode(
   collection: QuestionCollectionRead,

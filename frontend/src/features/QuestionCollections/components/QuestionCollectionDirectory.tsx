@@ -3,11 +3,9 @@ import { useState } from "react";
 import type { ResourceTreeProps } from "../../../components/ResourceTree/ResourceTree";
 import { ResourceTree } from "../../../components/ResourceTree/ResourceTree";
 import { useUpdateCollectionParent } from "../../../hooks/collections";
-import {
-  type QuestionCollectionTreeNode,
-  useCollectionStore,
-} from "../../../stores/collections";
+import { useCollectionStore } from "../../../stores/collections";
 import CollectionNode from "./CollectionNode";
+import type { QuestionCollectionTreeNode } from "../utils/collectionQuestion";
 
 type QuestionCollectionDirectoryProps = {
   nodes: QuestionCollectionTreeNode[];

@@ -16,7 +16,7 @@ import {
   useDeleteCollection,
   useUpdateCollectionTitle,
 } from "../../../hooks/collections";
-import type { QuestionCollectionTreeNode } from "../../../stores/collections";
+import type { QuestionCollectionTreeNode } from "../utils/collectionQuestion";
 
 type CollectionNodeProps = RenderNodeProps<QuestionCollectionTreeNode> & {
   draggingNodeId: string | null;

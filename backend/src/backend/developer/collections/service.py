@@ -19,16 +19,18 @@ from backend.question.collections.services.question_collection_service import (
     _UnsetType,
 )
 from backend.shared import ID
-
+from backend.question.collections.services.question_collection_reader import QuestionCollectionReader
 
 class DeveloperCollectionService:
     def __init__(
         self,
         collections: QuestionCollectionService[DeveloperProfile],
+        reader: QuestionCollectionReader[DeveloperProfile],
         authorizer: DeveloperCollectionAuthorizer,
     ) -> None:
         self._collections = collections
         self._authorizer = authorizer
+        self._reader = reader
 
     async def create_collection(
         self, user: User | ID, title: str, *, description: str | None = None
@@ -40,9 +42,9 @@ class DeveloperCollectionService:
 
     async def get_collection(
         self, user: User | ID, collection_id: ID
-    ) -> QuestionCollection:
+    ) -> QuestionCollectionRead:
         await self._require_action(user, collection_id, DeveloperCollectionAction.VIEW)
-        return self._collections.get_collection(collection_id)
+        return await self._collections.get_collection_detail_read(collection_id)
 
     async def update_collection(
         self,

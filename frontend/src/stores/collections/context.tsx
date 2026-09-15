@@ -1,11 +1,12 @@
 import { createContext, type ReactNode, useContext, useRef } from "react";
+import { createStore } from "zustand";
 import { useStore } from "zustand";
 
-import {
-  createCollectionStore,
-  type QuestionCollectionState,
-  type QuestionCollectionStore,
-} from "./store";
+import { createCollectionSlice } from "./slice";
+import type {
+  QuestionCollectionState,
+  QuestionCollectionStore,
+} from "./state";
 
 type CollectionStoreApi = ReturnType<typeof createCollectionStore>;
 const CollectionContext = createContext<CollectionStoreApi | null>(null);
@@ -14,6 +15,15 @@ type CollectionProviderProps = {
   children: ReactNode;
   initialState?: Partial<QuestionCollectionState>;
 };
+
+export function createCollectionStore(
+  preloaded?: Partial<QuestionCollectionState>,
+) {
+  return createStore<QuestionCollectionStore>()((...args) => ({
+    ...createCollectionSlice<QuestionCollectionStore>()(...args),
+    ...preloaded,
+  }));
+}
 
 export function CollectionProvider({
   children,

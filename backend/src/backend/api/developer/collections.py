@@ -111,12 +111,12 @@ async def search_collections(
         ) from e
 
 
-@router.get("/{collection_id}", response_model=QuestionCollection)
+@router.get("/{collection_id}", response_model=QuestionCollectionRead)
 async def get_collection(
     collection_id: ID,
     current_user: CurrentUser,
     collections: DevCollectionManager,
-) -> QuestionCollection:
+) -> QuestionCollectionRead:
     try:
         return await collections.get_collection(current_user, collection_id)
     except DeveloperAccessDenied as e:
@@ -139,9 +139,7 @@ async def update_collection(
 ) -> QuestionCollection:
     try:
         description = (
-            payload.description
-            if "description" in payload.model_fields_set
-            else _UNSET
+            payload.description if "description" in payload.model_fields_set else _UNSET
         )
         collection_status = (
             payload.status if "status" in payload.model_fields_set else _UNSET

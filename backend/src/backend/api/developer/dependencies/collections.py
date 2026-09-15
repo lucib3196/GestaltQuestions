@@ -12,6 +12,7 @@ from backend.developer.collections.authorizer import DeveloperCollectionAuthoriz
 from backend.question.collections import (
     QuestionCollectionAdapter,
     QuestionCollectionService,
+    QuestionCollectionReader,
 )
 
 from .profiles import DeveloperProfileDependency
@@ -83,10 +84,12 @@ CollectionAuthorizer = Annotated[
 def get_dev_collection_manager(
     collections: QuestionCollectionServiceDependency,
     authorizer: CollectionAuthorizer,
+    session: SessionDep,
 ) -> DeveloperCollectionService:
     return DeveloperCollectionService(
         collections=collections,
         authorizer=authorizer,
+        reader=QuestionCollectionReader(session),
     )
 
 
