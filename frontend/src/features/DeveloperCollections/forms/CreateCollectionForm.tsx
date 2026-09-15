@@ -2,7 +2,7 @@ import { FolderPlus, Loader2, Plus } from "lucide-react";
 import type { FormEvent } from "react";
 import { useState } from "react";
 
-import useCreateCollection from "../../QuestionCollections/hooks/useCreateCollection";
+import { useCreateCollection } from "../../../hooks/collections";
 
 export type CreateCollectionProps = {
   onCancel?: () => void;

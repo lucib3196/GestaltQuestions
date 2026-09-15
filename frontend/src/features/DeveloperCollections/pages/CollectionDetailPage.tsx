@@ -5,9 +5,11 @@ import { Modal } from "../../../components/Modal";
 import type { QuestionCollection, Status } from "../../../services";
 import { normalizeStatus } from "../../../services/Status";
 import AddQuestionsToCollection from "../../AddQuestionsToCollection";
-import { useFetchCollection } from "../../QuestionCollections/hooks/useFetchCollection";
-import { CollectionProvider } from "../../QuestionCollections/instance/context";
-import { useCollectionStore } from "../../QuestionCollections/instance/context";
+import { useFetchCollection } from "../../../hooks/collections";
+import {
+  CollectionProvider,
+  useCollectionStore,
+} from "../../../stores/collections";
 import { CollectionDetailHeader } from "../detail/CollectionDetailHeader";
 import {
   CollectionDetailEmpty,

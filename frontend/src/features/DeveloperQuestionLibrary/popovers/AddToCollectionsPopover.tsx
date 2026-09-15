@@ -2,12 +2,14 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useState } from "react";
 
 import { SearchBar } from "../../../components/SearchBar";
+import {
+  useAddQuestionToCollection,
+  useCollections,
+  useSearchCollections,
+} from "../../../hooks/collections";
 import type { QuestionCollectionRead } from "../../../services";
-import { useAddQuestionToCollection } from "../../QuestionCollections/hooks/useAddQuestions";
-import { useCollections } from "../../QuestionCollections/hooks/useCollection";
 
 import { useTableBaseContext } from "../../TableBase/state";
-import { useSearchCollections } from "../hooks/useSearchCollections";
 import { CollectionResults } from "./CollectionResults";
 
 

@@ -1,8 +1,12 @@
-import { useCopyQuestion } from "../../../QuestionBuilder";
-import { useDeleteQuestion } from "../../../QuestionBuilder";
-import { useDownloadQuestions } from "../../../QuestionBuilder";
-import { useCollections } from "../../../QuestionCollections/hooks/useCollection";
-import { useRemoveQuestionsFromCollection } from "../../../QuestionCollections/hooks/useRemoveQuestions";
+import {
+  useCollections,
+  useRemoveQuestionsFromCollection,
+} from "../../../../hooks/collections";
+import {
+  useCopyQuestion,
+  useDeleteQuestion,
+  useDownloadQuestions,
+} from "../../../../hooks/developerQuestions";
 import { useTableBaseContext } from "../../../TableBase";
 import type { ManageableQuestionsActionId } from "../config/manageableQuestionsToolbarConfig";
 

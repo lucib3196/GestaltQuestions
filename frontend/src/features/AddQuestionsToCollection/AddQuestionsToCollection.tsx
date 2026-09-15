@@ -11,8 +11,8 @@ import { TableBaseProvider, useTableBaseContext } from "../TableBase";
 import { TableBaseView } from "../TableBase/base/TableBaseView";
 import { TableBaseSearch } from "../TableBase/components/search";
 import type { TableConfig } from "../TableBase/config/types";
-import { useAddQuestionToCollection } from "../QuestionCollections/hooks/useAddQuestions";
-import { useCollectionStore } from "../QuestionCollections/instance/context";
+import { useAddQuestionToCollection } from "../../hooks/collections";
+import { useCollectionStore } from "../../stores/collections";
 import type {
   QuestionTableColumn,
   QuestionTableColumnId,

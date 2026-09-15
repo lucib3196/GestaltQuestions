@@ -1,7 +1,7 @@
 import {
   useCopyQuestion,
   useDownloadQuestions,
-} from "../../../QuestionBuilder";
+} from "../../../../hooks/developerQuestions";
 import { useTableBaseContext } from "../../../TableBase";
 import type { PublishedQuestionsToolbarActionId } from "../config/publishedQuestionsToolbarConfig";
 

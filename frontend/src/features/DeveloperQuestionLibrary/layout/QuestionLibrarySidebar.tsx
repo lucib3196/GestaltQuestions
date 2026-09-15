@@ -3,11 +3,11 @@ import { ChevronLeft, ChevronRight, Grid2X2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { SearchBar } from "../../../components/SearchBar";
+import { useSearchCollections } from "../../../hooks/collections";
 import type { QuestionTableSearchParams } from "../../../services";
+import { useCollectionStore } from "../../../stores/collections";
 import QuestionCollectionToolBar from "../../QuestionCollections/components/CollectionToolBar";
-import { useCollectionStore } from "../../QuestionCollections/instance/context";
 import QuestionCollections from "../../QuestionCollections/QuestionCollections";
-import { useSearchCollections } from "../hooks/useSearchCollections";
 
 const COLLECTIONS_PER_PAGE = 5;
 

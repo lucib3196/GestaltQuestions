@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import { useCollections } from "../../QuestionCollections/hooks/useCollection";
+import { useCollections } from "../../../hooks/collections";
 import type { CollectionView } from "../types";
 import { CollectionCard } from "./CollectionCard";
 import { CollectionEmptyState } from "./CollectionEmptyState";

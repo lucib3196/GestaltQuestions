@@ -14,7 +14,7 @@ import {
   useDeleteFile,
   useSaveFile,
   useUploadFile,
-} from "../hooks";
+} from "../../../hooks/developerQuestions";
 
 type EditorPaneProps = {
   qid: string;

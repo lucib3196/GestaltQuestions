@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { QuestionCollectionDirectory } from "./components/QuestionCollectionDirectory";
-import { useCollections } from "./hooks/useCollection";
-import type { QuestionCollectionTreeNode } from "./instance/types";
-import { buildCollectionTree } from "./utils/collectionTree";
+import { useCollections } from "../../hooks/collections";
+import {
+  buildCollectionTree,
+  type QuestionCollectionTreeNode,
+} from "../../stores/collections";
 
 type QuestionCollectionsProps = {
   page?: number;

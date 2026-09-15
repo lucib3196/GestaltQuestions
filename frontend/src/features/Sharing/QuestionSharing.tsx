@@ -1,11 +1,11 @@
 import { type ReactNode, useState } from "react";
 
 import { ShareLevelPicker } from "../../components/Access";
+import { useShareQuestionBatch } from "../../hooks/questionAccess";
 import {
   type ShareableAccessLevel,
   type ShareQuestionBatchResult,
   type ShareQuestionsWithUsersPayload,
-  useShareQuestionBatch,
 } from "../../services/Access/QuestionAccess";
 import { UserLookupCombobox } from "../UserLookUp/components";
 import {

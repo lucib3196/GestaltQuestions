@@ -8,7 +8,7 @@ import {
 import {
   useListSharedByMe,
   useRetrieveAccess,
-} from "../../services/Access/QuestionAccess";
+} from "../../hooks/questionAccess";
 import type { UserLookupVariant } from "../UserLookUp/UserLookUp";
 import { AccessDetailList } from "./components/AccessDetailList";
 import {

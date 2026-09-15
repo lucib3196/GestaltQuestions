@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { CollectionProvider } from "../../QuestionCollections/instance/context";
+import { CollectionProvider } from "../../../stores/collections";
 
 type DeveloperQuestionLibraryShellProps = {
   children: ReactNode;

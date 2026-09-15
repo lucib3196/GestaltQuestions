@@ -2,9 +2,9 @@ import clsx from "clsx";
 import { useState } from "react";
 
 import { ShareLevelPicker } from "../../../components/Access";
+import { useShareQuestionBatch } from "../../../hooks/questionAccess";
 import {
   type ShareableAccessLevel,
-  useShareQuestionBatch,
 } from "../../../services/Access/QuestionAccess";
 import { useUserLookupStore } from "../../UserLookUp/instance/context";
 import {

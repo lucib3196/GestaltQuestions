@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Modal } from "../../../components/Modal";
-import { CollectionProvider } from "../../QuestionCollections/instance/context";
+import { CollectionProvider } from "../../../stores/collections";
 import CreateCollectionForm from "../forms/CreateCollectionForm";
 import { CollectionGrid } from "../list/CollectionGrid";
 import CollectionsHeader from "../list/CollectionsHeader";

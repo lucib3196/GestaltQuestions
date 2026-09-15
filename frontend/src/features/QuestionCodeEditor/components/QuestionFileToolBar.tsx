@@ -9,7 +9,7 @@ import {
   useDeleteFile,
   useSaveFile,
   useUploadFile,
-} from "../../QuestionBuilder";
+} from "../../../hooks/developerQuestions";
 import { extensionToMime } from "../utils";
 
 type QuestionFileToolBarProps = {
