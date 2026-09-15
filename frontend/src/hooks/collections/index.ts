@@ -1,6 +1,6 @@
 export * from "./useAddQuestionsToCollection";
-export { default as useCreateCollection } from "./useCreateCollection";
 export * from "./useCollections";
+export { default as useCreateCollection } from "./useCreateCollection";
 export * from "./useDeleteCollection";
 export * from "./useFetchCollection";
 export * from "./useRemoveQuestionsFromCollection";

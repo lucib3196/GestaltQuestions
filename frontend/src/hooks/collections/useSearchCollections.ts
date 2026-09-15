@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
+import { useAuth } from "../../services/Auth";
+import CollectionsApi from "../../services/Collections/api";
 import type {
   QuestionCollectionRead,
   SearchCollectionsParams,
 } from "../../services/Collections/types";
-import { useAuth } from "../../services/Auth";
-import CollectionsApi from "../../services/Collections/api";
 
 export function useSearchCollections(
   search: SearchCollectionsParams = { title: "", limit: 3 },

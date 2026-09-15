@@ -1,6 +1,7 @@
 import { useDebounce } from "@uidotdev/usehooks";
 import { useState } from "react";
 import { useMemo } from "react";
+
 import { SearchBar } from "../../../components/SearchBar";
 import {
   useAddQuestionToCollection,
@@ -8,10 +9,9 @@ import {
   useSearchCollections,
 } from "../../../hooks/collections";
 import type { QuestionCollectionRead } from "../../../services";
-
+import type { SearchCollectionsParams } from "../../../services";
 import { useTableBaseContext } from "../../TableBase/state";
 import { CollectionResults } from "./CollectionResults";
-import type { SearchCollectionsParams } from "../../../services";
 
 function SearchCollections({
   title,

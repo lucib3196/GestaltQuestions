@@ -1,8 +1,11 @@
 import { Check, Globe2, Lock, Save, X } from "lucide-react";
 
-import type { CollectionCustomization, QuestionCollection } from "../../../services";
-import { getStatusDescription, getStatusLabel } from "../../../services/Status";
 import { useUpdateCollection } from "../../../hooks/collections";
+import type {
+  CollectionCustomization,
+  QuestionCollection,
+} from "../../../services";
+import { getStatusDescription, getStatusLabel } from "../../../services/Status";
 import { QuestionStatusSelect } from "../../QuestionMetadata/components/QuestionStatusSelect";
 import {
   COLLECTION_COLOR_PRESETS,

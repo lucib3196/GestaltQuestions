@@ -1,11 +1,11 @@
 import { useCallback, useState } from "react";
 
-import { useAuth } from "../../services/Auth";
 import QuestionAccessApi from "../../services/Access/QuestionAccess/api";
 import type {
   ShareQuestionBatchResult,
   ShareQuestionsWithUsersPayload,
 } from "../../services/Access/QuestionAccess/types";
+import { useAuth } from "../../services/Auth";
 
 export function useShareQuestionBatch() {
   const [loading, setLoading] = useState(false);

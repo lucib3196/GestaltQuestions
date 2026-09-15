@@ -1,7 +1,8 @@
 import { FolderKanban, LibraryBig } from "lucide-react";
-import { NavLink } from "react-router-dom";
 import { GoSidebarCollapse } from "react-icons/go";
 import { GoSidebarExpand } from "react-icons/go";
+import { NavLink } from "react-router-dom";
+
 import { DEVELOPER_WORKSPACE_SIDEBAR_OPTIONS } from "../constants";
 import type { DeveloperWorkspaceSection } from "../types";
 

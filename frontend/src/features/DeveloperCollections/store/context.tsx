@@ -1,8 +1,8 @@
 import { createContext, type ReactNode, useContext, useRef } from "react";
 import { useStore } from "zustand";
 
-import { createCollectionStore } from "./store";
 import type { CollectionStore, CollectionStoreOptions } from "./state";
+import { createCollectionStore } from "./store";
 
 type CollectionStoreApi = ReturnType<typeof createCollectionStore>;
 
@@ -35,7 +35,9 @@ export function useCollectionStore<T>(
   const store = useContext(CollectionContext);
 
   if (!store) {
-    throw new Error("useCollectionStore must be used inside CollectionProvider");
+    throw new Error(
+      "useCollectionStore must be used inside CollectionProvider",
+    );
   }
 
   return useStore(store, selector);

@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 
 import { useAuth } from "../../services/Auth";
 import DeveloperQuestionsApi from "../../services/DeveloperQuestions/api";
-import type { QuestionFilter, QuestionRead } from "../../services/Questions/types";
+import type {
+  QuestionFilter,
+  QuestionRead,
+} from "../../services/Questions/types";
 
 export function useFilterMyQuestions(filter: Partial<QuestionFilter>) {
   const { user } = useAuth();

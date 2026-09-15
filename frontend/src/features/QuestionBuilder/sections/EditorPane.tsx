@@ -4,17 +4,17 @@ import { Button } from "../../../components/Button";
 import { CodeEditor } from "../../../components/CodeEditor";
 import { Container } from "../../../components/Container";
 import { ShowUploadedFiles, UploadFiles } from "../../../components/UploadFile";
-import { type FileData } from "../../../types/fileTypes";
-import {
-  getImageBase64FileData,
-  isImageExt,
-} from "../../../utils/parsingUtils";
 import {
   useCreateFile,
   useDeleteFile,
   useSaveFile,
   useUploadFile,
 } from "../../../hooks/developerQuestions";
+import { type FileData } from "../../../types/fileTypes";
+import {
+  getImageBase64FileData,
+  isImageExt,
+} from "../../../utils/parsingUtils";
 
 type EditorPaneProps = {
   qid: string;

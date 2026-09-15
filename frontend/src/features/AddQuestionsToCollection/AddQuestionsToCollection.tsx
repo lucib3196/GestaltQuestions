@@ -1,17 +1,12 @@
 import { CheckCircle2, Plus, Search } from "lucide-react";
 
+import { useAddQuestionToCollection } from "../../hooks/collections";
 import type {
   QuestionCollection,
   QuestionCollectionRead,
   QuestionTableRow,
   QuestionTableSearchParams,
 } from "../../services";
-import type { RowId, TableSchema } from "../TableBase";
-import { TableBaseProvider, useTableBaseContext } from "../TableBase";
-import { TableBaseView } from "../TableBase/base/TableBaseView";
-import { TableBaseSearch } from "../TableBase/components/search";
-import type { TableConfig } from "../TableBase/config/types";
-import { useAddQuestionToCollection } from "../../hooks/collections";
 import { useCollectionStore } from "../../stores/collections";
 import type {
   QuestionTableColumn,
@@ -21,6 +16,11 @@ import {
   createQuestionTableColumns,
   usePersonalQuestionsTableRows,
 } from "../QuestionTables";
+import type { RowId, TableSchema } from "../TableBase";
+import { TableBaseProvider, useTableBaseContext } from "../TableBase";
+import { TableBaseView } from "../TableBase/base/TableBaseView";
+import { TableBaseSearch } from "../TableBase/components/search";
+import type { TableConfig } from "../TableBase/config/types";
 
 type AddQuestionsToCollectionSchema = TableSchema<
   QuestionTableRow,
@@ -91,7 +91,6 @@ function SelectionSummary({
       onSuccess: clearSelectedIds,
     });
   }
-
 
   return (
     <div className="rounded-lg border border-border bg-bg p-4">

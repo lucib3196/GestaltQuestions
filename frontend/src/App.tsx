@@ -2,6 +2,8 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { ComponentPlayGround } from "./features/ComponentPlayGround";
 import { CreateNewQuestion } from "./features/CreateNewQuestion";
+import CollectionView from "./features/DeveloperCollections/CollectionView";
+import DeveloperCollections from "./features/DeveloperCollections/DeveloperCollections";
 import DeveloperQuestionLibrary from "./features/DeveloperQuestionLibrary/DeveloperQuestionLibrary";
 import { DeveloperWorkspaceLayout } from "./features/DeveloperWorkspace/DeveloperWorkspaceLayout";
 import Published from "./features/Published/Published";
@@ -11,8 +13,6 @@ import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
 import { RequireRole } from "./services/Auth";
-import DeveloperCollections from "./features/DeveloperCollections/DeveloperCollections";
-import CollectionView from "./features/DeveloperCollections/CollectionView";
 function Test() {
   return <div></div>;
 }

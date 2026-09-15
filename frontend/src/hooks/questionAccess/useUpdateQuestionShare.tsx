@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 
-import { useAuth } from "../../services/Auth";
 import QuestionAccessApi from "../../services/Access/QuestionAccess/api";
 import type {
   QuestionAccess,
@@ -8,6 +7,7 @@ import type {
   ShareableAccessLevel,
   UserId,
 } from "../../services/Access/QuestionAccess/types";
+import { useAuth } from "../../services/Auth";
 
 export function useUpdateQuestionShare() {
   const [loading, setLoading] = useState(false);

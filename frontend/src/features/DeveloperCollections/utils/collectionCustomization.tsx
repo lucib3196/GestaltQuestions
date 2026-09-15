@@ -10,8 +10,8 @@ import {
   Database,
   FlaskConical,
   Folder,
-  Network,
   type LucideIcon,
+  Network,
 } from "lucide-react";
 
 export const COLLECTION_COLOR_PRESETS = [

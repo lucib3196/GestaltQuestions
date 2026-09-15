@@ -1,7 +1,7 @@
 import type { StateCreator } from "zustand";
-import { normalizeCollections } from "./utils";
 
 import type { QuestionCollectionState, QuestionCollectionStore } from "./state";
+import { normalizeCollections } from "./utils";
 
 const initialCollectionState: QuestionCollectionState = {
   normalizedCollection: {

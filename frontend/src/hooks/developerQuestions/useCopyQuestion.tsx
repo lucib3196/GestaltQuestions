@@ -48,7 +48,9 @@ export function useCopyQuestion() {
         return results;
       } catch (err) {
         const message =
-          err instanceof Error ? err.message : "Failed to process copy requests.";
+          err instanceof Error
+            ? err.message
+            : "Failed to process copy requests.";
         setError(message);
         toast.error(message);
       } finally {

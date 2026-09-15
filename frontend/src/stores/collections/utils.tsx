@@ -1,6 +1,6 @@
 import type { QuestionCollectionRead } from "../../services";
-import type { NormalizedCollections } from "./state";
 import type { CollectionId } from "../../services";
+import type { NormalizedCollections } from "./state";
 
 export function normalizeCollections(
   collections: QuestionCollectionRead[],

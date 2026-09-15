@@ -1,9 +1,9 @@
 import {
   isStatus,
   normalizeStatus,
+  type Status,
   STATUS_OPTIONS,
   STATUS_VALUES,
-  type Status,
 } from "../Status";
 
 export const QUESTION_STATUS_VALUES = STATUS_VALUES;

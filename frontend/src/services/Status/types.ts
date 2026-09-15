@@ -21,7 +21,9 @@ export function normalizeStatus(value: string | null | undefined) {
 }
 
 export function getStatusLabel(status: Status) {
-  return STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status;
+  return (
+    STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status
+  );
 }
 
 export function getStatusDescription(status: Status) {

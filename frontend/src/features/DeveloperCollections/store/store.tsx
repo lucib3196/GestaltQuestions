@@ -3,8 +3,8 @@ import { persist } from "zustand/middleware";
 
 import { createCollectionSlice } from "../../../stores/collections";
 import {
-  createResourceAccessSlice,
   type AnyResourceSchema,
+  createResourceAccessSlice,
 } from "../../../stores/resourceAccess";
 import type { CollectionStore, CollectionStoreOptions } from "./state";
 

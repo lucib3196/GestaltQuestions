@@ -14,7 +14,7 @@ export default function CollectionsHeader({
           Collections
         </h1>
         <p className="mt-2 text-base text-text-muted sm:text-lg">
-          Organize your questions. 
+          Organize your questions.
         </p>
       </div>
 

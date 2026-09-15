@@ -3,10 +3,7 @@ import { createStore } from "zustand";
 import { useStore } from "zustand";
 
 import { createCollectionSlice } from "./slice";
-import type {
-  QuestionCollectionState,
-  QuestionCollectionStore,
-} from "./state";
+import type { QuestionCollectionState, QuestionCollectionStore } from "./state";
 
 type CollectionStoreApi = ReturnType<typeof createCollectionStore>;
 const CollectionContext = createContext<CollectionStoreApi | null>(null);

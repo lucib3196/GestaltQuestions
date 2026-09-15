@@ -4,8 +4,8 @@ import type { ResourceTreeProps } from "../../../components/ResourceTree/Resourc
 import { ResourceTree } from "../../../components/ResourceTree/ResourceTree";
 import { useUpdateCollectionParent } from "../../../hooks/collections";
 import { useCollectionStore } from "../../../stores/collections";
-import CollectionNode from "./CollectionNode";
 import type { QuestionCollectionTreeNode } from "../utils/collectionQuestion";
+import CollectionNode from "./CollectionNode";
 
 type QuestionCollectionDirectoryProps = {
   nodes: QuestionCollectionTreeNode[];
