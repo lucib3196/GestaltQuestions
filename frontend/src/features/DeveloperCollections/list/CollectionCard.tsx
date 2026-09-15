@@ -1,13 +1,15 @@
-import { ArrowUpRight, Folder } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import type { QuestionCollectionRead } from "../../../services";
+import {
+  getCollectionColor,
+  getCollectionIcon,
+} from "../utils/collectionCustomization";
 
 export type CollectionCardProps = {
   collection: QuestionCollectionRead;
   onOpen: (collection: QuestionCollectionRead) => void;
 };
-
-const DEFAULT_COLLECTION_COLOR = "var(--color-accent)";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   month: "short",
@@ -26,16 +28,12 @@ function formatDate(value: string) {
 }
 
 function getCollectionAccent(collection: QuestionCollectionRead) {
-  return collection.customization?.color || DEFAULT_COLLECTION_COLOR;
-}
-
-function getCollectionIcon(collection: QuestionCollectionRead) {
-  return collection.customization?.icon?.trim() || null;
+  return getCollectionColor(collection.customization?.color);
 }
 
 export function CollectionCard({ collection, onOpen }: CollectionCardProps) {
   const accentColor = getCollectionAccent(collection);
-  const icon = getCollectionIcon(collection);
+  const Icon = getCollectionIcon(collection.customization?.icon);
   const questionCount = collection.question_ids.length;
 
   return (
@@ -44,20 +42,16 @@ export function CollectionCard({ collection, onOpen }: CollectionCardProps) {
 
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-3">
-          {/* <div
+          <div
             className="flex size-12 shrink-0 items-center justify-center rounded-md border text-lg font-semibold shadow-sm"
             style={{
               borderColor: accentColor,
-              backgroundColor: `${accentColor}1A`,
+              backgroundColor: `color-mix(in srgb, ${accentColor} 14%, transparent)`,
               color: accentColor,
             }}
           >
-            {icon ? (
-              <span aria-hidden="true">{icon}</span>
-            ) : (
-              <Folder className="size-6" aria-hidden="true" />
-            )}
-          </div> */}
+            <Icon className="size-6" aria-hidden="true" />
+          </div>
         </div>
 
         <div className="mt-4 min-w-0">

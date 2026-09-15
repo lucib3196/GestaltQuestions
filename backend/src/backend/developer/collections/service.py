@@ -9,8 +9,10 @@ from backend.question import Question
 from backend.question.collections.models import (
     QuestionCollection,
     QuestionCollectionLink,
+    Status,
 )
 from backend.question.collections.schema import QuestionCollectionRead
+from backend.question.collections.schema import CollectionCustomization
 from backend.question.collections.services.question_collection_service import (
     _UNSET,
     QuestionCollectionService,
@@ -47,6 +49,9 @@ class DeveloperCollectionService:
         user: User | ID,
         collection_id: ID,
         title: str | None,
+        description: str | None | _UnsetType = _UNSET,
+        status: Status | None | _UnsetType = _UNSET,
+        customization: CollectionCustomization | None | _UnsetType = _UNSET,
         parent_id: ID | None | _UnsetType = _UNSET,
     ) -> QuestionCollection:
         await self._require_action(
@@ -67,7 +72,10 @@ class DeveloperCollectionService:
             await self._authorizer.resolve_profile(user),
             collection_id,
             title,
-            parent,
+            description=description,
+            status=status,
+            customization=customization,
+            parent=parent,
         )
 
     async def add_question(

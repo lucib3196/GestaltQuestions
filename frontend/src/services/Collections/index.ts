@@ -2,6 +2,7 @@ export { default as CollectionsApi } from "./api";
 export type {
   AddQuestionToCollectionPayload,
   CollectionId,
+  CollectionCustomization,
   CollectionQuestion,
   CreateCollectionPayload,
   ListCollectionsParams,
@@ -10,5 +11,6 @@ export type {
   QuestionCollectionRead,
   QuestionId,
   SearchCollectionsParams,
+  Status,
   UpdateCollectionPayload,
 } from "./types";

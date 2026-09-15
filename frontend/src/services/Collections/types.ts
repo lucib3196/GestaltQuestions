@@ -1,4 +1,7 @@
 import type { QuestionRead } from "../Questions";
+import type { Status } from "../Status";
+
+export type { Status };
 
 export type CollectionId = string;
 export type QuestionId = string;
@@ -12,6 +15,7 @@ export type QuestionCollection = {
   id: CollectionId | null;
   owner_id: string | null;
   title: string;
+  status: Status;
   parent_id: CollectionId | null;
   children?: QuestionCollection[];
   description: string | null;
@@ -37,6 +41,9 @@ export type CreateCollectionPayload = {
 
 export type UpdateCollectionPayload = {
   title?: string | null;
+  description?: string | null;
+  status?: Status | null;
+  customization?: CollectionCustomization | null;
   parent_id?: CollectionId | null;
 };
 

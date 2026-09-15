@@ -1,9 +1,9 @@
 from datetime import datetime
 from uuid import UUID
-from typing import Literal, Any
+from typing import Literal
 from pydantic import BaseModel, Field
 
-from backend.question.collections.models import QuestionCollection
+from backend.question.collections.models import QuestionCollection, Status
 from pydantic import BaseModel, ConfigDict
 
 
@@ -18,14 +18,17 @@ class CollectionCustomization(BaseModel):
 class QuestionCollectionCreate(BaseModel):
     title: str
     description: str | None = None
-    customization: dict[str, Any] | CollectionCustomization = Field(
-        default_factory=dict
+    customization: CollectionCustomization = Field(
+        default_factory=CollectionCustomization
     )
     parent_id: str | UUID | None = None
 
 
 class QuestionCollectionUpdate(BaseModel):
     title: str | None = None
+    description: str | None = None
+    status: Status | None = None
+    customization: CollectionCustomization | None = None
     parent_id: UUID | str | None = None
 
 
@@ -33,6 +36,7 @@ class QuestionCollectionRead(BaseModel):
     id: UUID | None
     owner_id: UUID | None
     title: str
+    status: Status | None
     description: str | None
     customization: CollectionCustomization | None
     parent_id: UUID | None
@@ -51,9 +55,10 @@ class QuestionCollectionRead(BaseModel):
             id=collection.id,
             owner_id=collection.owner_id,
             title=collection.title,
+            status=collection.status,
             description=collection.description,
             customization=(
-                CollectionCustomization.model_validate(**collection.customization)
+                CollectionCustomization.model_validate(collection.customization)
                 if collection.customization
                 else None
             ),

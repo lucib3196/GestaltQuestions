@@ -4,7 +4,9 @@ export type CollectionsHeaderProps = {
   onCreateCollection: () => void;
 };
 
-export default function Header({ onCreateCollection }: CollectionsHeaderProps) {
+export default function CollectionsHeader({
+  onCreateCollection,
+}: CollectionsHeaderProps) {
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div>

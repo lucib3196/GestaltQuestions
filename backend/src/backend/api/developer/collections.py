@@ -18,7 +18,9 @@ from backend.question.collections import (
 from backend.question.collections.schema import (
     QuestionCollectionRead,
     QuestionCollectionCreate,
+    QuestionCollectionUpdate,
 )
+from backend.question.collections.services.question_collection_service import _UNSET
 from backend.shared import ID
 
 from .dependencies import DevCollectionManager
@@ -27,11 +29,6 @@ router = APIRouter(
     prefix="/collections",
     tags=["Collections"],
 )
-
-
-class UpdateCollectionPayload(BaseModel):
-    title: str | None = None
-    parent_id: str | UUID | None = None
 
 
 class CollectionQuestionPayload(BaseModel):
@@ -138,14 +135,34 @@ async def update_collection(
     collection_id: ID,
     current_user: CurrentUser,
     collections: DevCollectionManager,
-    payload: UpdateCollectionPayload,
+    payload: QuestionCollectionUpdate,
 ) -> QuestionCollection:
     try:
+        description = (
+            payload.description
+            if "description" in payload.model_fields_set
+            else _UNSET
+        )
+        collection_status = (
+            payload.status if "status" in payload.model_fields_set else _UNSET
+        )
+        customization = (
+            payload.customization
+            if "customization" in payload.model_fields_set
+            else _UNSET
+        )
+        parent_id = (
+            payload.parent_id if "parent_id" in payload.model_fields_set else _UNSET
+        )
+
         return await collections.update_collection(
             current_user,
             collection_id,
             title=payload.title,
-            parent_id=payload.parent_id,
+            description=description,
+            status=collection_status,
+            customization=customization,
+            parent_id=parent_id,
         )
     except DeveloperAccessDenied as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e

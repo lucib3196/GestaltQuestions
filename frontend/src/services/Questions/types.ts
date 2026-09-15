@@ -1,28 +1,16 @@
-export const QUESTION_STATUS_VALUES = [
-  "archived",
-  "draft",
-  "published",
-] as const;
+import {
+  isStatus,
+  normalizeStatus,
+  STATUS_OPTIONS,
+  STATUS_VALUES,
+  type Status,
+} from "../Status";
 
-export type QuestionStatus = (typeof QUESTION_STATUS_VALUES)[number];
-
-export const QUESTION_STATUS_OPTIONS: {
-  label: string;
-  value: QuestionStatus;
-}[] = [
-  { label: "Archived", value: "archived" },
-  { label: "Draft", value: "draft" },
-  { label: "Published", value: "published" },
-];
-
-export function isQuestionStatus(value: string): value is QuestionStatus {
-  return QUESTION_STATUS_VALUES.includes(value as QuestionStatus);
-}
-
-export function normalizeQuestionStatus(value: string | null | undefined) {
-  const normalized = value?.toLowerCase() ?? "";
-  return isQuestionStatus(normalized) ? normalized : "draft";
-}
+export const QUESTION_STATUS_VALUES = STATUS_VALUES;
+export const QUESTION_STATUS_OPTIONS = STATUS_OPTIONS;
+export type QuestionStatus = Status;
+export const isQuestionStatus = isStatus;
+export const normalizeQuestionStatus = normalizeStatus;
 export const QUESTION_TYPE_VALUES = [
   "mc",
   "mcq",

@@ -94,3 +94,9 @@ export function useUpdateCollectionParent() {
 }
 
 export default useUpdateCollection;
+
+export function useUpdateCollectionMetadata() {
+  const { loading, error, updateCollection } = useUpdateCollection();
+
+  return { loading, error, updateCollectionMetadata: updateCollection };
+}
