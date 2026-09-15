@@ -1,14 +1,7 @@
 import type { StateCreator } from "zustand";
+import { normalizeCollections } from "./utils";
 
-import type {
-  CollectionId,
-  QuestionCollectionRead,
-} from "../../services/Collections/types";
-import type {
-  NormalizedCollections,
-  QuestionCollectionState,
-  QuestionCollectionStore,
-} from "./state";
+import type { QuestionCollectionState, QuestionCollectionStore } from "./state";
 
 const initialCollectionState: QuestionCollectionState = {
   normalizedCollection: {
@@ -22,36 +15,6 @@ const initialCollectionState: QuestionCollectionState = {
   expandedCollectionIds: new Set(),
   selectedCollectionIds: new Set(),
 };
-
-function normalizeCollections(
-  collections: QuestionCollectionRead[],
-): NormalizedCollections {
-  const byId: Record<CollectionId, QuestionCollectionRead> = {};
-  const rootIds: CollectionId[] = [];
-  const childIdsByParentId: Record<CollectionId, CollectionId[]> = {};
-
-  for (const collection of collections) {
-    if (!collection.id) continue;
-    byId[collection.id] = collection;
-  }
-
-  for (const collection of collections) {
-    if (!collection.id) continue;
-    if (!collection.parent_id || !byId[collection.parent_id]) {
-      rootIds.push(collection.id);
-      continue;
-    }
-
-    childIdsByParentId[collection.parent_id] ??= [];
-    childIdsByParentId[collection.parent_id].push(collection.id);
-  }
-
-  return {
-    byId,
-    rootIds,
-    childIdsByParentId,
-  };
-}
 
 export type CollectionSliceCreator<
   Store extends QuestionCollectionStore = QuestionCollectionStore,

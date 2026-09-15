@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../services/Auth";
 import CollectionsApi from "../../services/Collections/api";
 import { useCollectionStore } from "../../stores/collections/context";
+import type { ListCollectionsParams } from "../../services";
 
-export function useCollections() {
+export function useCollections(params?:ListCollectionsParams) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +33,7 @@ export function useCollections() {
   }
   useEffect(() => {
     fetchCollections();
-  }, [user]);
+  }, [user, params]);
 
   return {
     normalizedCollection,

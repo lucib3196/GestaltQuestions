@@ -21,6 +21,10 @@ import CollectionInfo from "../detail/CollectionInfo";
 import { CollectionQuestionsEmptyState } from "../detail/CollectionQuestionsEmptyState";
 import { CollectionQuestionsTabs } from "../detail/CollectionQuestionsTabs";
 import { CollectionVisibilityFooter } from "../detail/CollectionVisibilityFooter";
+import { useNavigate } from "react-router-dom";
+import PersonalQuestionTable from "../../QuestionTables";
+import { ManageableQuestionsToolbar } from "../../DeveloperQuestionLibrary/toolbar/ManageableQuestionsToolbar";
+import { PersonalQuestionTableProvider } from "../../QuestionTables";
 
 function getQuestionCount(collection: QuestionCollection) {
   if ("question_ids" in collection && Array.isArray(collection.question_ids)) {
@@ -39,6 +43,7 @@ function CollectionViewData() {
   const setSelectedCollection = useCollectionStore(
     (s) => s.setSelectedCollectionId,
   );
+  const navigate = useNavigate();
 
   useEffect(() => {
     setSelectedCollection(collectionId ?? null);
@@ -59,11 +64,9 @@ function CollectionViewData() {
   const questionCount = getQuestionCount(collection);
   const status = normalizeStatus(collection.status) as Status;
 
-
-
   if (isEditingCollection) {
     return (
-      <section className="min-h-[720px] rounded-lg border border-slate-800 bg-slate-950 p-6 text-slate-100 shadow-soft">
+      <section className="min-h-180 rounded-lg border border-slate-800 bg-slate-950 p-6 text-slate-100 shadow-soft">
         <CollectionInfo
           collection={collection}
           mode="edit"
@@ -78,7 +81,7 @@ function CollectionViewData() {
   }
 
   return (
-    <section className="min-h-[720px] rounded-lg border border-slate-800 bg-slate-950 p-6 text-slate-100 shadow-soft">
+    <section className="min-h-180 rounded-lg border border-slate-800 bg-slate-950 p-6 text-slate-100 shadow-soft">
       <CollectionDetailHeader
         title={collection.title}
         onAddQuestions={() => setShowQuestion((prev) => !prev)}
@@ -111,9 +114,15 @@ function CollectionViewData() {
           }
         />
       ) : (
-        <div className="min-h-[360px] py-10 text-sm text-slate-400">
-          Questions for this collection will appear here.
-        </div>
+        <PersonalQuestionTableProvider>
+          <ManageableQuestionsToolbar />
+          <PersonalQuestionTable
+            baseQuery={{ collection_id: collectionId }}
+            onRowSelect={(rowId) =>
+              navigate(`/question_builder/questions/${rowId}/edit`)
+            }
+          />
+        </PersonalQuestionTableProvider>
       )}
 
       <CollectionVisibilityFooter

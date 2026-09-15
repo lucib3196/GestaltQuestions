@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { ChevronLeft, ChevronRight, Grid2X2 } from "lucide-react";
+import { useMemo } from "react";
 import { useEffect, useState } from "react";
 
 import { SearchBar } from "../../../components/SearchBar";
@@ -21,7 +22,14 @@ export default function QuestionLibrarySidebar() {
   const [collectionCount, setCollectionCount] = useState(0);
 
   // Get collections based on search bar
-  const { collections } = useSearchCollections(title);
+  const searchParams = useMemo(
+    () => ({
+      title: title.trim() || undefined,
+      limit: COLLECTIONS_PER_PAGE,
+    }),
+    [title],
+  );
+  const { collections } = useSearchCollections(searchParams);
 
   const setNormalizeCollection = useCollectionStore(
     (s) => s.setNormalizeCollection,

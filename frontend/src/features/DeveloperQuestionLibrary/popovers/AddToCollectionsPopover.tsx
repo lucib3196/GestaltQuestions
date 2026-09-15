@@ -1,6 +1,6 @@
 import { useDebounce } from "@uidotdev/usehooks";
 import { useState } from "react";
-
+import { useMemo } from "react";
 import { SearchBar } from "../../../components/SearchBar";
 import {
   useAddQuestionToCollection,
@@ -11,7 +11,7 @@ import type { QuestionCollectionRead } from "../../../services";
 
 import { useTableBaseContext } from "../../TableBase/state";
 import { CollectionResults } from "./CollectionResults";
-
+import type { SearchCollectionsParams } from "../../../services";
 
 function SearchCollections({
   title,
@@ -73,7 +73,15 @@ export function AddToCollectionsPopover({
   >(() => new Set());
 
   const debouncedTitle = useDebounce(title, 250);
-  const { collections, loading, error } = useSearchCollections(debouncedTitle);
+
+  const searchParams = useMemo<SearchCollectionsParams>(
+    () => ({
+      title: debouncedTitle.trim() || undefined,
+      limit: 3,
+    }),
+    [debouncedTitle],
+  );
+  const { collections, loading, error } = useSearchCollections(searchParams);
   const { addQuestionToCollection, loading: addingQuestions } =
     useAddQuestionToCollection();
 
