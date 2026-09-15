@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -6,14 +6,11 @@ import { Modal } from "../../../components/Modal";
 import { useFetchCollection } from "../../../hooks/collections";
 import type { QuestionCollection, Status } from "../../../services";
 import { normalizeStatus } from "../../../services/Status";
-import {
-  CollectionProvider,
-  useCollectionStore,
-} from "../../../stores/collections";
 import AddQuestionsToCollection from "../../AddQuestionsToCollection";
 import { ManageableQuestionsToolbar } from "../../DeveloperQuestionLibrary/toolbar/ManageableQuestionsToolbar";
 import PersonalQuestionTable from "../../QuestionTables";
 import { PersonalQuestionTableProvider } from "../../QuestionTables";
+import { CollectionAccessGate } from "../access/AccessGate";
 import { CollectionDetailHeader } from "../detail/CollectionDetailHeader";
 import {
   CollectionDetailEmpty,
@@ -25,7 +22,7 @@ import CollectionInfo from "../detail/CollectionInfo";
 import { CollectionQuestionsEmptyState } from "../detail/CollectionQuestionsEmptyState";
 import { CollectionQuestionsTabs } from "../detail/CollectionQuestionsTabs";
 import { CollectionVisibilityFooter } from "../detail/CollectionVisibilityFooter";
-
+import { CollectionProvider, useCollectionStore } from "../store";
 function getQuestionCount(collection: QuestionCollection) {
   if ("question_ids" in collection && Array.isArray(collection.question_ids)) {
     return collection.question_ids.length;
@@ -37,17 +34,11 @@ function getQuestionCount(collection: QuestionCollection) {
 function CollectionViewData() {
   const [showQuestion, setShowQuestion] = useState<boolean>(false);
   const [isEditingCollection, setIsEditingCollection] = useState(false);
-  const { collectionId } = useParams<{ collectionId: string }>();
+  const selectedCollection = useCollectionStore((s) => s.selectedCollectionId);
   const { collection, loading, error, fetchCollection } =
-    useFetchCollection(collectionId);
-  const setSelectedCollection = useCollectionStore(
-    (s) => s.setSelectedCollectionId,
-  );
-  const navigate = useNavigate();
+    useFetchCollection(selectedCollection);
 
-  useEffect(() => {
-    setSelectedCollection(collectionId ?? null);
-  }, [collectionId, setSelectedCollection]);
+  const navigate = useNavigate();
 
   if (loading) {
     return <CollectionDetailLoading />;
@@ -117,7 +108,7 @@ function CollectionViewData() {
         <PersonalQuestionTableProvider>
           <ManageableQuestionsToolbar />
           <PersonalQuestionTable
-            baseQuery={{ collection_id: collectionId }}
+            baseQuery={{ collection_id: selectedCollection }}
             onRowSelect={(rowId) =>
               navigate(`/question_builder/questions/${rowId}/edit`)
             }
@@ -142,9 +133,13 @@ function CollectionViewData() {
 }
 
 export default function CollectionView() {
+  const { collectionId } = useParams<{ collectionId: string }>();
+  if (!collectionId) return;
   return (
     <CollectionProvider>
-      <CollectionViewData />
+      <CollectionAccessGate collectionId={collectionId}>
+        <CollectionViewData />
+      </CollectionAccessGate>
     </CollectionProvider>
   );
 }

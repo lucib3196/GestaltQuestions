@@ -32,14 +32,14 @@ async def check_access(
     current_user: CurrentUser,
     collection_access: QuestionCollectionAccessDependency,
     collection_id: ID,
-) -> ResourceAccessResult[QuestionCollectionAccess]:
+) -> QuestionCollectionAccess:
     try:
         access = await collection_access.check_access(current_user, collection_id)
-        if not access:
+        if not access.access:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, detail="Access not allowed"
             )
-        return access
+        return access.access
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={str(e)}

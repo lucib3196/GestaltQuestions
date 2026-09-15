@@ -15,6 +15,17 @@ export default class CollectionAccessApi {
     return { Authorization: `Bearer ${token}` };
   }
 
+  static async retrieveAccess(
+    token: string,
+    collectionId: CollectionId,
+  ): Promise<CollectionAccess> {
+    const response = await api.get<CollectionAccess>(
+      `${this.base}/${collectionId}`,
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
   static async listSharedWithMe(token: string): Promise<CollectionAccess[]> {
     const response = await api.get<CollectionAccess[]>(
       `${this.base}/shared-with-me`,

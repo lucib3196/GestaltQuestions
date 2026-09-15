@@ -2,22 +2,21 @@ import { createStore } from "zustand";
 import { persist } from "zustand/middleware";
 
 import { createCollectionSlice } from "../../../stores/collections";
-import {
-  type AnyResourceSchema,
-  createResourceAccessSlice,
-} from "../../../stores/resourceAccess";
+import { createResourceAccessSlice } from "../../../stores/resourceAccess";
+import type { DeveloperCollectionAccessSchema } from "../access/types";
 import type { CollectionStore, CollectionStoreOptions } from "./state";
 
 export const COLLECTION_EDITOR_PERSIST_KEY = "collection-settings:v1";
 
-export function createCollectionStore<
-  AccessSchema extends AnyResourceSchema = AnyResourceSchema,
->(options: CollectionStoreOptions = {}) {
-  return createStore<CollectionStore<AccessSchema>>()(
+export function createCollectionStore(options: CollectionStoreOptions = {}) {
+  return createStore<CollectionStore>()(
     persist(
       (...args) => ({
-        ...createResourceAccessSlice<AccessSchema>()(...args),
-        ...createCollectionSlice()(...args),
+        ...createResourceAccessSlice<
+          DeveloperCollectionAccessSchema,
+          CollectionStore
+        >()(...args),
+        ...createCollectionSlice<CollectionStore>()(...args),
       }),
 
       {
