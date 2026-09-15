@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from starlette import status
-
+from backend.authorization import ResourceAccessResult
 from backend.api.dependencies.users import CurrentUser
 from backend.authorization import AccessLevel, ResourceAccessRevokeResult
 from backend.question.collections import QuestionCollectionAccess
@@ -25,6 +25,25 @@ class ShareCollectionAccessPayload(BaseModel):
 
 class UpdateCollectionAccessPayload(BaseModel):
     level: AccessLevel
+
+
+@router.get("/{collection_id}")
+async def check_access(
+    current_user: CurrentUser,
+    collection_access: QuestionCollectionAccessDependency,
+    collection_id: ID,
+) -> ResourceAccessResult[QuestionCollectionAccess]:
+    try:
+        access = await collection_access.check_access(current_user, collection_id)
+        if not access:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Access not allowed"
+            )
+        return access
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={str(e)}
+        ) from e
 
 
 @router.get("/shared-with-me")
