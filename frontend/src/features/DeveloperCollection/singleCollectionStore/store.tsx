@@ -4,23 +4,28 @@ import { persist } from "zustand/middleware";
 import { createCollectionSlice } from "../../../stores/collections";
 import { createResourceAccessSlice } from "../../../stores/resourceAccess";
 import type { DeveloperCollectionAccessSchema } from "../access/types";
-import type { CollectionStore, CollectionStoreOptions } from "./state";
+import type {
+  SingleCollectionStore,
+  SingleCollectionStoreOptions,
+} from "./state";
 
-export const COLLECTION_EDITOR_PERSIST_KEY = "collection-settings:v1";
+export const SINGLE_COLLECTION_STORE_PERSIST_KEY = "single-collection:v1";
 
-export function createCollectionStore(options: CollectionStoreOptions = {}) {
-  return createStore<CollectionStore>()(
+export function createSingleCollectionStore(
+  options: SingleCollectionStoreOptions = {},
+) {
+  return createStore<SingleCollectionStore>()(
     persist(
       (...args) => ({
         ...createResourceAccessSlice<
           DeveloperCollectionAccessSchema,
-          CollectionStore
+          SingleCollectionStore
         >()(...args),
-        ...createCollectionSlice<CollectionStore>()(...args),
+        ...createCollectionSlice<SingleCollectionStore>()(...args),
       }),
 
       {
-        name: options.persistKey ?? COLLECTION_EDITOR_PERSIST_KEY,
+        name: options.persistKey ?? SINGLE_COLLECTION_STORE_PERSIST_KEY,
       },
     ),
   );

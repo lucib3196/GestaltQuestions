@@ -2,10 +2,10 @@ import { useState } from "react";
 
 import { Modal } from "../../../components/Modal";
 import { CollectionProvider } from "../../../stores/collections";
-import CreateCollectionForm from "../forms/CreateCollectionForm";
-import { CollectionGrid } from "../list/CollectionGrid";
-import CollectionsHeader from "../list/CollectionsHeader";
-import CollectionsTabs from "../list/CollectionsTabs";
+import { CollectionGrid } from "../components/CollectionGrid";
+import CollectionsHeader from "../components/CollectionsHeader";
+import CollectionsTabs from "../components/CollectionsTabs";
+import CreateCollectionForm from "../components/CreateCollectionForm";
 import type { CollectionView } from "../types";
 
 export default function DeveloperCollections() {

@@ -1,4 +1,4 @@
-from .collections import PersonalQuestionCollectionExtension
+from .collections import QuestionCollectionExtension
 from .developer import DeveloperQuestionTableExtension
 from .published import PublishedQuestionTableExtension
 from .question_access import QuestionAccessTableExtension
@@ -7,7 +7,7 @@ from .shared_with_me import SharedWithMeQuestionTableExtension
 
 __all__ = [
     "DeveloperQuestionTableExtension",
-    "PersonalQuestionCollectionExtension",
+    "QuestionCollectionExtension",
     "PublishedQuestionTableExtension",
     "QuestionAccessTableExtension",
     "SharedByMeQuestionTableExtension",

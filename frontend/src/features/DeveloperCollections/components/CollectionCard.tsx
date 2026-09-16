@@ -4,7 +4,7 @@ import type { QuestionCollectionRead } from "../../../services";
 import {
   getCollectionColor,
   getCollectionIcon,
-} from "../utils/collectionCustomization";
+} from "../../CollectionShared/collectionCustomization";
 
 export type CollectionCardProps = {
   collection: QuestionCollectionRead;

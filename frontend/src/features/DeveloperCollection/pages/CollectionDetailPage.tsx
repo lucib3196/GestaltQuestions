@@ -11,18 +11,21 @@ import { ManageableQuestionsToolbar } from "../../DeveloperQuestionLibrary/toolb
 import PersonalQuestionTable from "../../QuestionTables";
 import { PersonalQuestionTableProvider } from "../../QuestionTables";
 import { CollectionAccessGate } from "../access/AccessGate";
-import { CollectionDetailHeader } from "../detail/CollectionDetailHeader";
+import { CollectionDetailHeader } from "../components/CollectionDetailHeader";
 import {
   CollectionDetailEmpty,
   CollectionDetailError,
   CollectionDetailLoading,
-} from "../detail/CollectionDetailStates";
-import { CollectionHeroIcon } from "../detail/CollectionHeroIcon";
-import CollectionInfo from "../detail/CollectionInfo";
-import { CollectionQuestionsEmptyState } from "../detail/CollectionQuestionsEmptyState";
-import { CollectionQuestionsTabs } from "../detail/CollectionQuestionsTabs";
-import { CollectionVisibilityFooter } from "../detail/CollectionVisibilityFooter";
-import { CollectionProvider, useCollectionStore } from "../store";
+} from "../components/CollectionDetailStates";
+import { CollectionHeroIcon } from "../components/CollectionHeroIcon";
+import CollectionInfo from "../components/CollectionInfo";
+import { CollectionQuestionsEmptyState } from "../components/CollectionQuestionsEmptyState";
+import { CollectionQuestionsTabs } from "../components/CollectionQuestionsTabs";
+import { CollectionVisibilityFooter } from "../components/CollectionVisibilityFooter";
+import {
+  SingleCollectionProvider,
+  useSingleCollectionStore,
+} from "../singleCollectionStore";
 function getQuestionCount(collection: QuestionCollection) {
   if ("question_ids" in collection && Array.isArray(collection.question_ids)) {
     return collection.question_ids.length;
@@ -34,7 +37,9 @@ function getQuestionCount(collection: QuestionCollection) {
 function CollectionViewData() {
   const [showQuestion, setShowQuestion] = useState<boolean>(false);
   const [isEditingCollection, setIsEditingCollection] = useState(false);
-  const selectedCollection = useCollectionStore((s) => s.selectedCollectionId);
+  const selectedCollection = useSingleCollectionStore(
+    (s) => s.selectedCollectionId,
+  );
   const { collection, loading, error, fetchCollection } =
     useFetchCollection(selectedCollection);
 
@@ -106,7 +111,7 @@ function CollectionViewData() {
         />
       ) : (
         <PersonalQuestionTableProvider>
-          <ManageableQuestionsToolbar />
+          {/* <ManageableQuestionsToolbar /> */}
           <PersonalQuestionTable
             baseQuery={{ collection_id: selectedCollection }}
             onRowSelect={(rowId) =>
@@ -136,10 +141,10 @@ export default function CollectionView() {
   const { collectionId } = useParams<{ collectionId: string }>();
   if (!collectionId) return;
   return (
-    <CollectionProvider>
+    <SingleCollectionProvider>
       <CollectionAccessGate collectionId={collectionId}>
         <CollectionViewData />
       </CollectionAccessGate>
-    </CollectionProvider>
+    </SingleCollectionProvider>
   );
 }

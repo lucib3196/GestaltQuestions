@@ -2,7 +2,7 @@ import type { CollectionCustomization } from "../../../services";
 import {
   getCollectionColor,
   getCollectionIcon,
-} from "../utils/collectionCustomization";
+} from "../../CollectionShared/collectionCustomization";
 
 type CollectionHeroIconProps = {
   customization: CollectionCustomization | null | undefined;

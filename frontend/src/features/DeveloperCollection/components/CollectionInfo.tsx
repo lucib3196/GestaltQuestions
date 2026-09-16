@@ -1,6 +1,5 @@
 import { Check, Globe2, Lock, Save, X } from "lucide-react";
 
-import { useUpdateCollection } from "../../../hooks/collections";
 import type {
   CollectionCustomization,
   QuestionCollection,
@@ -12,11 +11,12 @@ import {
   COLLECTION_ICON_OPTIONS,
   getCollectionColor,
   getCollectionIcon,
-} from "../utils/collectionCustomization";
+} from "../../CollectionShared/collectionCustomization";
 import {
   type CollectionMetadataFormValue,
   useCollectionInfoStore,
-} from "./useCollectionInfoStore";
+} from "../hooks/useCollectionInfoStore";
+import { useUpdateSingleCollection } from "../hooks/useUpdateSingleCollection";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   month: "short",
@@ -235,7 +235,7 @@ export default function CollectionInfo({
 }: CollectionInfoProps) {
   const { value, patch, reset, hasChanges, payload } =
     useCollectionInfoStore(collection);
-  const { updateCollection, loading, error } = useUpdateCollection();
+  const { updateCollection, loading, error } = useUpdateSingleCollection();
 
   const handleCancel = () => {
     reset();

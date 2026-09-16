@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 
 import { useRetrieveAccess } from "../../../hooks/collections";
-import { useCollectionStore } from "../store";
+import { useSingleCollectionStore } from "../singleCollectionStore";
 import { buildCollectionCapabilities } from "./capabilities";
 
 type CollectionAccessGateProps = {
@@ -14,10 +14,10 @@ export function CollectionAccessGate({
   children,
 }: CollectionAccessGateProps) {
   const { access, loading, error } = useRetrieveAccess(collectionId);
-  const setAccess = useCollectionStore((s) => s.setAccess);
-  const setCapabilities = useCollectionStore((s) => s.setCapabilities);
-  const clearAccess = useCollectionStore((s) => s.clearAccess);
-  const setSelectedCollectionId = useCollectionStore(
+  const setAccess = useSingleCollectionStore((s) => s.setAccess);
+  const setCapabilities = useSingleCollectionStore((s) => s.setCapabilities);
+  const clearAccess = useSingleCollectionStore((s) => s.clearAccess);
+  const setSelectedCollectionId = useSingleCollectionStore(
     (s) => s.setSelectedCollectionId,
   );
 

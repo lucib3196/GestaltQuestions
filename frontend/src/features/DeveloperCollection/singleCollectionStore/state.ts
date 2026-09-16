@@ -5,10 +5,10 @@ import type {
 } from "../../../stores/resourceAccess";
 import type { DeveloperCollectionAccessSchema } from "../access/types";
 
-export type CollectionStore<
+export type SingleCollectionStore<
   Schema extends AnyResourceSchema = DeveloperCollectionAccessSchema,
 > = ResourceAccessStore<Schema> & QuestionCollectionStore;
 
-export type CollectionStoreOptions = {
+export type SingleCollectionStoreOptions = {
   persistKey?: string;
 };

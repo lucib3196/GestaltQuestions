@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { ComponentPlayGround } from "./features/ComponentPlayGround";
 import { CreateNewQuestion } from "./features/CreateNewQuestion";
-import CollectionView from "./features/DeveloperCollections/CollectionView";
+import CollectionView from "./features/DeveloperCollection/CollectionView";
 import DeveloperCollections from "./features/DeveloperCollections/DeveloperCollections";
 import DeveloperQuestionLibrary from "./features/DeveloperQuestionLibrary/DeveloperQuestionLibrary";
 import { DeveloperWorkspaceLayout } from "./features/DeveloperWorkspace/DeveloperWorkspaceLayout";
