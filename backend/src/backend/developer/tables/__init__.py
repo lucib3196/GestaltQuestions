@@ -1,7 +1,7 @@
 from .base import DeveloperTables
 from .extensions import (
     DeveloperQuestionTableExtension,
-    PersonalQuestionCollectionExtension,
+    QuestionCollectionExtension,
     PublishedQuestionTableExtension,
     SharedByMeQuestionTableExtension,
     SharedWithMeQuestionTableExtension,
@@ -24,7 +24,7 @@ __all__ = [
     "DeveloperSharedQuestionTables",
     "DeveloperTables",
     "PersonalCollectionTableRow",
-    "PersonalQuestionCollectionExtension",
+    "QuestionCollectionExtension",
     "PersonalQuestionTableRow",
     "PublishedQuestionTableExtension",
     "PublishedQuestionTableRow",
