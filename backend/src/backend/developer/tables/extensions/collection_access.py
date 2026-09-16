@@ -17,10 +17,28 @@ from typing import Protocol
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from uuid import UUID
 from datetime import datetime
+from dataclasses import dataclass
+from typing import Protocol, TypeVar, runtime_checkable
+
+AccessT = TypeVar("AccessT", bound=SQLModel)
+ProfileT = TypeVar("ProfileT", bound=SQLModel)
+UserT = TypeVar("UserT", bound=SQLModel)
 
 
-ModelT = TypeVar("ModelT", bound=SQLModel)
 @dataclass(frozen=True)
-class ResourceAccessColumns(Generic[ModelT]):
-    resource_id: InstrumentedAttribute
-    
+class AccessTableConfig(Generic[AccessT, ProfileT]):
+    access_model: type[AccessT]
+    profile_model: type[ProfileT]
+
+    resource_id_col: InstrumentedAttribute[AccessT]
+    subject_id_col: InstrumentedAttribute[AccessT]
+    profile_id_col: InstrumentedAttribute[ProfileT]
+
+
+config = AccessTableConfig(
+    access_model=QuestionCollectionAccess,
+    profile_model=DeveloperProfile,
+    resource_id_col=QuestionCollectionAccess.collection_id,
+    subject_id_col=QuestionCollectionAccess.developer_id,
+    profile_id_col=DeveloperProfile.id,
+)
