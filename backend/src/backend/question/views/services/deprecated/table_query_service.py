@@ -5,8 +5,9 @@ from pydantic import BaseModel
 from sqlalchemy import TextClause, text
 from sqlmodel import Session
 
-from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
+from backend.question.views.schema import QuestionSearchParams
 
+from .schema import QuestionTableRow
 from .table_filter_builder import QuestionTableFilterBuilder
 from .table_sources import (
     BaseQuestionTableSource,

@@ -1,10 +1,14 @@
 import api from "../client";
 import type {
+  ShareCollectionBatchResult,
+  ShareCollectionsWithUsersPayload,
+} from "../Sharing";
+import type {
   CollectionAccess,
   CollectionId,
   ResourceAccessRevokeResult,
+  ShareableAccessLevel,
   ShareAccessPayload,
-  UpdateShareAccessPayload,
   UserId,
 } from "./types";
 
@@ -13,6 +17,17 @@ export default class CollectionAccessApi {
 
   private static authHeaders(token: string) {
     return { Authorization: `Bearer ${token}` };
+  }
+
+  static async retrieveAccess(
+    token: string,
+    collectionId: CollectionId,
+  ): Promise<CollectionAccess> {
+    const response = await api.get<CollectionAccess>(
+      `${this.base}/${collectionId}`,
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
   }
 
   static async listSharedWithMe(token: string): Promise<CollectionAccess[]> {
@@ -44,17 +59,29 @@ export default class CollectionAccessApi {
     return response.data;
   }
 
+  static async shareCollectionsWithUsers(
+    token: string,
+    payload: ShareCollectionsWithUsersPayload,
+  ): Promise<ShareCollectionBatchResult> {
+    const response = await api.post<ShareCollectionBatchResult>(
+      `${this.base}/shares/batch`,
+      payload,
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
   static async updateCollectionShare(
     token: string,
     collectionId: CollectionId,
     targetUserId: UserId,
-    payload: UpdateShareAccessPayload,
+    level: ShareableAccessLevel,
   ): Promise<CollectionAccess> {
     const response = await api.put<CollectionAccess>(
       `${this.base}/${encodeURIComponent(collectionId)}/shares/${encodeURIComponent(
         targetUserId,
       )}`,
-      payload,
+      { level },
       { headers: this.authHeaders(token) },
     );
     return response.data;

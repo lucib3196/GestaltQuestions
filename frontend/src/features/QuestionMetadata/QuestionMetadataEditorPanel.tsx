@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { useQuestionMetadata } from "../QuestionBuilder";
-import { useUpdateQuestion } from "./hooks/hooks";
+import {
+  useQuestionMetadata,
+  useUpdateQuestion,
+} from "../../hooks/developerQuestions";
 import { QuestionMetadataForm } from "./QuestionMetadataForm";
 import {
   metadataValuesEqual,

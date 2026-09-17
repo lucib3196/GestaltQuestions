@@ -2,8 +2,9 @@ import asyncio
 from collections.abc import Sequence
 from typing import Generic, Literal
 
+from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from backend.authorization import ProfileT
 from backend.question import Question
@@ -153,7 +154,10 @@ class QuestionCollectionReader(Generic[ProfileT]):
 
             if title:
                 stmt = stmt.where(
-                    QuestionCollection.title.ilike(f"%{title}%")  # type: ignore[attr-defined]
+                    or_(
+                        col(QuestionCollection.title).ilike(f"%{title}%"),
+                        col(QuestionCollection.description).ilike(f"%{title}%"),
+                    )
                 )
 
             stmt = stmt.order_by(

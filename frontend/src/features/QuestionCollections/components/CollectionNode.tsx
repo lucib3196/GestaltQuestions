@@ -12,9 +12,11 @@ import { type FormEvent, useState } from "react";
 
 import { DraggableContainer } from "../../../components/DraggableContainer";
 import type { RenderNodeProps } from "../../../components/ResourceTree/ResourceTree";
-import { useDeleteCollection } from "../hooks/useDeleteCollection";
-import { useUpdateCollectionTitle } from "../hooks/useUpdateCollection";
-import type { QuestionCollectionTreeNode } from "../instance/types";
+import {
+  useDeleteCollection,
+  useUpdateCollectionTitle,
+} from "../../../hooks/collections";
+import type { QuestionCollectionTreeNode } from "../utils/collectionQuestion";
 
 type CollectionNodeProps = RenderNodeProps<QuestionCollectionTreeNode> & {
   draggingNodeId: string | null;

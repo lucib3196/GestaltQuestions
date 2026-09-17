@@ -1,8 +1,11 @@
 from datetime import datetime
 from enum import StrEnum
 from typing import Any
+from enum import StrEnum
+from typing import Any
 from uuid import UUID
 
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 from backend.accounts import ValidInstitutions
@@ -13,7 +16,40 @@ from .utils import coerce_str_enum, normalize_list
 
 EnumMap = dict[str, type[StrEnum]]
 
+from .utils import coerce_str_enum, normalize_list
 
+EnumMap = dict[str, type[StrEnum]]
+
+
+class QuestionSearchParamsBase(BaseModel):
+    question_id: UUID | None = Field(
+        default=None, description="Filter questions based on question id"
+    )
+    search: str | None = Field(default=None, description="Search query for title")
+    status: Status | None = Field(
+        default=None, description="Filter questions based on status"
+    )
+    topic: str | None = Field(
+        default=None, description="General term for searching topics"
+    )
+    qtype: QType | list[QType] | None = Field(
+        default=None, description="Filter based on question type"
+    )
+    language: RuntimeLanguage | list[RuntimeLanguage] | None = Field(
+        default=None,
+        description="Search questions based on runtime language",
+    )
+    isAdaptive: bool | None = Field(
+        default=None, description="Filter questions based on adaptive status"
+    )
+
+    limit: int = Field(
+        default=1000, description="Maximum number of questions to return"
+    )
+    offset: int = Field(default=0, description="Number of questions to skip")
+
+
+class QuestionSearchParams(QuestionSearchParamsBase):
 class QuestionSearchParamsBase(BaseModel):
     question_id: UUID | None = Field(
         default=None, description="Filter questions based on question id"
@@ -78,22 +114,3 @@ class QuestionTableRowBase(BaseModel):
             return values
 
         return [coerce_str_enum(item, enum_type) for item in values]
-
-
-class QuestionTableRow(BaseModel):
-    question_id: UUID
-    user_id: UUID
-    isAdaptive: bool
-    developer_profile_id: UUID
-    title: str
-    institution_id: UUID
-    institution: str
-    created_by: str
-    status: Status | str
-    topics: list[str | None] | None
-    question_type: list[QType | str | None]
-    available_runtimes: list[RuntimeLanguage | str]
-    collection_id: UUID | None
-    collection_title: str | None
-    created_at: datetime | None = None
-    updated_at: datetime | None = None

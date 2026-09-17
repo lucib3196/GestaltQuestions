@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from backend.api.dependencies.core import SessionDep
-from backend.developer.collections import DeveloperCollectionService
+from backend.developer.collections import CollectionSharing, DeveloperCollectionService
 from backend.developer.collections.access import (
     QuestionCollectionAccessReader,
     QuestionCollectionAccessService,
@@ -11,6 +11,7 @@ from backend.developer.collections.access import (
 from backend.developer.collections.authorizer import DeveloperCollectionAuthorizer
 from backend.question.collections import (
     QuestionCollectionAdapter,
+    QuestionCollectionReader,
     QuestionCollectionService,
 )
 
@@ -64,6 +65,18 @@ QuestionCollectionAccessDependency = Annotated[
 ]
 
 
+def get_collection_sharing(
+    collection_access: QuestionCollectionAccessDependency,
+) -> CollectionSharing:
+    return CollectionSharing(collection_access)
+
+
+CollectionSharingDependency = Annotated[
+    CollectionSharing,
+    Depends(get_collection_sharing),
+]
+
+
 def get_developer_collection_authorizer(
     collection_access: QuestionCollectionAccessDependency,
     profile: DeveloperProfileDependency,
@@ -83,10 +96,12 @@ CollectionAuthorizer = Annotated[
 def get_dev_collection_manager(
     collections: QuestionCollectionServiceDependency,
     authorizer: CollectionAuthorizer,
+    session: SessionDep,
 ) -> DeveloperCollectionService:
     return DeveloperCollectionService(
         collections=collections,
         authorizer=authorizer,
+        reader=QuestionCollectionReader(session),
     )
 
 
