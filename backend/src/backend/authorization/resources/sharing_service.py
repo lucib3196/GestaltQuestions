@@ -35,6 +35,10 @@ class ResourceSharingService(Generic[AccessModelT, ProfileT, ResourceT]):
         access_service: ResourceAccessService[
             AccessModelT, ProfileT, ResourceT, AccessDetailRead
         ],
+        self,
+        access_service: ResourceAccessService[
+            AccessModelT, ProfileT, ResourceT, AccessDetailRead
+        ],
     ) -> None:
         self._access_service = access_service
 

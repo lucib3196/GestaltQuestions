@@ -36,6 +36,7 @@ class CollectionSharing(
         self,
         access_service: ResourceAccessService[
             QuestionCollectionAccess, DeveloperProfile, QuestionCollection, DetailRead
+            QuestionCollectionAccess, DeveloperProfile, QuestionCollection, DetailRead
         ],
     ) -> None:
         super().__init__(access_service=access_service)

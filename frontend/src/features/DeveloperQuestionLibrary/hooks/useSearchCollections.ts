@@ -1,17 +1,8 @@
-import { useEffect, useState } from "react";
-
-import { useAuth } from "../../services/Auth";
-import CollectionsApi from "../../services/Collections/api";
-import type {
-  QuestionCollectionRead,
-  SearchCollectionsParams,
-<<<<<<<< HEAD:frontend/src/hooks/collections/useSearchCollections.ts
-} from "../../services/Collections/types";
-========
-} from "../../../services";
+import type { SearchCollectionsParams } from "../../../services";
+import { useAuth } from "../../../context/AuthContext";
+import { useState, useEffect } from "react";
 import { CollectionsApi } from "../../../services";
-import { useAuth } from "../../../services/Auth";
->>>>>>>> main:frontend/src/features/DeveloperQuestionLibrary/hooks/useSearchCollections.ts
+import type { QuestionCollectionRead } from "../../../services";
 
 export function useSearchCollections(
   search: SearchCollectionsParams = { title: "", limit: 3 },

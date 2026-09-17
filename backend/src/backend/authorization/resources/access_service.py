@@ -46,6 +46,9 @@ class ResourceAccessService(
         adapter: ResourceAccessAdapter[
             AccessModelT, ProfileT, ResourceT, AccessDetailRead
         ],
+        adapter: ResourceAccessAdapter[
+            AccessModelT, ProfileT, ResourceT, AccessDetailRead
+        ],
         profile_service: ProfileService[ProfileT],
     ) -> None:
         self._adapter = adapter
@@ -313,6 +316,17 @@ class ResourceAccessService(
                 profile_id=str(requester_profile.id),
                 details=str(e),
             ) from e
+
+    async def list_resource_access_details(
+        self, resource: ResourceT | ID, *, owner: ProfileT | ID | None = None
+    ) -> Sequence[AccessDetailRead]:
+        resource_model = await self._resolve_resource(resource)
+        owner_profile = (
+            await self._resolve_profile(owner) if owner is not None else None
+        )
+        return await self._adapter.list_access_details(
+            resource_model, owner=owner_profile
+        )
 
     async def list_resource_access_details(
         self, resource: ResourceT | ID, *, owner: ProfileT | ID | None = None

@@ -1,8 +1,9 @@
-import api from "../client";
+import api from "../../client";
 import type {
   ShareQuestionBatchResult,
   ShareQuestionsWithUsersPayload,
-} from "../Sharing";
+} from "./types";
+
 import type {
   QuestionAccess,
   QuestionAccessDetailRead,

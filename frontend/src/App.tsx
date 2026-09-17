@@ -39,6 +39,7 @@ function App() {
             <Route path="/account" element={<AccountPage />} />
 
             <Route path="/questions" element={<Published />} />
+            <Route path="/questions" element={<Published />} />
             <Route path="/questions/:qid" element={<GeneralQuestionRender />} />
 
             <Route path="/test" element={<Test />}></Route>
@@ -51,8 +52,13 @@ function App() {
                 path="/question_builder"
                 element={<DeveloperWorkspaceLayout />}
               >
+              <Route
+                path="/question_builder"
+                element={<DeveloperWorkspaceLayout />}
+              >
                 <Route
                   path="questions"
+                  element={<DeveloperQuestionLibrary />}
                   element={<DeveloperQuestionLibrary />}
                 />
                 <Route index element={<DeveloperQuestionLibrary />} />
@@ -64,6 +70,7 @@ function App() {
                 <Route path="questions/new" element={<CreateNewQuestion />} />
                 <Route
                   path="questions/:qid/edit"
+                  element={<QuestionEditor />}
                   element={<QuestionEditor />}
                 />
                 <Route path="playground" element={<ComponentPlayGround />} />
