@@ -5,7 +5,7 @@ import type {
 } from "../../services/Collections/types";
 
 export type NormalizedCollections = {
-  byId: Record<CollectionId, QuestionCollectionRead>;
+  byId: Record<CollectionId, QuestionCollectionRead | QuestionCollection>;
   rootIds: CollectionId[];
 
   childIdsByParentId: Record<CollectionId, CollectionId[]>;
@@ -23,7 +23,9 @@ export type QuestionCollectionState = {
 
 export type QuestionCollectionActions = {
   // Gets the raw collection and normalizes it for me
-  setNormalizeCollection: (collections: QuestionCollectionRead[]) => void;
+  setNormalizeCollection: (
+    collections: QuestionCollectionRead[] | QuestionCollection[],
+  ) => void;
   setSelectedCollectionId: (collectionId: CollectionId | null) => void;
 };
 

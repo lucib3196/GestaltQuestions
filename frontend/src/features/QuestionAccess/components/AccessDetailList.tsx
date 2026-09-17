@@ -13,7 +13,7 @@ import {
 import {
   type QuestionAccessDetailRead,
   type ShareableAccessLevel,
-} from "../../../services/Access/QuestionAccess";
+} from "../../../services/Access";
 
 type AccessDetailListProps = {
   qid: string;

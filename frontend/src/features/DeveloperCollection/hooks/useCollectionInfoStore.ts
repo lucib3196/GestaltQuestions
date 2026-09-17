@@ -6,7 +6,7 @@ import type {
   Status,
 } from "../../../services";
 import { normalizeStatus } from "../../../services/Status";
-import { DEFAULT_COLLECTION_CUSTOMIZATION } from "../../CollectionShared/collectionCustomization";
+import { DEFAULT_COLLECTION_CUSTOMIZATION } from "../components/customization/customization";
 
 export type CollectionMetadataFormValue = {
   title: string;

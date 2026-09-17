@@ -7,7 +7,7 @@ import {
   useRetrieveAccess,
   useShareQuestionBatch,
 } from "../../../hooks/questionAccess";
-import { type ShareableAccessLevel } from "../../../services/Access/QuestionAccess";
+import { type ShareableAccessLevel } from "../../../services/Access";
 import { AccessDetailList } from "../../QuestionAccess/components/AccessDetailList";
 import { UserLookupCombobox } from "../../UserLookUp/components";
 import { useUserLookupStore } from "../../UserLookUp/instance/context";

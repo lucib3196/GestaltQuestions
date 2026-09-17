@@ -1,10 +1,12 @@
 from .collections import (
     CollectionAuthorizer,
+    CollectionSharingDependency,
     DevCollectionManager,
     QuestionCollectionAccessAdapterDependency,
     QuestionCollectionAccessDependency,
     QuestionCollectionAccessReaderDependency,
     QuestionCollectionServiceDependency,
+    get_collection_sharing,
     get_dev_collection_manager,
     get_developer_collection_authorizer,
     get_question_collection_access,
@@ -20,11 +22,13 @@ from .questions import (
     QuestionAccessAdapterDependency,
     QuestionAccessDependency,
     QuestionAuthorizer,
+    QuestionSharingDependency,
     get_dev_exporter,
     get_dev_question_manager,
     get_developer_question_authorizer,
     get_question_access,
     get_question_access_adapter,
+    get_question_sharing,
 )
 from .roles import DeveloperRoleAccess, get_developer_role_access
 from .tables import (
@@ -39,6 +43,7 @@ from .users import UserLookupDependency, get_user_lookup
 
 __all__ = [
     "CollectionAuthorizer",
+    "CollectionSharingDependency",
     "DevCollectionManager",
     "DevImporterDep",
     "DevQManager",
@@ -55,7 +60,9 @@ __all__ = [
     "QuestionCollectionAccessDependency",
     "QuestionCollectionAccessReaderDependency",
     "QuestionCollectionServiceDependency",
+    "QuestionSharingDependency",
     "UserLookupDependency",
+    "get_collection_sharing",
     "get_dev_collection_manager",
     "get_dev_exporter",
     "get_dev_question_manager",
@@ -72,5 +79,6 @@ __all__ = [
     "get_question_collection_access_adapter",
     "get_question_collection_access_reader",
     "get_question_collection_service",
+    "get_question_sharing",
     "get_user_lookup",
 ]

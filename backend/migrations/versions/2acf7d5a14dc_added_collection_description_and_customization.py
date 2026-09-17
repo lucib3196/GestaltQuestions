@@ -1,10 +1,9 @@
-from typing import Sequence, Union
-from sqlalchemy import inspect
-from alembic import op
-import sqlalchemy as sa
-import sqlmodel
-from sqlalchemy.dialects import postgresql
 from collections.abc import Sequence
+
+import sqlalchemy as sa
+from alembic import op
+from sqlalchemy import inspect
+from sqlalchemy.dialects import postgresql
 
 revision: str = "2acf7d5a14dc"
 down_revision: str | Sequence[str] | None = "5b0929781b0d"

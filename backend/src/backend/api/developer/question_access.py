@@ -5,20 +5,19 @@ from fastapi import APIRouter, HTTPException
 from starlette import status
 
 from backend.api.dependencies.users import CurrentUser
-from backend.authorization import ResourceAccessRevokeResult
+from backend.authorization import AccessPolicyError, ResourceAccessRevokeResult
 from backend.question.access.exceptions import QuestionAccessError
 from backend.question.access.models import QuestionAccess
 from backend.question.access.schema import (
     QuestionAccessDetailRead,
     ShareQuestionAccessPayload,
     ShareQuestionBatchResult,
-    ShareQuestionFailure,
     ShareQuestionsWithUsersPayload,
     UpdateQuestionAccessPayload,
 )
 from backend.shared import ID
 
-from .dependencies import QuestionAccessDependency
+from .dependencies import QuestionAccessDependency, QuestionSharingDependency
 
 router = APIRouter(
     prefix="/question-access",
@@ -28,11 +27,11 @@ router = APIRouter(
 
 @router.get("/shared-with-me")
 async def get_shared_with_me(
-    current_user: CurrentUser, question_access: QuestionAccessDependency
+    current_user: CurrentUser, question_sharing: QuestionSharingDependency
 ) -> Sequence[QuestionAccess]:
     try:
-        return await question_access.list_access_shared_with(current_user)
-    except QuestionAccessError as e:
+        return await question_sharing.list_shared_with_me(current_user)
+    except AccessPolicyError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
@@ -66,11 +65,11 @@ async def list_question_access_details(
 
 @router.get("/shared-by-me")
 async def get_shared_by_me(
-    current_user: CurrentUser, question_access: QuestionAccessDependency
+    current_user: CurrentUser, question_sharing: QuestionSharingDependency
 ) -> Sequence[QuestionAccess]:
     try:
-        return await question_access.list_access_shared_by(current_user)
-    except QuestionAccessError as e:
+        return await question_sharing.list_shared_by_me(current_user)
+    except AccessPolicyError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
@@ -109,18 +108,18 @@ async def check_access(
 async def share_question(
     question_id: ID,
     current_user: CurrentUser,
-    question_access: QuestionAccessDependency,
+    question_sharing: QuestionSharingDependency,
     payload: ShareQuestionAccessPayload,
 ) -> QuestionAccess:
     """Updating is the safer version for this"""
     try:
-        return await question_access.update_access(
+        return await question_sharing.update_user_access(
             current_user,
             payload.target_user_id,
             question_id,
             payload.level,
         )
-    except QuestionAccessError as e:
+    except AccessPolicyError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
@@ -139,37 +138,17 @@ async def share_question(
 )
 async def share_questions_with_users(
     current_user: CurrentUser,
-    question_access: QuestionAccessDependency,
+    question_sharing: QuestionSharingDependency,
     payload: ShareQuestionsWithUsersPayload,
 ) -> ShareQuestionBatchResult:
     try:
-        shared: list[QuestionAccess] = []
-        failed: list[ShareQuestionFailure] = []
-
-        for question_id in payload.question_ids:
-            for target_user_id in payload.target_user_ids:
-                try:
-                    access = await question_access.update_access(
-                        current_user,
-                        target_user_id,
-                        question_id,
-                        payload.level,
-                    )
-                except QuestionAccessError as e:
-                    failed.append(
-                        ShareQuestionFailure(
-                            question_id=question_id,
-                            target_user_id=target_user_id,
-                            reason=str(e),
-                        )
-                    )
-                    continue
-
-                shared.append(access)
-
-        return ShareQuestionBatchResult(shared=shared, failed=failed)
-
-    except QuestionAccessError as e:
+        return await question_sharing.share_questions_with_users(
+            current_user,
+            payload.question_ids,
+            payload.target_user_ids,
+            payload.level,
+        )
+    except AccessPolicyError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
@@ -189,17 +168,17 @@ async def update_question_share(
     question_id: ID,
     target_user_id: ID,
     current_user: CurrentUser,
-    question_access: QuestionAccessDependency,
+    question_sharing: QuestionSharingDependency,
     payload: UpdateQuestionAccessPayload,
 ) -> QuestionAccess:
     try:
-        return await question_access.update_access(
+        return await question_sharing.update_user_access(
             current_user,
             target_user_id,
             question_id,
             payload.level,
         )
-    except QuestionAccessError as e:
+    except AccessPolicyError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
@@ -219,15 +198,15 @@ async def unshare_question(
     question_id: ID,
     target_user_id: ID,
     current_user: CurrentUser,
-    question_access: QuestionAccessDependency,
+    question_sharing: QuestionSharingDependency,
 ) -> ResourceAccessRevokeResult:
     try:
-        return await question_access.revoke_access(
+        return await question_sharing.unshare_with_user(
             current_user,
             target_user_id,
             question_id,
         )
-    except QuestionAccessError as e:
+    except AccessPolicyError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),

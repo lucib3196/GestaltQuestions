@@ -35,7 +35,6 @@ def upgrade() -> None:
     END $$;
     """)
 
-
     op.execute("""
     DO $$
     BEGIN
@@ -50,6 +49,8 @@ def upgrade() -> None:
         END IF;
     END $$;
     """)
+
+
 # ### end Alembic commands ###
 
 

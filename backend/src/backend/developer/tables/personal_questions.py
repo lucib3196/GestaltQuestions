@@ -5,8 +5,8 @@ from backend.developer.model import DeveloperProfile
 from backend.developer.tables.base import DeveloperTables
 from backend.developer.tables.extensions import (
     DeveloperQuestionTableExtension,
-    QuestionCollectionExtension,
     PublishedQuestionTableExtension,
+    QuestionCollectionExtension,
 )
 from backend.developer.tables.schemas import (
     PersonalQuestionTableRow,

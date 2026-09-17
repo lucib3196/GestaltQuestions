@@ -1,5 +1,4 @@
 import { Edit3, Plus, Share2 } from "lucide-react";
-import { Link } from "react-router-dom";
 
 type CollectionDetailHeaderProps = {
   title: string;
@@ -9,24 +8,12 @@ type CollectionDetailHeaderProps = {
 };
 
 export function CollectionDetailHeader({
-  title,
   onAddQuestions,
   onShareCollection,
   onEditDetails,
 }: CollectionDetailHeaderProps) {
   return (
     <div className="flex flex-col gap-8 xl:flex-row xl:items-center xl:justify-between">
-      <nav className="flex min-w-0 items-center gap-2 text-sm font-semibold">
-        <Link
-          to="/question_builder/collections"
-          className="text-slate-500 transition hover:text-slate-300"
-        >
-          Collections
-        </Link>
-        <span className="text-slate-700">/</span>
-        <span className="min-w-0 truncate text-slate-100">{title}</span>
-      </nav>
-
       <div className="flex flex-wrap gap-3">
         <button
           type="button"

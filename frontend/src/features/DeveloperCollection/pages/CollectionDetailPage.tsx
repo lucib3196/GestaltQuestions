@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
+import ShareCollection from "../access-management/ShareCollection";
 import { Modal } from "../../../components/Modal";
 import { useFetchCollection } from "../../../hooks/collections";
-import type { QuestionCollection, Status } from "../../../services";
+import type { Status } from "../../../services";
 import { normalizeStatus } from "../../../services/Status";
 import AddQuestionsToCollection from "../../AddQuestionsToCollection";
-import { ManageableQuestionsToolbar } from "../../DeveloperQuestionLibrary/toolbar/ManageableQuestionsToolbar";
 import PersonalQuestionTable from "../../QuestionTables";
 import { PersonalQuestionTableProvider } from "../../QuestionTables";
 import { CollectionAccessGate } from "../access/AccessGate";
@@ -17,7 +16,7 @@ import {
   CollectionDetailError,
   CollectionDetailLoading,
 } from "../components/CollectionDetailStates";
-import { CollectionHeroIcon } from "../components/CollectionHeroIcon";
+import { CollectionHeroIcon } from "../components/customization/CollectionHeroIcon";
 import CollectionInfo from "../components/CollectionInfo";
 import { CollectionQuestionsEmptyState } from "../components/CollectionQuestionsEmptyState";
 import { CollectionQuestionsTabs } from "../components/CollectionQuestionsTabs";
@@ -26,22 +25,20 @@ import {
   SingleCollectionProvider,
   useSingleCollectionStore,
 } from "../singleCollectionStore";
-function getQuestionCount(collection: QuestionCollection) {
-  if ("question_ids" in collection && Array.isArray(collection.question_ids)) {
-    return collection.question_ids.length;
-  }
-
-  return 0;
-}
+import { getQuestionCount } from "../utils";
+import { AccessBadge } from "../../../components/Access";
 
 function CollectionViewData() {
   const [showQuestion, setShowQuestion] = useState<boolean>(false);
   const [isEditingCollection, setIsEditingCollection] = useState(false);
+  const [showShare, setShowShare] = useState<boolean>(false);
   const selectedCollection = useSingleCollectionStore(
     (s) => s.selectedCollectionId,
   );
   const { collection, loading, error, fetchCollection } =
     useFetchCollection(selectedCollection);
+
+  const access = useSingleCollectionStore((s) => s.access);
 
   const navigate = useNavigate();
 
@@ -78,12 +75,14 @@ function CollectionViewData() {
 
   return (
     <section className="min-h-180 rounded-lg border border-slate-800 bg-slate-950 p-6 text-slate-100 shadow-soft">
+      <AccessBadge level={access?.access_level} />
       <CollectionDetailHeader
         title={collection.title}
         onAddQuestions={() => setShowQuestion((prev) => !prev)}
-        onShareCollection={() => console.log("Share collection", collection.id)}
+        onShareCollection={() => setShowShare((prev)=>!prev)}
         onEditDetails={() => setIsEditingCollection(true)}
       />
+      {showShare && <Modal setShowModal={setShowShare}><ShareCollection /></Modal>}
 
       <div className="mt-8 flex flex-col gap-6 xl:flex-row xl:items-center">
         <CollectionHeroIcon customization={collection.customization} />

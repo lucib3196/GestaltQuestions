@@ -1,11 +1,11 @@
-import type { QuestionCollectionRead } from "../../services";
+import type { QuestionCollectionRead, QuestionCollection } from "../../services";
 import type { CollectionId } from "../../services";
 import type { NormalizedCollections } from "./state";
 
 export function normalizeCollections(
-  collections: QuestionCollectionRead[],
+  collections: QuestionCollectionRead[]|QuestionCollection[],
 ): NormalizedCollections {
-  const byId: Record<CollectionId, QuestionCollectionRead> = {};
+  const byId: Record<CollectionId, QuestionCollectionRead|QuestionCollection> = {};
   const rootIds: CollectionId[] = [];
   const childIdsByParentId: Record<CollectionId, CollectionId[]> = {};
 

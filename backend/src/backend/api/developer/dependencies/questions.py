@@ -8,6 +8,7 @@ from backend.developer.export.service import DeveloperDownloadService
 from backend.developer.questions import DeveloperQuestionService
 from backend.developer.questions.access import QuestionAccessService
 from backend.developer.questions.authorizer import DeveloperQuestionAuthorizer
+from backend.developer.questions.sharing import QuestionSharing
 from backend.question.access import QuestionAccessAdapter
 from backend.question.export import QuestionDownload
 from backend.question.reader import QuestionReader
@@ -41,6 +42,18 @@ def get_question_access(
 QuestionAccessDependency = Annotated[
     QuestionAccessService,
     Depends(get_question_access),
+]
+
+
+def get_question_sharing(
+    question_access: QuestionAccessDependency,
+) -> QuestionSharing:
+    return QuestionSharing(question_access)
+
+
+QuestionSharingDependency = Annotated[
+    QuestionSharing,
+    Depends(get_question_sharing),
 ]
 
 

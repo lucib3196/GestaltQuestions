@@ -11,15 +11,20 @@ from backend.question.collections.models import (
     QuestionCollectionLink,
     Status,
 )
-from backend.question.collections.schema import QuestionCollectionRead
-from backend.question.collections.schema import CollectionCustomization
+from backend.question.collections.schema import (
+    CollectionCustomization,
+    QuestionCollectionRead,
+)
+from backend.question.collections.services.question_collection_reader import (
+    QuestionCollectionReader,
+)
 from backend.question.collections.services.question_collection_service import (
     _UNSET,
     QuestionCollectionService,
     _UnsetType,
 )
 from backend.shared import ID
-from backend.question.collections.services.question_collection_reader import QuestionCollectionReader
+
 
 class DeveloperCollectionService:
     def __init__(

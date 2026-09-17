@@ -1,8 +1,10 @@
 from .base import DeveloperTables
 from .extensions import (
+    CollectionAccessTableExtension,
     DeveloperQuestionTableExtension,
-    QuestionCollectionExtension,
     PublishedQuestionTableExtension,
+    QuestionCollectionExtension,
+    ResourceAccessTableExtension,
     SharedByMeQuestionTableExtension,
     SharedWithMeQuestionTableExtension,
 )
@@ -12,24 +14,33 @@ from .schemas import (
     PersonalCollectionTableRow,
     PersonalQuestionTableRow,
     PublishedQuestionTableRow,
+    SharedByMeCollectionTableRow,
     SharedByMeQuestionTableRow,
+    SharedWithMeCollectionTableRow,
     SharedWithMeQuestionTableRow,
 )
+from .shared_collections import CollectionSearchParams, DeveloperSharedCollectionTables
 from .shared_questions import DeveloperSharedQuestionTables
 
 __all__ = [
+    "CollectionAccessTableExtension",
+    "CollectionSearchParams",
     "DeveloperPersonalQuestionTables",
     "DeveloperPublishedQuestionTables",
     "DeveloperQuestionTableExtension",
+    "DeveloperSharedCollectionTables",
     "DeveloperSharedQuestionTables",
     "DeveloperTables",
     "PersonalCollectionTableRow",
-    "QuestionCollectionExtension",
     "PersonalQuestionTableRow",
     "PublishedQuestionTableExtension",
     "PublishedQuestionTableRow",
+    "QuestionCollectionExtension",
+    "ResourceAccessTableExtension",
+    "SharedByMeCollectionTableRow",
     "SharedByMeQuestionTableExtension",
     "SharedByMeQuestionTableRow",
+    "SharedWithMeCollectionTableRow",
     "SharedWithMeQuestionTableExtension",
     "SharedWithMeQuestionTableRow",
 ]

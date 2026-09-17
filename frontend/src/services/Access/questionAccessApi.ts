@@ -1,13 +1,15 @@
-import api from "../../client";
+import api from "../client";
+import type {
+  ShareQuestionBatchResult,
+  ShareQuestionsWithUsersPayload,
+} from "../Sharing";
 import type {
   QuestionAccess,
   QuestionAccessDetailRead,
   QuestionId,
   ResourceAccessRevokeResult,
+  ShareableAccessLevel,
   ShareAccessPayload,
-  ShareQuestionBatchResult,
-  ShareQuestionsWithUsersPayload,
-  UpdateShareAccessPayload,
   UserId,
 } from "./types";
 
@@ -85,13 +87,13 @@ export default class QuestionAccessApi {
     token: string,
     questionId: QuestionId,
     targetUserId: UserId,
-    payload: UpdateShareAccessPayload,
+    level: ShareableAccessLevel,
   ): Promise<QuestionAccess> {
     const response = await api.patch<QuestionAccess>(
       `${this.base}/${encodeURIComponent(questionId)}/shares/${encodeURIComponent(
         targetUserId,
       )}`,
-      payload,
+      { level },
       { headers: this.authHeaders(token) },
     );
     return response.data;

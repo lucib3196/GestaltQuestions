@@ -1,10 +1,7 @@
 import { ArrowRight, Globe2, ListChecks, LockKeyhole } from "lucide-react";
 
 import type { QuestionCollectionRead } from "../../../services";
-import {
-  getCollectionColor,
-  getCollectionIcon,
-} from "../../CollectionShared/collectionCustomization";
+import { getCollectionColor, getCollectionIcon } from "../../DeveloperCollection/components/customization/customization";
 
 export type CollectionCardProps = {
   collection: QuestionCollectionRead;

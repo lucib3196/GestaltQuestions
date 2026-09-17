@@ -12,9 +12,21 @@ import QuestionEditor from "./features/QuestionEditor/QuestionEditor";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
+import { ResourceSharingForm } from "./features/Sharing/ResourceSharing";
 import { RequireRole } from "./services/Auth";
+import { UserLookupProvider } from "./features/UserLookUp/instance/context";
 function Test() {
-  return <div></div>;
+  return (
+    <UserLookupProvider>
+    <div>
+      <ResourceSharingForm
+        title="CollectionSharing"
+        buildPayload={() => console.log("Bulding")}
+        shareResource={async () => console.log("Sharing Resources")}
+      />
+    </div>
+    </UserLookupProvider>
+  );
 }
 function App() {
   return (
