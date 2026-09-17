@@ -1,3 +1,6 @@
-export * from "../../types/questionTypes";
+export type {
+  DeveloperQuestionCreate,
+  DeveloperQuestionUpdate,
+  LegacyQuestionAllRow,
+} from "../../services/DeveloperQuestions";
 export * from "./hooks";
-export { default as QuestionBuilderApi } from "./questionBuilderApi";

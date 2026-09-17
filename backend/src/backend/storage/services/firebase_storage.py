@@ -112,7 +112,7 @@ class FbStorage(Storage):
             for blob in iterator
             if blob.name != prefix and not blob.name.endswith("/")
         ]
-        logger.info("Non-recursive results: %s", files)
+        logger.debug("Non-recursive results: %s", files)
         return files
 
     def download(self, target: str | Path | Blob) -> bytes:

@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 
-import { useAuth, type UserRole } from "../..";
-import { RoleDescriptions } from "../../constants";
+import {
+  RoleDescriptions,
+  useAuth,
+  type UserRole,
+} from "../../../../services/Auth";
 
 type FieldRowProps = {
   label: string;

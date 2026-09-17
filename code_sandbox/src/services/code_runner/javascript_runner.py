@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import List
 
 from src.services.code_runner.base import CodeRunner
 from src.services.code_runner.models import Language, RuntimeExecutionConfig
@@ -22,6 +23,9 @@ class JavaScriptRunner(CodeRunner):
         if "module.exports" not in code:
             code += f"\nmodule.exports = {{ {self.runtime_config.func_name} }};"
         self._update_entry_point(code)
+
+    def _helper_files(self) -> List[Path]:
+        return []
 
     def _build_runner_script(self, entry_point_path: str | Path) -> str:
         """Build inline Node script that requires and calls the entry module."""

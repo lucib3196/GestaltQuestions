@@ -10,9 +10,10 @@ from backend.accounts.users import UserManager
 from backend.api.dependencies.storage import get_storage_manager
 from backend.core.firebase import initialize_firebase_app
 from backend.database.config import engine
-from backend.developer import DeveloperProfileService, DeveloperQuestionService
 from backend.developer.collections.access import QuestionCollectionAccessReader
 from backend.developer.importer import DeveloperImportService
+from backend.developer.profiles import DeveloperProfileService
+from backend.developer.questions import DeveloperQuestionService
 from backend.developer.questions.access import QuestionAccessService
 from backend.developer.questions.authorizer import DeveloperQuestionAuthorizer
 from backend.question import Status
@@ -90,7 +91,6 @@ async def main() -> None:
             session=session, developer_questions=developer_questions
         )
 
-        
         for package in packages.values():
             try:
                 question = await qimporter.import_question(
@@ -103,8 +103,6 @@ async def main() -> None:
             except Exception as e:
                 print(f"Failed to import {package}")
                 raise e
-                
-       
 
 
 if __name__ == "__main__":

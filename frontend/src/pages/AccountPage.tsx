@@ -1,11 +1,11 @@
 import { Navigate } from "react-router-dom";
 
-import { useAuth } from "../features/Auth";
 import {
   AccountActions,
   AccountHeader,
   AccountProfile,
 } from "../features/Auth/components/account";
+import { useAuth } from "../services/Auth";
 
 export default function AccountPage() {
   const { user, userData, loading } = useAuth();

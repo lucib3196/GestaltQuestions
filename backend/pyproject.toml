@@ -38,6 +38,7 @@ dependencies = [
     "ruff (>=0.15.13,<0.16.0)",
     "multimethod>=2.1",
     "gdrive-importer",
+    "tabulate>=0.10.0",
 ]
 [tool.uv.sources]
 gdrive-importer = { path = "../packages/gdrive_importer", editable = true }

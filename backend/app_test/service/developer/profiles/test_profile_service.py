@@ -6,7 +6,8 @@ import pytest
 from app_test.fakes import FakeStorage, FakeUserManager
 from backend.accounts import UserRoles
 from backend.authorization import ProfileOperationError
-from backend.developer import DeveloperProfile, DeveloperProfileService
+from backend.developer import DeveloperProfile
+from backend.developer.profiles import DeveloperProfileService
 
 
 @pytest.fixture

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { CollectionId } from "../../../services";
 import { CollectionsApi } from "../../../services";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../services/Auth";
 import { useCollectionStore } from "../instance/context";
 
 export function useDeleteCollection() {

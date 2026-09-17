@@ -11,8 +11,8 @@ import {
 import QuestionRenderShell from "../../QuestionEngine/layout/QuestionRenderShell";
 import type { PlaygroundComponentDoc } from "../componentPlaygroundRegistry";
 import {
-  useComponentPlaygroundStore,
   type PlaygroundPreviewMode,
+  useComponentPlaygroundStore,
 } from "../componentPlaygroundStore";
 import { buildPlaygroundRuntime } from "../playgroundRuntime";
 
@@ -158,9 +158,7 @@ export default function PlaygroundPreview({
   component,
   markup,
 }: PlaygroundPreviewProps) {
-  const previewMode = useComponentPlaygroundStore(
-    (state) => state.previewMode,
-  );
+  const previewMode = useComponentPlaygroundStore((state) => state.previewMode);
   const setPreviewMode = useComponentPlaygroundStore(
     (state) => state.setPreviewMode,
   );

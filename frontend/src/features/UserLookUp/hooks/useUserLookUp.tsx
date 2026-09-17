@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
 import { type UserDetailRead, UserLookupApi } from "../../../services";
-import { useAuth } from "../../Auth";
+import { useAuth } from "../../../services/Auth";
 
-export function useUserLookup(queryStr: string) {
+export function useUserLookup(queryStr: string, excluded?: string[]) {
   const { user } = useAuth();
   const [users, setUsers] = useState<UserDetailRead[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -25,7 +25,7 @@ export function useUserLookup(queryStr: string) {
       try {
         const fetched = await UserLookupApi.lookupDevelopers(
           await user.getIdToken(),
-          { query: queryStr },
+          { query: queryStr, excluded: excluded },
         );
         if (!cancelled) {
           setUsers(fetched);
@@ -49,7 +49,7 @@ export function useUserLookup(queryStr: string) {
     return () => {
       cancelled = true;
     };
-  }, [queryStr, user]);
+  }, [queryStr, user, excluded]);
 
   return { users, loading, error };
 }

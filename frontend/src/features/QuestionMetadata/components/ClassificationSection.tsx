@@ -1,7 +1,7 @@
 import { Tag } from "lucide-react";
 import type { Dispatch } from "react";
 
-import type { QuestionType } from "../../../types/questionTypes";
+import type { QuestionType } from "../../../services/Questions";
 import { QuestionMetadataSection } from "./QuestionMetadataSection";
 import { QuestionTypesSection } from "./QuestionTypesSection";
 import { TopicsSection } from "./TopicsSection";

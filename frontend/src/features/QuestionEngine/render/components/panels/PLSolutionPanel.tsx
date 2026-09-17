@@ -1,9 +1,9 @@
 import { MathJax } from "better-react-mathjax";
 import clsx from "clsx";
 import React, { useMemo, useState } from "react";
+import { useEffect } from "react";
 
 import { Button } from "../../../../../components/Button";
-import type { PLHintProps } from "../content/PLHint";
 import {
   uiPanelBaseStyles,
   type UIPanelSize,
@@ -12,7 +12,7 @@ import {
   uiPanelVariantStyles,
   uiTextStyles,
 } from "../../../styles";
-import { useEffect } from "react";
+import type { PLHintProps } from "../content/PLHint";
 export interface PLSolutionPanelProps {
   title?: string;
   subtitle?: string;

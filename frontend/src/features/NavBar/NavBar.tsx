@@ -13,7 +13,7 @@ import clsx from "clsx";
 import { type User } from "firebase/auth";
 import { Link, NavLink } from "react-router-dom";
 
-import { useAuth, type UserRole } from "../Auth";
+import { useAuth, type UserRole } from "../../services/Auth";
 import { ThemeToggle } from "../ThemeToggle";
 
 type Base = {

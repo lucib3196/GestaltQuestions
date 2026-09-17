@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import type { QuestionCreate } from "../../../types/questionTypes";
+import type { DeveloperQuestionCreate } from "../../../services/DeveloperQuestions";
 
 export type QuestionTemplateFile = {
   filename: string;
@@ -26,7 +26,7 @@ export type QuestionTemplate = {
   name: QuestionTemplateName;
   title: string;
   description: string;
-  questionData: Partial<QuestionCreate>;
+  questionData: Partial<DeveloperQuestionCreate>;
   defaultFiles: string[];
   files: QuestionTemplateFile[];
 };

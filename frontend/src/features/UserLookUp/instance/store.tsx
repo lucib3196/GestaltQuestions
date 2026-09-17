@@ -1,43 +1,25 @@
 import { createStore } from "zustand";
-import { useStore } from "zustand";
 
-import type { UserDetailRead } from "../../../services";
-export type UserLookUpState = {
-  userById: Record<string, UserDetailRead>;
-  selectedUserIds: string[];
+import {
+  createUserLookUpSlice,
+  type UserLookupState,
+  type UserLookupStore,
+} from "../../../stores/userLookUp";
+
+const initialState: UserLookupState = {
+  selectedUsersById: {},
 };
 
-export type UserLookUpActions = {
-  setUserById: (u: UserDetailRead[]) => void;
-  setSelectedUserIds: (ids: string[]) => void;
-};
+export type {
+  SelectedUsersById,
+  UserLookupState,
+  UserLookupStore,
+} from "../../../stores/userLookUp";
 
-export type UserLookUpStore = UserLookUpState & UserLookUpActions;
-
-const initialState: UserLookUpState = {
-  userById: {},
-  selectedUserIds: [],
-};
-export function createUserLookUpStore(preloaded?: Partial<UserLookUpState>) {
-  return createStore<UserLookUpStore>()((set) => ({
+export function createUserLookupStore(preloaded?: Partial<UserLookupState>) {
+  return createStore<UserLookupStore>()((...args) => ({
+    ...createUserLookUpSlice<UserLookupStore>()(...args),
     ...initialState,
     ...preloaded,
-    setSelectedUserIds: (ids) => {
-      set({ selectedUserIds: ids });
-    },
-    setUserById: (users) => {
-      const usersById: Record<string, UserDetailRead> = {};
-      users.forEach((user) => {
-        usersById[user.id] = user;
-      });
-
-      return set({ userById: usersById });
-    },
   }));
-}
-
-export const userLookUpStore = createUserLookUpStore();
-
-export function useUserLookUpStore<T>(selector: (state: UserLookUpStore) => T) {
-  return useStore(userLookUpStore, selector);
 }

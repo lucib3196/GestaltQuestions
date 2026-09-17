@@ -1,4 +1,4 @@
-import type { UserRead } from "../../features/Auth/types";
+import type { UserRead } from "../Auth";
 
 export type UserId = string;
 
@@ -10,4 +10,5 @@ export type DeveloperLookupParams = {
   query?: string | null;
   offset?: number | null;
   limit?: number | null;
+  excluded?: string[];
 };

@@ -102,6 +102,23 @@ def test_py_execution_with_custom_function(
     assert any("mock py custom func" in log for log in response.logs)
 
 
+def test_py_execution_serializes_runtime_helper_values(asset_dir: Path):
+    config = RuntimeExecutionConfig(
+        entry="server.py",
+        language="python",
+        files={"server.py": _read_asset(asset_dir, "runtime_serialization_entry.py")},
+    )
+
+    response = ExecutionResult.model_validate(PythonScriptRunner(config).run())
+
+    assert isinstance(response.output, dict)
+    assert isinstance(response.output["params"], dict)
+    assert isinstance(response.output["correct_answers"], dict)
+    assert isinstance(response.output["symbolic_subs"], dict)
+    assert "f3s" in response.output["correct_answers"]
+    assert "numsols" in response.output["symbolic_subs"]
+
+
 def test_failed_execution():
     bad_code = "def generate():\n    return not_defined_name\n"
     config = RuntimeExecutionConfig(

@@ -1,6 +1,6 @@
 import type { Dispatch } from "react";
 
-import type { QuestionType } from "../../../types/questionTypes";
+import type { QuestionType } from "../../../services/Questions";
 import { QuestionTypeMultiSelect } from "./QuestionTypeMultiSelect";
 
 type QuestionTypesSectionProps = {

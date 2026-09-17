@@ -16,14 +16,14 @@ services:
       - ./backend:/app/backend # mount project allows for reloading
       - ./packages:/app/packages # mount external packages allows for reloading
       
-
-
   code_sandbox:
     build:
       context: ./code_sandbox
       dockerfile: Dockerfile
     ports:
       - 8080:8080
+    volumes:
+      - ./code_sandbox:/app/code_sandbox # mount project allows for reloading
   frontend:
     build:
       context: ./frontend

@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { parse, symbolicEqual } from "mathjs";
 
 import type {
   QuestionAnswerMap,
@@ -35,6 +36,33 @@ function formatQuestionValue(value: QuestionValue): string {
   return String(value);
 }
 
+function areQuestionValuesEquivalent(
+  submittedValue: QuestionValue,
+  correctValue: QuestionValue,
+): boolean {
+  const submittedText = formatQuestionValue(submittedValue);
+  const correctText = formatQuestionValue(correctValue);
+
+  if (submittedText === correctText) {
+    return true;
+  }
+
+  if (
+    typeof submittedValue !== "string" ||
+    typeof correctValue !== "string" ||
+    !submittedValue.trim() ||
+    !correctValue.trim()
+  ) {
+    return false;
+  }
+
+  try {
+    return symbolicEqual(parse(submittedValue), parse(correctValue));
+  } catch {
+    return false;
+  }
+}
+
 function buildAnswerComparisonRows(
   correctAnswers: QuestionAnswerMap,
   submitted: QuestionAnswerMap | null,
@@ -47,9 +75,7 @@ function buildAnswerComparisonRows(
       key,
       correct: correctValue,
       submitted: submittedValue,
-      isMatch:
-        formatQuestionValue(submittedValue) ===
-        formatQuestionValue(correctValue),
+      isMatch: areQuestionValuesEquivalent(submittedValue, correctValue),
     };
   });
 }

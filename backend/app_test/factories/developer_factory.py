@@ -4,7 +4,8 @@ import pytest
 
 from app_test.fakes import FakeStorage
 from backend.accounts import User, UserManager
-from backend.developer import DeveloperProfile, DeveloperProfileService
+from backend.developer import DeveloperProfile
+from backend.developer.profiles import DeveloperProfileService
 
 
 class MakeDeveloperProfile(Protocol):

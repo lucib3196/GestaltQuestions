@@ -4,7 +4,10 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 import { UseAuthMode } from "../../../../context/AuthMode";
-import { AllowedInstitutions, type ValidInstitutions } from "../../types";
+import {
+  AllowedInstitutions,
+  type ValidInstitutions,
+} from "../../../../services/Auth";
 
 type AuthProps = {
   onSubmit: (

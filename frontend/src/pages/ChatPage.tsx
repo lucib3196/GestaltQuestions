@@ -6,7 +6,7 @@ import { ChatSession } from "../features/Chat/Chat";
 import ChatConfig from "../features/Chat/components/ChatConfig";
 import ThreadMenuItem from "../features/Chat/components/ThreadMenuItem";
 import { useLoadUserThreads } from "../features/Chat/hooks";
-import { useThreadStore } from "../features/Chat/instance/store";
+import { useThreadStore } from "../features/Chat/instance/thread_store";
 
 export default function ChatPage() {
   const previousChats = useThreadStore((s) => s.threads);
@@ -14,9 +14,7 @@ export default function ChatPage() {
   // hook to load threads
   useLoadUserThreads();
 
-  const handleOpenChatSettings = () => {
-    console.log("Opening chat settings");
-  };
+  const handleOpenChatSettings = () => undefined;
 
   return (
     <div className="flex h-dvh min-h-0 flex-row overflow-hidden p-2">

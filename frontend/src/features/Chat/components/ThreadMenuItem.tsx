@@ -2,7 +2,7 @@ import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
 import { SideBarMenu } from "../../../components/SideBar";
 import type { ThreadRead as Thread } from "../../../services/Chat";
-import { useThreadStore } from "../instance/store";
+import { useThreadStore } from "../instance/thread_store";
 
 type ThreadMenuItemProps = {
   thread: Thread;
@@ -20,12 +20,12 @@ export default function ThreadMenuItem({ thread }: ThreadMenuItemProps) {
         {
           label: "Rename",
           icon: FaPencilAlt,
-          onClick: (selectedThread) => console.log("Rename", selectedThread.id),
+          onClick: () => undefined,
         },
         {
           label: "Delete",
           icon: FaTrashAlt,
-          onClick: (selectedThread) => console.log("Delete", selectedThread.id),
+          onClick: () => undefined,
         },
       ]}
     />

@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from backend.api.dependencies.core import SessionDep
-from backend.developer import DeveloperCollectionService
+from backend.developer.collections import DeveloperCollectionService
 from backend.developer.collections.access import (
     QuestionCollectionAccessReader,
     QuestionCollectionAccessService,

@@ -1,8 +1,8 @@
-import type { QuestionTableRow } from "../../../../services";
+import type { QuestionTableRowBase } from "../../../../services";
 import { styles } from "../styles";
 
 type QuestionSelectCellProps = {
-  row: QuestionTableRow;
+  row: QuestionTableRowBase;
   checked?: boolean;
   onSelect?(id: string, checked: boolean): void;
 };

@@ -8,6 +8,7 @@ from backend.authorization.profiles import ProfileService
 from backend.authorization.profiles.exceptions import ProfileNotSet
 from backend.authorization.resources.access_service import ResourceAccessService
 from backend.authorization.types import (
+    AccessDetailRead,
     AccessModelT,
     Profile,
     ProfileT,
@@ -30,7 +31,9 @@ DeniedErrorFactory = Callable[[str, str | None, str | None], Exception]
 class ResourceAuthorizer(Generic[AccessModelT, ProfileT, ResourceT, ActionT]):
     def __init__(
         self,
-        access: ResourceAccessService[AccessModelT, ProfileT, ResourceT],
+        access: ResourceAccessService[
+            AccessModelT, ProfileT, ResourceT, AccessDetailRead
+        ],
         profile: ProfileService[ProfileT],
         policy: ActionPolicy[ActionT],
         denied_error: DeniedErrorFactory,

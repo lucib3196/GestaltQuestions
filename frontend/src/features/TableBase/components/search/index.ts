@@ -1,0 +1,1 @@
+export { TableBaseSearch } from "./TableBaseSearch";

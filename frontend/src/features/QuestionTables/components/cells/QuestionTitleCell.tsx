@@ -1,7 +1,7 @@
-import type { QuestionTableRow } from "../../../../services";
+import type { QuestionTableRowBase } from "../../../../services";
 
 type QuestionTitleCellProps = {
-  row: QuestionTableRow;
+  row: QuestionTableRowBase;
   isSelected: boolean;
   onSelect: () => void;
 };

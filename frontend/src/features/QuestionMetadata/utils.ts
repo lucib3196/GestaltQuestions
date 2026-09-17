@@ -1,4 +1,4 @@
-import type { QuestionCreate } from "../../types/questionTypes";
+import type { DeveloperQuestionCreate } from "../../services/DeveloperQuestions";
 import {
   normalizeQuestionStatus,
   normalizeQuestionTypes,
@@ -7,11 +7,11 @@ import {
   type QuestionRead,
   type QuestionStatus,
   type QuestionType,
-} from "../../types/questionTypes";
+} from "../../services/Questions";
 
 export type QuestionMetadataFormValue = Required<
   Pick<
-    QuestionCreate,
+    DeveloperQuestionCreate,
     "title" | "ai_generated" | "isAdaptive" | "topics" | "qType" | "status"
   >
 >;

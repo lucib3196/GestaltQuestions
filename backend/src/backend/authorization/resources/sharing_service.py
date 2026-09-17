@@ -3,13 +3,22 @@ from typing import Generic
 
 from backend.authorization import ResourceAccessRevokeResult
 from backend.authorization.resources.access_service import ResourceAccessService
-from backend.authorization.types import AccessLevel, AccessModelT, ProfileT, ResourceT
+from backend.authorization.types import (
+    AccessDetailRead,
+    AccessLevel,
+    AccessModelT,
+    ProfileT,
+    ResourceT,
+)
 from backend.shared import ID
 
 
 class ResourceSharingService(Generic[AccessModelT, ProfileT, ResourceT]):
     def __init__(
-        self, access_service: ResourceAccessService[AccessModelT, ProfileT, ResourceT]
+        self,
+        access_service: ResourceAccessService[
+            AccessModelT, ProfileT, ResourceT, AccessDetailRead
+        ],
     ) -> None:
         self._access_service = access_service
 

@@ -1,7 +1,7 @@
 import { Globe2 } from "lucide-react";
 import type { Dispatch } from "react";
 
-import type { QuestionStatus } from "../../../types/questionTypes";
+import type { QuestionStatus } from "../../../services/Questions";
 import { getStatusDescription } from "../utils";
 import { QuestionMetadataSection } from "./QuestionMetadataSection";
 import { QuestionStatusSelect } from "./QuestionStatusSelect";

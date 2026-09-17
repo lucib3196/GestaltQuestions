@@ -1,7 +1,9 @@
-import type { QuestionTableRow } from "../../../../services";
+import type { QuestionTableRowBase } from "../../../../services";
 
-export function QuestionTypesCell({ row }: { row: QuestionTableRow }) {
+export function QuestionTypesCell({ row }: { row: QuestionTableRowBase }) {
   return (
-    <span>{row.question_type.length ? row.question_type.join(", ") : "-"}</span>
+    <span>
+      {row.question_type?.length ? row.question_type.join(", ") : "-"}
+    </span>
   );
 }

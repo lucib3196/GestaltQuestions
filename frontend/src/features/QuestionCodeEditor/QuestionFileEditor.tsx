@@ -102,7 +102,7 @@ function QuestionFileEditorBase({ qid }: QuestionFileEditorBaseProps) {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3 rounded-lg border border-border bg-surface-strong p-3 text-text shadow-soft transition-colors">
+    <div className="flex h-full min-h-0 flex-col gap-3 text-text">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <FileDropDown
           files={files}

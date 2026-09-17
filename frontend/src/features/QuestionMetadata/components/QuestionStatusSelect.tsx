@@ -4,7 +4,7 @@ import { useId } from "react";
 import {
   QUESTION_STATUS_OPTIONS,
   type QuestionStatus,
-} from "../../../types/questionTypes";
+} from "../../../services/Questions";
 
 type QuestionStatusSelectProps = {
   value: QuestionStatus;

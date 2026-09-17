@@ -6,18 +6,16 @@ Create Date: 2026-08-31 13:37:30.399238
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 from alembic import op
-import sqlalchemy as sa
-import sqlmodel
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "5b0929781b0d"
-down_revision: Union[str, Sequence[str], None] = "09a1ca6f8218"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | Sequence[str] | None = "09a1ca6f8218"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 CREATE_QUESTION_TABLE_VIEW_SQL = """
@@ -159,7 +157,6 @@ def downgrade() -> None:
     old_qtype.create(bind, checkfirst=True)
 
     with op.batch_alter_table("question_type", schema=None) as batch_op:
-
         batch_op.alter_column(
             "name",
             existing_type=new_qtype,
