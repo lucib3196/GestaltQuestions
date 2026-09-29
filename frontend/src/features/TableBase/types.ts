@@ -78,6 +78,10 @@ export type TableColumn<Schema extends AnyTableSchema = AnyTableSchema> = {
     kind: ColumnFilterKind;
     label?: string;
     options?: { label: string; value: string }[];
+    booleanLabels?: {
+      true: string;
+      false: string;
+    };
     show?: boolean;
     toQuery?: (value: unknown) => Partial<TableSchemaQuery<Schema>>;
   };

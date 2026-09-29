@@ -11,6 +11,7 @@ export type QuestionTableSearchParamsBase = {
   topic?: string | null;
   language?: QuestionRuntimeLanguage | QuestionRuntimeLanguage[] | null;
   isAdaptive?: boolean | null;
+  ai_generated?: boolean | null;
   limit?: number;
   offset?: number;
 };
@@ -26,6 +27,7 @@ export type QuestionTableRowBase = {
   question_id: string;
   title: string | null;
   isAdaptive: boolean;
+  ai_generated: boolean | null;
   status: QuestionStatus | string;
   topics: (string | null)[] | null;
   question_type: (QuestionType | null)[] | null;

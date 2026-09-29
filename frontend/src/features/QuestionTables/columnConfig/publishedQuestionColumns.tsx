@@ -18,6 +18,7 @@ const PUBLISHED_QUESTION_COLUMN_IDS = [
   "select",
   "title",
   "isAdaptive",
+  "ai_generated",
   "status",
   "topics",
   "question_type",

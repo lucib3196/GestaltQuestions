@@ -1,6 +1,7 @@
 export { QuestionAccessLevelCell } from "./QuestionAccessLevelCell";
 export { QuestionAccessLevelsCell } from "./QuestionAccessLevelsCell";
 export { QuestionAdaptiveCell } from "./QuestionAdaptiveCell";
+export { QuestionAiGeneratedCell } from "./QuestionAiGeneratedCell";
 export { QuestionCreatedAtCell } from "./QuestionCreatedAtCell";
 export { QuestionCreatedByCell } from "./QuestionCreatedByCell";
 export { QuestionGrantedByCell } from "./QuestionGrantedByCell";

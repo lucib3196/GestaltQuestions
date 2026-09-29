@@ -7,6 +7,7 @@ import {
 import { TableSelectHeaderCell } from "../../TableBase/components/headers";
 import {
   QuestionAdaptiveCell,
+  QuestionAiGeneratedCell,
   QuestionCreatedAtCell,
   QuestionRuntimesCell,
   QuestionSelectCell,
@@ -23,6 +24,7 @@ const BASE_QUESTION_COLUMN_IDS = [
   "select",
   "title",
   "isAdaptive",
+  "ai_generated",
   "status",
   "topics",
   "question_type",
@@ -60,8 +62,29 @@ export const questionTableColumnRegistry = {
     filter: {
       kind: "booleanToggle",
       label: "Filter adaptive questions",
+      booleanLabels: {
+        true: "Adaptive",
+        false: "Static",
+      },
       toQuery: (value) => ({
         isAdaptive: typeof value === "boolean" ? value : null,
+      }),
+    },
+  },
+  ai_generated: {
+    key: "ai_generated",
+    label: "AI Generated",
+    defaultVisible: true,
+    render: (row) => <QuestionAiGeneratedCell row={row} />,
+    filter: {
+      kind: "booleanToggle",
+      label: "Filter AI generated questions",
+      booleanLabels: {
+        true: "AI",
+        false: "Manual",
+      },
+      toQuery: (value) => ({
+        ai_generated: typeof value === "boolean" ? value : null,
       }),
     },
   },

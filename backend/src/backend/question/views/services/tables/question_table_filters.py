@@ -23,6 +23,7 @@ class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
         self.add_status(subquery)
         self.add_topic(subquery)
         self.add_is_adaptive(subquery)
+        self.add_ai_generated(subquery)
         self.add_qtype(subquery)
         self.add_language(subquery)
         return self.filters
@@ -66,6 +67,12 @@ class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
             return
 
         self.filters.append(subquery.c.isAdaptive == self.params.isAdaptive)
+
+    def add_ai_generated(self, subquery: Subquery) -> None:
+        if self.params.ai_generated is None:
+            return
+
+        self.filters.append(subquery.c.ai_generated == self.params.ai_generated)
 
     def add_qtype(self, subquery: Subquery) -> None:
         qtypes = self._enum_names(self.params.qtype)

@@ -88,8 +88,8 @@ export function ColumnFilterControl<
     case "booleanToggle": {
       const selectedValue = typeof value === "boolean" ? value : null;
       const options = [
-        { label: "Adaptive", value: true },
-        { label: "Static", value: false },
+        { label: filter.booleanLabels?.true ?? "True", value: true },
+        { label: filter.booleanLabels?.false ?? "False", value: false },
       ];
 
       return (
