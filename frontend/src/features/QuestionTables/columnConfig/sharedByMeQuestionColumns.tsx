@@ -17,6 +17,7 @@ const SHARED_BY_ME_BASE_COLUMN_IDS = [
   "select",
   "title",
   "isAdaptive",
+  "ai_generated",
   "status",
   "topics",
   "question_type",

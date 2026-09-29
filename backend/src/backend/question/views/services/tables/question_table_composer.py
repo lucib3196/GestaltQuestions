@@ -66,6 +66,7 @@ class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
                 col(Question.id).label("question_id"),
                 col(Question.title),
                 col(Question.isAdaptive),
+                col(Question.ai_generated),
                 col(Question.status),
                 col(Question.created_at),
                 col(Question.created_by_id),
@@ -74,16 +75,19 @@ class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
                 question_type,
                 available_runtimes,
             )
-            .join(
+            .outerjoin(
                 QuestionTopicLink,
                 col(Question.id) == col(QuestionTopicLink.question_id),
             )
-            .join(Topic, col(Topic.id) == col(QuestionTopicLink.topic_id))
-            .join(
+            .outerjoin(Topic, col(Topic.id) == col(QuestionTopicLink.topic_id))
+            .outerjoin(
                 QuestionQTypeLink,
                 col(Question.id) == col(QuestionQTypeLink.question_id),
             )
-            .join(QuestionType, col(QuestionType.id) == col(QuestionQTypeLink.qtype_id))
+            .outerjoin(
+                QuestionType,
+                col(QuestionType.id) == col(QuestionQTypeLink.qtype_id),
+            )
             .outerjoin(
                 QuestionRunTime,
                 (col(QuestionRunTime.question_id) == col(Question.id))
@@ -93,6 +97,7 @@ class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
                 col(Question.id),
                 col(Question.title),
                 col(Question.isAdaptive),
+                col(Question.ai_generated),
                 col(Question.status),
                 col(Question.created_at),
                 col(Question.created_by_id),
@@ -124,11 +129,13 @@ class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
 
         if dialect == "postgresql":
             return cast(
-                func.array_agg(func.distinct(field)),
+                func.array_agg(func.distinct(field)).filter(field.is_not(None)),
                 ARRAY(String),
             ).label(label)
 
         if dialect == "sqlite":
-            return func.json_group_array(func.distinct(field)).label(label)
+            return func.json_group_array(func.distinct(field)).filter(
+                field.is_not(None)
+            ).label(label)
 
         raise ValueError(f"Unsupported dialect: {dialect}")

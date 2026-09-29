@@ -35,6 +35,9 @@ class QuestionSearchParamsBase(BaseModel):
     isAdaptive: bool | None = Field(
         default=None, description="Filter questions based on adaptive status"
     )
+    ai_generated: bool | None = Field(
+        default=None, description="Filter questions based on AI generation status"
+    )
 
     limit: int = Field(
         default=1000, description="Maximum number of questions to return"
@@ -59,6 +62,7 @@ class QuestionTableRowBase(BaseModel):
     question_id: UUID
     title: str | None
     isAdaptive: bool
+    ai_generated: bool | None = None
     status: Status | str
     topics: list[str | None] | None
     question_type: list[QType | None] | None

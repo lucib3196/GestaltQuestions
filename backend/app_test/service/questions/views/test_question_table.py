@@ -77,6 +77,27 @@ def test_search_filters_by_base_params(db_session, make_question: MakeQuestion) 
     assert rows[0].available_runtimes == [RuntimeLanguage.PYTHON]
 
 
+def test_search_filters_by_ai_generated(
+    db_session, make_question: MakeQuestion
+) -> None:
+    ai_question = make_question(
+        title="Generated Question",
+        ai_generated=True,
+    )
+    manual_question = make_question(
+        title="Manual Question",
+        ai_generated=False,
+    )
+
+    rows = QuestionTable(db_session).search(
+        QuestionSearchParamsBase(ai_generated=True)
+    )
+
+    assert {row.question_id for row in rows} == {ai_question.id}
+    assert manual_question.id not in {row.question_id for row in rows}
+    assert rows[0].ai_generated is True
+
+
 def test_search_by_id_returns_matching_question(
     db_session, make_question: MakeQuestion
 ) -> None:
@@ -91,6 +112,25 @@ def test_search_by_id_returns_matching_question(
     assert len(rows) == 1
     assert rows[0].question_id == question.id
     assert rows[0].title == "Specific Question"
+
+
+def test_search_by_id_returns_question_without_metadata_links(
+    db_session, make_question: MakeQuestion
+) -> None:
+    question = make_question(
+        title="Question Without Metadata",
+        topics=[],
+        qType=[],
+    )
+    assert question.id
+
+    rows = QuestionTable(db_session).search_by_id(question.id)
+
+    assert len(rows) == 1
+    assert rows[0].question_id == question.id
+    assert rows[0].title == "Question Without Metadata"
+    assert rows[0].topics in (None, [])
+    assert rows[0].question_type in (None, [])
 
 
 def test_search_by_id_returns_empty_list_for_missing_question(db_session) -> None:
