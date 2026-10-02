@@ -9,8 +9,15 @@ from backend.question import Question
 from backend.question.collections.models import (
     QuestionCollection,
     QuestionCollectionLink,
+    Status,
 )
-from backend.question.collections.schema import QuestionCollectionRead
+from backend.question.collections.schema import (
+    CollectionCustomization,
+    QuestionCollectionRead,
+)
+from backend.question.collections.services.question_collection_reader import (
+    QuestionCollectionReader,
+)
 from backend.question.collections.services.question_collection_service import (
     _UNSET,
     QuestionCollectionService,
@@ -23,28 +30,35 @@ class DeveloperCollectionService:
     def __init__(
         self,
         collections: QuestionCollectionService[DeveloperProfile],
+        reader: QuestionCollectionReader[DeveloperProfile],
         authorizer: DeveloperCollectionAuthorizer,
     ) -> None:
         self._collections = collections
         self._authorizer = authorizer
+        self._reader = reader
 
     async def create_collection(
-        self, user: User | ID, title: str
+        self, user: User | ID, title: str, *, description: str | None = None
     ) -> QuestionCollection:
         owner = await self._authorizer.resolve_profile(user)
-        return await self._collections.create_collection(owner, title)
+        return await self._collections.create_collection(
+            owner, title, description=description
+        )
 
     async def get_collection(
         self, user: User | ID, collection_id: ID
-    ) -> QuestionCollection:
+    ) -> QuestionCollectionRead:
         await self._require_action(user, collection_id, DeveloperCollectionAction.VIEW)
-        return self._collections.get_collection(collection_id)
+        return await self._collections.get_collection_detail_read(collection_id)
 
     async def update_collection(
         self,
         user: User | ID,
         collection_id: ID,
         title: str | None,
+        description: str | None | _UnsetType = _UNSET,
+        status: Status | None | _UnsetType = _UNSET,
+        customization: CollectionCustomization | None | _UnsetType = _UNSET,
         parent_id: ID | None | _UnsetType = _UNSET,
     ) -> QuestionCollection:
         await self._require_action(
@@ -65,7 +79,10 @@ class DeveloperCollectionService:
             await self._authorizer.resolve_profile(user),
             collection_id,
             title,
-            parent,
+            description=description,
+            status=status,
+            customization=customization,
+            parent=parent,
         )
 
     async def add_question(

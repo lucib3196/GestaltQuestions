@@ -1,43 +1,14 @@
 import type {
   CollectionId,
+  CollectionQuestion,
   QuestionCollection,
-  QuestionCollectionRead,
-} from "../../../services";
-import type { CollectionQuestion } from "../../../services";
-import type {
-  NormalizedCollections,
-  QuestionCollectionTreeNode,
-} from "../instance/types";
-import { toCollectionTreeNode, toQuestionTreeNode } from "./collectionQuestion";
-export function normalizeCollections(
-  collections: QuestionCollectionRead[],
-): NormalizedCollections {
-  const byId: Record<CollectionId, QuestionCollectionRead> = {};
-  const rootIds: CollectionId[] = [];
-  const childIdsByParentId: Record<CollectionId, CollectionId[]> = {};
-
-  for (const collection of collections) {
-    if (!collection.id) continue;
-    byId[collection.id] = collection;
-  }
-
-  for (const collection of collections) {
-    if (!collection.id) continue;
-    if (!collection.parent_id || !byId[collection.parent_id]) {
-      rootIds.push(collection.id);
-      continue;
-    }
-
-    childIdsByParentId[collection.parent_id] ??= [];
-    childIdsByParentId[collection.parent_id].push(collection.id);
-  }
-
-  return {
-    byId,
-    rootIds,
-    childIdsByParentId,
-  };
-}
+} from "../../../services/Collections/types";
+import type { NormalizedCollections } from "../../../stores/collections";
+import {
+  type QuestionCollectionTreeNode,
+  toCollectionTreeNode,
+  toQuestionTreeNode,
+} from "./collectionQuestion";
 
 export function buildCollectionTree(
   state: NormalizedCollections,

@@ -1,11 +1,22 @@
 from datetime import UTC, datetime
-from typing import Optional
+from enum import StrEnum
+from typing import Any, Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint, text
+from sqlalchemy import JSON, Column, ForeignKey, Index, UniqueConstraint, text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel
 
 from backend.authorization import AccessLevel
+
+
+class Status(StrEnum):
+    ARCHIVED = "archived"
+    DRAFT = "draft"
+    PUBLISHED = "published"
+
+
+JSONType = JSON().with_variant(JSONB, "postgresql")
 
 
 class QuestionCollection(SQLModel, table=True):
@@ -16,7 +27,13 @@ class QuestionCollection(SQLModel, table=True):
         foreign_key="developer_profile.id",
     )
     title: str = Field(index=True)
+    description: str | None = None
+    customization: dict[str, Any] | None = Field(
+        sa_column=Column(JSONType, nullable=False), default_factory=dict
+    )
+    status: Status | None = Field(default=Status.DRAFT)
 
+    # Nested information
     parent_id: UUID | None = Field(
         default=None,
         foreign_key="question_collection.id",
