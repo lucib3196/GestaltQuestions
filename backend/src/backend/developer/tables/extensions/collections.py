@@ -8,8 +8,8 @@ from backend.question.collections import QuestionCollection, QuestionCollectionL
 from backend.tables import TableExtension
 
 
-class PersonalQuestionCollectionExtension(TableExtension):
-    """Filters personal question rows by collection id or collection title."""
+class QuestionCollectionExtension(TableExtension):
+    """Filters rows by collection id or collection title."""
 
     def __init__(
         self,

@@ -1,12 +1,12 @@
 from collections.abc import Sequence
 from enum import StrEnum
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.selectable import Subquery
 from sqlmodel import col
 
-from backend.question import QuestionQTypeLink, QuestionType, Topic, QuestionTopicLink
+from backend.question import QuestionQTypeLink, QuestionTopicLink, QuestionType, Topic
 from backend.question.views.schema import QuestionSearchParamsBase
 from backend.question_runtime.model import QuestionRunTime
 from backend.tables import FilterBuilder
@@ -14,8 +14,7 @@ from backend.tables import FilterBuilder
 
 class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
     def __init__(self, params: QuestionSearchParamsBase) -> None:
-        self.params = params
-        self.filters: list[ColumnElement[bool]] = []
+        super().__init__(params)
 
     def build(self, subquery: Subquery) -> list[ColumnElement[bool]]:
         self.add_question_id(subquery)

@@ -5,8 +5,8 @@ from backend.developer.model import DeveloperProfile
 from backend.developer.tables.base import DeveloperTables
 from backend.developer.tables.extensions import (
     DeveloperQuestionTableExtension,
-    PersonalQuestionCollectionExtension,
     PublishedQuestionTableExtension,
+    QuestionCollectionExtension,
 )
 from backend.developer.tables.schemas import (
     PersonalQuestionTableRow,
@@ -67,7 +67,7 @@ class DeveloperPersonalQuestionTables(DeveloperTables):
             self._session,
             extensions=[
                 DeveloperQuestionTableExtension(dev.id),
-                PersonalQuestionCollectionExtension(collection_id=params.collection_id),
+                QuestionCollectionExtension(collection_id=params.collection_id),
             ],
             row_model=PersonalQuestionTableRow,
         )

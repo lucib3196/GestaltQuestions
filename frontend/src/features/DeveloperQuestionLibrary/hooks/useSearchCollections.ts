@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
-
-import type {
-  QuestionCollectionRead,
-  SearchCollectionsParams,
-} from "../../../services";
+import type { SearchCollectionsParams } from "../../../services";
+import { useAuth } from "../../../context/AuthContext";
+import { useState, useEffect } from "react";
 import { CollectionsApi } from "../../../services";
-import { useAuth } from "../../../services/Auth";
+import type { QuestionCollectionRead } from "../../../services";
 
-export function useSearchCollections(title: string) {
+export function useSearchCollections(
+  search: SearchCollectionsParams = { title: "", limit: 3 },
+) {
   const { user } = useAuth();
   const [collections, setCollections] = useState<QuestionCollectionRead[]>([]);
   const [loading, setLoading] = useState(false);
@@ -28,15 +27,8 @@ export function useSearchCollections(title: string) {
       setError(null);
 
       try {
-        const searchParams: SearchCollectionsParams = {
-          title,
-          limit: 3,
-        };
         const token = await user.getIdToken();
-        const results = await CollectionsApi.searchCollections(
-          token,
-          searchParams,
-        );
+        const results = await CollectionsApi.searchCollections(token, search);
 
         if (!cancelled) {
           setCollections(results);
@@ -62,7 +54,7 @@ export function useSearchCollections(title: string) {
     return () => {
       cancelled = true;
     };
-  }, [title, user]);
+  }, [search, user]);
 
   return {
     collections,

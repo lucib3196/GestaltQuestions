@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { AnchoredPopover } from "../../../components/AnchoredPopover";
-import { useCollectionStore } from "../../QuestionCollections/instance/context";
+import { useCollectionStore } from "../../../stores/collections";
 import { QuestionTableToolbar } from "../../QuestionTables/toolbar/QuestionTableToolbar";
 import QuestionSharing from "../../Sharing/QuestionSharing";
 import { ColumnVisibilityPanel, useTableBaseContext } from "../../TableBase";

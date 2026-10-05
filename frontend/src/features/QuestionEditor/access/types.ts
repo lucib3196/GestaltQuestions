@@ -1,4 +1,4 @@
-import type { QuestionAccess } from "../../../services/Access/QuestionAccess";
+import type { QuestionAccess } from "../../../services/Access";
 import type { ResourceAccessSchema } from "../../../stores/resourceAccess";
 
 export type QuestionEditorAccessAction =

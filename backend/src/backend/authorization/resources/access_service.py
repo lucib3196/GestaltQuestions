@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 from typing import ClassVar
 
-from pydantic import BaseModel
 
 from backend.authorization.exceptions import AccessPolicyError
 from backend.authorization.profiles.service import ProfileService
@@ -14,21 +13,27 @@ from backend.authorization.resources.exceptions import (
 from backend.authorization.types import (
     AccessDecision,
     AccessLevel,
-    AccessModelProtocol,
     Profile,
+    ProfileT,
+    AccessModelT,
     ResourceAccessResult,
     ResourceAccessRevokeResult,
     ResourceProtocol,
+    ResourceT,
+    AccessDetailRead,
 )
 from backend.shared import ID
+from typing import Generic
 
 
-class ResourceAccessService[
-    AccessModelT: AccessModelProtocol,
-    ProfileT: Profile,
-    ResourceT: ResourceProtocol,
-    AccessDetailRead: BaseModel,
-]:
+class ResourceAccessService(
+    Generic[
+        AccessModelT,
+        ProfileT,
+        ResourceT,
+        AccessDetailRead,
+    ]
+):
     _ACCESS_LEVEL_RANK: ClassVar[dict[AccessLevel, int]] = {
         AccessLevel.VIEW: 1,
         AccessLevel.EDIT: 2,
@@ -308,6 +313,8 @@ class ResourceAccessService[
                 profile_id=str(requester_profile.id),
                 details=str(e),
             ) from e
+
+    
 
     async def list_resource_access_details(
         self, resource: ResourceT | ID, *, owner: ProfileT | ID | None = None

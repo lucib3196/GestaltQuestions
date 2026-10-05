@@ -1,41 +1,27 @@
 import type {
   CollectionId,
+  CollectionQuestion,
   QuestionCollection,
   QuestionCollectionRead,
-} from "../../../services";
-import type { CollectionQuestion } from "../../../services";
-import type {
-  NormalizedCollections,
-  QuestionCollectionTreeNode,
-} from "../instance/types";
-import { toCollectionTreeNode, toQuestionTreeNode } from "./collectionQuestion";
-export function normalizeCollections(
-  collections: QuestionCollectionRead[],
-): NormalizedCollections {
-  const byId: Record<CollectionId, QuestionCollectionRead> = {};
-  const rootIds: CollectionId[] = [];
-  const childIdsByParentId: Record<CollectionId, CollectionId[]> = {};
+} from "../../../services/Collections/types";
+import type { NormalizedCollections } from "../../../stores/collections";
+import {
+  type QuestionCollectionTreeNode,
+  toCollectionTreeNode,
+  toQuestionTreeNode,
+} from "./collectionQuestion";
 
-  for (const collection of collections) {
-    if (!collection.id) continue;
-    byId[collection.id] = collection;
-  }
-
-  for (const collection of collections) {
-    if (!collection.id) continue;
-    if (!collection.parent_id || !byId[collection.parent_id]) {
-      rootIds.push(collection.id);
-      continue;
-    }
-
-    childIdsByParentId[collection.parent_id] ??= [];
-    childIdsByParentId[collection.parent_id].push(collection.id);
+function toReadableCollection(
+  collection: QuestionCollection | QuestionCollectionRead,
+): QuestionCollectionRead {
+  if ("question_ids" in collection && "subcollections_len" in collection) {
+    return collection;
   }
 
   return {
-    byId,
-    rootIds,
-    childIdsByParentId,
+    ...collection,
+    question_ids: [],
+    subcollections_len: collection.children?.length ?? 0,
   };
 }
 
@@ -68,7 +54,7 @@ export function buildCollectionTree(
 
     const nodeDepth = getDepth(collection);
     return {
-      ...toCollectionTreeNode(collection, nodeDepth),
+      ...toCollectionTreeNode(toReadableCollection(collection), nodeDepth),
       children: [
         ...(state.childIdsByParentId[id] ?? []).map(buildNode),
         ...(questions ?? []).map((question) =>

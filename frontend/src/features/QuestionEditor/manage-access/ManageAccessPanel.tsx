@@ -3,11 +3,11 @@ import { useMemo, useState } from "react";
 
 import { AccessHeader, ShareLevelPicker } from "../../../components/Access";
 import {
-  type ShareableAccessLevel,
   useListSharedByMe,
   useRetrieveAccess,
   useShareQuestionBatch,
-} from "../../../services/Access/QuestionAccess";
+} from "../../../hooks/questionAccess";
+import { type ShareableAccessLevel } from "../../../services/Access";
 import { AccessDetailList } from "../../QuestionAccess/components/AccessDetailList";
 import { UserLookupCombobox } from "../../UserLookUp/components";
 import { useUserLookupStore } from "../../UserLookUp/instance/context";

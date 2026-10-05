@@ -12,7 +12,7 @@ const modalSizeVariants = {
 const modalPresentationVariants = {
   modal: {
     overlay:
-      "fixed inset-0 z-50 flex items-center justify-center bg-bg/70 px-4 py-6 backdrop-blur-sm",
+      "fixed inset-0 z-50 flex items-center justify-center bg-bg/70 px-4 py-6 ",
     panel:
       "flex min-h-0 flex-col overflow-hidden rounded-lg border border-border bg-surface-strong text-text shadow-soft",
     ariaModal: true,
@@ -51,10 +51,7 @@ export default function Modal({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         setShowModal(false);
       }
     }
@@ -67,6 +64,7 @@ export default function Modal({
 
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
@@ -85,7 +83,7 @@ export default function Modal({
           className,
         )}
       >
-        <div className="flex shrink-0 justify-end  p-2">
+        <div className="flex shrink-0 justify-end p-2">
           <CloseButton onClick={() => setShowModal(false)} />
         </div>
         <div
