@@ -91,9 +91,17 @@ async def check_access(
                 status_code=status.HTTP_403_FORBIDDEN, detail="Access not allowed"
             )
         return access.access
+    except HTTPException:
+        raise
+    except AccessPolicyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={str(e)}
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
         ) from e
 
 

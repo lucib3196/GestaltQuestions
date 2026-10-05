@@ -1,18 +1,17 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
-from uuid import UUID
 from typing import Generic
+from uuid import UUID
+
 from backend.authorization.types import (
+    AccessModelT,
+    AccessDetailRead,
     AccessLevel,
     ProfileT,
-    AccessModelT,
     ResourceAccessRevokeResult,
     ResourceT,
-    AccessDetailRead,
 )
-from backend.authorization import ResourceAccessRevokeResult
 from backend.authorization.resources.access_service import ResourceAccessService
-from backend.authorization.types import AccessDetailRead, AccessLevel
 from backend.shared import ID
 
 
@@ -31,10 +30,6 @@ class BatchResult[BatchAccessT]:
 
 class ResourceSharingService(Generic[AccessModelT, ProfileT, ResourceT]):
     def __init__(
-        self,
-        access_service: ResourceAccessService[
-            AccessModelT, ProfileT, ResourceT, AccessDetailRead
-        ],
         self,
         access_service: ResourceAccessService[
             AccessModelT, ProfileT, ResourceT, AccessDetailRead

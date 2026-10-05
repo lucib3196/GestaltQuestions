@@ -34,7 +34,7 @@ export function useUpdateQuestionShare() {
           token,
           questionId,
           targetUserId,
-          { level },
+          level,
         );
       } catch (err) {
         setError(

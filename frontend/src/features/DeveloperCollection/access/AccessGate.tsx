@@ -14,26 +14,32 @@ export function CollectionAccessGate({
   children,
 }: CollectionAccessGateProps) {
   const { access, loading, error } = useRetrieveAccess(collectionId);
-  const { collection, error:fetchError, loading:loadingCollection } = useFetchCollection(collectionId);
+  const {
+    collection,
+    error: fetchError,
+    loading: loadingCollection,
+  } = useFetchCollection(collectionId);
   const setAccess = useSingleCollectionStore((s) => s.setAccess);
   const setCapabilities = useSingleCollectionStore((s) => s.setCapabilities);
   const clearAccess = useSingleCollectionStore((s) => s.clearAccess);
   const setCollectionData = useSingleCollectionStore(
     (s) => s.setNormalizeCollection,
   );
-  const setSelectedCollection = useSingleCollectionStore(s=>s.setSelectedCollectionId)
+  const setSelectedCollection = useSingleCollectionStore(
+    (s) => s.setSelectedCollectionId,
+  );
 
   useEffect(() => {
     if (!collection) {
-      console.log(fetchError, loadingCollection)
-      return
+      console.log(fetchError, loadingCollection);
+      return;
     }
 
-    console.log("Current Collection", collection)
-    
-   
+    console.log("Current Collection", collection,);
+    console.log("Access", access)
+
     setCollectionData([collection]);
-    setSelectedCollection(collection.id)
+    setSelectedCollection(collection.id);
 
     if (!access || access.collection_id !== collectionId) {
       clearAccess();
@@ -46,7 +52,15 @@ export function CollectionAccessGate({
     return () => {
       clearAccess();
     };
-  }, [access, clearAccess, collectionId, setAccess, setCapabilities, collection, loadingCollection]);
+  }, [
+    access,
+    clearAccess,
+    collectionId,
+    setAccess,
+    setCapabilities,
+    collection,
+    loadingCollection,
+  ]);
 
   if (loading) {
     return (

@@ -5,13 +5,7 @@ import CollectionsApi from "../../services/Collections/api";
 import type {
   QuestionCollectionRead,
   SearchCollectionsParams,
-<<<<<<<< HEAD:frontend/src/hooks/collections/useSearchCollections.ts
 } from "../../services/Collections/types";
-========
-} from "../../../services";
-import { CollectionsApi } from "../../../services";
-import { useAuth } from "../../../services/Auth";
->>>>>>>> main:frontend/src/features/DeveloperQuestionLibrary/hooks/useSearchCollections.ts
 
 export function useSearchCollections(
   search: SearchCollectionsParams = { title: "", limit: 3 },
