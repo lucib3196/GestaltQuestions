@@ -23,7 +23,9 @@ export default function CreateCollection({
 
     if (!trimmedTitle || loading) return;
 
-    await createCollection(trimmedTitle);
+    const created = await createCollection(trimmedTitle);
+    if (!created) return;
+
     setTitle("");
     onCreated?.();
   }

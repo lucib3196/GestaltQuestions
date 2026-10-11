@@ -15,9 +15,13 @@ const COLLECTION_LIMIT_OPTIONS = [3, 6, 9, 12];
 
 type CollectionGridProps = {
   activeView: CollectionView;
+  refreshKey: number;
 };
 
-export function CollectionGrid({ activeView }: CollectionGridProps) {
+export function CollectionGrid({
+  activeView,
+  refreshKey,
+}: CollectionGridProps) {
   const [title, setTitle] = useState("");
   const [limit, setLimit] = useState(3);
   const debouncedTitle = useDebounce(title, 250);
@@ -31,7 +35,11 @@ export function CollectionGrid({ activeView }: CollectionGridProps) {
     [debouncedTitle, limit],
   );
 
-  const { collections, loading, error } = useSearchCollections(searchParams);
+  const { collections, loading, error } = useSearchCollections(
+    searchParams,
+    refreshKey,
+    activeView,
+  );
   const hasSearch = title.trim().length > 0;
 
   return (

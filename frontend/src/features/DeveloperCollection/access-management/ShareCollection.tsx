@@ -8,7 +8,6 @@ import type {
 import type { ShareCollectionBatchResult } from "../../../services/Sharing";
 import { prepareBatch } from "../../../services/Sharing/utils";
 import ResourceSharing from "../../Sharing/ResourceSharing";
-import { useSingleCollectionStore } from "../singleCollectionStore";
 
 function CollectionShareHeader({
   collection,
@@ -49,23 +48,22 @@ function notifyShareResult(result: ShareCollectionBatchResult) {
   toast.error(firstReason ?? "Could not share collection.");
 }
 
-export default function ShareCollection() {
-  const selectedCollection = useSingleCollectionStore(
-    (s) => s.selectedCollection,
-  );
+export default function ShareCollection({
+  collection,
+}: {
+  collection: QuestionCollectionRead | QuestionCollection;
+}) {
   const { shareCollectionsWithUsers, loading } = useShareCollectionBatch();
-
-  if (!selectedCollection) return null;
 
   return (
     <ResourceSharing
       title="Share Collection"
       variant="borderless"
-      preview={<CollectionShareHeader collection={selectedCollection} />}
+      preview={<CollectionShareHeader collection={collection} />}
       buildPayload={(selectedUsers, accessLevel) =>
         prepareBatch(
           "collection_ids",
-          selectedCollection.id ? [selectedCollection.id] : [],
+          collection.id ? [collection.id] : [],
           selectedUsers,
           accessLevel,
         )
@@ -80,7 +78,7 @@ export default function ShareCollection() {
         return result;
       }}
       actions={{
-        disableShare: loading,
+        disableShare: loading || !collection.id,
         onShared: notifyShareResult,
       }}
     />

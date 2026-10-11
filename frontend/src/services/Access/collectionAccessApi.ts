@@ -38,6 +38,10 @@ export default class CollectionAccessApi {
     return response.data;
   }
 
+  static async listSharedCollections(token: string): Promise<CollectionAccess[]> {
+    return CollectionAccessApi.listSharedWithMe(token);
+  }
+
   static async listSharedByMe(token: string): Promise<CollectionAccess[]> {
     const response = await api.get<CollectionAccess[]>(
       `${CollectionAccessApi.base}/shared-by-me`,

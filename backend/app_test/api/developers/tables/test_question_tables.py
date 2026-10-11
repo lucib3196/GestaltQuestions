@@ -3,6 +3,7 @@ import pytest
 from app_test.factories.question_factory import MakeQuestion
 from backend.api.dependencies.users import get_current_user_id
 from backend.authorization import AccessLevel
+from backend.question.collections import QuestionCollectionAccess
 from backend.question import Status
 from backend.question.access import QuestionAccess
 
@@ -83,3 +84,42 @@ async def test_developer_question_table_endpoints_are_active(
     assert response.status_code == 200
     assert isinstance(response.json(), list)
     assert response.json()
+
+
+@pytest.mark.asyncio
+async def test_collection_question_search_includes_questions_for_viewer(
+    api_client,
+    db_session,
+    developer_collection_service,
+    dev_owner,
+    dev_other,
+    make_question: MakeQuestion,
+) -> None:
+    collection = await developer_collection_service.create_collection(
+        dev_owner.user,
+        title="Shared Collection",
+    )
+    question = make_question(dev_owner.profile, title="Owner's question")
+    await developer_collection_service.add_question(
+        dev_owner.user,
+        collection.id,
+        question.id,
+    )
+    db_session.add(
+        QuestionCollectionAccess(
+            collection_id=collection.id,
+            granted_by_id=dev_owner.profile.id,
+            developer_id=dev_other.profile.id,
+            access_level=AccessLevel.VIEW,
+        )
+    )
+    db_session.commit()
+
+    override_current_user(api_client, dev_other.user.id)
+    response = api_client.post(
+        "/developer/tables/questions/collections/search",
+        json={"collection_id": str(collection.id)},
+    )
+
+    assert response.status_code == 200
+    assert [row["question_id"] for row in response.json()] == [str(question.id)]

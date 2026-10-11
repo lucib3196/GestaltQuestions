@@ -30,6 +30,7 @@ type AddQuestionsToCollectionSchema = TableSchema<
 
 type AddQuestionsToCollectionProps = {
   onQuestionSelect?: (questionId: RowId) => void;
+  onQuestionsAdded?: () => void;
   baseQuery?: Partial<QuestionTableSearchParams>;
   collection?: QuestionCollection | QuestionCollectionRead | null;
 };
@@ -61,8 +62,42 @@ const addQuestionsTableConfig: TableConfig<AddQuestionsToCollectionSchema> = {
 
 function SelectionSummary({
   collection,
+  onQuestionsAdded,
 }: {
   collection?: QuestionCollection | QuestionCollectionRead | null;
+  onQuestionsAdded?: () => void;
+}) {
+  if (collection) {
+    return (
+      <SelectionSummaryContent
+        collection={collection}
+        onQuestionsAdded={onQuestionsAdded}
+      />
+    );
+  }
+
+  return <SelectionSummaryFromStore onQuestionsAdded={onQuestionsAdded} />;
+}
+
+function SelectionSummaryFromStore({
+  onQuestionsAdded,
+}: Pick<AddQuestionsToCollectionProps, "onQuestionsAdded">) {
+  const selectedCollection = useCollectionStore((s) => s.selectedCollection);
+
+  return (
+    <SelectionSummaryContent
+      collection={selectedCollection}
+      onQuestionsAdded={onQuestionsAdded}
+    />
+  );
+}
+
+function SelectionSummaryContent({
+  collection,
+  onQuestionsAdded,
+}: {
+  collection?: QuestionCollection | QuestionCollectionRead | null;
+  onQuestionsAdded?: () => void;
 }) {
   const selectedIds = useTableBaseContext<
     AddQuestionsToCollectionSchema,
@@ -72,15 +107,11 @@ function SelectionSummary({
     AddQuestionsToCollectionSchema,
     () => void
   >((s) => s.clearSelectedIds);
-  const storeSelectedCollection = useCollectionStore(
-    (s) => s.selectedCollection,
-  );
-  const selectedCollection = collection ?? storeSelectedCollection;
   const { addQuestionToCollection, loading, error } =
     useAddQuestionToCollection();
 
   const selectedCount = selectedIds.length;
-  const collectionId = selectedCollection?.id;
+  const collectionId = collection?.id;
   const canAddQuestions =
     Boolean(collectionId) && selectedCount > 0 && !loading;
 
@@ -88,7 +119,10 @@ function SelectionSummary({
     if (!collectionId || selectedCount === 0) return;
 
     await addQuestionToCollection([collectionId], selectedIds, {
-      onSuccess: clearSelectedIds,
+      onSuccess: () => {
+        clearSelectedIds();
+        onQuestionsAdded?.();
+      },
     });
   }
 
@@ -105,8 +139,8 @@ function SelectionSummary({
             </p>
           </div>
           <p className="mt-1 text-sm text-text-muted">
-            {selectedCollection?.title
-              ? `Selected questions will be added to ${selectedCollection.title}.`
+            {collection?.title
+              ? `Selected questions will be added to ${collection.title}.`
               : "Open a collection before adding questions."}
           </p>
           {error ? (
@@ -155,6 +189,7 @@ function QuestionSearchTable({
 
 export function AddQuestionsToCollection({
   onQuestionSelect,
+  onQuestionsAdded,
   baseQuery,
   collection,
 }: AddQuestionsToCollectionProps) {
@@ -181,7 +216,10 @@ export function AddQuestionsToCollection({
           <TableBaseSearch placeholder="Search questions by title" />
         </div>
 
-        <SelectionSummary collection={collection} />
+        <SelectionSummary
+          collection={collection}
+          onQuestionsAdded={onQuestionsAdded}
+        />
         <QuestionSearchTable
           baseQuery={baseQuery}
           onQuestionSelect={onQuestionSelect}

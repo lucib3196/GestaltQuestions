@@ -20,12 +20,12 @@ export default function useCreateCollection() {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
       setError("Enter a collection title.");
-      return;
+      return false;
     }
 
     if (!user) {
       setError("Sign in to create");
-      return;
+      return false;
     }
     setLoading(true);
     setError(null);
@@ -39,10 +39,12 @@ export default function useCreateCollection() {
 
       setNormalizedCollections(collections);
       setSelectedCollectionId(createdCollection.id ?? "");
+      return true;
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Unable to create collection.",
       );
+      return false;
     } finally {
       setLoading(false);
     }

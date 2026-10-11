@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from starlette import status
 
 from backend.api.dependencies.users import CurrentUser
-from backend.developer.exceptions import DeveloperProfileError
+from backend.developer.exceptions import DeveloperAccessDenied, DeveloperProfileError
 from backend.developer.tables.schemas import (
     PersonalQuestionTableRow,
     SharedByMeQuestionTableRow,
@@ -14,6 +14,7 @@ from backend.question.views.schema import QuestionSearchParams, QuestionTableRow
 
 from .dependencies import (
     DeveloperPersonalQuestionTablesDependency,
+    DevCollectionManager,
     DeveloperProfileDependency,
     DeveloperPublishedQuestionTablesDependency,
     DeveloperSharedQuestionTablesDependency,
@@ -35,7 +36,7 @@ async def search_my_questions(
     try:
         profile = await profiles.get_profile(current_user)
         if params and params.collection_id:
-            return tables.search_questions_in_collections(profile, params)
+            return tables.search_owned_questions_in_collection(profile, params)
         return tables.search_my_questions(profile, params)
     except DeveloperProfileError as e:
         raise HTTPException(
@@ -49,13 +50,20 @@ async def search_my_questions(
 )
 async def search_my_collection_questions(
     current_user: CurrentUser,
-    profiles: DeveloperProfileDependency,
+    collections: DevCollectionManager,
     tables: DeveloperPersonalQuestionTablesDependency,
     params: QuestionSearchParams,
 ) -> Sequence[PersonalQuestionTableRow]:
     try:
-        profile = await profiles.get_profile(current_user)
-        return tables.search_questions_in_collections(profile, params)
+        if not params.collection_id:
+            raise ValueError("collection_id is required")
+        await collections.get_collection(current_user, params.collection_id)
+        return tables.search_all_questions_in_collection(params)
+    except DeveloperAccessDenied as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(e),
+        ) from e
     except DeveloperProfileError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

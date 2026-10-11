@@ -11,19 +11,26 @@ import type { CollectionView } from "../types";
 export default function DeveloperCollections() {
   const [activeView, setActiveView] = useState<CollectionView>("myCollections");
   const [showCreate, setShowCreate] = useState<boolean>(false);
+  const [collectionsRefreshKey, setCollectionsRefreshKey] = useState(0);
 
   return (
     <CollectionProvider>
       <div className="flex min-h-0 flex-1 flex-col gap-6 rounded-lg border border-border bg-surface p-5 text-text shadow-soft">
         <CollectionsHeader onCreateCollection={() => setShowCreate(true)} />
         <CollectionsTabs activeView={activeView} onChange={setActiveView} />
-        <CollectionGrid activeView={activeView} />
+        <CollectionGrid
+          activeView={activeView}
+          refreshKey={collectionsRefreshKey}
+        />
       </div>
       {showCreate ? (
         <Modal variant="small" setShowModal={(val) => setShowCreate(val)}>
           <CreateCollectionForm
             onCancel={() => setShowCreate(false)}
-            onCreated={() => setShowCreate(false)}
+            onCreated={() => {
+              setShowCreate(false);
+              setCollectionsRefreshKey((key) => key + 1);
+            }}
           />
         </Modal>
       ) : null}

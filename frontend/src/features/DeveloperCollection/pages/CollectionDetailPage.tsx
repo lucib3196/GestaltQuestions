@@ -79,10 +79,14 @@ function CollectionViewData() {
       <CollectionDetailHeader
         title={collection.title}
         onAddQuestions={() => setShowQuestion((prev) => !prev)}
-        onShareCollection={() => setShowShare((prev)=>!prev)}
+        onShareCollection={() => setShowShare(true)}
         onEditDetails={() => setIsEditingCollection(true)}
       />
-      {showShare && <Modal setShowModal={setShowShare}><ShareCollection /></Modal>}
+      {showShare && (
+        <Modal setShowModal={setShowShare}>
+          <ShareCollection collection={collection} />
+        </Modal>
+      )}
 
       <div className="mt-8 flex flex-col gap-6 xl:flex-row xl:items-center">
         <CollectionHeroIcon customization={collection.customization} />
@@ -122,14 +126,18 @@ function CollectionViewData() {
 
       <CollectionVisibilityFooter
         status={status}
-        onManageSharing={() =>
-          console.log("Manage sharing for collection", collection.id)
-        }
+        onManageSharing={() => setShowShare(true)}
       />
 
       {showQuestion && (
         <Modal setShowModal={(val) => setShowQuestion(val)} variant="default">
-          <AddQuestionsToCollection collection={collection} />
+          <AddQuestionsToCollection
+            collection={collection}
+            onQuestionsAdded={() => {
+              setShowQuestion(false);
+              void fetchCollection();
+            }}
+          />
         </Modal>
       )}
     </section>
