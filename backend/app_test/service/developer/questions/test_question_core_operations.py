@@ -2,10 +2,13 @@ import json
 from pathlib import PurePosixPath
 
 import pytest
+from sqlmodel import select
 
+from backend.authorization import AccessLevel
 from backend.authorization.profiles import ProfileAccessDenied
 from backend.developer.questions import DeveloperQuestionService
 from backend.question import Question, QuestionFilter, QuestionUpdate
+from backend.question.access.models import QuestionAccess
 from backend.storage import FileData
 
 
@@ -50,6 +53,7 @@ async def test_create_question_without_files(
     developer_question_service,
     dev_owner,
     make_question_payload,
+    db_session,
 ) -> None:
     payload = make_question_payload(
         question={
@@ -72,6 +76,13 @@ async def test_create_question_without_files(
     assert question.created_by_id == dev_owner.profile.id
     assert question.storage_path
     assert question.storage_path.startswith(dev_owner.profile.storage_path.rstrip("/"))
+
+    # makes sure that we give owner access to its creator
+    owner_access = db_session.exec(
+        select(QuestionAccess).where(QuestionAccess.question_id == question.id)
+    ).one()
+    assert owner_access.developer_id == dev_owner.profile.id
+    assert owner_access.access_level == AccessLevel.OWNER
 
 
 @pytest.mark.asyncio

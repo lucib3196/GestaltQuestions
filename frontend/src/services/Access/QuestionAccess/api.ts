@@ -26,8 +26,8 @@ export default class QuestionAccessApi {
     qid: QuestionId,
   ): Promise<QuestionAccessDetailRead[]> {
     const response = await api.get<QuestionAccessDetailRead[]>(
-      `${this.base}/${encodeURIComponent(qid)}/access-details`,
-      { headers: this.authHeaders(token) },
+      `${QuestionAccessApi.base}/${encodeURIComponent(qid)}/access-details`,
+      { headers: QuestionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
@@ -37,24 +37,24 @@ export default class QuestionAccessApi {
     qid: string,
   ): Promise<QuestionAccess> {
     const response = await api.get<QuestionAccess>(
-      `${this.base}/${encodeURI(qid)}`,
-      { headers: this.authHeaders(token) },
+      `${QuestionAccessApi.base}/${encodeURI(qid)}`,
+      { headers: QuestionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
 
   static async listSharedWithMe(token: string): Promise<QuestionAccess[]> {
     const response = await api.get<QuestionAccess[]>(
-      `${this.base}/shared-with-me`,
-      { headers: this.authHeaders(token) },
+      `${QuestionAccessApi.base}/shared-with-me`,
+      { headers: QuestionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
 
   static async listSharedByMe(token: string): Promise<QuestionAccess[]> {
     const response = await api.get<QuestionAccess[]>(
-      `${this.base}/shared-by-me`,
-      { headers: this.authHeaders(token) },
+      `${QuestionAccessApi.base}/shared-by-me`,
+      { headers: QuestionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
@@ -65,9 +65,9 @@ export default class QuestionAccessApi {
     payload: ShareAccessPayload,
   ): Promise<QuestionAccess> {
     const response = await api.post<QuestionAccess>(
-      `${this.base}/${encodeURIComponent(questionId)}/shares`,
+      `${QuestionAccessApi.base}/${encodeURIComponent(questionId)}/shares`,
       payload,
-      { headers: this.authHeaders(token) },
+      { headers: QuestionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
@@ -77,9 +77,9 @@ export default class QuestionAccessApi {
     payload: ShareQuestionsWithUsersPayload,
   ): Promise<ShareQuestionBatchResult> {
     const response = await api.post<ShareQuestionBatchResult>(
-      `${this.base}/shares/batch`,
+      `${QuestionAccessApi.base}/shares/batch`,
       payload,
-      { headers: this.authHeaders(token) },
+      { headers: QuestionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
@@ -91,11 +91,11 @@ export default class QuestionAccessApi {
     level: ShareableAccessLevel,
   ): Promise<QuestionAccess> {
     const response = await api.patch<QuestionAccess>(
-      `${this.base}/${encodeURIComponent(questionId)}/shares/${encodeURIComponent(
+      `${QuestionAccessApi.base}/${encodeURIComponent(questionId)}/shares/${encodeURIComponent(
         targetUserId,
       )}`,
       { level },
-      { headers: this.authHeaders(token) },
+      { headers: QuestionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
@@ -106,10 +106,10 @@ export default class QuestionAccessApi {
     targetUserId: UserId,
   ): Promise<ResourceAccessRevokeResult> {
     const response = await api.delete<ResourceAccessRevokeResult>(
-      `${this.base}/${encodeURIComponent(questionId)}/shares/${encodeURIComponent(
+      `${QuestionAccessApi.base}/${encodeURIComponent(questionId)}/shares/${encodeURIComponent(
         targetUserId,
       )}`,
-      { headers: this.authHeaders(token) },
+      { headers: QuestionAccessApi.authHeaders(token) },
     );
     return response.data;
   }

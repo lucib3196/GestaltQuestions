@@ -11,7 +11,6 @@ from backend.developer.collections.access import (
 from backend.developer.collections.authorizer import DeveloperCollectionAuthorizer
 from backend.question.collections import (
     QuestionCollectionAdapter,
-    QuestionCollectionReader,
     QuestionCollectionService,
 )
 
@@ -96,12 +95,10 @@ CollectionAuthorizer = Annotated[
 def get_dev_collection_manager(
     collections: QuestionCollectionServiceDependency,
     authorizer: CollectionAuthorizer,
-    session: SessionDep,
 ) -> DeveloperCollectionService:
     return DeveloperCollectionService(
         collections=collections,
         authorizer=authorizer,
-        reader=QuestionCollectionReader(session),
     )
 
 
