@@ -28,50 +28,33 @@ const modalPresentationVariants = {
 
 type ModalSizeVariants = keyof typeof modalSizeVariants;
 type ModalPresentationVariants = keyof typeof modalPresentationVariants;
-type ModalPresentationVariants = keyof typeof modalPresentationVariants;
 
 type ModalProps = {
   variant?: ModalSizeVariants;
   presentation?: ModalPresentationVariants;
-  presentation?: ModalPresentationVariants;
   setShowModal: (visible: boolean) => void;
   children: React.ReactNode;
   className?: string;
-  contentClassName?: string;
   contentClassName?: string;
 };
 
 export default function Modal({
   variant = "default",
   presentation = "modal",
-  variant = "default",
-  presentation = "modal",
   setShowModal,
   children,
   className,
   contentClassName,
-  contentClassName,
 }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
-  const presentationClasses = modalPresentationVariants[presentation];
   const presentationClasses = modalPresentationVariants[presentation];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         setShowModal(false);
       }
     }
-
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setShowModal(false);
-      }
-    }
-
 
     function handleEscape(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -81,39 +64,27 @@ export default function Modal({
 
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
-    document.addEventListener("keydown", handleEscape);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
       document.removeEventListener("keydown", handleEscape);
     };
   }, [setShowModal]);
 
-
   return (
-    <div className={presentationClasses.overlay}>
     <div className={presentationClasses.overlay}>
       <div
         ref={modalRef}
         role="dialog"
         aria-modal={presentationClasses.ariaModal}
-        role="dialog"
-        aria-modal={presentationClasses.ariaModal}
         className={clsx(
-          presentationClasses.panel,
           presentationClasses.panel,
           modalSizeVariants[variant],
           className,
         )}
       >
-        <div className="flex shrink-0 justify-end  p-2">
-        <div className="flex shrink-0 justify-end  p-2">
+        <div className="flex shrink-0 justify-end p-2">
           <CloseButton onClick={() => setShowModal(false)} />
-        </div>
-        <div
-          className={clsx("min-h-0 flex-1 overflow-auto p-4", contentClassName)}
-        >
-          {children}
         </div>
         <div
           className={clsx("min-h-0 flex-1 overflow-auto p-4", contentClassName)}

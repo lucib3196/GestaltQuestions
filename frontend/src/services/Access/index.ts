@@ -1,4 +1,5 @@
 export { default as CollectionAccessApi } from "./collectionAccessApi";
+export { default as QuestionAccessApi } from "./QuestionAccess/api";
 export type {
   AccessLevel,
   CollectionAccess,

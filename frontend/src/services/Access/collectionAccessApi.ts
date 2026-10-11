@@ -24,24 +24,24 @@ export default class CollectionAccessApi {
     collectionId: CollectionId,
   ): Promise<CollectionAccess> {
     const response = await api.get<CollectionAccess>(
-      `${this.base}/${collectionId}`,
-      { headers: this.authHeaders(token) },
+      `${CollectionAccessApi.base}/${collectionId}`,
+      { headers: CollectionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
 
   static async listSharedWithMe(token: string): Promise<CollectionAccess[]> {
     const response = await api.get<CollectionAccess[]>(
-      `${this.base}/shared-with-me`,
-      { headers: this.authHeaders(token) },
+      `${CollectionAccessApi.base}/shared-with-me`,
+      { headers: CollectionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
 
   static async listSharedByMe(token: string): Promise<CollectionAccess[]> {
     const response = await api.get<CollectionAccess[]>(
-      `${this.base}/shared-by-me`,
-      { headers: this.authHeaders(token) },
+      `${CollectionAccessApi.base}/shared-by-me`,
+      { headers: CollectionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
@@ -52,9 +52,9 @@ export default class CollectionAccessApi {
     payload: ShareAccessPayload,
   ): Promise<CollectionAccess> {
     const response = await api.post<CollectionAccess>(
-      `${this.base}/${encodeURIComponent(collectionId)}/shares`,
+      `${CollectionAccessApi.base}/${encodeURIComponent(collectionId)}/shares`,
       payload,
-      { headers: this.authHeaders(token) },
+      { headers: CollectionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
@@ -64,9 +64,9 @@ export default class CollectionAccessApi {
     payload: ShareCollectionsWithUsersPayload,
   ): Promise<ShareCollectionBatchResult> {
     const response = await api.post<ShareCollectionBatchResult>(
-      `${this.base}/shares/batch`,
+      `${CollectionAccessApi.base}/shares/batch`,
       payload,
-      { headers: this.authHeaders(token) },
+      { headers: CollectionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
@@ -78,11 +78,11 @@ export default class CollectionAccessApi {
     level: ShareableAccessLevel,
   ): Promise<CollectionAccess> {
     const response = await api.put<CollectionAccess>(
-      `${this.base}/${encodeURIComponent(collectionId)}/shares/${encodeURIComponent(
+      `${CollectionAccessApi.base}/${encodeURIComponent(collectionId)}/shares/${encodeURIComponent(
         targetUserId,
       )}`,
       { level },
-      { headers: this.authHeaders(token) },
+      { headers: CollectionAccessApi.authHeaders(token) },
     );
     return response.data;
   }
@@ -93,10 +93,10 @@ export default class CollectionAccessApi {
     targetUserId: UserId,
   ): Promise<ResourceAccessRevokeResult> {
     const response = await api.delete<ResourceAccessRevokeResult>(
-      `${this.base}/${encodeURIComponent(collectionId)}/shares/${encodeURIComponent(
+      `${CollectionAccessApi.base}/${encodeURIComponent(collectionId)}/shares/${encodeURIComponent(
         targetUserId,
       )}`,
-      { headers: this.authHeaders(token) },
+      { headers: CollectionAccessApi.authHeaders(token) },
     );
     return response.data;
   }

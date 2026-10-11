@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 from uuid import UUID
-from uuid import UUID
 
 from fastapi import APIRouter, HTTPException
 from starlette import status
@@ -101,25 +100,6 @@ async def check_access(
         ) from e
 
 
-@router.get("/{qid}")
-async def check_access(
-    current_user: CurrentUser,
-    question_access: QuestionAccessDependency,
-    qid: UUID | str,
-) -> QuestionAccess:
-    try:
-        access = await question_access.retrieve_access(current_user, qid)
-        if not access:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="Access not allowed"
-            )
-        return access
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={str(e)}
-        ) from e
-
-
 @router.post(
     "/{question_id}/shares",
     response_model=QuestionAccess,
@@ -131,7 +111,6 @@ async def share_question(
     question_sharing: QuestionSharingDependency,
     payload: ShareQuestionAccessPayload,
 ) -> QuestionAccess:
-    """Updating is the safer version for this"""
     """Updating is the safer version for this"""
     try:
         return await question_sharing.update_user_access(

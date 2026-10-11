@@ -2,6 +2,7 @@ import type {
   CollectionId,
   CollectionQuestion,
   QuestionCollection,
+  QuestionCollectionRead,
 } from "../../../services/Collections/types";
 import type { NormalizedCollections } from "../../../stores/collections";
 import {
@@ -9,6 +10,20 @@ import {
   toCollectionTreeNode,
   toQuestionTreeNode,
 } from "./collectionQuestion";
+
+function toReadableCollection(
+  collection: QuestionCollection | QuestionCollectionRead,
+): QuestionCollectionRead {
+  if ("question_ids" in collection && "subcollections_len" in collection) {
+    return collection;
+  }
+
+  return {
+    ...collection,
+    question_ids: [],
+    subcollections_len: collection.children?.length ?? 0,
+  };
+}
 
 export function buildCollectionTree(
   state: NormalizedCollections,
@@ -39,7 +54,7 @@ export function buildCollectionTree(
 
     const nodeDepth = getDepth(collection);
     return {
-      ...toCollectionTreeNode(collection, nodeDepth),
+      ...toCollectionTreeNode(toReadableCollection(collection), nodeDepth),
       children: [
         ...(state.childIdsByParentId[id] ?? []).map(buildNode),
         ...(questions ?? []).map((question) =>

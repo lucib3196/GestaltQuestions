@@ -30,12 +30,11 @@ class DeveloperCollectionService:
     def __init__(
         self,
         collections: QuestionCollectionService[DeveloperProfile],
-        reader: QuestionCollectionReader[DeveloperProfile],
         authorizer: DeveloperCollectionAuthorizer,
     ) -> None:
         self._collections = collections
         self._authorizer = authorizer
-        self._reader = reader
+
 
     async def create_collection(
         self, user: User | ID, title: str, *, description: str | None = None
