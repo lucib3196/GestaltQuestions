@@ -13,7 +13,6 @@ from .utils import coerce_str_enum, normalize_list
 
 EnumMap = dict[str, type[StrEnum]]
 
-
 class QuestionSearchParamsBase(BaseModel):
     question_id: UUID | None = Field(
         default=None, description="Filter questions based on question id"
@@ -82,22 +81,3 @@ class QuestionTableRowBase(BaseModel):
             return values
 
         return [coerce_str_enum(item, enum_type) for item in values]
-
-
-class QuestionTableRow(BaseModel):
-    question_id: UUID
-    user_id: UUID
-    isAdaptive: bool
-    developer_profile_id: UUID
-    title: str
-    institution_id: UUID
-    institution: str
-    created_by: str
-    status: Status | str
-    topics: list[str | None] | None
-    question_type: list[QType | str | None]
-    available_runtimes: list[RuntimeLanguage | str]
-    collection_id: UUID | None
-    collection_title: str | None
-    created_at: datetime | None = None
-    updated_at: datetime | None = None

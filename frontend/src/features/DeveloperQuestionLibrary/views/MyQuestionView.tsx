@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import { useCollectionStore } from "../../QuestionCollections/instance/context";
+import { useCollectionStore } from "../../../stores/collections";
 import PersonalQuestionTable from "../../QuestionTables";
 import { PersonalQuestionTableProvider } from "../../QuestionTables";
 import { ManageableQuestionsToolbar } from "../toolbar/ManageableQuestionsToolbar";

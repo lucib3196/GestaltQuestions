@@ -1,8 +1,7 @@
-from .schema import QuestionSearchParams, QuestionTableRow
+from .schema import QuestionSearchParams
 from .services.deprecated import TableQueryService
 
 __all__ = [
     "QuestionSearchParams",
-    "QuestionTableRow",
     "TableQueryService",
 ]

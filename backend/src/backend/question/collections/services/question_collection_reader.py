@@ -2,8 +2,9 @@ import asyncio
 from collections.abc import Sequence
 from typing import Generic, Literal
 
+from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from backend.authorization import ProfileT
 from backend.question import Question
@@ -14,6 +15,7 @@ from backend.question.collections.exceptions import (
 from backend.question.collections.models import (
     QuestionCollection,
     QuestionCollectionLink,
+    Status,
 )
 from backend.question.collections.schema import QuestionCollectionRead
 from backend.shared import ID
@@ -153,7 +155,10 @@ class QuestionCollectionReader(Generic[ProfileT]):
 
             if title:
                 stmt = stmt.where(
-                    QuestionCollection.title.ilike(f"%{title}%")  # type: ignore[attr-defined]
+                    or_(
+                        col(QuestionCollection.title).ilike(f"%{title}%"),
+                        col(QuestionCollection.description).ilike(f"%{title}%"),
+                    )
                 )
 
             stmt = stmt.order_by(
@@ -173,6 +178,49 @@ class QuestionCollectionReader(Generic[ProfileT]):
                 *[self.get_collection_detail_read(c) for c in collections]
             )
 
+        except SQLAlchemyError as e:
+            raise QuestionCollectionOperationError("retrieve", str(e)) from e
+
+    async def search_published_collections(
+        self,
+        *,
+        title: str | None = None,
+        offset: int | None = None,
+        limit: int | None = 10,
+        method: Literal["default", "detail-read"] = "default",
+    ) -> Sequence[QuestionCollection] | Sequence[QuestionCollectionRead]:
+        try:
+            stmt = select(QuestionCollection).where(
+                QuestionCollection.status == Status.PUBLISHED,
+            )
+
+            if title:
+                stmt = stmt.where(
+                    or_(
+                        col(QuestionCollection.title).ilike(f"%{title}%"),
+                        col(QuestionCollection.description).ilike(f"%{title}%"),
+                    )
+                )
+
+            stmt = stmt.order_by(
+                QuestionCollection.created_at.desc()  # type: ignore[attr-defined]
+            )
+
+            if offset is not None:
+                stmt = stmt.offset(offset)
+
+            if limit is not None:
+                stmt = stmt.limit(limit)
+
+            collections = self._session.exec(stmt).all()
+            if method == "default":
+                return collections
+            return await asyncio.gather(
+                *[
+                    self.get_collection_detail_read(collection)
+                    for collection in collections
+                ]
+            )
         except SQLAlchemyError as e:
             raise QuestionCollectionOperationError("retrieve", str(e)) from e
 

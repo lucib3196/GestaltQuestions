@@ -3,13 +3,13 @@ import { useCallback, useState } from "react";
 
 import { Button } from "../../../components/Button";
 import { ShowUploadedFiles, UploadFiles } from "../../../components/UploadFile";
-import type { FileData } from "../../../types/fileTypes";
 import {
   useCreateFile,
   useDeleteFile,
   useSaveFile,
   useUploadFile,
-} from "../../QuestionBuilder";
+} from "../../../hooks/developerQuestions";
+import type { FileData } from "../../../types/fileTypes";
 import { extensionToMime } from "../utils";
 
 type QuestionFileToolBarProps = {

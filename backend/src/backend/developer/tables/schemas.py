@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, field_validator
 
 from backend.authorization import AccessLevel
+from backend.question.collections.models import Status as CollectionStatus
 from backend.question.views.schema import QuestionTableRowBase
 from backend.question.views.utils import coerce_str_enum, normalize_list
 
@@ -27,6 +28,52 @@ class PersonalCollectionTableRow(BaseModel):
     question_count: int
     created_at: datetime
     updated_at: datetime
+
+
+class SharedCollectionTableRowBase(PersonalCollectionTableRow):
+    """Base row returned by shared collection table queries."""
+
+    description: str | None = None
+    customization: dict[str, Any] | None = None
+    status: CollectionStatus | str | None = None
+    subcollections_len: int = 0
+    access_levels: list[AccessLevel | str]
+
+    @field_validator("access_levels", mode="before")
+    @classmethod
+    def normalize_access_levels(cls, value: Any) -> list[Any] | None:
+        values = normalize_list(value)
+        if values is None:
+            return None
+
+        return [coerce_str_enum(item, AccessLevel) for item in values]
+
+
+class SharedWithMeCollectionTableRow(SharedCollectionTableRowBase):
+    """Row returned by the shared-with-me collection table."""
+
+    granted_by_email: str
+    granted_to_emails: list[str]
+    shared_at: datetime
+
+    @field_validator("granted_to_emails", mode="before")
+    @classmethod
+    def normalize_granted_to_emails(cls, value: Any) -> list[Any] | None:
+        return normalize_list(value)
+
+
+class SharedByMeCollectionTableRow(SharedCollectionTableRowBase):
+    """Row returned by the shared-by-me collection table."""
+
+    granted_by_email: str | None
+    granted_to_emails: list[str | None]
+    member_ids: list[UUID | None]
+    shared_at: datetime | None
+
+    @field_validator("granted_to_emails", "member_ids", mode="before")
+    @classmethod
+    def normalize_shared_by_me_array_fields(cls, value: Any) -> list[Any] | None:
+        return normalize_list(value)
 
 
 class SharedQuestionTableRowBase(QuestionTableRowBase):

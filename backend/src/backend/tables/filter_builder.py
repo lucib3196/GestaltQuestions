@@ -9,7 +9,7 @@ from .types import SearchParams
 
 class FilterBuilder(ABC, Generic[SearchParams]):
     def __init__(self, params: SearchParams) -> None:
-        self.params = params
+        self.params = params.model_copy(deep=True)
         self.filters: list[ColumnElement[bool]] = []
 
     @abstractmethod

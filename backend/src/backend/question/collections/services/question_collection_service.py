@@ -19,8 +19,11 @@ from backend.question.collections.models import (
     QuestionCollection,
     QuestionCollectionAccess,
     QuestionCollectionLink,
+    Status,
 )
+from backend.question.collections.schema import CollectionCustomization
 from backend.question.collections.services import QuestionCollectionReader
+from backend.question.schema import Status as QuestionStatus
 from backend.shared import ID
 
 
@@ -40,13 +43,18 @@ class QuestionCollectionService(
         self._session = session
 
     async def create_collection(
-        self, owner: ProfileT, title: str, parent: QuestionCollection | None = None
+        self,
+        owner: ProfileT,
+        title: str,
+        description: str | None = None,
+        parent: QuestionCollection | None = None,
     ) -> QuestionCollection:
         owner_id = self._require_profile_id(owner)
         self._validate_parent(parent, owner_id)
         try:
             collection = QuestionCollection(
                 title=title,
+                description=description,
                 owner_id=owner_id,
                 parent=parent,
                 parent_id=parent.id if parent else None,
@@ -103,6 +111,9 @@ class QuestionCollectionService(
         owner: ProfileT,
         collection: QuestionCollection | ID,
         title: str | None = None,
+        description: str | None | _UnsetType = _UNSET,
+        status: Status | None | _UnsetType = _UNSET,
+        customization: CollectionCustomization | None | _UnsetType = _UNSET,
         parent: QuestionCollection | None | _UnsetType = _UNSET,
     ) -> QuestionCollection:
         owner_id = self._require_profile_id(owner)
@@ -116,13 +127,31 @@ class QuestionCollectionService(
                     "Collection cannot be its own parent"
                 )
         try:
+            updated_at = datetime.now(UTC)
+
             if title is not None:
                 collection.title = title
+
+            if not isinstance(description, _UnsetType):
+                collection.description = description
+
+            if not isinstance(status, _UnsetType):
+                collection.status = status
+                if status is not None:
+                    question_status = QuestionStatus(status.value)
+                    for question in self.get_questions_in_collection(collection):
+                        question.status = question_status
+                        question.updated_at = updated_at
+
+            if not isinstance(customization, _UnsetType):
+                collection.customization = (
+                    customization.model_dump() if customization else {}
+                )
 
             if not isinstance(parent, _UnsetType):
                 collection.parent = parent
                 collection.parent_id = parent.id if parent else None
-            collection.updated_at = datetime.now(UTC)
+            collection.updated_at = updated_at
 
             self._session.commit()
             self._session.refresh(collection)

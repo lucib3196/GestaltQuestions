@@ -4,7 +4,7 @@ import { Trash2 } from "lucide-react";
 import type {
   QuestionAccessDetailRead,
   ShareableAccessLevel,
-} from "../../services/Access/QuestionAccess";
+} from "../../services/Access";
 import { UserAvatar } from "../User";
 import {
   accessDetailContainerStyles,

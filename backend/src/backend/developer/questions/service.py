@@ -7,6 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session
 
 from backend.accounts import User
+from backend.authorization import AccessLevel
 from backend.core import logger
 from backend.developer import DeveloperProfile, DeveloperProfileError
 from backend.developer.profiles import DeveloperProfileService
@@ -16,6 +17,7 @@ from backend.question.manager.exceptions import (
     DeveloperQuestionServiceError,
     QuestionNotFound,
 )
+from backend.question.access.models import QuestionAccess
 from backend.question.models import Question
 from backend.question.schema import (
     QuestionCreate,
@@ -216,6 +218,14 @@ class DeveloperQuestionService:
                 "Assigning creator profile %s to question %s", profile.id, question.id
             )
             question.created_by = profile
+            self._session.add(
+                QuestionAccess(
+                    question_id=question.id,
+                    granted_by_id=profile.id,
+                    developer_id=profile.id,
+                    access_level=AccessLevel.OWNER,
+                )
+            )
             self._session.add(question)
             self._session.commit()
             self._session.refresh(question)
