@@ -56,6 +56,11 @@ export function useSearchCollections(
               search.offset ?? 0,
               (search.offset ?? 0) + (search.limit ?? 10),
             );
+        } else if (view === "publicCollections") {
+          results = await CollectionsApi.searchPublishedCollections(
+            token,
+            search,
+          );
         } else {
           results = await CollectionsApi.searchCollections(token, search);
         }

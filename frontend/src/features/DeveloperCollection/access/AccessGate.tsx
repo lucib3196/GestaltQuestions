@@ -41,13 +41,15 @@ export function CollectionAccessGate({
     setCollectionData([collection]);
     setSelectedCollection(collection.id);
 
-    if (!access || access.collection_id !== collectionId) {
+    if (access?.collection_id === collectionId) {
+      setAccess(access);
+      setCapabilities(buildCollectionCapabilities(access.access_level));
+    } else if (collection.status === "published") {
       clearAccess();
-      return;
+      setCapabilities(buildCollectionCapabilities("view"));
+    } else {
+      clearAccess();
     }
-
-    setAccess(access);
-    setCapabilities(buildCollectionCapabilities(access.access_level));
 
     return () => {
       clearAccess();
@@ -62,7 +64,7 @@ export function CollectionAccessGate({
     loadingCollection,
   ]);
 
-  if (loading) {
+  if (loading || loadingCollection) {
     return (
       <div className="rounded-lg border border-border bg-surface p-4 text-sm text-text-muted">
         Loading collection access...
@@ -70,7 +72,19 @@ export function CollectionAccessGate({
     );
   }
 
-  if (error || !access) {
+  if (fetchError || !collection) {
+    return (
+      <div className="rounded-lg border border-border bg-surface p-4 text-sm text-text-muted">
+        {fetchError ?? "Unable to load this collection."}
+      </div>
+    );
+  }
+
+  if (collection.status === "published") {
+    return children;
+  }
+
+  if (error || !access || access.collection_id !== collectionId) {
     return (
       <div className="rounded-lg border border-border bg-surface p-4 text-sm text-text-muted">
         You do not have access to this collection.

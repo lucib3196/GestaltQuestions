@@ -2,12 +2,14 @@ import { ArrowRight, Plus } from "lucide-react";
 
 type CollectionQuestionsEmptyStateProps = {
   collectionTitle: string;
+  canAddQuestions: boolean;
   onAddQuestions: () => void;
   onCreateQuestion: () => void;
 };
 
 export function CollectionQuestionsEmptyState({
   collectionTitle,
+  canAddQuestions,
   onAddQuestions,
   onCreateQuestion,
 }: CollectionQuestionsEmptyStateProps) {
@@ -29,27 +31,33 @@ export function CollectionQuestionsEmptyState({
       <h2 className="text-2xl font-semibold tracking-normal text-slate-50">
         Your collection is ready
       </h2>
-      <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
-        Add questions from your library to start building {collectionTitle}.
-      </p>
-
-      <button
-        type="button"
-        onClick={onAddQuestions}
-        className="mt-8 inline-flex h-12 items-center justify-center gap-3 rounded-md bg-indigo-400 px-8 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/60"
-      >
-        <Plus className="size-5" aria-hidden="true" />
-        Add questions
-      </button>
-
-      <button
-        type="button"
-        onClick={onCreateQuestion}
-        className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-indigo-300 transition hover:text-indigo-200"
-      >
-        Create a new question
-        <ArrowRight className="size-4" aria-hidden="true" />
-      </button>
+      {canAddQuestions ? (
+        <>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
+            Add questions from your library to start building {collectionTitle}.
+          </p>
+          <button
+            type="button"
+            onClick={onAddQuestions}
+            className="mt-8 inline-flex h-12 items-center justify-center gap-3 rounded-md bg-indigo-400 px-8 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/60"
+          >
+            <Plus className="size-5" aria-hidden="true" />
+            Add questions
+          </button>
+          <button
+            type="button"
+            onClick={onCreateQuestion}
+            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-indigo-300 transition hover:text-indigo-200"
+          >
+            Create a new question
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </button>
+        </>
+      ) : (
+        <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
+          This published collection does not contain any questions.
+        </p>
+      )}
     </div>
   );
 }

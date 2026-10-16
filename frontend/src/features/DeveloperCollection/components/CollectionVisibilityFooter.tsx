@@ -5,11 +5,13 @@ import { getStatusLabel } from "../../../services/Status";
 
 type CollectionVisibilityFooterProps = {
   status: Status;
+  canManageAccess: boolean;
   onManageSharing: () => void;
 };
 
 export function CollectionVisibilityFooter({
   status,
+  canManageAccess,
   onManageSharing,
 }: CollectionVisibilityFooterProps) {
   return (
@@ -22,14 +24,16 @@ export function CollectionVisibilityFooter({
         </span>
       </div>
 
-      <button
-        type="button"
-        onClick={onManageSharing}
-        className="inline-flex items-center gap-2 font-semibold text-indigo-300 transition hover:text-indigo-200"
-      >
-        Manage sharing
-        <ArrowRight className="size-4" aria-hidden="true" />
-      </button>
+      {canManageAccess && (
+        <button
+          type="button"
+          onClick={onManageSharing}
+          className="inline-flex items-center gap-2 font-semibold text-indigo-300 transition hover:text-indigo-200"
+        >
+          Manage sharing
+          <ArrowRight className="size-4" aria-hidden="true" />
+        </button>
+      )}
     </footer>
   );
 }

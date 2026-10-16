@@ -1,7 +1,6 @@
 import api from "../client";
 import type {
   AddQuestionToCollectionPayload,
-  CollectionQuestion,
   CreateCollectionPayload,
   ListCollectionsParams,
   QuestionCollection,
@@ -67,6 +66,20 @@ export default class CollectionsApi {
     return response.data;
   }
 
+  static async searchPublishedCollections(
+    token: string,
+    params: SearchCollectionsParams = {},
+  ): Promise<QuestionCollectionRead[]> {
+    const response = await api.get<QuestionCollectionRead[]>(
+      `${this.base}/public/search`,
+      {
+        params,
+        headers: this.authHeaders(token),
+      },
+    );
+    return response.data;
+  }
+
   static async updateCollection(
     token: string,
     collectionId: string,
@@ -103,17 +116,6 @@ export default class CollectionsApi {
     const response = await api.post<QuestionCollectionLink>(
       `${this.base}/${encodeURIComponent(collectionId)}/questions`,
       payload,
-      { headers: this.authHeaders(token) },
-    );
-    return response.data;
-  }
-
-  static async getCollectionQuestions(
-    token: string,
-    collectionId: string,
-  ): Promise<CollectionQuestion[]> {
-    const response = await api.get<CollectionQuestion[]>(
-      `${this.base}/${encodeURIComponent(collectionId)}/questions`,
       { headers: this.authHeaders(token) },
     );
     return response.data;

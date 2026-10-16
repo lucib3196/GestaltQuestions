@@ -139,6 +139,20 @@ class DeveloperCollectionService:
             method="detail-read",
         )
 
+    async def search_published_collections(
+        self,
+        title: str | None = None,
+        offset: int | None = None,
+        limit: int | None = 10,
+    ) -> Sequence[QuestionCollectionRead]:
+        results = await self._collections.search_published_collections(
+            title=title,
+            offset=offset,
+            limit=limit,
+            method="detail-read",
+        )
+        return results  # type: ignore[return-value]
+
     async def get_questions_in_collection(
         self, user: User | DeveloperProfile | ID, collection: QuestionCollection | ID
     ) -> Sequence[Question]:
@@ -153,6 +167,10 @@ class DeveloperCollectionService:
         collection: ID | QuestionCollection,
         action: DeveloperCollectionAction,
     ) -> None:
+        if action == DeveloperCollectionAction.VIEW:
+            collection_model = self._collections.get_collection(collection)
+            if collection_model.status == Status.PUBLISHED:
+                return
         await self._authorizer.require_action(user, collection, action)
 
     async def check_access(

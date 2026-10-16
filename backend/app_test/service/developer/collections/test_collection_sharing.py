@@ -1,11 +1,23 @@
 import pytest
+from sqlmodel import Session
 
+from app_test.factories.question_factory import MakeQuestion
+from app_test.support.developer import DeveloperActor
+from backend.api.developer.collections import (
+    CollectionQuestionPayload,
+    add_question_to_collection,
+)
 from backend.authorization import AccessLevel
 from backend.authorization.profiles import ProfileAccessDenied
 from backend.authorization.resources import (
     ResourceAccessDenied,
     ResourceAccessValidationError,
 )
+from backend.developer.collections import CollectionSharing, DeveloperCollectionService
+from backend.developer.profiles import DeveloperProfileService
+from backend.developer.questions.access import QuestionAccessService
+from backend.developer.questions.sharing import QuestionSharing
+from backend.question.manager import QuestionManager
 
 SHAREABLE_ACCESS_LEVELS = [
     AccessLevel.VIEW,
@@ -104,6 +116,53 @@ async def test_update_access_changes_existing_shared_access_level(
     assert updated_access.developer_id == dev_other.profile.id
     assert updated_access.granted_by_id == dev_owner.profile.id
     assert updated_access.access_level == level
+
+
+@pytest.mark.asyncio
+async def test_editor_adds_question_shared_with_collection_owner(
+    developer_collection_service: DeveloperCollectionService,
+    collection_sharing: CollectionSharing,
+    developer_question_sharing: QuestionSharing,
+    developer_question_access: QuestionAccessService,
+    developer_profile_service: DeveloperProfileService,
+    question_manager: QuestionManager,
+    db_session: Session,
+    dev_owner: DeveloperActor,
+    dev_other: DeveloperActor,
+    make_question: MakeQuestion,
+) -> None:
+    collection = await developer_collection_service.create_collection(
+        dev_owner.user,
+        "SharedCollection",
+    )
+    await collection_sharing.share_with_user(
+        dev_owner.user,
+        dev_other.user,
+        collection.id,
+        level=AccessLevel.EDIT,
+    )
+    question = make_question(dev_other.profile, title="Editor's Question")
+
+    await add_question_to_collection(
+        collection_id=collection.id,
+        current_user=dev_other.user,
+        collections=developer_collection_service,
+        questions=question_manager,
+        profiles=developer_profile_service,
+        question_sharing=developer_question_sharing,
+        session=db_session,
+        payload=CollectionQuestionPayload(question_id=str(question.id)),
+    )
+
+    access = await developer_question_access.retrieve_access(
+        dev_owner.profile,
+        question.id,
+    )
+
+    assert access is not None
+    assert access.developer_id == dev_owner.profile.id
+    assert access.granted_by_id == dev_other.profile.id
+    assert access.access_level == AccessLevel.FULL
 
 
 @pytest.mark.asyncio

@@ -4,14 +4,16 @@ import { useAuth } from "../../services/Auth";
 import CollectionsApi from "../../services/Collections/api";
 import type {
   CollectionId,
-  QuestionCollection,
+  QuestionCollectionRead,
 } from "../../services/Collections/types";
 
 export function useFetchCollection(
   collectionId: CollectionId | null | undefined,
 ) {
   const { user } = useAuth();
-  const [collection, setCollection] = useState<QuestionCollection | null>(null);
+  const [collection, setCollection] = useState<QuestionCollectionRead | null>(
+    null,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
