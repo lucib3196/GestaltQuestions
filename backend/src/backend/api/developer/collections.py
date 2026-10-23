@@ -5,8 +5,11 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from starlette import status
 
+from backend.api.dependencies import QuestionManagerDependency, SessionDep
 from backend.api.dependencies.users import CurrentUser
+from backend.authorization import AccessLevel
 from backend.developer.exceptions import DeveloperAccessDenied
+from backend.developer.model import DeveloperProfile
 from backend.question import Question
 from backend.question.collections import (
     QuestionAlreadyInCollectionError,
@@ -15,25 +18,24 @@ from backend.question.collections import (
     QuestionCollectionLink,
     QuestionCollectionNotFoundError,
 )
-from backend.question.collections.schema import QuestionCollectionRead
+from backend.question.collections.schema import (
+    QuestionCollectionCreate,
+    QuestionCollectionRead,
+    QuestionCollectionUpdate,
+)
+from backend.question.collections.services.question_collection_service import _UNSET
 from backend.shared import ID
 
-from .dependencies import DevCollectionManager
+from .dependencies import (
+    DevCollectionManager,
+    DeveloperProfileDependency,
+    QuestionSharingDependency,
+)
 
 router = APIRouter(
     prefix="/collections",
     tags=["Collections"],
 )
-
-
-class CreateCollectionPayload(BaseModel):
-    title: str
-    parent_id: str | UUID | None = None
-
-
-class UpdateCollectionPayload(BaseModel):
-    title: str | None = None
-    parent_id: str | UUID | None = None
 
 
 class CollectionQuestionPayload(BaseModel):
@@ -48,12 +50,11 @@ class CollectionQuestionPayload(BaseModel):
 async def create_collection(
     current_user: CurrentUser,
     collections: DevCollectionManager,
-    payload: CreateCollectionPayload,
+    payload: QuestionCollectionCreate,
 ) -> QuestionCollection:
     try:
         return await collections.create_collection(
-            current_user,
-            title=payload.title,
+            current_user, title=payload.title, description=payload.description
         )
     except DeveloperAccessDenied as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
@@ -117,12 +118,37 @@ async def search_collections(
         ) from e
 
 
-@router.get("/{collection_id}", response_model=QuestionCollection)
+@router.get(
+    "/public/search",
+    response_model=list[QuestionCollectionRead],
+    status_code=status.HTTP_200_OK,
+)
+async def search_published_collections(
+    current_user: CurrentUser,
+    collections: DevCollectionManager,
+    title: str | None = None,
+    offset: int | None = None,
+    limit: int | None = 10,
+) -> Sequence[QuestionCollectionRead]:
+    try:
+        return await collections.search_published_collections(
+            title=title,
+            offset=offset,
+            limit=limit,
+        )
+    except QuestionCollectionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
+
+
+@router.get("/{collection_id}", response_model=QuestionCollectionRead)
 async def get_collection(
     collection_id: ID,
     current_user: CurrentUser,
     collections: DevCollectionManager,
-) -> QuestionCollection:
+) -> QuestionCollectionRead:
     try:
         return await collections.get_collection(current_user, collection_id)
     except DeveloperAccessDenied as e:
@@ -141,14 +167,32 @@ async def update_collection(
     collection_id: ID,
     current_user: CurrentUser,
     collections: DevCollectionManager,
-    payload: UpdateCollectionPayload,
+    payload: QuestionCollectionUpdate,
 ) -> QuestionCollection:
     try:
+        description = (
+            payload.description if "description" in payload.model_fields_set else _UNSET
+        )
+        collection_status = (
+            payload.status if "status" in payload.model_fields_set else _UNSET
+        )
+        customization = (
+            payload.customization
+            if "customization" in payload.model_fields_set
+            else _UNSET
+        )
+        parent_id = (
+            payload.parent_id if "parent_id" in payload.model_fields_set else _UNSET
+        )
+
         return await collections.update_collection(
             current_user,
             collection_id,
             title=payload.title,
-            parent_id=payload.parent_id,
+            description=description,
+            status=collection_status,
+            customization=customization,
+            parent_id=parent_id,
         )
     except DeveloperAccessDenied as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
@@ -189,14 +233,42 @@ async def add_question_to_collection(
     collection_id: ID,
     current_user: CurrentUser,
     collections: DevCollectionManager,
+    questions: QuestionManagerDependency,
+    profiles: DeveloperProfileDependency,
+    question_sharing: QuestionSharingDependency,
+    session: SessionDep,
     payload: CollectionQuestionPayload,
 ) -> QuestionCollectionLink:
     try:
-        return await collections.add_question(
+        question_id = UUID(str(payload.question_id))
+        collection = await collections.get_collection(current_user, collection_id)
+        question = await questions.get_question(question_id)
+        profile = await profiles.get_profile(current_user)
+        collection_owner = (
+            session.get(DeveloperProfile, collection.owner_id)
+            if collection.owner_id is not None
+            else None
+        )
+
+        link = await collections.add_question(
             current_user,
             collection_id,
-            payload.question_id,
+            question_id,
         )
+
+        if (
+            question.created_by_id == profile.id
+            and collection_owner is not None
+            and collection_owner.id != profile.id
+        ):
+            await question_sharing.update_user_access(
+                current_user,
+                collection_owner,
+                question_id,
+                AccessLevel.FULL,
+            )
+
+        return link
     except DeveloperAccessDenied as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
     except QuestionCollectionNotFoundError as e:

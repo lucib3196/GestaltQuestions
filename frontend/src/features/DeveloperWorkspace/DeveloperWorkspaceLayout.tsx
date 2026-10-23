@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+
+import DeveloperWorkspaceSidebar from "./components/DeveloperWorkspaceSidebar";
 
 const navLinkClassName = ({ isActive }: { isActive: boolean }) =>
   isActive
@@ -6,11 +9,6 @@ const navLinkClassName = ({ isActive }: { isActive: boolean }) =>
     : "rounded-md border border-border px-3 py-1.5 text-sm text-text-muted hover:text-text";
 
 const workspaceLocations = [
-  {
-    title: "My Questions",
-    to: "/question_builder/questions",
-    end: true,
-  },
   {
     title: "New Question",
     to: "/question_builder/questions/new",
@@ -27,8 +25,10 @@ const workspaceLocations = [
 ];
 
 export function DeveloperWorkspaceLayout() {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   return (
-    <div className="text-text">
+    <div className="space-y-5 text-text">
       <header className="rounded-lg border border-border bg-surface px-5 py-4 shadow-soft">
         <h1 className="text-xl font-semibold">Developer Workspace</h1>
         <p className="mt-1 max-w-3xl text-sm text-text-muted">
@@ -45,8 +45,16 @@ export function DeveloperWorkspaceLayout() {
         </nav>
       </header>
 
-      <main>
-        <Outlet />
+      <main className="flex min-h-0 flex-row gap-2">
+        <DeveloperWorkspaceSidebar
+          collapsed={sidebarCollapsed}
+          onToggleCollapsed={() =>
+            setSidebarCollapsed((isCollapsed) => !isCollapsed)
+          }
+        />
+        <section className="min-w-0 flex-1">
+          <Outlet />
+        </section>
       </main>
     </div>
   );

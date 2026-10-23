@@ -7,11 +7,13 @@ import {
   type AccessDetailVariant,
 } from "../../../components/Access";
 import {
-  type QuestionAccessDetailRead,
-  type ShareableAccessLevel,
   useRevokeQuestionAccess,
   useUpdateQuestionShare,
-} from "../../../services/Access/QuestionAccess";
+} from "../../../hooks/questionAccess";
+import {
+  type QuestionAccessDetailRead,
+  type ShareableAccessLevel,
+} from "../../../services/Access";
 
 type AccessDetailListProps = {
   qid: string;

@@ -2,7 +2,7 @@ import type React from "react";
 import { useCallback, useState } from "react";
 
 import { CodeEditor } from "../../components/CodeEditor";
-import { useQuestionFileData } from "../QuestionBuilder";
+import { useQuestionFileData } from "../../hooks/developerQuestions";
 import { useQuestionInstance } from "../QuestionEngine/instance";
 import FileDropDown from "./components/FileDropDown";
 import QuestionFileToolBar from "./components/QuestionFileToolBar";
@@ -10,7 +10,7 @@ import {
   useActiveFilePreview,
   useActiveQuestionFile,
   useEditableQuestionFiles,
-} from "./hooks/hooks";
+} from "./hooks";
 import { toEditorLanguage } from "./utils";
 
 type QuestionFileEditorBaseProps = {

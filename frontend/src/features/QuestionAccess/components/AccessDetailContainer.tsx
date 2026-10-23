@@ -1,5 +1,5 @@
 import type { AccessDetailVariant } from "../../../components/Access";
-import { useListSharedByMe } from "../../../services/Access/QuestionAccess";
+import { useListSharedByMe } from "../../../hooks/questionAccess";
 import { AccessDetailList } from "./AccessDetailList";
 
 type AccessDetailContainerProps = {

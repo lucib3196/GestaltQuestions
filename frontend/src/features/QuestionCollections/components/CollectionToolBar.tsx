@@ -2,7 +2,7 @@ import { Plus } from "lucide-react";
 import type { FormEvent } from "react";
 import { useState } from "react";
 
-import useCreateCollection from "../hooks/useCreateCollection";
+import { useCreateCollection } from "../../../hooks/collections";
 
 export default function QuestionCollectionToolBar() {
   const [title, setTitle] = useState("");

@@ -3,4 +3,3 @@ export type {
   DeveloperQuestionUpdate,
   LegacyQuestionAllRow,
 } from "../../services/DeveloperQuestions";
-export * from "./hooks";

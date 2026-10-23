@@ -68,7 +68,7 @@ def test_search_my_questions_applies_table_filters(
 
 
 @pytest.mark.asyncio
-async def test_search_questions_in_collections_returns_selected_collection_questions(
+async def test_search_owned_questions_in_collection_returns_selected_collection_questions(
     personal_table,
     developer_collection_service,
     dev_owner,
@@ -89,7 +89,7 @@ async def test_search_questions_in_collections_returns_selected_collection_quest
         dev_owner.user, collection.id, second.id
     )
 
-    rows = personal_table.search_questions_in_collections(
+    rows = personal_table.search_owned_questions_in_collection(
         dev_owner.profile,
         QuestionSearchParams(collection_id=collection.id),
     )

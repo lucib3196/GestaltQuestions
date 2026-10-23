@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 
-import { useRetrieveAccess } from "../../../services/Access/QuestionAccess";
+import { useRetrieveAccess } from "../../../hooks/questionAccess";
 import {
   useQuestionEditorContext,
   useQuestionEditorStoreContext,

@@ -1,4 +1,4 @@
-import { useCollectionStore } from "../../QuestionCollections/instance/context";
+import { useCollectionStore } from "../../../stores/collections";
 
 export function CollectionPreview() {
   const selectedCollection = useCollectionStore((s) => s.selectedCollection);
