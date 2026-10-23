@@ -9,8 +9,7 @@ from backend.question.access.schema import QuestionAccessDetailRead
 from backend.shared import ID
 
 
-class QuestionAccessService(
-    ResourceAccessService[
+class QuestionAccessService(ResourceAccessService[
         QuestionAccess, DeveloperProfile, Question, QuestionAccessDetailRead
     ]
 ):

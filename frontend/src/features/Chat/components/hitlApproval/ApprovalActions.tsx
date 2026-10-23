@@ -24,6 +24,9 @@ export const approvalActionButtonStyles = {
   edit:
     approvalActionButtonBase +
     " border-border-strong bg-surface-strong text-text hover:bg-surface-muted",
+  respond:
+    approvalActionButtonBase +
+    " border-border-strong bg-surface-strong text-text hover:bg-surface-muted",
   reject:
     approvalActionButtonBase +
     " border-warning-border bg-warning-muted text-warning hover:bg-warning hover:text-warning-foreground",
