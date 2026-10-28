@@ -18,6 +18,7 @@ export type QuestionTableSearchParamsBase = {
 
 export type QuestionTableSearchParams = QuestionTableSearchParamsBase & {
   institution?: ValidInstitutions | null;
+  created_by_email?: string | null;
   published?: boolean | null;
   collection_id?: string | null;
   collection_title?: string | null;
@@ -57,7 +58,7 @@ export type QuestionTableRow = QuestionTableRowBase & {
   title: string;
   institution_id: string;
   institution: string | ValidInstitutions;
-  created_by: string;
+  created_by_email: string | null;
   question_type: (QuestionType | string | null)[];
   available_runtimes: (QuestionRuntimeLanguage | string)[];
   collection_id: string | null;

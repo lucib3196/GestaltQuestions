@@ -5,12 +5,16 @@ from starlette import status
 
 from backend.api.dependencies.users import CurrentUser
 from backend.developer.exceptions import DeveloperAccessDenied, DeveloperProfileError
+from backend.developer.tables.published import (
+    PublishedQuestionRow,
+    PublishedQuestionSearch,
+)
 from backend.developer.tables.schemas import (
     PersonalQuestionTableRow,
     SharedByMeQuestionTableRow,
     SharedWithMeQuestionTableRow,
 )
-from backend.question.views.schema import QuestionSearchParams, QuestionTableRowBase
+from backend.question.views.schema import QuestionSearchParams
 
 from .dependencies import (
     DeveloperPersonalQuestionTablesDependency,
@@ -76,11 +80,14 @@ async def search_my_collection_questions(
         ) from e
 
 
-@router.post("/questions/published/search", response_model=list[QuestionTableRowBase])
+@router.post(
+    "/questions/published/search",
+    response_model=list[PublishedQuestionRow],
+)
 async def search_published_questions(
     tables: DeveloperPublishedQuestionTablesDependency,
-    params: QuestionSearchParams | None = None,
-) -> Sequence[QuestionTableRowBase]:
+    params: PublishedQuestionSearch | None = None,
+) -> Sequence[PublishedQuestionRow]:
     return tables.search_published_questions(params)
 
 
