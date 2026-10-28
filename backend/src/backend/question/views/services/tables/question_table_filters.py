@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from enum import StrEnum
-
+from typing import Generic, TypeVar
 from sqlalchemy import select
 from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.selectable import Subquery
@@ -11,9 +11,13 @@ from backend.question.views.schema import QuestionSearchParamsBase
 from backend.question_runtime.model import QuestionRunTime
 from backend.tables import FilterBuilder
 
+QuestionParams = TypeVar("QuestionParams", bound=QuestionSearchParamsBase)
 
-class QuestionTableFilterBuilder(FilterBuilder[QuestionSearchParamsBase]):
-    def __init__(self, params: QuestionSearchParamsBase) -> None:
+
+class QuestionTableFilterBuilder(
+    FilterBuilder[QuestionParams], Generic[QuestionParams]
+):
+    def __init__(self, params: QuestionParams) -> None:
         super().__init__(params)
 
     def build(self, subquery: Subquery) -> list[ColumnElement[bool]]:
