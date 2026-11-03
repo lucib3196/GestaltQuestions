@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { AccessBadge } from "../../../components/Access";
 import { Modal } from "../../../components/Modal";
