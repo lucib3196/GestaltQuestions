@@ -2,7 +2,7 @@ import clsx from "clsx";
 import type { ReviewConfig } from "langchain";
 
 type AllowedDecisions = NonNullable<ReviewConfig["allowedDecisions"]>;
-type ApprovalActionButtonVariant = AllowedDecisions[number] | "cancel";
+type ApprovalActionButtonVariant = "approve" | "edit" | "reject" | "cancel";
 type HITLButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   label: string;
   variant: ApprovalActionButtonVariant;
@@ -27,6 +27,7 @@ export const approvalActionButtonStyles = {
   reject:
     approvalActionButtonBase +
     " border-warning-border bg-warning-muted text-warning hover:bg-warning hover:text-warning-foreground",
+    
   cancel:
     approvalActionButtonBase +
     " border-border bg-button-secondary text-text-muted hover:border-border-strong hover:bg-surface-muted hover:text-text",
