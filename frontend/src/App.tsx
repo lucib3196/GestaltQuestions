@@ -9,12 +9,12 @@ import { DeveloperWorkspaceLayout } from "./features/DeveloperWorkspace/Develope
 import Published from "./features/Published/Published";
 import { GeneralQuestionRender } from "./features/Published/Published";
 import QuestionEditor from "./features/QuestionEditor/QuestionEditor";
+import { ResourceSharingForm } from "./features/Sharing/ResourceSharing";
+import { UserLookupProvider } from "./features/UserLookUp/instance/context";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
-import { ResourceSharingForm } from "./features/Sharing/ResourceSharing";
 import { RequireRole } from "./services/Auth";
-import { UserLookupProvider } from "./features/UserLookUp/instance/context";
 
 function Test() {
   return (
@@ -49,36 +49,31 @@ function App() {
 
             {/* Developer Only Routes */}
             <Route element={<RequireRole allow={["admin", "developer"]} />}>
+              <Route
+                path="/question_builder"
+                element={<DeveloperWorkspaceLayout />}
+              >
                 <Route
-                  path="/question_builder"
-                  element={<DeveloperWorkspaceLayout />}
-                >
-                  <Route
-                    path="questions"
-                    element={<DeveloperQuestionLibrary />}
-
-                  />
-                  <Route index element={<DeveloperQuestionLibrary />} />
-                  <Route
-                    path="collections"
-                    element={<DeveloperCollections />}
-                  />
-                  <Route
-                    path="collections/:collectionId"
-                    element={<CollectionView />}
-                  />
-                  <Route path="questions/new" element={<CreateNewQuestion />} />
-                  <Route
-                    path="questions/:qid/edit"
-                    element={<QuestionEditor />}
-                  />
-                  <Route path="playground" element={<ComponentPlayGround />} />
-                  <Route path="chat" element={<ChatPage />} />
-                </Route>
+                  path="questions"
+                  element={<DeveloperQuestionLibrary />}
+                />
+                <Route index element={<DeveloperQuestionLibrary />} />
+                <Route path="collections" element={<DeveloperCollections />} />
+                <Route
+                  path="collections/:collectionId"
+                  element={<CollectionView />}
+                />
+                <Route path="questions/new" element={<CreateNewQuestion />} />
+                <Route
+                  path="questions/:qid/edit"
+                  element={<QuestionEditor />}
+                />
+                <Route path="playground" element={<ComponentPlayGround />} />
+                <Route path="chat" element={<ChatPage />} />
               </Route>
-              <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
-  
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>

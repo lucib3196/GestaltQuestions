@@ -1,8 +1,9 @@
-import type { SearchCollectionsParams } from "../../../services";
+import { useEffect, useState } from "react";
+
 import { useAuth } from "../../../context/AuthContext";
-import { useState, useEffect } from "react";
-import { CollectionsApi } from "../../../services";
+import type { SearchCollectionsParams } from "../../../services";
 import type { QuestionCollectionRead } from "../../../services";
+import { CollectionsApi } from "../../../services";
 
 export function useSearchCollections(
   search: SearchCollectionsParams = { title: "", limit: 3 },

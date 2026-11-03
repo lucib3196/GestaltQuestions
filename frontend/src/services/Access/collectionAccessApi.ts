@@ -38,7 +38,9 @@ export default class CollectionAccessApi {
     return response.data;
   }
 
-  static async listSharedCollections(token: string): Promise<CollectionAccess[]> {
+  static async listSharedCollections(
+    token: string,
+  ): Promise<CollectionAccess[]> {
     return CollectionAccessApi.listSharedWithMe(token);
   }
 

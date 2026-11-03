@@ -31,7 +31,11 @@ export function useUpdateSingleCollection() {
 
     try {
       const token = await user.getIdToken();
-      return await CollectionsApi.updateCollection(token, collectionId, payload);
+      return await CollectionsApi.updateCollection(
+        token,
+        collectionId,
+        payload,
+      );
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Unable to update collection.",

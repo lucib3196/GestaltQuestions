@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+
 import type { CollectionCustomization } from "../../../../services";
 import {
   COLLECTION_COLOR_PRESETS,

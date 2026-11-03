@@ -9,8 +9,9 @@ import { createSingleCollectionStore } from "./store";
 
 type SingleCollectionStoreApi = ReturnType<typeof createSingleCollectionStore>;
 
-const SingleCollectionContext =
-  createContext<SingleCollectionStoreApi | null>(null);
+const SingleCollectionContext = createContext<SingleCollectionStoreApi | null>(
+  null,
+);
 
 type SingleCollectionProviderProps = SingleCollectionStoreOptions & {
   children: ReactNode;

@@ -4,10 +4,10 @@ import type { QuestionCollection } from "../../../services";
 import { getStatusDescription } from "../../../services/Status";
 import { QuestionStatusSelect } from "../../QuestionMetadata/components/QuestionStatusSelect";
 import { useCollectionInfoStore } from "../hooks/useCollectionInfoStore";
-import { CollectionPreviewCard } from "./info/CollectionPreviewCard";
 import { useUpdateSingleCollection } from "../hooks/useUpdateSingleCollection";
-import { CollectionSummary } from "./info/CollectionSummary";
 import { CollectionAppearanceEditor } from "./customization/CollectionAppearanceEditor";
+import { CollectionPreviewCard } from "./info/CollectionPreviewCard";
+import { CollectionSummary } from "./info/CollectionSummary";
 type CollectionInfoProps = {
   collection: QuestionCollection;
   mode: "view" | "edit";

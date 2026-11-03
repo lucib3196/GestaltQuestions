@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { AccessBadge } from "../../../components/Access";
 import { Modal } from "../../../components/Modal";
@@ -7,8 +7,6 @@ import { useFetchCollection } from "../../../hooks/collections";
 import type { Status } from "../../../services";
 import { normalizeStatus } from "../../../services/Status";
 import AddQuestionsToCollection from "../../AddQuestionsToCollection";
-import PersonalQuestionTable from "../../QuestionTables";
-import { PersonalQuestionTableProvider } from "../../QuestionTables";
 import { CollectionAccessGate } from "../access/AccessGate";
 import ShareCollection from "../access-management/ShareCollection";
 import { CollectionDetailHeader } from "../components/CollectionDetailHeader";
@@ -18,17 +16,16 @@ import {
   CollectionDetailLoading,
 } from "../components/CollectionDetailStates";
 import CollectionInfo from "../components/CollectionInfo";
-import { CollectionQuestionsEmptyState } from "../components/CollectionQuestionsEmptyState";
 import { CollectionQuestionsTabs } from "../components/CollectionQuestionsTabs";
 import { CollectionVisibilityFooter } from "../components/CollectionVisibilityFooter";
 import { CollectionHeroIcon } from "../components/customization/CollectionHeroIcon";
 import { useUpdateSingleCollection } from "../hooks/useUpdateSingleCollection";
+import { CollectionQuestionView } from "../question-view/CollectionQuestionView";
 import {
   SingleCollectionProvider,
   useSingleCollectionStore,
 } from "../singleCollectionStore";
 import { getQuestionCount } from "../utils";
-
 function CollectionViewData() {
   const [showQuestion, setShowQuestion] = useState<boolean>(false);
   const [isEditingCollection, setIsEditingCollection] = useState(false);
@@ -47,7 +44,6 @@ function CollectionViewData() {
   const access = useSingleCollectionStore((s) => s.access);
   const capabilities = useSingleCollectionStore((s) => s.capabilities);
 
-  const navigate = useNavigate();
 
   if (loading) {
     return <CollectionDetailLoading />;
@@ -139,30 +135,7 @@ function CollectionViewData() {
 
       <CollectionQuestionsTabs questionCount={questionCount} />
 
-      {questionCount === 0 ? (
-        <CollectionQuestionsEmptyState
-          collectionTitle={collection.title}
-          canAddQuestions={capabilities.canAddQuestions}
-          onAddQuestions={() => setShowQuestion(true)}
-          onCreateQuestion={() =>
-            console.log("Create question for collection", collection.id)
-          }
-        />
-      ) : (
-        <PersonalQuestionTableProvider>
-          {/* <ManageableQuestionsToolbar /> */}
-          <PersonalQuestionTable
-            baseQuery={{ collection_id: selectedCollection }}
-            onRowSelect={(rowId) => {
-              if (status === "published" && !access) {
-                navigate(`/questions/${rowId}`);
-                return;
-              }
-              navigate(`/question_builder/questions/${rowId}/edit`);
-            }}
-          />
-        </PersonalQuestionTableProvider>
-      )}
+      <CollectionQuestionView />
 
       <CollectionVisibilityFooter
         status={status}
