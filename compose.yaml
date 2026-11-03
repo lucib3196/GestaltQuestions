@@ -1,40 +1,89 @@
-
+name: gestalt_questions_dev
 services:
-  server:
+  gestalt_backend_server:
     build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: backend/Dockerfile.dev
+    depends_on:
+      db:
+        condition: service_healthy
+      firebase_emulator:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:password@db:5432/gestalt_db
+      FIREBASE_AUTH_EMULATOR_HOST: firebase_emulator:9099
+      STORAGE_EMULATOR_HOST: http://firebase_emulator:9199
     env_file:
-      - ./backend/.env
+      - ./backend/.env.dev.docker
+      
     ports:
       - 8000:8000
     volumes:
-      - ./backend:/app        # mount project
-      - ./backend/questions:/questions
-      - ./backend/FIREBASE_CRED.json:/FIREBASE_CRED.json
+      - ./backend:/app/backend # mount project allows for reloading
+      - ./packages:/app/packages # mount external packages allows for reloading
+
   code_sandbox:
-    build: 
+    build:
       context: ./code_sandbox
       dockerfile: Dockerfile
     ports:
       - 8080:8080
-  
+    volumes:
+      - ./code_sandbox:/app/code_sandbox # mount project allows for reloading
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app        # mount project
-      - /app/node_modules      # do NOT overwrite node_modules
-    environment:
-    - CHOKIDAR_USEPOLLING=true
     env_file:
-      - ./frontend/.env
-    tty: true
-    stdin_open: true
+      - ./frontend/.env.dev.docker
+    ports:
+      - 5173:5173
+    volumes:
+      - ./frontend:/app # mount project allows for reloading
+      - /app/node_modules
+  db:
+    image: postgres:18
+    container_name: gestalt_questions_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: gestalt_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gestalt_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./sql_scripts:/sql_scripts
 
+  firebase_emulator:
+    build:
+      context: .
+      dockerfile: Dockerfile.firebase-emulator
+    ports:
+      - "9099:9099"
+      - "9199:9199"
+      - "0.0.0.0:4000:4000"
+    volumes:
+      - ./emulator-data:/app/emulator-data
+      - ./firebase.json:/app/firebase.json:ro
+      - ./storage.rules:/app/storage.rules:ro
+      - ./.firebaserc:/app/.firebaserc:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "Promise.all([fetch(''http://127.0.0.1:9099''), fetch(''http://127.0.0.1:9199'')]).then(() => process.exit(0)).catch(() => process.exit(1))"',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    working_dir: /app
 
-
-
+volumes:
+  postgres_data:
