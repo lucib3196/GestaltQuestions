@@ -15,6 +15,7 @@ export function CollectionQuestionView() {
   const access = useSingleCollectionStore((s) => s.access);
   const capabilities = useSingleCollectionStore((s) => s.capabilities);
 
+
   const navigate = useNavigate();
   if (!collection?.id) {
     return <CollectionDetailEmpty />;

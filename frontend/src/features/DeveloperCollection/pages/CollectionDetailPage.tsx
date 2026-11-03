@@ -7,9 +7,6 @@ import { useFetchCollection } from "../../../hooks/collections";
 import type { Status } from "../../../services";
 import { normalizeStatus } from "../../../services/Status";
 import AddQuestionsToCollection from "../../AddQuestionsToCollection";
-import { ManageableQuestionsToolbar } from "../../DeveloperQuestionLibrary/toolbar/ManageableQuestionsToolbar";
-import PersonalQuestionTable from "../../QuestionTables";
-import { PersonalQuestionTableProvider } from "../../QuestionTables";
 import { CollectionAccessGate } from "../access/AccessGate";
 import ShareCollection from "../access-management/ShareCollection";
 import { CollectionDetailHeader } from "../components/CollectionDetailHeader";
@@ -19,7 +16,6 @@ import {
   CollectionDetailLoading,
 } from "../components/CollectionDetailStates";
 import CollectionInfo from "../components/CollectionInfo";
-import { CollectionQuestionsEmptyState } from "../components/CollectionQuestionsEmptyState";
 import { CollectionQuestionsTabs } from "../components/CollectionQuestionsTabs";
 import { CollectionVisibilityFooter } from "../components/CollectionVisibilityFooter";
 import { CollectionHeroIcon } from "../components/customization/CollectionHeroIcon";
@@ -48,7 +44,6 @@ function CollectionViewData() {
   const access = useSingleCollectionStore((s) => s.access);
   const capabilities = useSingleCollectionStore((s) => s.capabilities);
 
-  const navigate = useNavigate();
 
   if (loading) {
     return <CollectionDetailLoading />;
