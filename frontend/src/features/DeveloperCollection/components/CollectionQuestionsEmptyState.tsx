@@ -1,5 +1,4 @@
 import { ArrowRight, Plus } from "lucide-react";
-
 type CollectionQuestionsEmptyStateProps = {
   collectionTitle: string;
   canAddQuestions: boolean;
@@ -14,7 +13,7 @@ export function CollectionQuestionsEmptyState({
   onCreateQuestion,
 }: CollectionQuestionsEmptyStateProps) {
   return (
-    <div className="flex min-h-[440px] flex-col items-center justify-center px-4 py-16 text-center">
+    <div className="flex min-h-110 flex-col items-center justify-center px-4 py-16 text-center">
       <div className="relative mb-8 h-28 w-36 text-slate-500">
         <div className="absolute left-11 top-0 h-20 w-28 rounded-md border-2 border-slate-600/80" />
         <div className="absolute left-6 top-4 h-20 w-28 rounded-md border-2 border-slate-500/90" />

@@ -7,6 +7,7 @@ import { useFetchCollection } from "../../../hooks/collections";
 import type { Status } from "../../../services";
 import { normalizeStatus } from "../../../services/Status";
 import AddQuestionsToCollection from "../../AddQuestionsToCollection";
+import { ManageableQuestionsToolbar } from "../../DeveloperQuestionLibrary/toolbar/ManageableQuestionsToolbar";
 import PersonalQuestionTable from "../../QuestionTables";
 import { PersonalQuestionTableProvider } from "../../QuestionTables";
 import { CollectionAccessGate } from "../access/AccessGate";
@@ -23,12 +24,12 @@ import { CollectionQuestionsTabs } from "../components/CollectionQuestionsTabs";
 import { CollectionVisibilityFooter } from "../components/CollectionVisibilityFooter";
 import { CollectionHeroIcon } from "../components/customization/CollectionHeroIcon";
 import { useUpdateSingleCollection } from "../hooks/useUpdateSingleCollection";
+import { CollectionQuestionView } from "../question-view/CollectionQuestionView";
 import {
   SingleCollectionProvider,
   useSingleCollectionStore,
 } from "../singleCollectionStore";
 import { getQuestionCount } from "../utils";
-
 function CollectionViewData() {
   const [showQuestion, setShowQuestion] = useState<boolean>(false);
   const [isEditingCollection, setIsEditingCollection] = useState(false);
@@ -139,30 +140,7 @@ function CollectionViewData() {
 
       <CollectionQuestionsTabs questionCount={questionCount} />
 
-      {questionCount === 0 ? (
-        <CollectionQuestionsEmptyState
-          collectionTitle={collection.title}
-          canAddQuestions={capabilities.canAddQuestions}
-          onAddQuestions={() => setShowQuestion(true)}
-          onCreateQuestion={() =>
-            console.log("Create question for collection", collection.id)
-          }
-        />
-      ) : (
-        <PersonalQuestionTableProvider>
-          {/* <ManageableQuestionsToolbar /> */}
-          <PersonalQuestionTable
-            baseQuery={{ collection_id: selectedCollection }}
-            onRowSelect={(rowId) => {
-              if (status === "published" && !access) {
-                navigate(`/questions/${rowId}`);
-                return;
-              }
-              navigate(`/question_builder/questions/${rowId}/edit`);
-            }}
-          />
-        </PersonalQuestionTableProvider>
-      )}
+      <CollectionQuestionView />
 
       <CollectionVisibilityFooter
         status={status}

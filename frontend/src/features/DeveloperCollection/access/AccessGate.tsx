@@ -1,9 +1,9 @@
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
 
 import { useRetrieveAccess } from "../../../hooks/collections";
+import { useFetchCollection } from "../../../hooks/collections";
 import { useSingleCollectionStore } from "../singleCollectionStore";
 import { buildCollectionCapabilities } from "./capabilities";
-import { useFetchCollection } from "../../../hooks/collections";
 type CollectionAccessGateProps = {
   collectionId: string;
   children: ReactNode;
@@ -34,9 +34,6 @@ export function CollectionAccessGate({
       console.log(fetchError, loadingCollection);
       return;
     }
-
-    console.log("Current Collection", collection,);
-    console.log("Access", access)
 
     setCollectionData([collection]);
     setSelectedCollection(collection.id);
