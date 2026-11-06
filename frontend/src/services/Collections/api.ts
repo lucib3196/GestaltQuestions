@@ -1,6 +1,7 @@
 import api from "../client";
 import type {
   AddQuestionToCollectionPayload,
+  CollectionQuestion,
   CreateCollectionPayload,
   ListCollectionsParams,
   QuestionCollection,
@@ -47,6 +48,17 @@ export default class CollectionsApi {
   ): Promise<QuestionCollectionRead> {
     const response = await api.get<QuestionCollectionRead>(
       `${this.base}/${encodeURIComponent(collectionId)}`,
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
+  static async getCollectionQuestions(
+    token: string,
+    collectionId: string,
+  ): Promise<CollectionQuestion[]> {
+    const response = await api.get<CollectionQuestion[]>(
+      `${this.base}/${encodeURIComponent(collectionId)}/questions`,
       { headers: this.authHeaders(token) },
     );
     return response.data;

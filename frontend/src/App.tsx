@@ -8,13 +8,15 @@ import DeveloperQuestionLibrary from "./features/DeveloperQuestionLibrary/Develo
 import { DeveloperWorkspaceLayout } from "./features/DeveloperWorkspace/DeveloperWorkspaceLayout";
 import Published from "./features/Published/Published";
 import { GeneralQuestionRender } from "./features/Published/Published";
+import PublishedCollectionPage from "./features/PublishedCollections/PublishedCollectionPage";
+import PublishedCollectionsPage from "./features/PublishedCollections/PublishedCollectionsPage";
 import QuestionEditor from "./features/QuestionEditor/QuestionEditor";
+import { ResourceSharingForm } from "./features/Sharing/ResourceSharing";
+import { UserLookupProvider } from "./features/UserLookUp/instance/context";
 import AppLayout from "./layouts/AppLayout";
 import { AccountPage, Home, LoginPage } from "./pages";
 import ChatPage from "./pages/ChatPage";
-import { ResourceSharingForm } from "./features/Sharing/ResourceSharing";
-import { RequireRole } from "./services/Auth";
-import { UserLookupProvider } from "./features/UserLookUp/instance/context";
+import { RequireAuth, RequireRole } from "./services/Auth";
 
 function Test() {
   return (
@@ -42,6 +44,17 @@ function App() {
             <Route path="/questions" element={<Published />} />
             <Route path="/questions" element={<Published />} />
             <Route path="/questions/:qid" element={<GeneralQuestionRender />} />
+
+            <Route element={<RequireAuth />}>
+              <Route
+                path="/collections"
+                element={<PublishedCollectionsPage />}
+              />
+              <Route
+                path="/collections/:collectionId"
+                element={<PublishedCollectionPage />}
+              />
+            </Route>
 
             <Route path="/test" element={<Test />} />
 

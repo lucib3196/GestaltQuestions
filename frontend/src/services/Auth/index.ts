@@ -1,6 +1,7 @@
 export { AuthProvider, useAuth } from "../../context/AuthContext";
 export { UserAPI } from "./api";
 export { type RoleDescription, RoleDescriptions } from "./constants";
+export { default as RequireAuth } from "./RequireAuth";
 export { default as RequireRole } from "./RequireRole";
 export type {
   AllowedRoles,
