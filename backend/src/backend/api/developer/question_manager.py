@@ -5,16 +5,21 @@ from fastapi import APIRouter, HTTPException, UploadFile
 from pydantic import BaseModel
 from starlette import status
 
+from backend.api.dependencies import SessionDep
 from backend.api.dependencies.users import CurrentUser
 from backend.question import (
     Question,
     QuestionCreate,
     QuestionFilter,
+    QuestionNotFound,
     QuestionRead,
+    QuestionReadError,
     QuestionUpdate,
 )
+from backend.question.services import QuestionBookmarkService
 from backend.shared import ID
 from backend.storage import FileData, UploadFileDataConverter
+from backend.utils import convert_uuid
 
 from .dependencies import DevQManager
 
@@ -26,6 +31,61 @@ router = APIRouter(
 
 class WriteFilePayload(BaseModel):
     content: str
+
+
+@router.get("/bookmarks", response_model=list[str])
+async def list_question_bookmarks(
+    current_user: CurrentUser,
+    session: SessionDep,
+) -> Sequence[str]:
+    try:
+        question_ids = await QuestionBookmarkService(session).list_bookmarks(
+            convert_uuid(current_user)
+        )
+        return [str(question_id) for question_id in question_ids]
+    except QuestionReadError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
+
+
+@router.put("/{question_id}/bookmark", response_model=bool)
+async def add_question_bookmark(
+    question_id: str,
+    current_user: CurrentUser,
+    session: SessionDep,
+) -> bool:
+    try:
+        return await QuestionBookmarkService(session).add_bookmark(
+            convert_uuid(current_user),
+            convert_uuid(question_id),
+        )
+    except QuestionNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
+    except (QuestionReadError, ValueError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
+
+
+@router.delete("/{question_id}/bookmark", response_model=bool)
+async def remove_question_bookmark(
+    question_id: str,
+    current_user: CurrentUser,
+    session: SessionDep,
+) -> bool:
+    try:
+        return await QuestionBookmarkService(session).remove_bookmark(
+            convert_uuid(current_user),
+            convert_uuid(question_id),
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)

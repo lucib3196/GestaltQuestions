@@ -16,6 +16,7 @@ export const QUESTION_TABLE_ENDPOINTS = {
     "/developer/tables/questions/shared-with-me/search",
   developerSharedByMeQuestionsSearch:
     "/developer/tables/questions/shared-by-me/search",
+  questionBookmarks: "/developer/questions/bookmarks",
 } as const;
 
 export default class QuestionTablesApi {
@@ -39,6 +40,37 @@ export default class QuestionTablesApi {
     const response = await api.post<QuestionTableRow[]>(
       QUESTION_TABLE_ENDPOINTS.publishedQuestionsSearch,
       params,
+    );
+    return response.data;
+  }
+
+  static async getBookmarkedQuestionIds(token: string): Promise<string[]> {
+    const response = await api.get<string[]>(
+      QUESTION_TABLE_ENDPOINTS.questionBookmarks,
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
+  static async addQuestionBookmark(
+    token: string,
+    questionId: string,
+  ): Promise<boolean> {
+    const response = await api.put<boolean>(
+      `/developer/questions/${encodeURIComponent(questionId)}/bookmark`,
+      {},
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
+  static async removeQuestionBookmark(
+    token: string,
+    questionId: string,
+  ): Promise<boolean> {
+    const response = await api.delete<boolean>(
+      `/developer/questions/${encodeURIComponent(questionId)}/bookmark`,
+      { headers: this.authHeaders(token) },
     );
     return response.data;
   }

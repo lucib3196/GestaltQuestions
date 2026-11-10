@@ -50,7 +50,7 @@ export function CollectionGrid({
   const debouncedTitle = useDebounce(title, 250);
   const navigate = useNavigate();
   const user = useAuth().user!;
-  const collectionRefreshKey = `${refreshKey}:${bookmarkRefreshKey}`;
+  const collectionRefreshKey = refreshKey + bookmarkRefreshKey;
 
   const searchParams = useMemo<SearchCollectionsParams>(
     () => ({
@@ -109,9 +109,7 @@ export function CollectionGrid({
     };
   }, [activeView, collectionRefreshKey, collections, user]);
 
-  async function toggleBookmark(
-    collection: (typeof collections)[number],
-  ) {
+  async function toggleBookmark(collection: (typeof collections)[number]) {
     const collectionId = collection.id;
     if (!collectionId) return;
 
@@ -131,8 +129,8 @@ export function CollectionGrid({
         });
       } else {
         await CollectionsApi.addCollectionBookmark(token, collectionId);
-        setBookmarkedCollectionIds(
-          (currentIds) => new Set(currentIds).add(collectionId),
+        setBookmarkedCollectionIds((currentIds) =>
+          new Set(currentIds).add(collectionId),
         );
       }
       setBookmarkRefreshKey((key) => key + 1);

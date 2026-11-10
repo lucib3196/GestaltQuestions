@@ -111,6 +111,26 @@ class Question(SQLModel, table=True):
     updated_at: datetime | None = SQLField(default_factory=datetime.now)
 
 
+class QuestionBookmark(SQLModel, table=True):
+    __tablename__ = "question_bookmark"  # type: ignore
+
+    user_id: UUID = SQLField(
+        sa_column=Column(
+            ForeignKey("user.id", ondelete="CASCADE"),
+            nullable=False,
+            primary_key=True,
+        ),
+    )
+    question_id: UUID = SQLField(
+        sa_column=Column(
+            ForeignKey("question.id", ondelete="CASCADE"),
+            nullable=False,
+            primary_key=True,
+        ),
+    )
+    created_at: datetime = SQLField(default_factory=datetime.now)
+
+
 class QuestionSourceReference(SQLModel, table=True):
     __tablename__ = "question_source_reference"  # type: ignore
     id: UUID = SQLField(default_factory=uuid4, primary_key=True)
