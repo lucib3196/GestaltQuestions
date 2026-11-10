@@ -1,17 +1,16 @@
+from collections.abc import Sequence
+
 from pydantic import BaseModel
 
-from backend.authorization.resources import (
-    ResourceAccessService,
-    ResourceSharingService,
-)
+from backend.authorization.resources import ResourceSharingService
 from backend.authorization.types import AccessLevel
+from backend.developer.collections.access import (
+    DetailRead,
+    QuestionCollectionAccessService,
+)
 from backend.developer.model import DeveloperProfile
 from backend.question.collections import QuestionCollectionAccess
 from backend.question.collections.models import QuestionCollection
-from backend.question.collections.services.question_collection_access_adapter import (
-    DetailRead,
-)
-from backend.developer.collections.access import QuestionCollectionAccessService
 from backend.shared import ID
 
 
@@ -35,11 +34,12 @@ class CollectionSharing(
 ):
     def __init__(
         self,
-        access_service: ResourceAccessService[
-            QuestionCollectionAccess, DeveloperProfile, QuestionCollection, DetailRead
-        ],
+        access_service: QuestionCollectionAccessService,
     ) -> None:
         super().__init__(access_service=access_service)
+
+    async def list_shared_by_me(self, user_id: ID) -> Sequence[DetailRead]:
+        return await self._access_service.list_access_shared_by(user_id)
 
     async def share_collections_with_users(
         self,

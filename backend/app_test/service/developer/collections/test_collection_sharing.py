@@ -262,6 +262,56 @@ async def test_list_shared_with_me_includes_shared_collection_access(
 
 
 @pytest.mark.asyncio
+async def test_list_shared_by_me_includes_shared_user_details(
+    collection_sharing,
+    developer_collection_service,
+    dev_owner,
+    dev_other,
+) -> None:
+    collection = await developer_collection_service.create_collection(
+        dev_owner.user.id, "SharedCollection"
+    )
+    await collection_sharing.share_with_user(
+        dev_owner.user.id,
+        dev_other.user.id,
+        collection.id,
+        level=AccessLevel.EDIT,
+    )
+
+    details = await collection_sharing.list_shared_by_me(dev_owner.user.id)
+
+    assert len(details) == 1
+    assert details[0].developer_id == dev_other.profile.id
+    assert details[0].collection_id == collection.id
+    assert details[0].granted_by_id == dev_owner.profile.id
+    assert details[0].user_id == dev_other.user.id
+    assert details[0].email == dev_other.user.email
+    assert details[0].first_name == dev_other.user.first_name
+    assert details[0].last_name == dev_other.user.last_name
+    assert details[0].access_level == AccessLevel.EDIT
+
+
+@pytest.mark.asyncio
+async def test_list_shared_by_me_only_returns_access_granted_by_requester(
+    collection_sharing,
+    developer_collection_service,
+    dev_owner,
+    dev_other,
+) -> None:
+    collection = await developer_collection_service.create_collection(
+        dev_owner.user.id, "SharedCollection"
+    )
+    await collection_sharing.share_with_user(
+        dev_owner.user.id,
+        dev_other.user.id,
+        collection.id,
+        level=AccessLevel.VIEW,
+    )
+
+    assert await collection_sharing.list_shared_by_me(dev_other.user.id) == []
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("grant_action", ["share", "update"])
 async def test_owner_access_level_cannot_be_granted_to_another_user(
     collection_sharing,

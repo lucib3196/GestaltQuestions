@@ -10,6 +10,7 @@ from backend.authorization import (
     AccessPolicyError,
     ResourceAccessRevokeResult,
 )
+from backend.developer.collections.access import DetailRead
 from backend.developer.collections.sharing import ShareCollectionBatchResult
 from backend.question.collections import QuestionCollectionAccess
 from backend.shared import ID
@@ -63,7 +64,7 @@ async def get_shared_with_me(
 async def get_shared_by_me(
     current_user: CurrentUser,
     collection_sharing: CollectionSharingDependency,
-) -> Sequence[QuestionCollectionAccess]:
+) -> Sequence[DetailRead]:
     try:
         return await collection_sharing.list_shared_by_me(current_user)
     except AccessPolicyError as e:

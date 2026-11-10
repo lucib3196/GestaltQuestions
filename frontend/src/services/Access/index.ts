@@ -3,6 +3,7 @@ export { default as QuestionAccessApi } from "./QuestionAccess/api";
 export type {
   AccessLevel,
   CollectionAccess,
+  CollectionAccessDetailRead,
   CollectionId,
   QuestionAccess,
   QuestionAccessDetailRead,

@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { Trash2 } from "lucide-react";
 
 import type {
-  QuestionAccessDetailRead,
+  AccessLevel,
   ShareableAccessLevel,
 } from "../../services/Access";
 import { UserAvatar } from "../User";
@@ -12,8 +12,17 @@ import {
 } from "./accessDetailStyles";
 import { ShareLevelPicker } from "./ShareLevelPicker";
 
+type AccessDetailUser = {
+  user_id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  username: string | null;
+  access_level: AccessLevel;
+};
+
 type AccessDetailRowProps = {
-  details: QuestionAccessDetailRead;
+  details: AccessDetailUser;
   disabled?: boolean;
   variant?: AccessDetailVariant;
   // eslint-disable-next-line no-unused-vars
@@ -21,7 +30,7 @@ type AccessDetailRowProps = {
   onRevokeAccess: () => void;
 };
 
-function getDisplayName(details: QuestionAccessDetailRead) {
+function getDisplayName(details: AccessDetailUser) {
   return (
     [details.first_name, details.last_name].filter(Boolean).join(" ") ||
     details.username ||
