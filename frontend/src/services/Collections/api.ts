@@ -92,6 +92,39 @@ export default class CollectionsApi {
     return response.data;
   }
 
+  static async getBookmarkedCollections(
+    token: string,
+  ): Promise<QuestionCollectionRead[]> {
+    const response = await api.get<QuestionCollectionRead[]>(
+      `${this.base}/bookmarks`,
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
+  static async addCollectionBookmark(
+    token: string,
+    collectionId: string,
+  ): Promise<boolean> {
+    const response = await api.put<boolean>(
+      `${this.base}/${encodeURIComponent(collectionId)}/bookmark`,
+      {},
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
+  static async removeCollectionBookmark(
+    token: string,
+    collectionId: string,
+  ): Promise<boolean> {
+    const response = await api.delete<boolean>(
+      `${this.base}/${encodeURIComponent(collectionId)}/bookmark`,
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
   static async updateCollection(
     token: string,
     collectionId: string,

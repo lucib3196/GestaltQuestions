@@ -5,12 +5,13 @@ import {
   Search,
   SlidersHorizontal,
 } from "lucide-react";
-import { useMemo } from "react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { SearchBar } from "../../../components/SearchBar";
 import { useSearchCollections } from "../../../hooks/collections";
+import { useAuth } from "../../../services/Auth";
+import CollectionsApi from "../../../services/Collections/api";
 import type { SearchCollectionsParams } from "../../../services/Collections/types";
 import type { CollectionView } from "../types";
 import { CollectionCard } from "./CollectionCard";
@@ -38,8 +39,18 @@ export function CollectionGrid({
   const [title, setTitle] = useState("");
   const [limit, setLimit] = useState(initialPageSize);
   const [page, setPage] = useState(0);
+  const [bookmarkedCollectionIds, setBookmarkedCollectionIds] = useState<
+    Set<string>
+  >(() => new Set());
+  const [bookmarkRefreshKey, setBookmarkRefreshKey] = useState(0);
+  const [bookmarkingCollectionId, setBookmarkingCollectionId] = useState<
+    string | null
+  >(null);
+  const [bookmarkError, setBookmarkError] = useState<string | null>(null);
   const debouncedTitle = useDebounce(title, 250);
   const navigate = useNavigate();
+  const user = useAuth().user!;
+  const collectionRefreshKey = `${refreshKey}:${bookmarkRefreshKey}`;
 
   const searchParams = useMemo<SearchCollectionsParams>(
     () => ({
@@ -52,9 +63,90 @@ export function CollectionGrid({
 
   const { collections, loading, error } = useSearchCollections(
     searchParams,
-    refreshKey,
+    collectionRefreshKey,
     activeView,
   );
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchBookmarks() {
+      if (
+        activeView !== "publicCollections" ||
+        !collections.some((collection) => collection.status === "published")
+      ) {
+        setBookmarkedCollectionIds(new Set());
+        setBookmarkError(null);
+        return;
+      }
+
+      try {
+        const token = await user.getIdToken();
+        const bookmarks = await CollectionsApi.getBookmarkedCollections(token);
+        if (!cancelled) {
+          setBookmarkedCollectionIds(
+            new Set(
+              bookmarks.flatMap((collection) =>
+                collection.id ? [collection.id] : [],
+              ),
+            ),
+          );
+          setBookmarkError(null);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setBookmarkError(
+            err instanceof Error
+              ? err.message
+              : "Unable to load collection bookmarks.",
+          );
+        }
+      }
+    }
+
+    fetchBookmarks();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeView, collectionRefreshKey, collections, user]);
+
+  async function toggleBookmark(
+    collection: (typeof collections)[number],
+  ) {
+    const collectionId = collection.id;
+    if (!collectionId) return;
+
+    setBookmarkingCollectionId(collectionId);
+    setBookmarkError(null);
+    try {
+      const token = await user.getIdToken();
+      const isBookmarked =
+        activeView === "bookmarkedCollections" ||
+        bookmarkedCollectionIds.has(collectionId);
+      if (isBookmarked) {
+        await CollectionsApi.removeCollectionBookmark(token, collectionId);
+        setBookmarkedCollectionIds((currentIds) => {
+          const nextIds = new Set(currentIds);
+          nextIds.delete(collectionId);
+          return nextIds;
+        });
+      } else {
+        await CollectionsApi.addCollectionBookmark(token, collectionId);
+        setBookmarkedCollectionIds(
+          (currentIds) => new Set(currentIds).add(collectionId),
+        );
+      }
+      setBookmarkRefreshKey((key) => key + 1);
+    } catch (err) {
+      setBookmarkError(
+        err instanceof Error
+          ? err.message
+          : "Unable to update this collection bookmark.",
+      );
+    } finally {
+      setBookmarkingCollectionId(null);
+    }
+  }
+
   const hasSearch = title.trim().length > 0;
   const visibleCollections = enablePagination
     ? collections.slice(0, limit)
@@ -99,6 +191,15 @@ export function CollectionGrid({
         </label>
       </div>
 
+      {bookmarkError ? (
+        <div
+          role="alert"
+          className="mb-4 rounded-md border border-warning-border bg-warning-muted px-4 py-3 text-sm font-medium text-warning"
+        >
+          {bookmarkError}
+        </div>
+      ) : null}
+
       {loading ? (
         <div className="flex min-h-72 items-center justify-center rounded-md border border-dashed border-border bg-surface text-sm font-medium text-text-muted">
           Loading collections...
@@ -119,6 +220,12 @@ export function CollectionGrid({
             <CollectionCard
               key={collection.id ?? collection.title}
               collection={collection}
+              isBookmarked={
+                activeView === "bookmarkedCollections" ||
+                bookmarkedCollectionIds.has(collection.id ?? "")
+              }
+              bookmarkDisabled={bookmarkingCollectionId === collection.id}
+              onToggleBookmark={toggleBookmark}
               onOpen={(selectedCollection) => {
                 if (collectionBasePath && selectedCollection.id) {
                   navigate(

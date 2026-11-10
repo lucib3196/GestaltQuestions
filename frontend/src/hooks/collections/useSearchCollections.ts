@@ -37,7 +37,23 @@ export function useSearchCollections(
         const token = await user.getIdToken();
         let results: QuestionCollectionRead[];
 
-        if (view === "sharedWithMe") {
+        if (view === "bookmarkedCollections") {
+          const bookmarkedCollections =
+            await CollectionsApi.getBookmarkedCollections(token);
+          const filteredCollections = bookmarkedCollections.filter(
+            (collection) =>
+              search.title
+                ? collection.title
+                    .toLowerCase()
+                    .includes(search.title.toLowerCase())
+                : true,
+          );
+          const offset = search.offset ?? 0;
+          results = filteredCollections.slice(
+            offset,
+            offset + (search.limit ?? 10),
+          );
+        } else if (view === "sharedWithMe") {
           const accessEntries = await CollectionAccessApi.listSharedWithMe(token);
           const collections = await Promise.all(
             accessEntries.map((entry) =>

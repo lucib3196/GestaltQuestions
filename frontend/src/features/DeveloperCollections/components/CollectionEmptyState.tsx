@@ -17,6 +17,11 @@ const EMPTY_STATE_COPY: Record<
     title: "No public collections yet",
     description: "Published collections from the community will appear here.",
   },
+  bookmarkedCollections: {
+    title: "No bookmarked collections yet",
+    description:
+      "Bookmark published collections to keep them easy to find here.",
+  },
 };
 
 export function CollectionEmptyState({

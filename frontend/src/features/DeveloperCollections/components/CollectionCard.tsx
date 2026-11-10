@@ -1,4 +1,10 @@
-import { ArrowRight, Globe2, ListChecks, LockKeyhole } from "lucide-react";
+import {
+  ArrowRight,
+  Bookmark,
+  Globe2,
+  ListChecks,
+  LockKeyhole,
+} from "lucide-react";
 
 import type { QuestionCollectionRead } from "../../../services";
 import { getCollectionColor, getCollectionIcon } from "../../DeveloperCollection/components/customization/customization";
@@ -6,6 +12,9 @@ import { getCollectionColor, getCollectionIcon } from "../../DeveloperCollection
 export type CollectionCardProps = {
   collection: QuestionCollectionRead;
   onOpen: (collection: QuestionCollectionRead) => void;
+  isBookmarked?: boolean;
+  bookmarkDisabled?: boolean;
+  onToggleBookmark?: (collection: QuestionCollectionRead) => void;
 };
 
 function getCollectionAccent(collection: QuestionCollectionRead) {
@@ -16,7 +25,13 @@ function getStatusLabel(status: QuestionCollectionRead["status"]) {
   return status === "published" ? "Public" : "Private";
 }
 
-export function CollectionCard({ collection, onOpen }: CollectionCardProps) {
+export function CollectionCard({
+  collection,
+  onOpen,
+  isBookmarked = false,
+  bookmarkDisabled = false,
+  onToggleBookmark,
+}: CollectionCardProps) {
   const accentColor = getCollectionAccent(collection);
   const Icon = getCollectionIcon(collection.customization?.icon);
   const questionCount = collection.question_ids.length;
@@ -60,6 +75,27 @@ export function CollectionCard({ collection, onOpen }: CollectionCardProps) {
         >
           <Icon className="size-9" aria-hidden="true" />
         </div>
+        {isPublic && collection.id && onToggleBookmark ? (
+          <button
+            type="button"
+            disabled={bookmarkDisabled}
+            onClick={() => onToggleBookmark(collection)}
+            aria-label={
+              isBookmarked
+                ? `Remove bookmark from ${collection.title}`
+                : `Bookmark ${collection.title}`
+            }
+            aria-pressed={isBookmarked}
+            title={isBookmarked ? "Remove bookmark" : "Bookmark collection"}
+            className="absolute right-3 top-3 inline-flex size-10 items-center justify-center rounded-md border border-border bg-surface text-text-muted shadow-sm transition hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Bookmark
+              className="size-5"
+              fill={isBookmarked ? "currentColor" : "none"}
+              aria-hidden="true"
+            />
+          </button>
+        ) : null}
       </div>
 
       <div className="mt-5 min-w-0">

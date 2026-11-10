@@ -8,6 +8,7 @@ from starlette import status
 from backend.api.dependencies import QuestionManagerDependency, SessionDep
 from backend.api.dependencies.users import CurrentUser
 from backend.authorization import AccessLevel
+from backend.developer.collections.bookmarks import CollectionBookmarkService
 from backend.developer.exceptions import DeveloperAccessDenied
 from backend.developer.model import DeveloperProfile
 from backend.question import Question
@@ -25,6 +26,7 @@ from backend.question.collections.schema import (
 )
 from backend.question.collections.services.question_collection_service import _UNSET
 from backend.shared import ID
+from backend.utils import convert_uuid
 
 from .dependencies import (
     DevCollectionManager,
@@ -135,6 +137,70 @@ async def search_published_collections(
             title=title,
             offset=offset,
             limit=limit,
+        )
+    except QuestionCollectionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
+
+
+@router.get(
+    "/bookmarks",
+    response_model=list[QuestionCollectionRead],
+    status_code=status.HTTP_200_OK,
+)
+async def list_collection_bookmarks(
+    current_user: CurrentUser,
+    session: SessionDep,
+) -> Sequence[QuestionCollectionRead]:
+    try:
+        return await CollectionBookmarkService(session).list_bookmarks(
+            convert_uuid(current_user)
+        )
+    except QuestionCollectionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
+
+
+@router.put(
+    "/{collection_id}/bookmark",
+    response_model=bool,
+    status_code=status.HTTP_200_OK,
+)
+async def add_collection_bookmark(
+    collection_id: UUID,
+    current_user: CurrentUser,
+    session: SessionDep,
+) -> bool:
+    try:
+        return await CollectionBookmarkService(session).add_bookmark(
+            convert_uuid(current_user), collection_id
+        )
+    except QuestionCollectionNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
+    except QuestionCollectionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
+
+
+@router.delete(
+    "/{collection_id}/bookmark",
+    response_model=bool,
+    status_code=status.HTTP_200_OK,
+)
+async def remove_collection_bookmark(
+    collection_id: UUID,
+    current_user: CurrentUser,
+    session: SessionDep,
+) -> bool:
+    try:
+        return await CollectionBookmarkService(session).remove_bookmark(
+            convert_uuid(current_user), collection_id
         )
     except QuestionCollectionError as e:
         raise HTTPException(
