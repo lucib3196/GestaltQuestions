@@ -8,6 +8,31 @@ export type QuestionBookmarksContextValue = {
   toggleBookmark: (questionId: string) => Promise<void>;
 };
 
+export function getQuestionBookmarkActionLabel(
+  questionIds: string[],
+  bookmarkedQuestionIds: Set<string>,
+) {
+  return questionIds.length > 0 &&
+    questionIds.every((id) => bookmarkedQuestionIds.has(id))
+    ? "Remove bookmark"
+    : "Bookmark";
+}
+
+export async function toggleSelectedQuestionBookmarks(
+  questionIds: string[],
+  bookmarkedQuestionIds: Set<string>,
+  toggleBookmark: QuestionBookmarksContextValue["toggleBookmark"],
+) {
+  const shouldRemoveBookmark =
+    questionIds.length > 0 &&
+    questionIds.every((id) => bookmarkedQuestionIds.has(id));
+  await Promise.all(
+    questionIds
+      .filter((id) => bookmarkedQuestionIds.has(id) === shouldRemoveBookmark)
+      .map((questionId) => toggleBookmark(questionId)),
+  );
+}
+
 export const QuestionBookmarksContext =
   createContext<QuestionBookmarksContextValue | null>(null);
 

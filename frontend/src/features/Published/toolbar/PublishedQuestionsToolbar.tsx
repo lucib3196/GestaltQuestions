@@ -5,7 +5,10 @@ import { useAuth } from "../../../services/Auth";
 import { QuestionTableToolbar } from "../../QuestionTables/toolbar/QuestionTableToolbar";
 import { ColumnVisibilityPanel } from "../../TableBase";
 import { useTableBaseContext } from "../../TableBase/state";
-import { useQuestionBookmarks } from "../questionBookmarksContext";
+import {
+  getQuestionBookmarkActionLabel,
+  useQuestionBookmarks,
+} from "../questionBookmarksContext";
 import {
   type PublishedQuestionsToolbarActionId,
   publishedQuestionsToolbarActions,
@@ -38,13 +41,10 @@ export function PublishedQuestionsToolbar() {
             ? {
                 ...action,
                 visible: Boolean(user),
-                label:
-                  selectedQuestionIds.length > 0 &&
-                  selectedQuestionIds.every((id) =>
-                    bookmarkedQuestionIds.has(id),
-                  )
-                    ? "Remove bookmark"
-                    : "Bookmark",
+                label: getQuestionBookmarkActionLabel(
+                  selectedQuestionIds,
+                  bookmarkedQuestionIds,
+                ),
               }
             : action,
         )}

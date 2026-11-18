@@ -6,7 +6,6 @@ from sqlmodel import Session, select
 
 from backend.question.exceptions import QuestionNotFound, QuestionReadError
 from backend.question.models import Question, QuestionBookmark
-from backend.question.schema import Status
 
 
 class QuestionBookmarkService:
@@ -17,11 +16,7 @@ class QuestionBookmarkService:
         try:
             stmt = (
                 select(QuestionBookmark.question_id)
-                .join(Question, Question.id == QuestionBookmark.question_id)
-                .where(
-                    QuestionBookmark.user_id == user_id,
-                    Question.status == Status.PUBLISHED,
-                )
+                .where(QuestionBookmark.user_id == user_id)
                 .order_by(QuestionBookmark.created_at.desc())
             )
             return self._session.exec(stmt).all()
@@ -30,7 +25,7 @@ class QuestionBookmarkService:
 
     async def add_bookmark(self, user_id: UUID, question_id: UUID) -> bool:
         question = self._session.get(Question, question_id)
-        if question is None or question.status != Status.PUBLISHED:
+        if question is None:
             raise QuestionNotFound(question_id)
 
         bookmark_id = (user_id, question_id)

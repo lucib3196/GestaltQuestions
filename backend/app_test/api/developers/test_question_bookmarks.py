@@ -55,7 +55,7 @@ async def test_any_signed_in_user_can_bookmark_a_published_question(
 
 
 @pytest.mark.asyncio
-async def test_unpublished_question_cannot_be_bookmarked(
+async def test_unpublished_question_can_be_bookmarked(
     api_client: TestClient,
     dev_owner: DeveloperActor,
     make_user: MakeUser,
@@ -69,4 +69,8 @@ async def test_unpublished_question_cannot_be_bookmarked(
 
     response = api_client.put(f"/developer/questions/{question.id}/bookmark")
 
-    assert response.status_code == 404
+    assert response.status_code == 200
+    assert response.json() is True
+    assert api_client.get("/developer/questions/bookmarks").json() == [
+        str(question.id)
+    ]

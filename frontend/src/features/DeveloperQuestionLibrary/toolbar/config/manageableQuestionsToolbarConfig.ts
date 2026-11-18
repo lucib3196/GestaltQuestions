@@ -3,6 +3,7 @@ import { buildQuestionLibraryToolbarActions } from "../constants";
 export const manageableQuestionsToolbarActions =
   buildQuestionLibraryToolbarActions(
     [
+      "bookmark",
       "copy",
       "download",
       "shareQuestion",
@@ -13,6 +14,9 @@ export const manageableQuestionsToolbarActions =
       "clearFilters",
     ] as const,
     {
+      bookmark: {
+        placement: "primary",
+      },
       copy: {
         placement: "primary",
       },

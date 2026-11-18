@@ -2,6 +2,10 @@ import { useState } from "react";
 
 import { AnchoredPopover } from "../../../components/AnchoredPopover";
 import { useCollectionStore } from "../../../stores/collections";
+import {
+  getQuestionBookmarkActionLabel,
+  useQuestionBookmarks,
+} from "../../Published/questionBookmarksContext";
 import { QuestionTableToolbar } from "../../QuestionTables/toolbar/QuestionTableToolbar";
 import QuestionSharing from "../../Sharing/QuestionSharing";
 import { ColumnVisibilityPanel, useTableBaseContext } from "../../TableBase";
@@ -34,11 +38,26 @@ export function ManageableQuestionsToolbar() {
   );
   const columnDefs = useTableBaseContext((s) => s.columnDefs);
   const columnFilters = useTableBaseContext((s) => s.columnFilters);
+  const {
+    bookmarkedQuestionIds,
+    loading: bookmarksLoading,
+    pendingQuestionIds,
+  } = useQuestionBookmarks();
 
   return (
     <QuestionTableToolbar
       actionHandlers={actionHandlers}
-      actions={manageableQuestionsToolbarActions}
+      actions={manageableQuestionsToolbarActions.map((action) =>
+        action.id === "bookmark"
+          ? {
+              ...action,
+              label: getQuestionBookmarkActionLabel(
+                selectedQuestionIds,
+                bookmarkedQuestionIds,
+              ),
+            }
+          : action,
+      )}
       openPopover={openPopup}
       onClosePopover={() => setOpenPopup(null)}
       isActionDisabled={(action) => {
@@ -50,6 +69,13 @@ export function ManageableQuestionsToolbar() {
         }
         if (action.id === "clearFilters") {
           return Object.keys(columnFilters).length === 0;
+        }
+        if (action.id === "bookmark") {
+          return (
+            base ||
+            bookmarksLoading ||
+            selectedQuestionIds.some((id) => pendingQuestionIds.has(id))
+          );
         }
         return base;
       }}

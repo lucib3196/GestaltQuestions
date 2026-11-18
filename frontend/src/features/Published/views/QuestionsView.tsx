@@ -47,7 +47,7 @@ function PublishedQuestionsContent() {
           ) : null}
         </div>
 
-        {!showBookmarks ? <PublishedQuestionsToolbar /> : null}
+        <PublishedQuestionsToolbar />
 
         {showBookmarks && bookmarksLoading ? (
           <div className="flex min-h-72 items-center justify-center text-sm font-medium text-text-muted">
