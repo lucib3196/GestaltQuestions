@@ -1,14 +1,25 @@
+from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from backend.authorization import AccessLevel
 from backend.shared import ID
 
-from .models import QuestionAccess
+
+class QuestionAccessRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID | None
+    question_id: UUID
+    granted_by_id: UUID | None = None
+    developer_id: UUID
+    access_level: AccessLevel
+    created_at: datetime
+    updated_at: datetime
 
 
-class QuestionAccessDetailRead(QuestionAccess):
+class QuestionAccessDetailRead(QuestionAccessRead):
     user_id: UUID
     email: str
     first_name: str
@@ -34,7 +45,7 @@ class ShareQuestionFailure(BaseModel):
 
 
 class ShareQuestionBatchResult(BaseModel):
-    shared: list[QuestionAccess]
+    shared: list[QuestionAccessRead]
     failed: list[ShareQuestionFailure]
 
 

@@ -10,6 +10,7 @@ from backend.question.access.exceptions import QuestionAccessError
 from backend.question.access.models import QuestionAccess
 from backend.question.access.schema import (
     QuestionAccessDetailRead,
+    QuestionAccessRead,
     ShareQuestionAccessPayload,
     ShareQuestionBatchResult,
     ShareQuestionsWithUsersPayload,
@@ -25,7 +26,7 @@ router = APIRouter(
 )
 
 
-@router.get("/shared-with-me")
+@router.get("/shared-with-me", response_model=list[QuestionAccessRead])
 async def get_shared_with_me(
     current_user: CurrentUser, question_sharing: QuestionSharingDependency
 ) -> Sequence[QuestionAccess]:
@@ -63,7 +64,7 @@ async def list_question_access_details(
         ) from e
 
 
-@router.get("/shared-by-me")
+@router.get("/shared-by-me", response_model=list[QuestionAccessRead])
 async def get_shared_by_me(
     current_user: CurrentUser, question_sharing: QuestionSharingDependency
 ) -> Sequence[QuestionAccess]:
@@ -81,7 +82,7 @@ async def get_shared_by_me(
         ) from e
 
 
-@router.get("/{qid}")
+@router.get("/{qid}", response_model=QuestionAccessRead)
 async def check_access(
     current_user: CurrentUser,
     question_access: QuestionAccessDependency,
@@ -102,7 +103,7 @@ async def check_access(
 
 @router.post(
     "/{question_id}/shares",
-    response_model=QuestionAccess,
+    response_model=QuestionAccessRead,
     status_code=status.HTTP_201_CREATED,
 )
 async def share_question(
@@ -162,7 +163,7 @@ async def share_questions_with_users(
 
 @router.patch(
     "/{question_id}/shares/{target_user_id}",
-    response_model=QuestionAccess,
+    response_model=QuestionAccessRead,
 )
 async def update_question_share(
     question_id: ID,
