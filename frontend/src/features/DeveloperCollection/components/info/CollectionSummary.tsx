@@ -18,20 +18,20 @@ export function CollectionSummary({
   return (
     <div className="min-w-0 flex-1">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="min-w-0 text-3xl font-semibold leading-tight tracking-normal text-slate-50">
+        <h1 className="min-w-0 text-3xl font-semibold leading-tight tracking-normal text-text">
           {value.title || "Untitled collection"}
         </h1>
-        <span className="rounded-full border border-slate-700 bg-slate-800/90 px-3 py-1 text-sm font-semibold text-slate-200">
+        <span className="rounded-full border border-border bg-surface-muted px-3 py-1 text-sm font-semibold text-text-muted">
           {getStatusLabel(value.status)}
         </span>
       </div>
 
-      <p className="mt-3 max-w-4xl text-base leading-7 text-slate-400">
+      <p className="mt-3 max-w-4xl text-base leading-7 text-text-muted">
         {value.description ||
           "No description has been added for this collection yet."}
       </p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500">
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm font-medium text-text-soft">
         {createdDate ? <span>Created {createdDate}</span> : null}
         {createdDate && updatedDate ? <span>·</span> : null}
         {updatedDate ? <span>Updated {updatedDate}</span> : null}

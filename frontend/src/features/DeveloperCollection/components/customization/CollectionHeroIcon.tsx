@@ -3,9 +3,13 @@ import { getCollectionColor, getCollectionIcon } from "./customization";
 
 type CollectionHeroIconProps = {
   customization: CollectionCustomization | null | undefined;
+  surfaceColor?: string;
 };
 
-export function CollectionHeroIcon({ customization }: CollectionHeroIconProps) {
+export function CollectionHeroIcon({
+  customization,
+  surfaceColor = "#020617",
+}: CollectionHeroIconProps) {
   const accentColor = getCollectionColor(customization?.color);
   const CollectionIcon = getCollectionIcon(customization?.icon);
 
@@ -14,7 +18,7 @@ export function CollectionHeroIcon({ customization }: CollectionHeroIconProps) {
       className="flex size-32 shrink-0 items-center justify-center rounded-lg border text-5xl font-semibold shadow-lg"
       style={{
         borderColor: `color-mix(in srgb, ${accentColor} 34%, transparent)`,
-        backgroundColor: `color-mix(in srgb, ${accentColor} 22%, #020617)`,
+        backgroundColor: `color-mix(in srgb, ${accentColor} 22%, ${surfaceColor})`,
         color: accentColor,
       }}
     >
