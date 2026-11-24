@@ -4,7 +4,7 @@ import type {
   ResourceAccessStore,
 } from "../../../stores/resourceAccess";
 
-export type QuestionEditorPane = "livePreview" | "editor" | "metadata";
+export type QuestionEditorPane = "livePreview" | "editor";
 export type QuestionEditorLayoutMode = "single" | "split";
 
 export type QuestionEditorSessionState = {

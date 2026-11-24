@@ -18,6 +18,7 @@ from backend.question.exceptions import (
 )
 from backend.question.models import (
     Question,
+    QuestionBookmark,
     QuestionQTypeLink,
     QuestionTopicLink,
     QuestionType,
@@ -41,6 +42,7 @@ from backend.question.services.question_table import QuestionQueryService
 __all__ = [
     "QType",
     "Question",
+    "QuestionBookmark",
     "QuestionCreate",
     "QuestionCreateError",
     "QuestionDB",

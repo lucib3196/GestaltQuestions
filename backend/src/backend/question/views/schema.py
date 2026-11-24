@@ -17,6 +17,9 @@ class QuestionSearchParamsBase(BaseModel):
     question_id: UUID | None = Field(
         default=None, description="Filter questions based on question id"
     )
+    question_ids: list[UUID] | None = Field(
+        default=None, description="Filter questions based on question ids"
+    )
     search: str | None = Field(default=None, description="Search query for title")
     status: Status | None = Field(
         default=None, description="Filter questions based on status"

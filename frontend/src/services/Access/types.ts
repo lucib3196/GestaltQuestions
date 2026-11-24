@@ -21,6 +21,14 @@ export type ResourceAccess<TKey extends string> = {
 export type QuestionAccess = ResourceAccess<"question_id">;
 export type CollectionAccess = ResourceAccess<"collection_id">;
 
+export type CollectionAccessDetailRead = CollectionAccess & {
+  user_id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  username: string | null;
+};
+
 export type QuestionAccessDetailRead = QuestionAccess & {
   user_id: string;
   email: string;

@@ -1,4 +1,5 @@
 export type CollectionView =
   | "myCollections"
   | "sharedWithMe"
-  | "publicCollections";
+  | "publicCollections"
+  | "bookmarkedCollections";

@@ -4,13 +4,11 @@ import type { QuestionEditorPane } from "../store/types";
 export const questionEditorPaneCapabilityMap = {
   livePreview: "canView",
   editor: "canEditFiles",
-  metadata: "canEditMetadata",
 } satisfies Record<QuestionEditorPane, keyof QuestionEditorCapabilities>;
 
 export const questionEditorPaneOrder: QuestionEditorPane[] = [
   "livePreview",
   "editor",
-  "metadata",
 ];
 
 export function getAvailableQuestionEditorPanes(

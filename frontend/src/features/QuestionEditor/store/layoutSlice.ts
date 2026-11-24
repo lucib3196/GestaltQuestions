@@ -1,16 +1,9 @@
 import type { StateCreator } from "zustand";
 
-import type {
-  QuestionEditorPane,
-  QuestionEditorSettingsStore,
-} from "../../features/QuestionEditor/store/types";
+import type { QuestionEditorPane, QuestionEditorSettingsStore } from "./types";
 
 const defaultPane: QuestionEditorPane = "livePreview";
-const defaultActivePanes: QuestionEditorPane[] = [
-  "livePreview",
-  "editor",
-  "metadata",
-];
+const defaultActivePanes: QuestionEditorPane[] = ["editor", "livePreview"];
 
 export type QuestionEditorSettingsSliceCreator<
   Store extends QuestionEditorSettingsStore = QuestionEditorSettingsStore,

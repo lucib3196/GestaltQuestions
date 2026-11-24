@@ -5,6 +5,7 @@ import type {
 } from "../Sharing";
 import type {
   CollectionAccess,
+  CollectionAccessDetailRead,
   CollectionId,
   ResourceAccessRevokeResult,
   ShareableAccessLevel,
@@ -44,8 +45,10 @@ export default class CollectionAccessApi {
     return CollectionAccessApi.listSharedWithMe(token);
   }
 
-  static async listSharedByMe(token: string): Promise<CollectionAccess[]> {
-    const response = await api.get<CollectionAccess[]>(
+  static async listSharedByMe(
+    token: string,
+  ): Promise<CollectionAccessDetailRead[]> {
+    const response = await api.get<CollectionAccessDetailRead[]>(
       `${CollectionAccessApi.base}/shared-by-me`,
       { headers: CollectionAccessApi.authHeaders(token) },
     );

@@ -1,11 +1,11 @@
 import { createStore } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { createQuestionEditorSettingsSlice } from "../../../stores/paneLayout/settingSlice";
 import {
   type AnyResourceSchema,
   createResourceAccessSlice,
 } from "../../../stores/resourceAccess";
+import { createQuestionEditorSettingsSlice } from "./layoutSlice";
 import { createQuestionEditorSessionSlice } from "./sessionSlice";
 import type { QuestionEditorStore } from "./types";
 

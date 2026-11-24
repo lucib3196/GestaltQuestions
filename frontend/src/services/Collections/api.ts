@@ -1,6 +1,7 @@
 import api from "../client";
 import type {
   AddQuestionToCollectionPayload,
+  CollectionQuestion,
   CreateCollectionPayload,
   ListCollectionsParams,
   QuestionCollection,
@@ -52,6 +53,17 @@ export default class CollectionsApi {
     return response.data;
   }
 
+  static async getCollectionQuestions(
+    token: string,
+    collectionId: string,
+  ): Promise<CollectionQuestion[]> {
+    const response = await api.get<CollectionQuestion[]>(
+      `${this.base}/${encodeURIComponent(collectionId)}/questions`,
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
   static async searchCollections(
     token: string,
     params: SearchCollectionsParams = {},
@@ -76,6 +88,39 @@ export default class CollectionsApi {
         params,
         headers: this.authHeaders(token),
       },
+    );
+    return response.data;
+  }
+
+  static async getBookmarkedCollections(
+    token: string,
+  ): Promise<QuestionCollectionRead[]> {
+    const response = await api.get<QuestionCollectionRead[]>(
+      `${this.base}/bookmarks`,
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
+  static async addCollectionBookmark(
+    token: string,
+    collectionId: string,
+  ): Promise<boolean> {
+    const response = await api.put<boolean>(
+      `${this.base}/${encodeURIComponent(collectionId)}/bookmark`,
+      {},
+      { headers: this.authHeaders(token) },
+    );
+    return response.data;
+  }
+
+  static async removeCollectionBookmark(
+    token: string,
+    collectionId: string,
+  ): Promise<boolean> {
+    const response = await api.delete<boolean>(
+      `${this.base}/${encodeURIComponent(collectionId)}/bookmark`,
+      { headers: this.authHeaders(token) },
     );
     return response.data;
   }

@@ -1,8 +1,22 @@
-import { FaCopy, FaDownload, FaFilter, FaTimesCircle } from "react-icons/fa";
+import {
+  FaBookmark,
+  FaCopy,
+  FaDownload,
+  FaFilter,
+  FaTimesCircle,
+} from "react-icons/fa";
 
 import type { ToolBarActionConfig } from "../../../Toolbar/types";
 
 export const publishedQuestionsToolbarActions = [
+  {
+    id: "bookmark",
+    label: "Bookmark",
+    icon: FaBookmark,
+    requiresSelection: true,
+    placement: "primary",
+    visible: true,
+  },
   {
     id: "copy",
     label: "Copy",

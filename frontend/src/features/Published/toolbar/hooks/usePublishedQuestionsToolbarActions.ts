@@ -3,6 +3,10 @@ import {
   useDownloadQuestions,
 } from "../../../../hooks/developerQuestions";
 import { useTableBaseContext } from "../../../TableBase";
+import {
+  toggleSelectedQuestionBookmarks,
+  useQuestionBookmarks,
+} from "../../questionBookmarksContext";
 import type { PublishedQuestionsToolbarActionId } from "../config/publishedQuestionsToolbarConfig";
 
 export function usePublishedQuestionsToolbarActions(
@@ -12,9 +16,17 @@ export function usePublishedQuestionsToolbarActions(
   const { copyQuestion } = useCopyQuestion();
   const { downLoadQuestions } = useDownloadQuestions();
   const clearColumnFilters = useTableBaseContext((s) => s.clearColumnFilters);
+  const { bookmarkedQuestionIds, toggleBookmark } = useQuestionBookmarks();
 
   const actionHandlers: Record<PublishedQuestionsToolbarActionId, () => void> =
     {
+      bookmark: async () => {
+        await toggleSelectedQuestionBookmarks(
+          selectedIds,
+          bookmarkedQuestionIds,
+          toggleBookmark,
+        );
+      },
       copy: async () => {
         await copyQuestion(selectedIds);
       },

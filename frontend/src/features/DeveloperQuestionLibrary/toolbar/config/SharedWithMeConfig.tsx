@@ -1,9 +1,10 @@
 import { buildQuestionLibraryToolbarActions } from "../constants";
 
 export const sharedWithMeToolbarActions = buildQuestionLibraryToolbarActions(
-  ["tableFilters", "clearFilters"] as const,
+  ["bookmark", "tableFilters", "clearFilters"] as const,
 
   {
+    bookmark: { placement: "primary" },
     tableFilters: { placement: "primary" },
     clearFilters: { placement: "primary" },
   },

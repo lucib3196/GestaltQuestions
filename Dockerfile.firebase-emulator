@@ -16,4 +16,4 @@ WORKDIR /app
 RUN firebase setup:emulators:storage \
     && firebase setup:emulators:ui
 
-CMD ["firebase", "emulators:start", "--import=./emulator-data", "--export-on-exit=./emulator-data", "--only", "auth,storage"]
+CMD ["firebase", "emulators:start", "--import=/app/emulator-data/snapshot", "--export-on-exit=/app/emulator-data/snapshot", "--only", "auth,storage"]

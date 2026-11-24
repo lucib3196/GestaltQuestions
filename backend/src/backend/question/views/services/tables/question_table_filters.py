@@ -22,6 +22,7 @@ class QuestionTableFilterBuilder(
 
     def build(self, subquery: Subquery) -> list[ColumnElement[bool]]:
         self.add_question_id(subquery)
+        self.add_question_ids(subquery)
         self.add_title(subquery)
         self.add_status(subquery)
         self.add_topic(subquery)
@@ -36,6 +37,12 @@ class QuestionTableFilterBuilder(
             return
 
         self.filters.append(subquery.c.question_id == self.params.question_id)
+
+    def add_question_ids(self, subquery: Subquery) -> None:
+        if self.params.question_ids is None:
+            return
+
+        self.filters.append(subquery.c.question_id.in_(self.params.question_ids))
 
     def add_title(self, subquery: Subquery) -> None:
         if not self.params.search:

@@ -34,6 +34,7 @@ createRoot(document.getElementById("root")!).render(
     <MathJaxContext version={3} config={config}>
       <AuthProvider>
         <ToastContainer />
+  
 
         <App />
       </AuthProvider>

@@ -1,5 +1,11 @@
 import { BsCollectionFill } from "react-icons/bs";
-import { FaCopy, FaDownload, FaFilter, FaTimesCircle } from "react-icons/fa";
+import {
+  FaBookmark,
+  FaCopy,
+  FaDownload,
+  FaFilter,
+  FaTimesCircle,
+} from "react-icons/fa";
 import { MdDelete, MdRemoveCircle } from "react-icons/md";
 
 import type { ToolBarActionConfig } from "../../Toolbar/types";
@@ -10,6 +16,15 @@ export const QUESTION_LIBRARY_TOOLBAR_ACTION_CONFIGS = {
     label: "Copy",
     icon: FaCopy,
     requiresSelection: true,
+    allowedRoles: ["developer"],
+    visible: true,
+  },
+  bookmark: {
+    id: "bookmark",
+    label: "Bookmark",
+    icon: FaBookmark,
+    requiresSelection: true,
+    placement: "primary",
     allowedRoles: ["developer"],
     visible: true,
   },

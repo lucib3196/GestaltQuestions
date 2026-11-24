@@ -27,7 +27,7 @@ function QuestionLogsPanel({ logs = EMPTY_LOGS }: QuestionLogsPanelProps) {
   return (
     <section className="overflow-hidden rounded-lg border border-border bg-surface">
       <div className="flex items-center justify-between border-b border-border bg-surface-strong px-3 py-2">
-        <h3 className="text-sm font-semibold text-text">Output Logs</h3>
+        <h3 className="text-sm font-semibold text-text">Runtime output</h3>
         <span className="text-xs text-text-soft">
           {logs.length} {logs.length === 1 ? "entry" : "entries"}
         </span>
@@ -44,7 +44,7 @@ function QuestionLogsPanel({ logs = EMPTY_LOGS }: QuestionLogsPanelProps) {
             </div>
           ))
         ) : (
-          <div className="text-text-soft">No logs available</div>
+          <div className="text-text-soft">No output from the latest run.</div>
         )}
       </div>
     </section>
@@ -103,6 +103,7 @@ function QuestionFileEditorBase({ qid }: QuestionFileEditorBaseProps) {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 text-text">
+      <h2 className="text-sm font-semibold text-text">Source</h2>
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <FileDropDown
           files={files}
@@ -127,10 +128,11 @@ function QuestionFileEditorBase({ qid }: QuestionFileEditorBaseProps) {
       <div className="flex flex-col gap-3">
         <button
           type="button"
+          aria-expanded={showLogs}
           className="self-start rounded-md border border-border bg-button-secondary px-3 py-1.5 text-sm font-medium text-text transition-colors hover:border-border-strong hover:bg-surface-muted"
           onClick={() => setShowLogs((visible) => !visible)}
         >
-          {showLogs ? "Hide Logs" : "Show Logs"}
+          {showLogs ? "Hide runtime output" : `Runtime output (${logs.length})`}
         </button>
         {showLogs && <QuestionLogsPanel logs={logs} />}
       </div>

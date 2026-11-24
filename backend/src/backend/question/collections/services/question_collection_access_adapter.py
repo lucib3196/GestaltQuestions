@@ -1,12 +1,16 @@
 from collections.abc import Sequence
 from datetime import datetime
+from uuid import UUID
 
+from sqlalchemy import select as select_alc
 from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
+from backend.accounts.model import User
 from backend.authorization import AccessLevel
 from backend.authorization.resources import (
     ResourceAccessAdapter,
+    ResourceAccessDenied,
     ResourceAccessOperationError,
     ResourceAccessValidationError,
 )
@@ -20,7 +24,11 @@ from backend.utils import convert_uuid
 
 
 class DetailRead(QuestionCollectionAccess):
+    user_id: UUID
     email: str
+    first_name: str
+    last_name: str
+    username: str | None = None
 
 
 class QuestionCollectionAdapter(
@@ -161,12 +169,40 @@ class QuestionCollectionAdapter(
 
     async def list_access_granted_by(
         self, profile: DeveloperProfile
-    ) -> Sequence[QuestionCollectionAccess]:
+    ) -> Sequence[DetailRead]:
         try:
-            stmt = select(QuestionCollectionAccess).where(
-                QuestionCollectionAccess.granted_by_id == profile.id,
+            stmt = (
+                select_alc(
+                    QuestionCollectionAccess,
+                    col(User.id).label("user_id"),
+                    col(User.email).label("email"),
+                    col(User.first_name).label("first_name"),
+                    col(User.last_name).label("last_name"),
+                    col(User.username).label("username"),
+                )
+                .join(
+                    DeveloperProfile,
+                    col(QuestionCollectionAccess.developer_id)
+                    == col(DeveloperProfile.id),
+                )
+                .join(User, col(User.id) == col(DeveloperProfile.user_id))
+                .where(
+                    col(QuestionCollectionAccess.granted_by_id) == profile.id,
+                )
+                .order_by(col(QuestionCollectionAccess.created_at).desc())
             )
-            return list(self._session.exec(stmt).all())
+            rows = self._session.execute(stmt).all()
+            return [
+                DetailRead(
+                    **access.model_dump(),
+                    user_id=user_id,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                    username=username,
+                )
+                for access, user_id, email, first_name, last_name, username in rows
+            ]
         except SQLAlchemyError as e:
             raise self._operation_error(
                 "list access",
@@ -180,7 +216,59 @@ class QuestionCollectionAdapter(
         *,
         owner: DeveloperProfile | None = None,
     ) -> Sequence[DetailRead]:
-        raise NotImplementedError("Collection access details are not implemented")
+        if owner and resource.owner_id != owner.id:
+            raise ResourceAccessDenied(
+                "Only the owner can view access details",
+                resource_name=self.name,
+                resource_id=str(resource.id),
+                profile_id=str(owner.id),
+            )
+
+        try:
+            stmt = (
+                select_alc(
+                    QuestionCollectionAccess,
+                    col(User.id).label("user_id"),
+                    col(User.email).label("email"),
+                    col(User.first_name).label("first_name"),
+                    col(User.last_name).label("last_name"),
+                    col(User.username).label("username"),
+                )
+                .join(
+                    DeveloperProfile,
+                    col(QuestionCollectionAccess.developer_id)
+                    == col(DeveloperProfile.id),
+                )
+                .join(User, col(User.id) == col(DeveloperProfile.user_id))
+                .where(
+                    col(QuestionCollectionAccess.collection_id) == resource.id,
+                )
+            )
+
+            if owner:
+                stmt = stmt.where(
+                    col(QuestionCollectionAccess.developer_id) != owner.id
+                )
+
+            stmt = stmt.order_by(col(QuestionCollectionAccess.created_at).desc())
+            rows = self._session.execute(stmt).all()
+            return [
+                DetailRead(
+                    **access.model_dump(),
+                    user_id=user_id,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                    username=username,
+                )
+                for access, user_id, email, first_name, last_name, username in rows
+            ]
+        except SQLAlchemyError as e:
+            raise self._operation_error(
+                "list access details",
+                resource_id=str(resource.id),
+                details=str(e),
+            ) from e
 
     async def is_owner(
         self,

@@ -1,5 +1,6 @@
 import {
   type CollectionAccess,
+  type CollectionAccessDetailRead,
   CollectionAccessApi,
   type CollectionId,
   type ShareableAccessLevel,
@@ -7,6 +8,7 @@ import {
 } from "../../services/Access";
 import type { ShareCollectionBatchResult } from "../../services/Sharing";
 import {
+  useAccessDetails,
   useRetrieveAccess,
   useRevokeAccess,
   useShareAccess,
@@ -14,10 +16,25 @@ import {
   useUpdateAccess,
 } from "../resourceAccess";
 
+async function listSharedByMeForCollection(
+  token: string,
+  collectionId: string,
+): Promise<CollectionAccessDetailRead[]> {
+  const access = await CollectionAccessApi.listSharedByMe(token);
+  return access.filter((entry) => entry.collection_id === collectionId);
+}
+
 export function useRetrieveCollectionAccess(collectionId: CollectionId) {
   return useRetrieveAccess<CollectionAccess>(collectionId, {
     resourceName: "collection",
     retrieveRequest: CollectionAccessApi.retrieveAccess,
+  });
+}
+
+export function useListSharedByMe(collectionId: CollectionId) {
+  return useAccessDetails<CollectionAccessDetailRead>(collectionId, {
+    resourceName: "collection",
+    listAccessDetailsRequest: listSharedByMeForCollection,
   });
 }
 

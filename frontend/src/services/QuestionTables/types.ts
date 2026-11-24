@@ -5,6 +5,7 @@ import type { QuestionStatus, QuestionType } from "../Questions";
 export type { QuestionType };
 
 export type QuestionTableSearchParamsBase = {
+  question_ids?: string[] | null;
   search?: string | null;
   status?: QuestionStatus | null;
   qtype?: QuestionType | QuestionType[] | null;

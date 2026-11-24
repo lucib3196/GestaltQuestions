@@ -1,8 +1,13 @@
+from collections.abc import Sequence
+
 from sqlalchemy import case
 from sqlmodel import Session, col, select
 
-from backend.authorization import AccessLevel
-from backend.authorization.resources import ResourceAccessAdapter, ResourceAccessService
+from backend.authorization import AccessLevel, AccessPolicyError
+from backend.authorization.resources import (
+    ResourceAccessOperationError,
+    ResourceAccessService,
+)
 from backend.developer.model import DeveloperProfile
 from backend.developer.profiles import DeveloperProfileService
 from backend.question import Question
@@ -11,10 +16,11 @@ from backend.question.collections.models import (
     QuestionCollectionAccess,
     QuestionCollectionLink,
 )
-
-
-class DetailRead(QuestionCollectionAccess):
-    email: str
+from backend.question.collections.services.question_collection_access_adapter import (
+    DetailRead,
+    QuestionCollectionAdapter,
+)
+from backend.shared import ID
 
 
 class QuestionCollectionAccessService(
@@ -24,12 +30,29 @@ class QuestionCollectionAccessService(
 ):
     def __init__(
         self,
-        adapter: ResourceAccessAdapter[
-            QuestionCollectionAccess, DeveloperProfile, QuestionCollection, DetailRead
-        ],
+        adapter: QuestionCollectionAdapter,
         profile_service: DeveloperProfileService,
     ) -> None:
         super().__init__(adapter=adapter, profile_service=profile_service)
+        self._collection_adapter = adapter
+
+    async def list_access_shared_by(
+        self, requester: DeveloperProfile | ID
+    ) -> Sequence[DetailRead]:
+        requester_profile = await self._resolve_profile(requester)
+        try:
+            return await self._collection_adapter.list_access_granted_by(
+                requester_profile
+            )
+        except AccessPolicyError:
+            raise
+        except Exception as e:
+            raise ResourceAccessOperationError(
+                "list",
+                resource_name="Collection",
+                profile_id=str(requester_profile.id),
+                details=str(e),
+            ) from e
 
 
 class QuestionCollectionAccessReader:
