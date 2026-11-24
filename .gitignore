@@ -102,3 +102,4 @@ drive_question_manifest.json
 .env.production
 backend/helpers
 backend/src/local_question_manifest.json
+/agent-worktrees/**
