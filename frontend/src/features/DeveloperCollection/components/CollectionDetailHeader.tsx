@@ -33,7 +33,7 @@ export function CollectionDetailHeader({
           <button
             type="button"
             onClick={onAddQuestions}
-            className="inline-flex h-12 items-center justify-center gap-3 rounded-md bg-indigo-400 px-6 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/60"
+            className="inline-flex h-12 items-center justify-center gap-3 rounded-md bg-accent px-6 text-sm font-semibold text-bg shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
           >
             <Plus className="size-5" aria-hidden="true" />
             Add questions
@@ -43,7 +43,7 @@ export function CollectionDetailHeader({
           <button
             type="button"
             onClick={onShareCollection}
-            className="inline-flex h-12 items-center justify-center gap-3 rounded-md border border-slate-700 bg-slate-950 px-6 text-sm font-semibold text-slate-200 shadow-sm transition hover:border-slate-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/50"
+            className="inline-flex h-12 items-center justify-center gap-3 rounded-md border border-border bg-surface-secondary px-6 text-sm font-semibold text-text-muted shadow-sm transition hover:border-border-strong hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
           >
             <Share2 className="size-5" aria-hidden="true" />
             Share collection
@@ -53,7 +53,7 @@ export function CollectionDetailHeader({
           <button
             type="button"
             onClick={onEditDetails}
-            className="inline-flex h-12 items-center justify-center gap-3 rounded-md border border-slate-700 bg-slate-950 px-6 text-sm font-semibold text-slate-200 shadow-sm transition hover:border-slate-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/50"
+            className="inline-flex h-12 items-center justify-center gap-3 rounded-md border border-border bg-surface-secondary px-6 text-sm font-semibold text-text-muted shadow-sm transition hover:border-border-strong hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
           >
             <Edit3 className="size-5" aria-hidden="true" />
             Edit details
@@ -66,8 +66,8 @@ export function CollectionDetailHeader({
             disabled={isUpdatingStatus}
             className={
               status === "published"
-                ? "inline-flex h-12 items-center justify-center gap-3 rounded-md border border-slate-700 bg-slate-950 px-6 text-sm font-semibold text-slate-200 shadow-sm transition hover:border-slate-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/50 disabled:cursor-not-allowed disabled:opacity-50"
-                : "inline-flex h-12 items-center justify-center gap-3 rounded-md bg-indigo-400 px-6 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300/60 disabled:cursor-not-allowed disabled:opacity-50"
+                ? "inline-flex h-12 items-center justify-center gap-3 rounded-md border border-border bg-surface-secondary px-6 text-sm font-semibold text-text-muted shadow-sm transition hover:border-border-strong hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:cursor-not-allowed disabled:opacity-50"
+                : "inline-flex h-12 items-center justify-center gap-3 rounded-md bg-accent px-6 text-sm font-semibold text-bg shadow-sm transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 disabled:cursor-not-allowed disabled:opacity-50"
             }
           >
             {status === "published" ? (
