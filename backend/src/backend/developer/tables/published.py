@@ -1,5 +1,7 @@
 from collections.abc import Sequence
 
+from pydantic import field_validator
+
 from backend.developer.tables.base import DeveloperTables
 from backend.developer.tables.extensions import (
     PublishedQuestionTableExtension,
@@ -16,6 +18,7 @@ from backend.tables import Table, TableExtension
 from backend.tables import TableExtension
 
 from backend.question.views.schema import (
+    QuestionSearchParams,
     QuestionSearchParamsBase,
     QuestionTableRowBase,
 )
@@ -38,6 +41,11 @@ class PublishedQuestionRow(QuestionTableRowBase):
     created_by_email: str | None
     user_id: UUID | str
     institution: str
+
+    @field_validator("institution", mode="before")
+    @classmethod
+    def normalize_institution(cls, value: str | None) -> str:
+        return "" if value is None else value
 
 
 class PublishedQuestionSearch(QuestionSearchParamsBase):
@@ -99,6 +107,8 @@ class DeveloperPublishedQuestionTables(DeveloperTables):
 
     def search_published_questions(
         self,
-        params: PublishedQuestionSearch | None = None,
+        params: PublishedQuestionSearch | QuestionSearchParams | None = None,
     ) -> Sequence[PublishedQuestionRow]:
+        if isinstance(params, QuestionSearchParams):
+            params = PublishedQuestionSearch.model_validate(params.model_dump())
         return self._construct_table().search(params)
