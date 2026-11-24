@@ -1,3 +1,6 @@
+import re
+from unicodedata import normalize
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 from starlette import status
@@ -21,13 +24,22 @@ async def download_question_as_zip(
 ):
     try:
         payload = await downloader.download_question(current_user, question_id)
-        response = download_zip(payload.files, folder_name=payload.folder_name)
+        ascii_title = (
+            normalize("NFKD", payload.folder_name)
+            .encode("ascii", "ignore")
+            .decode("ascii")
+        )
+        words = re.findall(
+            r"[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+|[A-Z]+|[0-9]+", ascii_title
+        )
+        stem = "".join(word.capitalize() for word in words)
+        stem = stem[:1].lower() + stem[1:100]
+        filename = f"{stem or f'untitledQuestion{payload.question_id.hex[:5]}'}.zip"
+
         return Response(
-            content=response,
+            content=download_zip(payload.files, folder_name=payload.folder_name),
             media_type="application/zip",
-            headers={
-                "Content-Disposition": f'attachment; filename="{payload.folder_name}.zip"'
-            },
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
         )
     except Exception as e:
         raise HTTPException(
