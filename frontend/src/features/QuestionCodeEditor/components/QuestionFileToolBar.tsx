@@ -32,15 +32,18 @@ export default function QuestionFileToolBar({
   const [showUpload, setShowUpload] = useState(false);
   const [userFiles, setUserFiles] = useState<File[]>([]);
 
-  const { saveFile, loading: isSaving } = useSaveFile();
+  const {
+    saveFile,
+    loading: isSaving,
+    error: saveError,
+  } = useSaveFile(onRefresh);
   const { createFile, loading: isCreating } = useCreateFile();
   const { deleteFile, loading: isDeleting } = useDeleteFile();
   const { uploadFile, loading: isUploading } = useUploadFile();
 
   const handleSave = useCallback(async () => {
     await saveFile(qid, activeFile.filename, activeFile.content);
-    onRefresh();
-  }, [activeFile, onRefresh, qid, saveFile]);
+  }, [activeFile, qid, saveFile]);
 
   const handleCreateFile = useCallback(async () => {
     const rawName = window.prompt("New filename (e.g. helper.py):", "");
@@ -94,9 +97,9 @@ export default function QuestionFileToolBar({
   return (
     <>
       <div className="mb-3 flex flex-wrap items-end gap-3 rounded-md border border-border bg-surface p-3">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
-            name={isSaving ? "Saving..." : "Save"}
+            name={isSaving ? "Saving..." : "Save & refresh preview"}
             onClick={handleSave}
             disabled={isSaving}
             color="editorAction"
@@ -120,6 +123,11 @@ export default function QuestionFileToolBar({
             color="editorAction"
           />
         </div>
+        {saveError && (
+          <p role="alert" className="w-full text-sm text-warning">
+            {saveError}
+          </p>
+        )}
       </div>
 
       {showUpload && (

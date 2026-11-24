@@ -1,7 +1,7 @@
 from .collection_access import CollectionAccessTableExtension
 from .collections import QuestionCollectionExtension
 from .developer import DeveloperQuestionTableExtension
-from .published import PublishedQuestionTableExtension
+from .published import PublishedQuestionTableExtension, CreatedByTableExtension
 from .question_access import QuestionAccessTableExtension
 from .resource_access import AccessTableConfig, ResourceAccessTableExtension
 from .shared_by_me import SharedByMeQuestionTableExtension
@@ -17,4 +17,5 @@ __all__ = [
     "ResourceAccessTableExtension",
     "SharedByMeQuestionTableExtension",
     "SharedWithMeQuestionTableExtension",
+    "CreatedByTableExtension"
 ]

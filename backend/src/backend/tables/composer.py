@@ -40,7 +40,9 @@ class TableQueryComposer(ABC, Generic[SearchParams]):
 
             for extension in self._extensions:
                 stmt = extension.apply(stmt, table)
-
+            # Make the extended columns part of a new subquery.
+            table = stmt.subquery("extended_table")
+            stmt = select(table).select_from(table)
             filters = self.build_filters(params, table)
             stmt = stmt.where(*filters)
 

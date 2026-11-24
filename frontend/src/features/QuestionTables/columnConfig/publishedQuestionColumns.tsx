@@ -42,10 +42,18 @@ const publishedQuestionColumnRegistry = {
       }),
     },
   },
-  created_by: {
-    key: "created_by",
+  created_by_email: {
+    key: "created_by_email",
     label: "Created By",
     render: (row) => <QuestionCreatedByCell row={row} />,
+    filter: {
+      kind: "text",
+      label: "Filter by email",
+      toQuery: (value) => ({
+        created_by_email:
+          typeof value === "string" && value.trim() ? value.trim() : null,
+      }),
+    },
   },
 } satisfies Record<string, QuestionTableColumn<QuestionTableSchema>>;
 
@@ -62,6 +70,6 @@ export function createAllQuestionTableColumns(): QuestionTableColumn<QuestionTab
       },
     ),
     publishedQuestionColumnRegistry.institution,
-    publishedQuestionColumnRegistry.created_by,
+    publishedQuestionColumnRegistry.created_by_email,
   ];
 }

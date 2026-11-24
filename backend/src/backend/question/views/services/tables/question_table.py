@@ -7,24 +7,26 @@ from backend.question.views.schema import QuestionSearchParamsBase, QuestionTabl
 from backend.tables import Table, TableExtension
 
 from .question_table_composer import QuestionTableQueryComposer
+from backend.tables import TableExtension, TableQueryComposer
 
 
 class QuestionTable(Table[QuestionTableRowBase, QuestionSearchParamsBase]):
-    """Executes question table queries and validates rows into response models."""
+    """Executes question queries and validates response rows."""
 
     def __init__(
         self,
         session: Session,
         *,
-        extensions: Sequence[TableExtension] | None = None,
-        composer: QuestionTableQueryComposer | None = None,
+        composer: TableQueryComposer[QuestionSearchParamsBase] | None = None,
         row_model: type[QuestionTableRowBase] = QuestionTableRowBase,
+        extensions: Sequence[TableExtension] = []
     ) -> None:
-        """Initialize the table service with a session, composer, and row model."""
-        composer = composer or QuestionTableQueryComposer(
-            extensions=extensions,
-            dialect_name=session.get_bind().dialect.name,
-        )
+        if composer is None:
+            composer = QuestionTableQueryComposer(
+                dialect_name=session.get_bind().dialect.name,
+                search_model=QuestionSearchParamsBase,
+                extensions=extensions
+            )
 
         super().__init__(
             session=session,

@@ -63,6 +63,7 @@ export default function DeveloperWorkspaceSidebar({
           <button
             type="button"
             onClick={onToggleCollapsed}
+            aria-expanded={!collapsed}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             className="inline-flex size-9 shrink-0 items-center justify-center rounded-md border border-border bg-surface-secondary text-text-muted transition hover:border-border-strong hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
@@ -84,6 +85,7 @@ export default function DeveloperWorkspaceSidebar({
               to={option.to}
               end={option.end}
               title={collapsed ? option.label : undefined}
+              aria-label={collapsed ? option.label : undefined}
               className={({ isActive }) =>
                 sidebarTabClassName(isActive, collapsed)
               }

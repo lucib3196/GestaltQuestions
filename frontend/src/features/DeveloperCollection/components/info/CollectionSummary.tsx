@@ -1,7 +1,7 @@
 import type { QuestionCollection } from "../../../../services";
 import { getStatusLabel } from "../../../../services/Status";
-import { type CollectionMetadataFormValue } from "../../hooks/useCollectionInfoStore";
 import { formatDate } from "../../../../utils/formattingUtils";
+import { type CollectionMetadataFormValue } from "../../hooks/useCollectionInfoStore";
 
 type CollectionSummaryProps = {
   collection: QuestionCollection;

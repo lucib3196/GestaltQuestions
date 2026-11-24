@@ -1,7 +1,6 @@
 import type { QuestionRuntimeLanguage } from "../../../services/QuestionRuntime";
 import QuestionFileEditor from "../../QuestionCodeEditor/QuestionFileEditor";
 import { QuestionRender } from "../../QuestionEngine";
-import { QuestionMetadataEditorPanel } from "../../QuestionMetadata";
 import type { QuestionEditorPane } from "../store/types";
 
 type QuestionEditorPaneContentProps = {
@@ -18,15 +17,21 @@ export function QuestionEditorPaneContent({
   switch (pane) {
     case "livePreview":
       return (
-        <QuestionRender
-          qid={qid}
-          serverSettings={serverMode}
-          withProvider={false}
-        />
+        <section className="flex min-w-0 flex-col gap-3 [&_[data-question-prompt]]:min-h-0 [&_[data-question-prompt]]:min-w-0 [&_[data-question-prompt]]:justify-start">
+          <header className="border-b border-border pb-3">
+            <h2 className="text-sm font-semibold text-text">Student preview</h2>
+            <p className="mt-1 text-xs text-text-muted">
+              Preview uses saved question files.
+            </p>
+          </header>
+          <QuestionRender
+            qid={qid}
+            serverSettings={serverMode}
+            withProvider={false}
+          />
+        </section>
       );
     case "editor":
       return <QuestionFileEditor qid={qid} />;
-    case "metadata":
-      return <QuestionMetadataEditorPanel qid={qid} />;
   }
 }

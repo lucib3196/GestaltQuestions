@@ -3,7 +3,6 @@ import type {
   ShareQuestionBatchResult,
   ShareQuestionsWithUsersPayload,
 } from "./types";
-
 import type {
   QuestionAccess,
   QuestionAccessDetailRead,

@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Literal
+from typing import Generic, Literal, TypeVar
 
 from sqlalchemy import String, cast, func, select
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -17,12 +17,17 @@ from backend.question import (
 )
 from backend.question.views.schema import QuestionSearchParamsBase
 from backend.question_runtime.model import QuestionRunTime
-from backend.tables import TableExtension, TableQueryComposer
+from backend.tables import TableExtension, TableQueryComposer, FilterBuilder
 
 from .question_table_filters import QuestionTableFilterBuilder
 
 
-class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
+QuestionParams = TypeVar("QuestionParams", bound=QuestionSearchParamsBase)
+
+
+class QuestionTableQueryComposer(
+    TableQueryComposer[QuestionParams], Generic[QuestionParams]
+):
     """Builds question table SQL statements without executing them."""
 
     def __init__(
@@ -30,10 +35,14 @@ class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
         extensions: Sequence[TableExtension] | None = None,
         *,
         dialect_name: str,
+        search_model: type[QuestionParams],
+        filter_builder: type[
+            FilterBuilder[QuestionParams]
+        ] = QuestionTableFilterBuilder,
     ) -> None:
         super().__init__(
-            search_params_model=QuestionSearchParamsBase,
-            filter_builder=QuestionTableFilterBuilder,
+            search_params_model=search_model,
+            filter_builder=filter_builder,
             extensions=extensions,
             dialect_name=dialect_name,
         )
@@ -107,7 +116,7 @@ class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
         return stmt.subquery(table_name)
 
     def apply_ordering(
-        self, stmt: Select, params: QuestionSearchParamsBase, table: Subquery
+        self, stmt: Select, params: QuestionParams, table: Subquery
     ) -> Select:
         return stmt.order_by(
             table.c.updated_at.desc().nulls_last(),
@@ -134,8 +143,10 @@ class QuestionTableQueryComposer(TableQueryComposer[QuestionSearchParamsBase]):
             ).label(label)
 
         if dialect == "sqlite":
-            return func.json_group_array(func.distinct(field)).filter(
-                field.is_not(None)
-            ).label(label)
+            return (
+                func.json_group_array(func.distinct(field))
+                .filter(field.is_not(None))
+                .label(label)
+            )
 
         raise ValueError(f"Unsupported dialect: {dialect}")

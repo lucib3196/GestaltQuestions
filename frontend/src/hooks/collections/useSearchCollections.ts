@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-import { useAuth } from "../../services/Auth";
+import type { CollectionView } from "../../features/DeveloperCollections/types";
 import CollectionAccessApi from "../../services/Access/collectionAccessApi";
+import { useAuth } from "../../services/Auth";
 import CollectionsApi from "../../services/Collections/api";
 import type {
   QuestionCollectionRead,
   SearchCollectionsParams,
 } from "../../services/Collections/types";
-import type { CollectionView } from "../../features/DeveloperCollections/types";
 
 export function useSearchCollections(
   search: SearchCollectionsParams = { title: "", limit: 3 },

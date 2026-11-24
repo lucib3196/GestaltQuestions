@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import type React from "react";
-import { FiEye, FiFileText } from "react-icons/fi";
+import { FiEye } from "react-icons/fi";
 import { IoCodeSlash } from "react-icons/io5";
 
 import type { QuestionEditorPane } from "../store/types";
@@ -24,13 +24,8 @@ const paneOptions: Array<{
   },
   {
     value: "editor",
-    label: "Editor",
+    label: "Source",
     icon: <IoCodeSlash className="h-4 w-4" />,
-  },
-  {
-    value: "metadata",
-    label: "Metadata",
-    icon: <FiFileText className="h-4 w-4" />,
   },
 ];
 

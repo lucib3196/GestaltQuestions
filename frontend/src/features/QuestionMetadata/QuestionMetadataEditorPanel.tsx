@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  useQuestionMetadata,
-  useUpdateQuestion,
-} from "../../hooks/developerQuestions";
+import { useUpdateQuestion } from "../../hooks/developerQuestions";
+import type { QuestionRead } from "../../services/Questions";
 import { QuestionMetadataForm } from "./QuestionMetadataForm";
 import {
   metadataValuesEqual,
@@ -12,12 +10,17 @@ import {
 } from "./utils";
 type QuestionMetadataEditorPanelProps = {
   qid: string;
+  questionMetadata: QuestionRead | null;
+  loading: boolean;
+  onSaved: (metadata: QuestionRead) => void;
 };
 
 export default function QuestionMetadataEditorPanel({
   qid,
+  questionMetadata,
+  loading,
+  onSaved,
 }: QuestionMetadataEditorPanelProps) {
-  const { questionMetadata, loading } = useQuestionMetadata(qid);
   const { updateQuestion, loading: uloading } = useUpdateQuestion();
 
   const [value, setValue] = useState<QuestionMetadataFormValue>(
@@ -38,7 +41,8 @@ export default function QuestionMetadataEditorPanel({
   };
 
   const handleSubmit = async () => {
-    await updateQuestion(qid, value);
+    const updated = await updateQuestion(qid, value);
+    if (updated) onSaved(updated);
   };
 
   if (loading) {

@@ -24,6 +24,7 @@ const PLQuestionPanel: React.FC<PLQuestionPanelProps> = ({
   variant = "default",
 }) => (
   <div
+    data-question-prompt=""
     className={clsx(
       "flex w-full flex-col items-start justify-center text-left",
       uiPanelBaseStyles,

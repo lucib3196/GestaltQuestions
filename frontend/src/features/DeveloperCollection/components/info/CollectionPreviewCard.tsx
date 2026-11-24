@@ -1,11 +1,13 @@
 import { Lock } from "lucide-react";
+
 import type { QuestionCollection } from "../../../../services";
 import { getStatusLabel } from "../../../QuestionMetadata";
-import { getCollectionColor,getCollectionIcon } from "../customization/customization";
-
 import type { CollectionMetadataFormValue } from "../../hooks/useCollectionInfoStore";
 import { getQuestionCount } from "../../utils";
-
+import {
+  getCollectionColor,
+  getCollectionIcon,
+} from "../customization/customization";
 
 type CollectionPreviewCardProps = {
   collection: QuestionCollection;

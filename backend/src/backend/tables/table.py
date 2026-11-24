@@ -26,7 +26,8 @@ class Table(Generic[RowModel, SearchParams]):
     def search(self, params: SearchParams | None = None) -> Sequence[RowModel]:
         """Build, execute, and validate a table search query."""
         search = self._composer.search(params)
-        return self.execute(search)
+        results = self.execute(search)
+        return results
 
     def execute(self, stmt: Select[Any]) -> Sequence[RowModel]:
         """Execute a statement and validate each mapping with the row model."""
