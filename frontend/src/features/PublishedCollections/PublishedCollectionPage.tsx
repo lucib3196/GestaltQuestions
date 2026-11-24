@@ -1,75 +1,42 @@
-import { ArrowLeft, ListChecks } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 import { useFetchCollection } from "../../hooks/collections";
-import { useAuth } from "../../services/Auth";
-import CollectionsApi from "../../services/Collections/api";
-import type { CollectionQuestion } from "../../services/Collections/types";
+import { formatDate } from "../../utils/formattingUtils";
 import { CollectionHeroIcon } from "../DeveloperCollection/components/customization/CollectionHeroIcon";
+import { PublishedCollectionQuestions } from "./PublishedCollectionQuestions";
 
 export default function PublishedCollectionPage() {
   const { collectionId } = useParams<{ collectionId: string }>();
-  const { user } = useAuth();
+  return (
+    <PublishedCollectionDetail key={collectionId} collectionId={collectionId} />
+  );
+}
+
+function PublishedCollectionDetail({
+  collectionId,
+}: {
+  collectionId?: string;
+}) {
   const { collection, loading, error } = useFetchCollection(collectionId);
-  const [questions, setQuestions] = useState<CollectionQuestion[]>([]);
-  const [questionsLoading, setQuestionsLoading] = useState(false);
-  const [questionsError, setQuestionsError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let active = true;
-
-    async function loadQuestions() {
-      if (!user || !collectionId || collection?.status !== "published") {
-        setQuestions([]);
-        setQuestionsError(null);
-        setQuestionsLoading(false);
-        return;
-      }
-
-      setQuestionsLoading(true);
-      setQuestionsError(null);
-
-      try {
-        const token = await user.getIdToken();
-        const results = await CollectionsApi.getCollectionQuestions(
-          token,
-          collectionId,
-        );
-        if (active) {
-          setQuestions(results);
-        }
-      } catch (err) {
-        if (active) {
-          setQuestions([]);
-          setQuestionsError(
-            err instanceof Error
-              ? err.message
-              : "Unable to load collection questions.",
-          );
-        }
-      } finally {
-        if (active) {
-          setQuestionsLoading(false);
-        }
-      }
-    }
-
-    void loadQuestions();
-    return () => {
-      active = false;
-    };
-  }, [collection?.status, collectionId, user]);
-
-  if (loading) {
+  if (loading || (collectionId && !collection && !error)) {
     return (
-      <div className="rounded-lg border border-border bg-surface p-5 text-sm text-text-muted">
+      <div
+        role="status"
+        className="rounded-lg border border-border bg-surface p-5 text-sm text-text-muted"
+      >
         Loading collection...
       </div>
     );
   }
 
-  if (error || !collection || collection.status !== "published") {
+  if (
+    error ||
+    !collectionId ||
+    !collection ||
+    collection.status !== "published"
+  ) {
     return (
       <section className="rounded-lg border border-border bg-surface p-5">
         <p className="text-sm text-text-muted">
@@ -86,8 +53,11 @@ export default function PublishedCollectionPage() {
     );
   }
 
+  const createdDate = formatDate(collection.created_at);
+  const updatedDate = formatDate(collection.updated_at);
+
   return (
-    <section className="flex min-h-0 flex-1 flex-col gap-5">
+    <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-5">
       <Link
         to="/collections"
         className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-text-muted hover:text-text"
@@ -96,49 +66,32 @@ export default function PublishedCollectionPage() {
         Published collections
       </Link>
 
-      <article className="rounded-lg border border-border bg-surface p-5 text-text shadow-soft sm:p-7">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-          <CollectionHeroIcon customization={collection.customization} />
-          <div>
-            <h1 className="text-3xl font-semibold">{collection.title}</h1>
-            <p className="mt-2 max-w-3xl text-sm text-text-muted">
-              {collection.description?.trim() || "No description added yet."}
-            </p>
-          </div>
-        </div>
+      <header className="flex flex-col gap-5 rounded-lg border border-border bg-surface p-5 shadow-soft sm:flex-row sm:items-center sm:p-7">
+        <CollectionHeroIcon
+          customization={collection.customization}
+          themeAware
+        />
 
-        <div className="mt-8 border-t border-border pt-6">
-          <h2 className="flex items-center gap-2 text-xl font-semibold">
-            <ListChecks className="size-5" aria-hidden="true" />
-            Questions ({collection.question_ids.length})
-          </h2>
-
-          {questionsLoading ? (
-            <p className="mt-4 text-sm text-text-muted">Loading questions...</p>
-          ) : questionsError ? (
-            <p role="alert" className="mt-4 text-sm text-warning">
-              {questionsError}
-            </p>
-          ) : questions.length === 0 ? (
-            <p className="mt-4 text-sm text-text-muted">
-              This collection does not contain any questions.
-            </p>
-          ) : (
-            <ul className="mt-4 divide-y divide-border rounded-md border border-border">
-              {questions.map((question) => (
-                <li key={question.id}>
-                  <Link
-                    to={`/questions/${encodeURIComponent(question.id)}`}
-                    className="block px-4 py-3 text-sm font-medium text-text transition hover:bg-surface-muted"
-                  >
-                    {question.title?.trim() || "Untitled question"}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+        <div className="min-w-0">
+          <h1 className="wrap-break-word text-3xl font-semibold text-text">
+            {collection.title}
+          </h1>
+          <p className="mt-2 max-w-3xl wrap-break-word text-sm text-text-muted">
+            {collection.description?.trim() || "No description added yet."}
+          </p>
+          {(createdDate || updatedDate) && (
+            <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-text-muted">
+              {createdDate && <span>Created {createdDate}</span>}
+              {updatedDate && <span>Updated {updatedDate}</span>}
+            </div>
           )}
         </div>
-      </article>
+      </header>
+
+      <PublishedCollectionQuestions
+        collectionId={collectionId}
+        questionCount={collection.question_ids.length}
+      />
     </section>
   );
 }
