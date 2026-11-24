@@ -44,7 +44,6 @@ function CollectionViewData() {
   const access = useSingleCollectionStore((s) => s.access);
   const capabilities = useSingleCollectionStore((s) => s.capabilities);
 
-
   if (loading) {
     return <CollectionDetailLoading />;
   }
@@ -120,10 +119,7 @@ function CollectionViewData() {
       )}
 
       <div className="mt-8 flex flex-col gap-6 xl:flex-row xl:items-center">
-        <CollectionHeroIcon
-          customization={collection.customization}
-          surfaceColor="var(--color-bg)"
-        />
+        <CollectionHeroIcon customization={collection.customization} />
 
         <CollectionInfo
           collection={collection}
