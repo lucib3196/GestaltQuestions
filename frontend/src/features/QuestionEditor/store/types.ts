@@ -1,3 +1,5 @@
+import type { Dispatch } from "react";
+
 import type { QuestionRuntimeLanguage } from "../../../services/QuestionRuntime";
 import type {
   AnyResourceSchema,
@@ -21,11 +23,13 @@ export type QuestionEditorSessionActions = {
 export type QuestionEditorSettingsState = {
   layoutMode: QuestionEditorLayoutMode;
   activePanes: QuestionEditorPane[];
+  splitPaneOrder: QuestionEditorPane[];
 };
 
 export type QuestionEditorSettingsActions = {
   setLayoutMode: (mode: QuestionEditorLayoutMode) => void;
   setActivePanes: (panes: QuestionEditorPane[]) => void;
+  setSplitPaneOrder: Dispatch<QuestionEditorPane[]>;
   togglePane: (pane: QuestionEditorPane) => void;
   showSinglePane: (pane: QuestionEditorPane) => void;
 };

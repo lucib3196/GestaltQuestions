@@ -12,6 +12,7 @@ type QuestionBodyVariant = "default" | "compact" | "flush" | "centered";
 type QuestionBodyProps = {
   variant?: QuestionBodyVariant;
   className?: string;
+  solutionInDialog?: boolean;
 };
 
 const questionBodyVariants: Record<QuestionBodyVariant, string> = {
@@ -24,6 +25,7 @@ const questionBodyVariants: Record<QuestionBodyVariant, string> = {
 export default function QuestionBody({
   className = "",
   variant = "compact",
+  solutionInDialog,
 }: QuestionBodyProps) {
   const runtime = useQuestionInstance((s) => s.runtime);
   const hasSubmitted = useQuestionInstance((s) => s.hasSubmitted);
@@ -58,7 +60,7 @@ export default function QuestionBody({
           <QuestionHTMLToReact html={runtime.question_html} />
         </div>
 
-        <QuestionActions />
+        <QuestionActions solutionInDialog={solutionInDialog} />
 
         {hasSubmitted && (
           <div ref={feedbackRef}>

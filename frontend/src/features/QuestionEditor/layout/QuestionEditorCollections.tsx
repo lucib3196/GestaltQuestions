@@ -83,7 +83,6 @@ export function QuestionEditorCollections({ qid }: { qid: string }) {
                 <li key={id} className="min-w-0">
                   <Link
                     to={`/question_builder/collections/${encodeURIComponent(id)}`}
-                    target="_blank"
                     rel="noopener"
                     className="inline-flex max-w-64 items-center gap-1 rounded-md border border-border bg-surface-secondary px-2 py-1 text-xs font-medium text-text hover:bg-surface-muted"
                   >

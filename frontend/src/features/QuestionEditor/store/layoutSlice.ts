@@ -15,6 +15,7 @@ export function createQuestionEditorSettingsSlice<
   return (set) => ({
     layoutMode: "split",
     activePanes: defaultActivePanes,
+    splitPaneOrder: [],
     setLayoutMode: (mode) =>
       set(
         (state) =>
@@ -33,6 +34,9 @@ export function createQuestionEditorSettingsSlice<
       set({
         activePanes: panes.length ? panes : [defaultPane],
       } as Partial<Store>),
+
+    setSplitPaneOrder: (panes) =>
+      set({ splitPaneOrder: panes } as Partial<Store>),
 
     togglePane: (pane) =>
       set((state) => {
