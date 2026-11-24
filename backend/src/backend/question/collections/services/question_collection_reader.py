@@ -58,8 +58,11 @@ class QuestionCollectionReader(Generic[ProfileT]):
         )
 
     def get_collections_containing_question(
-        self, question: Question
+        self, question: Question | ID, *, owner: ProfileT | None = None
     ) -> Sequence[QuestionCollection]:
+        question_id = (
+            question.id if isinstance(question, Question) else convert_uuid(question)
+        )
         try:
             stmt = (
                 select(QuestionCollection)
@@ -67,8 +70,12 @@ class QuestionCollectionReader(Generic[ProfileT]):
                     QuestionCollectionLink,
                     QuestionCollectionLink.collection_id == QuestionCollection.id,  # type: ignore
                 )
-                .where(QuestionCollectionLink.question_id == question.id)
+                .where(QuestionCollectionLink.question_id == question_id)
             )
+            if owner is not None:
+                stmt = stmt.where(
+                    QuestionCollection.owner_id == require_profile_id(owner)
+                ).order_by(col(QuestionCollection.title), col(QuestionCollection.id))
             return self._session.exec(stmt).all()
         except SQLAlchemyError as e:
             raise Exception(f"Failed to fetch {e}") from e

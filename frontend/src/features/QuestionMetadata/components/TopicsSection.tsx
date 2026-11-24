@@ -6,10 +6,15 @@ import { parseTopicInput } from "../utils";
 
 type TopicsSectionProps = {
   topics: string[];
+  compact?: boolean;
   onTopicsChange: Dispatch<string[]>;
 };
 
-export function TopicsSection({ topics, onTopicsChange }: TopicsSectionProps) {
+export function TopicsSection({
+  topics,
+  compact = false,
+  onTopicsChange,
+}: TopicsSectionProps) {
   const [draftTopic, setDraftTopic] = useState("");
 
   const addTopics = (rawValue: string) => {
@@ -32,7 +37,7 @@ export function TopicsSection({ topics, onTopicsChange }: TopicsSectionProps) {
     <div className="space-y-2">
       <div className="flex items-center gap-1 text-sm font-medium text-text-muted">
         <label htmlFor="question-metadata-topics">Topics</label>
-        <span className="text-red-400">*</span>
+        {!compact && <span className="text-red-400">*</span>}
       </div>
 
       <div className="flex min-h-12 flex-wrap items-center gap-2 rounded-md border border-border bg-bg px-2 py-2 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/30">
@@ -69,9 +74,11 @@ export function TopicsSection({ topics, onTopicsChange }: TopicsSectionProps) {
         />
       </div>
 
-      <p className="text-sm text-text-muted">
-        Add relevant topics that best describe this question.
-      </p>
+      {!compact && (
+        <p className="text-sm text-text-muted">
+          Add relevant topics that best describe this question.
+        </p>
+      )}
     </div>
   );
 }

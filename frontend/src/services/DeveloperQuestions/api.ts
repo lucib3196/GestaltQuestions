@@ -1,6 +1,7 @@
 import type { FileData } from "../../types/fileTypes";
 import { downloadZip } from "../../utils/downloadUtils";
 import api from "../client";
+import type { QuestionCollectionMembership } from "../Collections/types";
 import type { QuestionFilter, QuestionRead } from "../Questions";
 import type {
   DeveloperQuestionCreate,
@@ -54,6 +55,17 @@ export default class DeveloperQuestionsApi {
     const response = await api.get<QuestionRead>(`${this.base}/${questionId}`, {
       headers: this.authHeaders(token),
     });
+    return response.data;
+  }
+
+  static async listOwnedCollections(
+    token: string,
+    questionId: string,
+  ): Promise<QuestionCollectionMembership[]> {
+    const response = await api.get<QuestionCollectionMembership[]>(
+      `${this.base}/${encodeURIComponent(questionId)}/collections`,
+      { headers: this.authHeaders(token) },
+    );
     return response.data;
   }
 

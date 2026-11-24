@@ -1,5 +1,6 @@
 import asyncio
 from collections.abc import Sequence
+from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, UploadFile
 from pydantic import BaseModel
@@ -7,6 +8,9 @@ from starlette import status
 
 from backend.api.dependencies import SessionDep
 from backend.api.dependencies.users import CurrentUser
+from backend.authorization.exceptions import AccessPolicyDenied
+from backend.authorization.profiles.exceptions import ProfileNotSet
+from backend.authorization.resources import ResourceAccessValidationError
 from backend.question import (
     Question,
     QuestionCreate,
@@ -16,12 +20,14 @@ from backend.question import (
     QuestionReadError,
     QuestionUpdate,
 )
+from backend.question.access import QuestionAccessDenied
+from backend.question.collections.schema import QuestionCollectionMembership
 from backend.question.services import QuestionBookmarkService
 from backend.shared import ID
 from backend.storage import FileData, UploadFileDataConverter
 from backend.utils import convert_uuid
 
-from .dependencies import DevQManager
+from .dependencies import DevCollectionManager, DevQManager
 
 router = APIRouter(
     prefix="/questions",
@@ -132,6 +138,34 @@ async def get_question(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Failed to get question: {e}",
+        ) from e
+
+
+@router.get(
+    "/{question_id}/collections",
+    response_model=list[QuestionCollectionMembership],
+)
+async def get_owned_question_collections(
+    question_id: UUID,
+    current_user: CurrentUser,
+    dev_q_manager: DevQManager,
+    collections: DevCollectionManager,
+) -> list[QuestionCollectionMembership]:
+    try:
+        await dev_q_manager.get_question(current_user, question_id)
+        return await collections.list_owned_question_collections(
+            current_user, question_id
+        )
+    except (
+        AccessPolicyDenied,
+        ProfileNotSet,
+        QuestionAccessDenied,
+        QuestionNotFound,
+        ResourceAccessValidationError,
+    ) as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Question not found",
         ) from e
 
 

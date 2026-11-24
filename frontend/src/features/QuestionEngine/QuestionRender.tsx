@@ -7,9 +7,14 @@ type QuestionRenderProps = {
   qid: string;
   serverSettings: QuestionRuntimeLanguage;
   withProvider?: boolean;
+  solutionInDialog?: boolean;
 };
 
-function QuestionRenderBody({ qid, serverSettings }: QuestionRenderProps) {
+function QuestionRenderBody({
+  qid,
+  serverSettings,
+  solutionInDialog,
+}: QuestionRenderProps) {
   const refreshKey = useQuestionInstance((s) => s.refreshKey);
   const runtime = useQuestionInstance((s) => s.runtime);
   const { error, loading } = useRunQuestion(qid, serverSettings, refreshKey);
@@ -39,7 +44,7 @@ function QuestionRenderBody({ qid, serverSettings }: QuestionRenderProps) {
     );
   }
 
-  return <QuestionRenderShell />;
+  return <QuestionRenderShell solutionInDialog={solutionInDialog} />;
 }
 
 export default function QuestionRender({

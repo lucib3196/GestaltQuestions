@@ -28,6 +28,7 @@ export function QuestionEditorPaneContent({
             qid={qid}
             serverSettings={serverMode}
             withProvider={false}
+            solutionInDialog
           />
         </section>
       );

@@ -1,38 +1,12 @@
-import { useDebounce } from "@uidotdev/usehooks";
 import { useState } from "react";
-import { useMemo } from "react";
 
-import { SearchBar } from "../../../components/SearchBar";
 import {
   useAddQuestionToCollection,
   useCollections,
-  useSearchCollections,
 } from "../../../hooks/collections";
-import type { QuestionCollectionRead } from "../../../services";
-import type { SearchCollectionsParams } from "../../../services";
+import { CollectionPicker } from "../../QuestionCollections/CollectionPicker";
 import { useTableBaseContext } from "../../TableBase/state";
-import { CollectionResults } from "./CollectionResults";
 
-function SearchCollections({
-  title,
-  setTitle,
-}: {
-  title: string;
-  setTitle: (title: string) => void;
-}) {
-  return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-text-muted">
-        Find Collections
-      </label>
-      <SearchBar
-        value={title}
-        setValue={setTitle}
-        placeholder="Search collections by title"
-      />
-    </div>
-  );
-}
 function Header({
   questionCount,
   collectionCount,
@@ -67,21 +41,10 @@ export function AddToCollectionsPopover({
   const setSelectedQuestions = useTableBaseContext((s) => s.setSelectedIds);
   const { fetchCollections } = useCollections();
 
-  const [title, setTitle] = useState<string>("");
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<
     Set<string>
   >(() => new Set());
 
-  const debouncedTitle = useDebounce(title, 250);
-
-  const searchParams = useMemo<SearchCollectionsParams>(
-    () => ({
-      title: debouncedTitle.trim() || undefined,
-      limit: 3,
-    }),
-    [debouncedTitle],
-  );
-  const { collections, loading, error } = useSearchCollections(searchParams);
   const { addQuestionToCollection, loading: addingQuestions } =
     useAddQuestionToCollection();
 
@@ -89,16 +52,14 @@ export function AddToCollectionsPopover({
   const canAddQuestions =
     selectedCount > 0 && selectedQuestions.length > 0 && !addingQuestions;
 
-  function toggleCollection(collection: QuestionCollectionRead) {
-    if (!collection.id) return;
-
+  function toggleCollection(collectionId: string) {
     setSelectedCollectionIds((current) => {
       const next = new Set(current);
 
-      if (next.has(collection.id!)) {
-        next.delete(collection.id!);
+      if (next.has(collectionId)) {
+        next.delete(collectionId);
       } else {
-        next.add(collection.id!);
+        next.add(collectionId);
       }
 
       return next;
@@ -127,25 +88,13 @@ export function AddToCollectionsPopover({
           questionCount={selectedQuestions.length}
           collectionCount={selectedCount}
         />
-        <SearchCollections title={title} setTitle={(v) => setTitle(v)} />
       </div>
 
       <div className="flex flex-1 flex-col gap-4 overflow-hidden px-5 py-4 overflow-y-auto">
-        <div className="min-h-0 space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-text">Collections</h3>
-            <span className="text-xs text-text-soft">
-              {collections.length} results
-            </span>
-          </div>
-          <CollectionResults
-            collections={collections}
-            loading={loading}
-            error={error}
-            selectedCollectionIds={selectedCollectionIds}
-            onToggleCollection={toggleCollection}
-          />
-        </div>
+        <CollectionPicker
+          selectedCollectionIds={selectedCollectionIds}
+          onToggleCollection={toggleCollection}
+        />
       </div>
 
       <div className="flex flex-col-reverse gap-2 border-t border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-end">

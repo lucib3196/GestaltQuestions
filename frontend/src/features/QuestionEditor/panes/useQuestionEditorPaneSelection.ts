@@ -10,6 +10,7 @@ import {
 export function useQuestionEditorPaneSelection(): QuestionEditorPane[] {
   const layoutMode = useQuestionEditorContext((s) => s.layoutMode);
   const activePanes = useQuestionEditorContext((s) => s.activePanes);
+  const splitPaneOrder = useQuestionEditorContext((s) => s.splitPaneOrder);
   const capabilities = useQuestionEditorContext((s) => s.capabilities);
 
   const availablePanes = useMemo(
@@ -23,8 +24,12 @@ export function useQuestionEditorPaneSelection(): QuestionEditorPane[] {
   );
 
   if (layoutMode === "split") {
+    const orderedActivePanes = filterAvailableQuestionEditorPanes(
+      Array.isArray(splitPaneOrder) ? splitPaneOrder : [],
+      allowedActivePanes,
+    );
     return allowedActivePanes.length
-      ? allowedActivePanes
+      ? [...new Set([...orderedActivePanes, ...allowedActivePanes])]
       : availablePanes.slice(0, 1);
   }
 

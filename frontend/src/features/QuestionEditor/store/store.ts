@@ -32,6 +32,7 @@ export function createQuestionEditorStore<
         partialize: (state) => ({
           layoutMode: state.layoutMode,
           activePanes: state.activePanes,
+          splitPaneOrder: state.splitPaneOrder,
         }),
       },
     ),

@@ -1,10 +1,11 @@
 import clsx from "clsx";
+import type { Dispatch } from "react";
 
-import type { QuestionCollectionRead } from "../../../services";
+import type { QuestionCollectionRead } from "../../services";
 type Props = {
   collection: QuestionCollectionRead;
   selectedCollections: Set<string>;
-  onToggleSelected: (collection: QuestionCollectionRead) => void;
+  onToggleSelected: Dispatch<string>;
 };
 export function CollectionResult({
   collection,
@@ -15,10 +16,10 @@ export function CollectionResult({
   const selected = collectionId ? selectedCollections.has(collectionId) : false;
   return (
     <button
-      key={collection.id ?? collection.title}
       type="button"
       disabled={!collectionId}
-      onClick={() => onToggleSelected(collection)}
+      aria-pressed={selected}
+      onClick={() => collectionId && onToggleSelected(collectionId)}
       className="flex w-full items-center gap-3 rounded-md border border-border bg-surface-secondary px-3 py-3 text-left transition hover:border-border-strong hover:bg-surface-tertiary disabled:cursor-not-allowed disabled:opacity-50"
     >
       <span
@@ -51,7 +52,7 @@ type CollectionResultsProps = {
   loading: boolean;
   error: string | null;
   selectedCollectionIds: Set<string>;
-  onToggleCollection: (collection: QuestionCollectionRead) => void;
+  onToggleCollection: Dispatch<string>;
 };
 
 export function CollectionResults({
@@ -89,6 +90,7 @@ export function CollectionResults({
     <div className="max-h-64 space-y-2 overflow-y-auto ">
       {collections.map((collection) => (
         <CollectionResult
+          key={collection.id ?? collection.title}
           collection={collection}
           selectedCollections={selectedCollectionIds}
           onToggleSelected={onToggleCollection}

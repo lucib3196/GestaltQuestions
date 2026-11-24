@@ -11,13 +11,11 @@ import { getAvailableQuestionEditorPanes } from "./questionEditorPaneAccess";
 type QuestionEditorViewControlsProps = {
   runtimeLanguages: QuestionRuntimeLanguage[];
   visiblePanes: QuestionEditorPane[];
-  onOpenMetadata?: () => void;
 };
 
 export function QuestionEditorViewControls({
   runtimeLanguages,
   visiblePanes,
-  onOpenMetadata,
 }: QuestionEditorViewControlsProps) {
   const layoutMode = useQuestionEditorContext((s) => s.layoutMode);
   const setLayoutMode = useQuestionEditorContext((s) => s.setLayoutMode);
@@ -51,16 +49,6 @@ export function QuestionEditorViewControls({
         availablePanes={availablePanes}
         onTogglePane={layoutMode === "single" ? showSinglePane : togglePane}
       />
-      {onOpenMetadata && (
-        <button
-          type="button"
-          aria-haspopup="dialog"
-          onClick={onOpenMetadata}
-          className="rounded-md border border-border bg-surface px-3 py-2 text-sm font-semibold text-text hover:bg-surface-muted"
-        >
-          Metadata
-        </button>
-      )}
     </section>
   );
 }
