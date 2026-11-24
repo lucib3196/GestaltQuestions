@@ -75,7 +75,7 @@ function CollectionViewData() {
 
   if (isEditingCollection) {
     return (
-      <section className="min-h-180 rounded-lg border border-slate-800 bg-slate-950 p-6 text-slate-100 shadow-soft">
+      <section className="min-h-180 rounded-lg border border-border bg-surface p-6 text-text shadow-soft">
         <CollectionInfo
           collection={collection}
           mode="edit"
@@ -90,7 +90,7 @@ function CollectionViewData() {
   }
 
   return (
-    <section className="min-h-180 rounded-lg border border-slate-800 bg-slate-950 p-6 text-slate-100 shadow-soft">
+    <section className="min-h-180 rounded-lg border border-border bg-surface p-6 text-text shadow-soft">
       <AccessBadge
         level={
           access?.access_level ?? (status === "published" ? "view" : undefined)
@@ -120,7 +120,10 @@ function CollectionViewData() {
       )}
 
       <div className="mt-8 flex flex-col gap-6 xl:flex-row xl:items-center">
-        <CollectionHeroIcon customization={collection.customization} />
+        <CollectionHeroIcon
+          customization={collection.customization}
+          surfaceColor="var(--color-bg)"
+        />
 
         <CollectionInfo
           collection={collection}

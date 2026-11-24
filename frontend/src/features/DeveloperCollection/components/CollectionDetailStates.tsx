@@ -1,7 +1,7 @@
 export function CollectionDetailLoading() {
   return (
-    <section className="min-h-[560px] rounded-lg border border-slate-800 bg-slate-950 p-6 text-slate-100 shadow-soft">
-      <div className="flex min-h-96 items-center justify-center rounded-md border border-dashed border-slate-700 bg-slate-900/70 text-sm font-medium text-slate-400">
+    <section className="min-h-[560px] rounded-lg border border-border bg-surface p-6 text-text shadow-soft">
+      <div className="flex min-h-96 items-center justify-center rounded-md border border-dashed border-border bg-bg text-sm font-medium text-text-muted">
         Loading collection...
       </div>
     </section>

@@ -31,7 +31,7 @@ class CreatedByTableExtension(TableExtension):
                 subquery.c.created_by_id == DeveloperProfile.id,
             )
             .join(User, col(DeveloperProfile.user_id) == User.id)
-            .join(Institution, col(User.institution_id) == Institution.id)
+            .outerjoin(Institution, col(User.institution_id) == Institution.id)
             .add_columns(col(User.email).label("created_by_email"))
             .add_columns(col(User.id).label("user_id"))
             .add_columns(col(Institution.name).label("institution"))

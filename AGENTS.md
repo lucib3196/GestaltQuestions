@@ -22,8 +22,10 @@ and execution workflows.
 - Use the `gestalt-playtest` skill to capture the evidence. In the four-agent
   workflow, have the tester capture the baseline before the implementor
   starts editing and capture the result once the change is running.
-- Link the labeled before and after screenshots and any recording in the final
-  response. If an artifact could not be captured, state which one and why.
+- Before publishing a UI PR, embed labeled before and after screenshots in the
+  PR body. For interaction changes, also attach a short recording. Verify that
+  reviewers can open the media from GitHub, then link the evidence again in the
+  final response. If an artifact could not be captured, state which one and why.
 
 ## Coordinating subagents
 
