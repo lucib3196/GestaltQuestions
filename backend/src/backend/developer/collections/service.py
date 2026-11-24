@@ -13,6 +13,7 @@ from backend.question.collections.models import (
 )
 from backend.question.collections.schema import (
     CollectionCustomization,
+    QuestionCollectionMembership,
     QuestionCollectionRead,
 )
 from backend.question.collections.services.question_collection_reader import (
@@ -107,6 +108,18 @@ class DeveloperCollectionService:
         return await self._collections.delete_collection(
             await self._authorizer.resolve_profile(user), collection_id
         )
+
+    async def list_owned_question_collections(
+        self, user: User | ID, question_id: ID
+    ) -> list[QuestionCollectionMembership]:
+        owner = await self._authorizer.resolve_profile(user)
+        collections = self._collections.get_collections_containing_question(
+            question_id, owner=owner
+        )
+        return [
+            QuestionCollectionMembership.model_validate(collection)
+            for collection in collections
+        ]
 
     async def list_collections_from_owner(
         self,

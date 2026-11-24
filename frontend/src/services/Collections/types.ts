@@ -29,6 +29,11 @@ export type QuestionCollectionRead = QuestionCollection & {
   subcollections_len: number;
 };
 
+export type QuestionCollectionMembership = {
+  id: CollectionId;
+  title: string;
+};
+
 export type QuestionCollectionLink = {
   question_id: QuestionId | null;
   collection_id: CollectionId | null;

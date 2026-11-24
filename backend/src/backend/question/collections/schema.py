@@ -32,6 +32,13 @@ class QuestionCollectionUpdate(BaseModel):
     parent_id: UUID | str | None = None
 
 
+class QuestionCollectionMembership(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    title: str
+
+
 class QuestionCollectionRead(BaseModel):
     id: UUID | None
     owner_id: UUID | None

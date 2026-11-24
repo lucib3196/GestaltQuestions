@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { ViewHeader } from "./components/ViewText";
 import { useQuestionCreate } from "./instance";
 import { CreateQuestionActionPanel } from "./sections/CreateQuestionActionPanel";
@@ -34,21 +36,29 @@ function Header() {
 }
 
 export default function CreateNewQuestion() {
+  const [createdQuestionId, setCreatedQuestionId] = useState<string | null>(
+    null,
+  );
   const mode = useQuestionCreate((s) => s.mode);
 
   return (
     <div className="mx-auto flex w-full flex-col gap-6 bg-bg p-4 text-text md:p-6">
       <Header />
 
-      <section className="rounded-2xl border border-border bg-surface p-4 shadow-sm md:p-5">
-        <ModeSelectionSection />
-      </section>
+      <div
+        className={`flex flex-col gap-6${createdQuestionId ? " opacity-60" : ""}`}
+        inert={createdQuestionId !== null}
+      >
+        <section className="rounded-2xl border border-border bg-surface p-4 shadow-sm md:p-5">
+          <ModeSelectionSection />
+        </section>
 
-      <section className="">
-        {mode === "blank" && <Blank />}
-        {mode === "template" && <TemplateView />}
-        {mode === "upload" && <UploadFilesView />}
-      </section>
+        <section>
+          {mode === "blank" && <Blank />}
+          {mode === "template" && <TemplateView />}
+          {mode === "upload" && <UploadFilesView />}
+        </section>
+      </div>
 
       <section className="rounded-2xl border border-border bg-surface p-4 shadow-sm md:p-5">
         <ViewHeader
@@ -57,7 +67,10 @@ export default function CreateNewQuestion() {
           description="Review the setup above, then create the question package."
         />
 
-        <CreateQuestionActionPanel />
+        <CreateQuestionActionPanel
+          createdQuestionId={createdQuestionId}
+          onQuestionCreated={setCreatedQuestionId}
+        />
       </section>
     </div>
   );

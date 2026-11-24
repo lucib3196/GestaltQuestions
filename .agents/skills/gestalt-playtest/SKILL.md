@@ -51,3 +51,20 @@ description: Use the local GestaltQuestions build in a browser to explore featur
   what failed, and what was blocked. For bugs, include reproduction steps,
   expected and actual behavior, and relevant browser or API evidence. List
   test records left behind.
+
+## Capture evidence for a UI change
+
+1. Open the affected route and reproduce the relevant state in the baseline
+   build. Save the screenshot as `<screen-or-state>-before.png` and note the
+   route, viewport, and test data needed to recreate it.
+2. Open the updated build with the same setup and capture
+   `<screen-or-state>-after.png`. Capture additional pairs when distinct states
+   changed, such as an empty view and a populated view.
+3. For a flow or animation, use browser video or screen recording to capture
+   the updated interaction from just before the triggering action through the
+   final visible state. Save it as a short MP4, WebM, or GIF. Verify that the
+   clip plays and shows the complete interaction.
+4. Save the artifacts in the session's artifact location, or in a dedicated
+   directory under `/tmp` for local runs. Use disposable test data and check
+   that the captures contain no credentials. Provide links to the files with
+   a brief caption identifying the change.

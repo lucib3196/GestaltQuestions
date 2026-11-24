@@ -1,11 +1,17 @@
----
+# GestaltQuestions
 
-# Gestalt Question Review — Local Development Setup
+GestaltQuestions is a centralized hub for creating and distributing
+engineering questions across disciplines. Its current focus is mechanical
+engineering, chemical engineering, and civil engineering.
 
-This guide explains how to run the **full Gestalt Question Review system locally**, including the backend API, AI Workspace, and frontend interface.
-You may start each service manually or use Docker Compose to run everything together.
+Users can create and run questions built from a question stub and dynamic
+content generated with Python or JavaScript. AI agents assist users with
+generating questions and running these workflows.
 
----
+## Local development
+
+You can run the frontend, backend API, and code execution service individually
+or start the local stack with Docker Compose.
 
 ## Prerequisites
 
